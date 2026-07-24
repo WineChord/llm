@@ -1,5 +1,5 @@
 site_name: LLM
-site_description: 中文大语言模型知识库：原理、训练、系统、推理与可靠性
+site_description: 大语言模型知识库：原理、训练、系统、推理与可靠性
 site_author: WineChord
 site_url: https://www.wineandchord.com/llm/
 repo_name: WineChord/llm
