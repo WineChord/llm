@@ -1,0 +1,150 @@
+site_name: LLM
+site_description: 中文大语言模型知识库：原理、训练、系统、推理与可靠性
+site_author: WineChord
+site_url: https://www.wineandchord.com/llm/
+repo_name: WineChord/llm
+repo_url: https://github.com/WineChord/llm
+edit_uri: edit/main/docs/
+copyright: Copyright &copy; 2026 WineChord
+
+theme:
+  name: material
+  language: zh
+  icon:
+    logo: material/brain
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: 切换至深色模式
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: 切换至浅色模式
+  font: false
+  features:
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.path
+    - navigation.top
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+
+plugins:
+  - search:
+      lang:
+        - zh
+        - en
+  - tags
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/WineChord
+      name: WineChord on GitHub
+
+nav:
+  - 首页: index.md
+  - 起点:
+      - 学习路线: guide/roadmap.md
+      - 阅读方法: guide/method.md
+  - 基础:
+      - 知识地图: foundations/index.md
+      - 语言建模: foundations/language-modeling.md
+      - 分词与表示: foundations/tokenization.md
+      - 缩放与计算: foundations/scaling.md
+  - 数据:
+      - 数据工程: data/index.md
+      - 质量与治理: data/quality-governance.md
+  - 模型结构:
+      - 总览: architecture/index.md
+      - Transformer: architecture/transformer.md
+      - 注意力与位置: architecture/attention-position.md
+      - 稀疏与替代架构: architecture/moe-alternatives.md
+  - 多模态:
+      - 总览: multimodal/index.md
+      - 融合与训练: multimodal/architecture-training.md
+  - 训练与对齐:
+      - 总览: training/index.md
+      - 预训练: training/pretraining.md
+      - 优化与稳定性: training/optimization.md
+      - 后训练与偏好学习: training/post-training.md
+      - 参数高效与压缩: training/peft-compression.md
+  - 系统与基础设施:
+      - 总览: systems/index.md
+      - 并行训练: systems/parallelism.md
+      - 内存、数值与硬件: systems/memory-numerics-hardware.md
+      - 检查点与容错: systems/checkpointing.md
+  - 推理与服务:
+      - 总览: inference/index.md
+      - KV Cache: inference/kv-cache.md
+      - 调度与服务: inference/serving.md
+      - 加速与量化: inference/acceleration.md
+  - 检索与智能体:
+      - 总览: applications/index.md
+      - RAG: applications/rag.md
+      - 工具与智能体: applications/agents.md
+  - 评测与可靠性:
+      - 总览: evaluation/index.md
+      - 评测设计: evaluation/metrics.md
+      - 可靠性与安全: evaluation/reliability-safety.md
+  - 实践:
+      - 实验方法: practice/index.md
+      - 调试手册: practice/debugging.md
+  - 术语表: glossary.md
+  - 文献: references.md
+  - 更新日志: changelog.md
