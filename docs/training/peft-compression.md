@@ -4,11 +4,11 @@
 
 ## LoRA
 
-[LoRA](https://arxiv.org/abs/2106.09685) 冻结原权重 \(W\)，学习低秩增量：
+[LoRA](https://arxiv.org/abs/2106.09685) 冻结原权重 $W$，学习低秩增量：
 
-\[
+$$
 W'=W+\Delta W,\quad \Delta W=BA,\quad \operatorname{rank}(BA)=r
-\]
+$$
 
 显存节省主要来自不为全部参数保存梯度和 optimizer state；前向仍需原模型权重。rank、目标层、缩放、dropout 与数据共同决定效果。多个 adapter 可切换或合并，但合并后的干扰需要重新评测。
 

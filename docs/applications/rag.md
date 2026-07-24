@@ -4,7 +4,7 @@ RAG 在生成前检索外部语料，使答案可以引用更新的、可审计�
 
 ## 流水线
 
-\[
+$$
 \text{query}
 \rightarrow \text{rewrite}
 \rightarrow \text{retrieve}
@@ -12,7 +12,7 @@ RAG 在生成前检索外部语料，使答案可以引用更新的、可审计�
 \rightarrow \text{assemble context}
 \rightarrow \text{generate}
 \rightarrow \text{verify}
-\]
+$$
 
 每一步都可能成为瓶颈，不能只评 embedding 模型。
 

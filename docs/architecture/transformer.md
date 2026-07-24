@@ -4,18 +4,18 @@ Transformer 的关键不是“没有循环”这一表述，而是把序列依�
 
 ## 缩放点积注意力
 
-给定输入 \(X\in\mathbb{R}^{T\times d}\)：
+给定输入 $X\in\mathbb{R}^{T\times d}$：
 
-\[
+$$
 Q=XW_Q,\quad K=XW_K,\quad V=XW_V
-\]
+$$
 
-\[
+$$
 \operatorname{Attention}(Q,K,V)
 =\operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_h}}+M\right)V
-\]
+$$
 
-\(M\) 是因果或结构掩码。除以 \(\sqrt{d_h}\) 用于控制点积方差，避免 softmax 在初始化时过早饱和。
+$M$ 是因果或结构掩码。除以 $\sqrt{d_h}$ 用于控制点积方差，避免 softmax 在初始化时过早饱和。
 
 多头注意力把表示分为多个 head，在不同投影子空间中寻址，再拼接输出。head 并不天然对应可解释的固定语义；功能可能分散且随层变化。
 
@@ -23,10 +23,10 @@ Q=XW_Q,\quad K=XW_K,\quad V=XW_V
 
 FFN 对每个 token 独立地做通道变换。常见 gated 形式为：
 
-\[
+$$
 \operatorname{SwiGLU}(x)
 =\left(\operatorname{SiLU}(xW_1)\odot xW_3\right)W_2
-\]
+$$
 
 注意力负责跨位置通信，FFN 提供大量参数容量。MoE 通常把 dense FFN 替换为按 token 路由的专家集合。
 
@@ -34,18 +34,19 @@ FFN 对每个 token 独立地做通道变换。常见 gated 形式为：
 
 pre-norm block 可写为：
 
-\[
+$$
 y=x+\operatorname{Attention}(\operatorname{Norm}(x))
-\]
-\[
+$$
+
+$$
 z=y+\operatorname{FFN}(\operatorname{Norm}(y))
-\]
+$$
 
 它为梯度提供更直接的残差路径，深层训练通常更稳定。LayerNorm 同时中心化并缩放，RMSNorm 只按均方根缩放；二者的差别需要结合完整初始化与优化配方评估。
 
 ## 复杂度
 
-标准注意力的 score 矩阵为 \(T\times T\)，时间和中间存储通常随 \(T^2\) 增长；FFN 成本通常随 \(T\) 线性增长但常数很大。短上下文、大 hidden size 时 FFN/GEMM 可能主导；长上下文时 attention 与 KV 内存更突出。
+标准注意力的 score 矩阵为 $T\times T$，时间和中间存储通常随 $T^2$ 增长；FFN 成本通常随 $T$ 线性增长但常数很大。短上下文、大 hidden size 时 FFN/GEMM 可能主导；长上下文时 attention 与 KV 内存更突出。
 
 ## 实现检查
 

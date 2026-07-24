@@ -32,8 +32,12 @@ jobs:
         run: python scripts/check_content.py
       - name: Check Python snippets
         run: python scripts/check_python.py
+      - name: Check Markdown and mathematics
+        run: python scripts/check_rendering.py
       - name: Build site
         run: mkdocs build --strict
+      - name: Check generated and browser rendering
+        run: python scripts/check_rendering.py --site-dir site --browser
       - name: Configure Pages
         uses: actions/configure-pages@v6
       - name: Upload Pages artifact

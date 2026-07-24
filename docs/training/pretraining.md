@@ -10,10 +10,10 @@ decoder-only 模型主要使用 causal language modeling。encoder 或 encoder-d
 
 global batch 通常由以下量组成：
 
-\[
+$$
 B_{\text{global}}
 =B_{\text{micro}}\times N_{\text{data}}\times N_{\text{accum}}
-\]
+$$
 
 真正决定学习率和数据进度的常是每步有效 token 数，而非样本数；动态长度和 packing 会使两者差异明显。
 

@@ -6,12 +6,13 @@
 
 Adam 维护一阶与二阶矩估计：
 
-\[
+$$
 m_t=\beta_1m_{t-1}+(1-\beta_1)g_t
-\]
-\[
+$$
+
+$$
 v_t=\beta_2v_{t-1}+(1-\beta_2)g_t^2
-\]
+$$
 
 AdamW 将 weight decay 与自适应梯度更新解耦，见 [Decoupled Weight Decay Regularization](https://arxiv.org/abs/1711.05101)。优化器状态通常以 FP32 保存，是训练显存的重要部分。
 
@@ -30,7 +31,7 @@ AdamW 将 weight decay 与自适应梯度更新解耦，见 [Decoupled Weight De
 
 ## 初始化与参数化
 
-残差分支随深度累积，初始化 scale、norm 位置和 residual scaling 会共同影响稳定性。[Tensor Programs V](https://arxiv.org/abs/2203.03466) 的 \(\mu\)P 讨论跨宽度迁移超参数的一种参数化框架，但只有满足其参数化条件时才成立。
+残差分支随深度累积，初始化 scale、norm 位置和 residual scaling 会共同影响稳定性。[Tensor Programs V](https://arxiv.org/abs/2203.03466) 的 $\mu$P 讨论跨宽度迁移超参数的一种参数化框架，但只有满足其参数化条件时才成立。
 
 ## 异常定位顺序
 

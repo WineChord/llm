@@ -22,14 +22,13 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 python scripts/check_content.py
 python scripts/check_python.py
+python scripts/check_rendering.py
+mkdocs build --strict
+python scripts/check_rendering.py --site-dir site --browser
 mkdocs serve
 ```
 
-浏览器打开 `http://127.0.0.1:8000/llm/`。生产构建使用：
-
-```bash
-mkdocs build --strict
-```
+浏览器打开 `http://127.0.0.1:8000/llm/`。
 
 ## 目录
 

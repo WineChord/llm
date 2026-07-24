@@ -4,11 +4,11 @@
 
 ## Mixture of Experts
 
-在稀疏 MoE 中，router 为 token 选择 top-\(k\) 专家：
+在稀疏 MoE 中，router 为 token 选择 top-$k$ 专家：
 
-\[
+$$
 y=\sum_{i\in\operatorname{TopK}(g(x))}p_i(x)E_i(x)
-\]
+$$
 
 总参数量可以很大，但每个 token 只激活少数专家。收益伴随新的系统成本：
 

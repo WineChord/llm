@@ -8,13 +8,13 @@
 - **Multi-Query Attention**：所有 query head 共享一组 K/V，显著减少缓存和读取带宽。
 - **Grouped-Query Attention**：若干 query head 共享一组 K/V，在质量与效率间折中。
 
-设 batch 为 \(B\)，缓存长度为 \(T\)，K/V head 数为 \(H_{kv}\)，head dimension 为 \(d_h\)，元素字节数为 \(s\)，单层 KV Cache 近似：
+设 batch 为 $B$，缓存长度为 $T$，K/V head 数为 $H_{kv}$，head dimension 为 $d_h$，元素字节数为 $s$，单层 KV Cache 近似：
 
-\[
+$$
 M_{\text{KV,layer}}=2BTH_{kv}d_hs
-\]
+$$
 
-因此减少 \(H_{kv}\) 会直接降低 decode 阶段缓存带宽。[MQA](https://arxiv.org/abs/1911.02150) 与 [GQA](https://arxiv.org/abs/2305.13245) 给出了代表性设计。
+因此减少 $H_{kv}$ 会直接降低 decode 阶段缓存带宽。[MQA](https://arxiv.org/abs/1911.02150) 与 [GQA](https://arxiv.org/abs/2305.13245) 给出了代表性设计。
 
 ## 高效精确注意力
 

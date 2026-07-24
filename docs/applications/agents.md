@@ -4,10 +4,10 @@
 
 ## 基本循环
 
-\[
+$$
 o_t \rightarrow \text{state}_t \rightarrow a_t
 \rightarrow \text{tool result}_t \rightarrow o_{t+1}
-\]
+$$
 
 [ReAct](https://arxiv.org/abs/2210.03629) 把推理轨迹与行动交错；[Toolformer](https://arxiv.org/abs/2302.04761) 研究模型自监督学习何时调用 API。具体产品不必复刻论文中的文本轨迹，关键是把行动接口与反馈语义定义清楚。
 

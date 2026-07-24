@@ -6,11 +6,11 @@
 
 对 dense decoder-only Transformer，一个常用数量级估算是：
 
-\[
+$$
 C_{\text{train}}\approx 6ND
-\]
+$$
 
-其中 \(N\) 是非 embedding 参数量，\(D\) 是训练 token 数。系数会随注意力、序列长度、激活重计算、稀疏路由和实现而变化；它适合做预算初筛，不应替代 profiler。
+其中 $N$ 是非 embedding 参数量，$D$ 是训练 token 数。系数会随注意力、序列长度、激活重计算、稀疏路由和实现而变化；它适合做预算初筛，不应替代 profiler。
 
 ## 参数与数据的配比
 

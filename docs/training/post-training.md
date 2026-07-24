@@ -8,12 +8,12 @@ SFT 对示范答案做条件语言建模。关键变量包括数据质量、任�
 
 ## Reward Modeling 与 RLHF
 
-偏好数据给出 \(y_w\succ y_l\)。Bradley–Terry 风格奖励模型常优化：
+偏好数据给出 $y_w\succ y_l$。Bradley–Terry 风格奖励模型常优化：
 
-\[
+$$
 \mathcal{L}_{RM}
 =-\log\sigma(r_\phi(x,y_w)-r_\phi(x,y_l))
-\]
+$$
 
 策略优化通常在提高奖励的同时，用 KL 约束限制偏离参考策略。[InstructGPT](https://arxiv.org/abs/2203.02155) 给出了 SFT、reward model 与 PPO 的代表性流程。
 

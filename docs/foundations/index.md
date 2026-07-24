@@ -2,14 +2,14 @@
 
 一个生成式语言模型可以沿以下链条理解：
 
-\[
+$$
 \text{原始数据}
 \rightarrow \text{token 序列}
 \rightarrow \text{向量表示}
 \rightarrow \text{上下文混合}
 \rightarrow \text{条件分布}
 \rightarrow \text{解码与行动}
-\]
+$$
 
 ## 关键对象
 

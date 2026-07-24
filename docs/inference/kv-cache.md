@@ -4,12 +4,12 @@
 
 ## 容量估算
 
-对 \(L\) 层、batch \(B\)、缓存长度 \(T\)、K/V head 数 \(H_{kv}\)、head dimension \(d_h\)、元素字节数 \(s\)：
+对 $L$ 层、batch $B$、缓存长度 $T$、K/V head 数 $H_{kv}$、head dimension $d_h$、元素字节数 $s$：
 
-\[
+$$
 M_{\text{KV}}
 =2LBTH_{kv}d_hs
-\]
+$$
 
 系数 2 对应 K 与 V。实际还要加入 block 元数据、对齐、碎片、量化 scale 和临时 workspace。
 

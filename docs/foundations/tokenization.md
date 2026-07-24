@@ -20,7 +20,7 @@ Unigram 从较大的候选词表出发，迭代删除贡献较低的子词，通
 
 ## Embedding 与输出层
 
-输入 token ID 经矩阵 \(E\in\mathbb{R}^{V\times d}\) 映射为向量。输出层把隐藏状态投影回 \(V\) 维 logits。权重 tying 可让输入 embedding 与输出矩阵共享参数，但会约束二者表示。
+输入 token ID 经矩阵 $E\in\mathbb{R}^{V\times d}$ 映射为向量。输出层把隐藏状态投影回 $V$ 维 logits。权重 tying 可让输入 embedding 与输出矩阵共享参数，但会约束二者表示。
 
 ## 评估清单
 

@@ -16,13 +16,13 @@
 
 ## Pipeline Parallel
 
-流水线并行把层分为 stage，通过 microbatch 填充流水线。若 stage 数为 \(p\)，microbatch 数为 \(m\)，简单 GPipe 调度的空泡比例约为：
+流水线并行把层分为 stage，通过 microbatch 填充流水线。若 stage 数为 $p$，microbatch 数为 $m$，简单 GPipe 调度的空泡比例约为：
 
-\[
+$$
 \frac{p-1}{m+p-1}
-\]
+$$
 
-增加 \(m\) 可减小空泡，但会改变激活存储与调度。[GPipe](https://arxiv.org/abs/1811.06965) 是代表性方案；1F1B 等调度进一步控制峰值激活。
+增加 $m$ 可减小空泡，但会改变激活存储与调度。[GPipe](https://arxiv.org/abs/1811.06965) 是代表性方案；1F1B 等调度进一步控制峰值激活。
 
 ## Context、Sequence 与 Expert Parallel
 

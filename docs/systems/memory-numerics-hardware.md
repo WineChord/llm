@@ -4,11 +4,11 @@
 
 ## 显存账本
 
-设参数量为 \(N\)。以 BF16 权重、BF16 梯度、FP32 master weight 和 Adam FP32 一二阶矩为例，仅静态模型状态就可能接近：
+设参数量为 $N$。以 BF16 权重、BF16 梯度、FP32 master weight 和 Adam FP32 一二阶矩为例，仅静态模型状态就可能接近：
 
-\[
+$$
 2N+2N+4N+8N=16N\ \text{bytes}
-\]
+$$
 
 实际实现可能没有 master weight，或使用分片、低精度 optimizer；还需加入激活、KV、中间 buffer、通信 bucket、allocator 碎片和 kernel workspace。
 
@@ -20,11 +20,11 @@
 
 算术强度：
 
-\[
+$$
 I=\frac{\text{FLOPs}}{\text{bytes moved}}
-\]
+$$
 
-当 \(I\) 低时更可能受内存带宽限制；高时更可能受计算峰值限制。prefill 的大 GEMM 往往更接近 compute-bound，逐 token decode 的小 batch 与权重/KV 读取往往更接近 bandwidth-bound。
+当 $I$ 低时更可能受内存带宽限制；高时更可能受计算峰值限制。prefill 的大 GEMM 往往更接近 compute-bound，逐 token decode 的小 batch 与权重/KV 读取往往更接近 bandwidth-bound。
 
 ## 数值路径
 

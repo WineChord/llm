@@ -6,11 +6,11 @@
 
 训练 step 可以粗略拆为：
 
-\[
+$$
 T_{\text{step}}
 =T_{\text{compute}}+T_{\text{memory}}+T_{\text{communication}}
 +T_{\text{input}}+T_{\text{bubble}}+T_{\text{checkpoint}}
-\]
+$$
 
 这些项会重叠，因此不能把 profiler 中各阶段时间简单相加。优化目标是关键路径，而不是单个 kernel 的峰值。
 
