@@ -9,13 +9,14 @@ LLM 横跨统计学习、模型结构、分布式系统与产品工程。有效�
 3. 推导 [Transformer](../architecture/transformer.md) 与[注意力、位置编码](../architecture/attention-position.md)。
 4. 把[数据流水线](../data/index.md)、[预训练](../training/pretraining.md)和[优化稳定性](../training/optimization.md)连接起来。
 5. 理解[并行训练](../systems/parallelism.md)、[KV Cache](../inference/kv-cache.md)与[服务调度](../inference/serving.md)。
-6. 最后学习[评测设计](../evaluation/metrics.md)与[可靠性、安全](../evaluation/reliability-safety.md)，避免只看单一榜单。
+6. 用[证据与研究方法](evidence.md)校准模型谱系、训练数字和时效性事实。
+7. 最后学习[评测设计](../evaluation/metrics.md)与[可靠性、安全](../evaluation/reliability-safety.md)，避免只看单一榜单。
 
 ## 四条深入路径
 
 ### 模型与算法
 
-重点阅读注意力变体、位置外推、MoE、状态空间模型、多模态融合、缩放规律和后训练目标。每种方法都回答三个问题：它改变了什么归纳偏置，计算图如何变化，收益在哪些条件下成立。
+重点阅读注意力变体、位置外推、MoE、状态空间模型、多模态融合、缩放规律和后训练目标。用[模型谱系](../landscape/index.md)区分家族案例与通用机制。每种方法都回答三个问题：它改变了什么归纳偏置，计算图如何变化，收益在哪些条件下成立。
 
 ### 训练系统
 
@@ -27,8 +28,16 @@ LLM 横跨统计学习、模型结构、分布式系统与产品工程。有效�
 
 ### 应用与智能体
 
-先建立可靠的离线评测，再引入[检索增强](../applications/rag.md)、工具调用和[智能体](../applications/agents.md)。把模型概率、外部证据、执行权限和业务终态分开验证。
+先建立可靠的离线评测，再引入[检索增强](../applications/rag.md)、工具调用和[智能体](../applications/agents.md)。需要训练多步决策时进入 [Agentic RL](../agentic-rl/index.md)；需要理解仓库级执行系统时阅读 [Coding Agent](../applications/coding-agents.md)。始终把模型概率、外部证据、执行权限和业务终态分开验证。
+
+### 多模态
+
+先读[融合与训练](../multimodal/architecture-training.md)，再比较连续特征、离散 token、理解与生成目标。家族案例只用于检验框架，不替代机制：可结合 [Kimi](../multimodal/kimi.md)与 [DeepSeek](../multimodal/deepseek.md)追踪原生视觉、MoE、长上下文和生成路线。
+
+### 评测与可靠性
+
+从评测协议出发，依次研究[幻觉与事实性](../evaluation/hallucination.md)、[指令遵循](../evaluation/instruction-following.md)与[生产可靠性](../evaluation/production-reliability.md)。目标是能把错误定位到模型、数据、检索、工具、评分器或服务层，而不是笼统归因。
 
 ## 学会的标准
 
-能够解释公式不等于能够训练，跑通框架不等于理解机制。每个专题至少完成一次：手算小例子、读原论文、读一个实现、做对照实验、解释失败案例。
+能够解释公式不等于能够训练，跑通框架不等于理解机制。每个专题至少完成一次：手算小例子、读原论文、读一个实现、做对照实验、解释失败案例，并把结论写成可核验的证据卡。

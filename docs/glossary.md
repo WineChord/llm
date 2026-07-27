@@ -22,6 +22,10 @@ FLOPs 与数据搬运字节数之比，用于判断算子更可能受计算还�
 
 按先前 token 条件化，逐 token 分解联合概率的模型。
 
+**Agentic RL**
+
+让模型策略在多步环境中通过观察、行动、工具结果与奖励学习的一组方法，而非单一算法。
+
 **BF16**
 
 具有 8-bit exponent 和 7-bit fraction 的 16-bit 浮点格式，动态范围接近 FP32。
@@ -33,6 +37,10 @@ Byte Pair Encoding，迭代合并高频相邻符号的子词算法。
 **Checkpoint**
 
 用于保存或恢复模型及训练状态的持久化快照。
+
+**Credit assignment**
+
+把延迟出现的结果或奖励归因到先前状态与动作的问题。
 
 **Context window**
 
@@ -54,6 +62,10 @@ Byte Pair Encoding，迭代合并高频相邻符号的子词算法。
 
 Direct Preference Optimization，直接用 chosen/rejected 对与参考策略优化偏好的方法。
 
+**Environment**
+
+Agent 交互的外部状态与转移规则，可包含工具、模拟器、代码仓库、服务或现实系统。
+
 **Expert parallelism, EP**
 
 把 MoE 专家分布到不同设备，并路由 token 的并行方式。
@@ -67,6 +79,10 @@ Fully Sharded Data Parallel，按 rank 分片参数、梯度与 optimizer state 
 **Goodput**
 
 满足延迟或其他 SLO 的有效吞吐，而非所有完成工作的总吞吐。
+
+**GRPO**
+
+Group Relative Policy Optimization，使用同一输入的成组样本和组相对奖励估计优势的策略优化方法。
 
 **GQA**
 
@@ -83,6 +99,10 @@ Grouped-Query Attention，多组 query head 分别共享较少 K/V head。
 **In-context learning**
 
 不更新权重，仅通过当前上下文中的说明或示例改变行为。
+
+**Instruction following**
+
+在优先级、作用域、格式、条件和排除约束下完成任务的能力。
 
 **ITL / TPOT**
 
@@ -108,6 +128,10 @@ Model FLOPs Utilization，用模型理论有效 FLOPs 与硬件峰值比较的�
 
 Multimodal Large Language Model，能处理文本以外一个或多个模态的大模型。
 
+**Model lineage**
+
+按架构、训练、能力、发布对象与时间记录模型继承和分支关系的方法。
+
 **MoE**
 
 Mixture of Experts，按输入动态选择部分专家计算的稀疏架构。
@@ -132,6 +156,10 @@ Multi-Query Attention，多个 query head 共享同一组 K/V。
 
 Proximal Policy Optimization，带裁剪目标的策略梯度算法，常用于 RLHF。
 
+**Policy lag**
+
+生成 rollout 的 behavior policy 与 learner 当前 policy 之间的版本或分布差异。
+
 ## Q–Z
 
 **Quantization**
@@ -141,6 +169,10 @@ Proximal Policy Optimization，带裁剪目标的策略梯度算法，常用于 
 **RAG**
 
 Retrieval-Augmented Generation，生成前检索外部证据并注入上下文。
+
+**Reward hacking**
+
+策略利用奖励函数或验证器漏洞取得高分，却没有完成真实目标的行为。
 
 **RLAIF**
 
@@ -157,6 +189,14 @@ Rotary Position Embedding，用位置相关旋转把相对位置信息注入 Q/K
 **SFT**
 
 Supervised Fine-Tuning，在指令—答案或任务示范上做监督微调。
+
+**Tool schema**
+
+工具名称、参数类型、返回结构、错误与副作用的机器可读契约。
+
+**Trajectory**
+
+一个 episode 中观察、动作、工具结果、奖励与终止状态组成的序列。
 
 **Speculative decoding**
 
@@ -181,6 +221,10 @@ Time to first token，从请求到首个输出 token 的时间。
 **VLM**
 
 Vision-Language Model，联合处理视觉与语言的模型。
+
+**Verifier**
+
+根据目标状态、测试、规则或评分模型判断输出或轨迹是否满足条件的组件。
 
 **ZeRO**
 

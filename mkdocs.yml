@@ -102,49 +102,73 @@ nav:
   - 起点:
       - 学习路线: guide/roadmap.md
       - 阅读方法: guide/method.md
-  - 基础:
-      - 知识地图: foundations/index.md
-      - 语言建模: foundations/language-modeling.md
-      - 分词与表示: foundations/tokenization.md
-      - 缩放与计算: foundations/scaling.md
-  - 数据:
-      - 数据工程: data/index.md
-      - 质量与治理: data/quality-governance.md
-  - 模型结构:
-      - 总览: architecture/index.md
-      - Transformer: architecture/transformer.md
-      - 注意力与位置: architecture/attention-position.md
-      - 稀疏与替代架构: architecture/moe-alternatives.md
+      - 证据与研究方法: guide/evidence.md
+  - 原理与模型:
+      - 基础:
+          - 知识地图: foundations/index.md
+          - 语言建模: foundations/language-modeling.md
+          - 分词与表示: foundations/tokenization.md
+          - 缩放与计算: foundations/scaling.md
+      - 数据:
+          - 数据工程: data/index.md
+          - 质量与治理: data/quality-governance.md
+      - 模型结构:
+          - 总览: architecture/index.md
+          - Transformer: architecture/transformer.md
+          - 注意力与位置: architecture/attention-position.md
+          - 稀疏与替代架构: architecture/moe-alternatives.md
+      - 模型谱系:
+          - 总览: landscape/index.md
+          - 训练 token 口径: landscape/training-tokens.md
+          - DeepSeek 演化案例: landscape/deepseek-timeline.md
   - 多模态:
       - 总览: multimodal/index.md
       - 融合与训练: multimodal/architecture-training.md
-  - 训练与对齐:
-      - 总览: training/index.md
-      - 预训练: training/pretraining.md
-      - 优化与稳定性: training/optimization.md
-      - 后训练与偏好学习: training/post-training.md
-      - 参数高效与压缩: training/peft-compression.md
-  - 系统与基础设施:
-      - 总览: systems/index.md
-      - 并行训练: systems/parallelism.md
-      - 内存、数值与硬件: systems/memory-numerics-hardware.md
-      - 检查点与容错: systems/checkpointing.md
-  - 推理与服务:
-      - 总览: inference/index.md
-      - KV Cache: inference/kv-cache.md
-      - 调度与服务: inference/serving.md
-      - 加速与量化: inference/acceleration.md
-  - 检索与智能体:
-      - 总览: applications/index.md
-      - RAG: applications/rag.md
-      - 工具与智能体: applications/agents.md
+      - 原生多模态与生成: multimodal/native-generation.md
+      - Kimi 案例: multimodal/kimi.md
+      - DeepSeek 案例: multimodal/deepseek.md
+  - 训练与系统:
+      - 训练与对齐:
+          - 总览: training/index.md
+          - 预训练: training/pretraining.md
+          - 优化与稳定性: training/optimization.md
+          - 后训练与偏好学习: training/post-training.md
+          - 参数高效与压缩: training/peft-compression.md
+      - 系统与基础设施:
+          - 总览: systems/index.md
+          - 并行训练: systems/parallelism.md
+          - 内存、数值与硬件: systems/memory-numerics-hardware.md
+          - 检查点与容错: systems/checkpointing.md
+  - 推理与应用:
+      - 推理与服务:
+          - 总览: inference/index.md
+          - KV Cache: inference/kv-cache.md
+          - 调度与服务: inference/serving.md
+          - 加速与量化: inference/acceleration.md
+      - 检索与智能体:
+          - 总览: applications/index.md
+          - RAG: applications/rag.md
+          - 工具与智能体: applications/agents.md
+          - Coding Agent: applications/coding-agents.md
+  - Agentic RL:
+      - 总览: agentic-rl/index.md
+      - 数学与算法: agentic-rl/math-algorithms.md
+      - 数据与环境: agentic-rl/data-environments.md
+      - 训练系统: agentic-rl/training-systems.md
+      - 长时任务: agentic-rl/long-horizon.md
+      - 评测与安全: agentic-rl/evaluation-safety.md
+      - 阅读清单: agentic-rl/reading-list.md
   - 评测与可靠性:
       - 总览: evaluation/index.md
       - 评测设计: evaluation/metrics.md
       - 可靠性与安全: evaluation/reliability-safety.md
-  - 实践:
-      - 实验方法: practice/index.md
-      - 调试手册: practice/debugging.md
-  - 术语表: glossary.md
-  - 文献: references.md
-  - 更新日志: changelog.md
+      - 幻觉与事实性: evaluation/hallucination.md
+      - 指令遵循: evaluation/instruction-following.md
+      - 生产可靠性: evaluation/production-reliability.md
+  - 实践与索引:
+      - 实践:
+          - 实验方法: practice/index.md
+          - 调试手册: practice/debugging.md
+      - 术语表: glossary.md
+      - 文献: references.md
+      - 更新日志: changelog.md

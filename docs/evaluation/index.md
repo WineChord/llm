@@ -21,4 +21,13 @@
 
 模型与 checkpoint、prompt/template、few-shot、解码、工具、上下文长度、数据版本、样本数、评分器、重复次数、置信区间、失败分类和核验日期。
 
-评测设计见[指标与协议](metrics.md)，可靠性边界见[可靠性与安全](reliability-safety.md)。综合框架可参考 [HELM](https://arxiv.org/abs/2211.09110)。
+## 专题入口
+
+- [指标与协议](metrics.md)：样本、方差、评分器与比较边界。
+- [可靠性与安全](reliability-safety.md)：校准、分布漂移、隐私和攻击面。
+- [幻觉与事实性](hallucination.md)：错误分类、引用验证、检索与 abstention。
+- [指令遵循](instruction-following.md)：组合约束、优先级、格式与作用域。
+- [生产可靠性](production-reliability.md)：SLO、降级、观测、canary 与事故闭环。
+- [Agentic RL 评测与安全](../agentic-rl/evaluation-safety.md)：环境、奖励攻击和动作权限。
+
+综合评测框架可参考 [HELM](https://arxiv.org/abs/2211.09110)。

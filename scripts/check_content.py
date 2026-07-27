@@ -18,12 +18,32 @@ PRIVATE_TRACES = (
     "the user asked",
     "the user wanted",
     "according to the prompt",
+    "according to our conversation",
     "private instruction",
     "用户要求我",
     "根据用户指令",
+    "根据本次对话",
+    "聊天记录",
     "内部工作流",
 )
+REQUIRED_PAGES = (
+    "guide/evidence.md",
+    "landscape/index.md",
+    "landscape/training-tokens.md",
+    "multimodal/native-generation.md",
+    "applications/coding-agents.md",
+    "agentic-rl/index.md",
+    "agentic-rl/math-algorithms.md",
+    "agentic-rl/training-systems.md",
+    "evaluation/hallucination.md",
+    "evaluation/instruction-following.md",
+    "evaluation/production-reliability.md",
+)
 errors: list[str] = []
+
+for relative in REQUIRED_PAGES:
+    if not (ROOT / "docs" / relative).is_file():
+        errors.append(f"docs/{relative}: 缺少知识架构核心页面")
 
 for path in FILES:
     text = path.read_text(encoding="utf-8")

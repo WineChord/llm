@@ -22,4 +22,11 @@ VLM、MLLM 与通用多模态模型都试图让文本模型读取或生成图像
 
 同时考察感知、grounding、组合推理、跨模态一致性、幻觉、时序理解、生成质量、延迟、输入分辨率和模态缺失鲁棒性。只用一个综合分数会隐藏模型到底是在“看”、在猜语言先验，还是依赖测试集模式。
 
-结构与训练细节见[融合与训练](architecture-training.md)。代表性基础包括 [CLIP](https://arxiv.org/abs/2103.00020)、[Flamingo](https://arxiv.org/abs/2204.14198)、[BLIP-2](https://arxiv.org/abs/2301.12597) 和 [LLaVA](https://arxiv.org/abs/2304.08485)。
+## 阅读路径
+
+- [融合与训练](architecture-training.md)：projector、resampler、cross-attention、分辨率与训练阶段。
+- [原生多模态与生成](native-generation.md)：连续/离散表示、自回归/扩散与理解—生成冲突。
+- [Kimi 案例](kimi.md)：MoE、视觉、长上下文与 agent 能力如何组合。
+- [DeepSeek 案例](deepseek.md)：VL、VL2、Janus 与 OCR 路线怎样分化。
+
+代表性基础包括 [CLIP](https://arxiv.org/abs/2103.00020)、[Flamingo](https://arxiv.org/abs/2204.14198)、[BLIP-2](https://arxiv.org/abs/2301.12597) 和 [LLaVA](https://arxiv.org/abs/2304.08485)。
