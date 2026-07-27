@@ -2,6 +2,8 @@
 
 Transformer 的关键不是“没有循环”这一表述，而是把序列依赖转化为可并行的全局内容寻址，并用残差堆叠交替完成 token mixing 与 channel mixing。
 
+这一步并非从空白开始。[Seq2Seq 与神经对齐](../landscape/works/seq2seq-and-neural-alignment.md)展示 fixed-vector bottleneck 怎样先变成按 decoder 状态读取的 memory，[从递归到注意力](../landscape/lineages/transduction-to-attention.md)再把问题推向 self-attention；[Attention Is All You Need](../landscape/works/attention-is-all-you-need.md)逐项拆解原论文、Tensor2Tensor 实现边界与最小可执行 attention。
+
 ## 缩放点积注意力
 
 给定输入 $X\in\mathbb{R}^{T\times d}$：

@@ -2,6 +2,8 @@
 
 模型规模、数据规模与训练计算共同决定预训练损失，但缩放规律是经验拟合，不是无条件的物理定律。
 
+[Scaling Laws 与 Chinchilla](../landscape/works/scaling-laws-chinchilla.md)重建了两项工作的实验问题、拟合口径和工程含义；[规模、数据与上下文](../landscape/lineages/scaling-and-context.md)则把它们放回 GPT-3、数据受限训练和长上下文演进中。
+
 ## 训练计算的近似
 
 对 dense decoder-only Transformer，一个常用数量级估算是：

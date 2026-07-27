@@ -2,6 +2,8 @@
 
 自回归 decode 在第 $t$ 步只产生少量新 query，却要访问此前所有 token 的 key 与 value。缓存历史 K/V 可以避免重复执行 projection，也把推理的主要约束从计算转向显存容量、读带宽和状态管理。长上下文服务中，KV 往往比单个请求的 activation 大得多；如果只计算“每 token 字节数”而忽略分页、所有权和临时 buffer，容量规划仍会失真。
 
+连续张量为何在动态请求下产生外部碎片、PagedAttention 怎样借用虚拟内存式间接寻址，见[vLLM / PagedAttention](../landscape/works/vllm-pagedattention.md)；它在完整服务演进中的位置见[推理运行时与服务](../landscape/lineages/inference-serving.md)。
+
 ## 容量模型
 
 设模型有 $L$ 层，batch 中共有 $B$ 条等长序列，每条缓存 $T$ 个 token；query head 数为 $H_q$，K/V head 数为 $H_{kv}$，head dimension 为 $d_h$，每个缓存元素占 $s$ 字节。未压缩 KV 的主体大小为

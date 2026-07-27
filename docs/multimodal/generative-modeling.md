@@ -8,6 +8,8 @@
 
 三者的训练目标、采样路径和失败模式不同，不能只按最终样例比较。
 
+[DDPM、DiT 与 Flow Matching](../landscape/works/diffusion-dit-flow.md)把去噪目标、Transformer backbone 和连续向量场放在同一组符号下比较；它们与视觉语言理解路线的汇合位置见[多模态理解与生成](../landscape/lineages/multimodal-generation.md)。
+
 ## VQ 表示
 
 Encoder 产生连续 latent：

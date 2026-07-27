@@ -5,6 +5,7 @@
 ## 阅读
 
 - [学习路线](guide/roadmap.md)：从共同基础进入模型、训练、系统、推理、智能体或多模态。
+- [技术谱系](landscape/index.md)：沿问题、转折和关键工作理解路线怎样形成。
 - [知识架构](guide/architecture.md)：理解各主题的边界与依赖。
 - [覆盖地图](guide/coverage.md)：在机制、实现、系统、评测和证据之间导航。
 - [手撕实现](practice/index.md)：用最小代码固定张量、状态与算法语义。
@@ -24,7 +25,7 @@
 | [推理时计算](reasoning/index.md) | 采样、搜索、验证与预算分配 |
 | [Agentic RL](agentic-rl/index.md) | 环境、轨迹、信用分配、异步训练与长时任务 |
 | [评测与可靠性](evaluation/index.md) | 协议、统计、校准、事实性、安全与生产门禁 |
-| [模型谱系](landscape/index.md) | checkpoint、训练口径、发布事件与证据边界 |
+| [技术谱系](landscape/index.md) | 历史转折、关键工作、实现传承与证据边界 |
 
 ## 索引
 

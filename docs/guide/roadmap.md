@@ -16,6 +16,18 @@ LLM 横跨统计学习、模型结构、分布式系统和交互环境。先建�
 
 共同主线的最低实践是完成[手撕 Decoder-only Transformer](../practice/transformer-from-scratch.md)、[训练目标](../practice/training-objectives.md)与[评测工具](../practice/evaluation-tooling.md)中的核心不变量。
 
+## 沿历史脉络建立直觉
+
+共同主线告诉你今天的系统由哪些对象组成，[技术谱系](../landscape/index.md)解释这些对象为什么会变成今天的样子。第一次阅读可以穿插五次转折：
+
+1. [计数、连续表示与可学习状态](../landscape/lineages/counts-to-learned-state.md)；
+2. [固定向量、神经对齐与 self-attention](../landscape/lineages/transduction-to-attention.md)；
+3. [预训练目标](../landscape/lineages/pretraining-objectives.md)、[规模规律与上下文适应](../landscape/lineages/scaling-and-context.md)；
+4. [指令、偏好与在线学习](../landscape/lineages/training-alignment.md)、[推理与可验证搜索](../landscape/lineages/reasoning-verification.md)；
+5. [分布式训练](../landscape/lineages/distributed-training-systems.md)与[推理运行时](../landscape/lineages/inference-serving.md)怎样把算法变成可运行系统。
+
+每条谱系都连接关键工作深读和现代机制页。先看矛盾怎样移动，再阅读论文细节，会比孤立记忆模型名称更容易判断新工作究竟改变了什么。
+
 ## 深入路径
 
 ### 模型结构与算法

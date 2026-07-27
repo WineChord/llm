@@ -2,6 +2,8 @@
 
 当一个模型层、完整模型或长序列无法在单设备上高效运行时，需要沿张量、层、序列或专家维度切分。组合并行的目标不是让并行度乘积等于 GPU 数，而是让每种通信匹配合适的互联和计算粒度。
 
+Megatron 的 tensor parallel 与 ZeRO 的状态分片解决的是不同复制对象。[分布式训练系统](../landscape/lineages/distributed-training-systems.md)给出从数据并行到多维并行的历史主线，[Megatron 与 ZeRO](../landscape/works/megatron-zero.md)则用最小张量账本展示二者怎样组合而不混淆。
+
 ## Tensor Parallel
 
 设线性层 $Y=XW$。

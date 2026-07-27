@@ -2,6 +2,8 @@
 
 开放式回答没有唯一参考答案。LLM judge 能按 rubric 扩展评分或 pairwise 比较，但它是一个有偏、可被攻击、会随版本变化的测量器，不是事实真值。
 
+[HELM、MT-Bench 与 Chatbot Arena](../landscape/works/helm-arena.md)区分多场景 benchmark、离线模型裁判与在线人类 pairwise 数据；[评测体系的演进](../landscape/lineages/evaluation.md)则解释评测为何从单一准确率逐步转向多指标、动态协议与可执行环境。
+
 ## 评测协议
 
 先确定 judge 的任务：

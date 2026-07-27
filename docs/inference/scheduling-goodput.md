@@ -99,7 +99,7 @@ $$
 P_i=\sum_{c=1}^{C_i}P_{i,c}.
 $$
 
-chunk 大时 prefill 效率高，chunk 小时 decode stall 更短，但 launch、调度和 partial-state 管理增加。[Sarathi-Serve](https://arxiv.org/abs/2403.02310)研究了以 chunked prefill 构造 stall-free batching 的路线。
+chunk 大时 prefill 效率高，chunk 小时 decode stall 更短，但 launch、调度和 partial-state 管理增加。[Sarathi-Serve](https://www.usenix.org/conference/osdi24/presentation/agrawal)研究了以 chunked prefill 构造 stall-free batching 的路线。
 
 选择 chunk 需要同时测：
 

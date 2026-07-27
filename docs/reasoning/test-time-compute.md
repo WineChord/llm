@@ -197,6 +197,6 @@ $$
 | 校准 | verifier score 分桶后的真实正确率 |
 | 泛化 | 不同任务、难度与分布外切片 |
 
-[Scaling LLM Test-Time Compute Optimally](https://arxiv.org/abs/2408.03314)给出了按问题难度选择计算策略的实证框架；[DeepSeek-R1](https://arxiv.org/abs/2501.12948)公开了推理模型训练与推理行为的一条路线。对开放和闭源系统，都应把可观察的预算—质量曲线与未披露训练机制分开。
+[Scaling LLM Test-Time Compute Optimally](https://arxiv.org/abs/2408.03314)给出了按问题难度选择计算策略的实证框架；[DeepSeek-R1 深读](../landscape/works/deepseek-r1.md)把可验证奖励、在线 RL、多阶段数据与蒸馏的公开证据拆开。对开放和闭源系统，都应把可观察的预算—质量曲线与未披露训练机制分开。
 
 本节的边界与阅读顺序见[推理与推理时计算总览](index.md)，搜索与 verifier 的计算图见[搜索与验证](search-verification.md)，底层采样见[解码](../inference/decoding.md)，紧凑实现与测试见[测试时计算手撕实现](../practice/test-time-compute.md)。

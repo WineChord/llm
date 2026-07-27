@@ -57,7 +57,7 @@ $$
 
 若格式只用文件名中的 local rank 表示身份，就难以在 TP / PP / EP size 改变后安全 reshard。global parameter ID、expert ID 和 pipeline layer range 必须独立于当前 rank 编号。
 
-[PyTorch Distributed Checkpoint](https://docs.pytorch.org/docs/2.8/distributed.checkpoint.html)提供分布式 state dict、planner 与跨 rank 保存 / 读取接口。具体格式仍需由调用方补齐数据游标、版本、外部状态和提交协议。
+[PyTorch Distributed Checkpoint](https://docs.pytorch.org/docs/stable/distributed.checkpoint.html)提供分布式 state dict、planner 与跨 rank 保存 / 读取接口。具体格式仍需由调用方补齐数据游标、版本、外部状态和提交协议。
 
 ## Manifest
 

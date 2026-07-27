@@ -2,6 +2,8 @@
 
 稀疏 Mixture of Experts 将模型总容量与每个 token 的激活计算部分解耦。真正的设计对象不是“有多少专家”，而是路由、容量、通信、负载和学习信号组成的整体系统。
 
+从 early expert mixtures、Sparsely-Gated MoE 到 Switch 与 DeepSeekMoE 的变化见[条件计算与稀疏专家](../landscape/lineages/conditional-compute.md)；关键路由与 capacity 语义的可执行缩影见[稀疏 MoE 深读](../landscape/works/sparse-moe.md)。
+
 ## 路由
 
 设 token 表示为 $x$，router logits 为

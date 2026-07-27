@@ -37,6 +37,8 @@ $$
 
 Agentic RL 不是一个特定算法。PPO、GRPO、REINFORCE、离线 RL 或 imitation learning 都可能成为训练组件。
 
+从单轮指令与偏好进入在线策略学习的前史见[后训练与对齐](../landscape/lineages/training-alignment.md)；CoT、候选搜索与 verifier 怎样产生训练信号见[推理、搜索与验证](../landscape/lineages/reasoning-verification.md)。本节从二者继续向有状态环境、长时轨迹和终态信用分配推进。
+
 ## 系统闭环
 
 ```text

@@ -11,8 +11,9 @@ import traceback
 
 ROOT = Path(__file__).resolve().parents[1]
 PRACTICE = ROOT / "docs" / "practice"
+WORKS = ROOT / "docs" / "landscape" / "works"
 BLOCK = re.compile(r"^```python[^\n]*\n(.*?)^```$", re.MULTILINE | re.DOTALL)
-PAGES = (
+PRACTICE_PAGES = (
     "tensor-primitives.md",
     "transformer-from-scratch.md",
     "training-objectives.md",
@@ -38,17 +39,24 @@ def main() -> int:
         return 2
     torch.set_num_threads(1)
     total = 0
-    for name in PAGES:
-        path = PRACTICE / name
+    pages = [
+        *(PRACTICE / name for name in PRACTICE_PAGES),
+        *sorted(WORKS.glob("*.md")),
+    ]
+    for path in pages:
+        relative = path.relative_to(ROOT)
         namespace = {"__name__": "__reference_snippet__"}
         blocks = BLOCK.findall(path.read_text(encoding="utf-8"))
+        if path.parent == WORKS and not blocks:
+            print(f"{relative}: 缺少可执行 reference", file=sys.stderr)
+            return 1
         for index, code in enumerate(blocks, 1):
             total += 1
             try:
                 exec(
                     compile(
                         code,
-                        f"docs/practice/{name}:block-{index}",
+                        f"{relative}:block-{index}",
                         "exec",
                         dont_inherit=True,
                     ),
@@ -56,13 +64,13 @@ def main() -> int:
                 )
             except Exception:
                 print(
-                    f"docs/practice/{name}: Python 代码块 {index} 运行失败",
+                    f"{relative}: Python 代码块 {index} 运行失败",
                     file=sys.stderr,
                 )
                 traceback.print_exc()
                 return 1
-        print(f"PASS docs/practice/{name}: {len(blocks)} 个代码块")
-    print(f"Reference 运行检查通过：{len(PAGES)} 个页面，{total} 个代码块")
+        print(f"PASS {relative}: {len(blocks)} 个代码块")
+    print(f"Reference 运行检查通过：{len(pages)} 个页面，{total} 个代码块")
     return 0
 
 

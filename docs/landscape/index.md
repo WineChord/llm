@@ -1,65 +1,113 @@
-# 模型谱系
+# 技术谱系
 
-模型谱系不是发布日期列表，而是一套回答“什么发生了变化”的坐标系。只有把架构、训练、能力、开放程度与产品形态分开，模型之间的继承关系才不会被命名和营销口径遮蔽。
+一个领域真正变得可理解，不是在所有论文旁边标上年份，而是看见问题怎样移动：固定窗口解决了可估计性，却截断历史；循环状态延长记忆，却把一切压进有限向量；attention 打开全局寻址，又把代价转成平方关系和 KV 状态。后来的工作不是凭空出现，它们总在接住前一代留下的某个矛盾。
 
-## 五条并行轴
+这里把知识库中的稳定机制与具体工作连接起来。谱系页讲“为什么下一步会发生”，工作深读讲“一项工作到底改变了什么”，模型结构、训练、系统和评测页则保留完整定义与实现边界。
 
-| 轴 | 观察对象 | 不能替代它的指标 |
-| --- | --- | --- |
-| 架构 | dense/MoE、注意力、路由、归一化、多模态接口 | 参数量 |
-| 训练 | 数据口径、token 暴露、优化器、阶段与目标 | 上下文长度 |
-| 后训练 | SFT、偏好优化、RL、工具与环境反馈 | base benchmark |
-| 系统 | 训练并行、精度、推理缓存、服务调度 | 单卡速度 |
-| 发布 | 论文、权重、API、产品和许可证 | 单一“发布日期” |
+## 不是一条单线年表
 
-例如同一模型家族可以先发布技术报告，随后开放 API，再发布较小权重；后续产品版本也可能复用名称但更换 checkpoint。记录谱系时应把事件拆开。
+技术路线会并行、分叉，也会在多年后重新汇合。RNN 与连续词表示早于 2003 年前馈神经语言模型并行发展；BERT、GPT 与 T5 是不同信息流选择，不是谁简单取代谁；线性 attention 与 SSM 从不同方向走向有限状态。阅读时应允许多个问题同时存在，而不是把论文排成版本号。
 
-## 最小模型卡
+### 从计数到寻址
+
+[从计数到可学习状态](lineages/counts-to-learned-state.md)沿着 n-gram、连续表示、RNN 与 LSTM 观察“怎样共享统计、怎样保存历史”。[从固定向量到内容寻址](lineages/transduction-to-attention.md)接着解释 seq2seq 的 context bottleneck 如何推动可微对齐，attention 又怎样从 encoder–decoder 接口进入每一层。
+
+这一转折的三个近距离切面是 [LSTM](works/lstm.md)、[Seq2Seq 与神经对齐](works/seq2seq-and-neural-alignment.md)和 [Attention Is All You Need](works/attention-is-all-you-need.md)。它们分别改变梯度路径、条件生成接口和序列内部的信息路径。
+
+### 从预训练目标到基础模型
+
+[预训练目标与信息流](lineages/pretraining-objectives.md)不把 GPT、BERT、T5 排成继任关系，而是比较 causal、masked 与 span-corruption 三种可见性和输出接口。[从规模规律到上下文内适应](lineages/scaling-and-context.md)把经验幂律、compute-optimal 训练与 in-context learning 放回各自的证据层。
+
+对应工作深读：
+
+- [GPT-1](works/generative-pretraining-gpt.md)：causal pretraining 与任务迁移怎样共享一个接口；
+- [BERT](works/bert.md)：双向表示为何需要 corruption，以及 15% / 80-10-10 的真实语义；
+- [T5](works/t5.md)：span corruption 与 text-to-text 如何共同形成配方；
+- [Scaling Laws 与 Chinchilla](works/scaling-laws-chinchilla.md)：固定算力下的拟合、资源分配和外推边界。
+
+[从可下载权重到可研究系统](lineages/open-model-ecosystem.md)则补上另一条历史：公开 API、权重、代码、数据、中间 checkpoint 与许可证逐层扩大了研究者真正能够检验的对象。
+
+### 当稠密 attention 不再是唯一答案
+
+[容量与激活计算怎样分开](lineages/conditional-compute.md)追踪 sparse gating 如何把参数容量与每 token 计算部分解耦，又把瓶颈转移到负载、overflow 与 all-to-all。[从显式寻址到有限状态](lineages/linear-time-sequence-models.md)区分 kernelized attention、fast weights、S4 与 selective SSM，解释它们在哪些代数结构上汇合、又在哪里保持不同。
+
+两篇工作深读把公式落到执行语义：
+
+- [Sparse MoE](works/sparse-moe.md)从 top-$k$ 路由约定走到 capacity、dispatch 和 expert parallel；
+- [S4 到 Mamba](works/s4-mamba.md)从 recurrence–convolution duality 走到 input-dependent selective scan。
+
+### 从续写到偏好、搜索与验证
+
+[从续写到偏好与在线学习](lineages/training-alignment.md)沿监督来源、数据分布和 optimizer 三条坐标连接 instruction tuning、reward model、PPO、DPO、RLOO、GRPO 与 RLVR。[从外显推理到可验证搜索](lineages/reasoning-verification.md)则连接 CoT、自一致采样、verifier、过程监督、搜索和 search-to-training。
+
+关键工作不按算法热度排列，而按它改变的闭环环节阅读：
+
+- [InstructGPT](works/instructgpt.md)连接 demonstration、pairwise reward 与 online PPO；
+- [DPO](works/dpo.md)从 KL-regularized policy 推出离线 pair objective，却不提供在线探索；
+- [DeepSeek-R1](works/deepseek-r1.md)把规则奖励 RL、cold start、rejection sampling、二次对齐与蒸馏放进多阶段流程。
+
+### 从单卡计算到分布式状态
+
+[分布式训练系统](lineages/distributed-training-systems.md)从参数复制、collective、tensor/pipeline parallel 讲到 ZeRO/FSDP、IO-aware kernel 与 durable checkpoint。重点不是并行缩写，而是一次创新减少了哪份状态或哪段等待，又把通信和恢复压力移到哪里。
+
+[推理运行时与服务](lineages/inference-serving.md)从静态 batch、Orca iteration scheduling 走到 PagedAttention、prefix sharing、推测解码、chunked prefill 和 Prefill–Decode 分离。模型生成仍然逐 token，系统进步来自更准确地管理动态状态和不同 SLO。
+
+对应深读：
+
+- [Megatron-LM 与 ZeRO](works/megatron-zero.md)：层内切分与状态分片为何解决不同瓶颈；
+- [FlashAttention](works/flashattention.md)：不引入 attention approximation，怎样通过 online softmax 计算同一 dense softmax attention 并改写 HBM traffic；
+- [vLLM 与 PagedAttention](works/vllm-pagedattention.md)：KV Cache 如何从连续 tensor 变成带所有权的分页状态。
+
+### 当模型开始看见、检索与行动
+
+[从“看懂”到“生成”](lineages/multimodal-generation.md)把视觉语言对齐与生成建模视作两股汇流，而不把“支持图片”当成统一技术标签：
+
+- [CLIP](works/clip.md)让自然语言成为开放视觉接口；
+- [Flamingo、BLIP-2 与 LLaVA](works/visual-language-bridges.md)展示冻结模型之间三种不同的桥；
+- [从 DDPM 到 DiT 与 Flow](works/diffusion-dit-flow.md)拆开表示、backbone 与概率路径。
+
+[从参数记忆到可行动系统](lineages/retrieval-agents.md)则沿外部记忆、工具调用和环境轨迹扩展模型边界：
+
+- [RAG](works/rag.md)把检索文档写成生成中的隐变量；
+- [ReAct 与 Toolformer](works/react-toolformer.md)分别从推理轨迹和训练数据回答“何时调用工具”。
+
+### 评测对象为何越来越大
+
+[从困惑度到运行中的评测](lineages/evaluation.md)解释测量对象怎样从 token likelihood 扩展到多任务协议、生成式裁判、人类偏好和 Agent 终态。[HELM 与 Chatbot Arena](works/helm-arena.md)展示两次关键转折：先把 scenario、adaptation、metric 和输出记录组成透明协议，再让开放式交互进入动态成对比较。
+
+评测没有位于历史的末尾。每当模型新增上下文、检索、工具或搜索预算，协议都必须记录新的自由度，否则系统改动会伪装成 checkpoint 能力。
+
+## 工作深读怎样使用
+
+一篇工作页不会逐节复述论文。它固定五个问题：
+
+1. 前一阶段留下了什么具体矛盾；
+2. 这项工作改变的是数据、目标、计算图、optimizer、状态还是测量协议；
+3. 关键公式怎样映射到最小可运行代码；
+4. 原论文实验最窄能支持什么结论；
+5. 后续工作为何仍有出现的必要。
+
+每段 reference 都保持短小并带断言；它用于冻结机制语义，不冒充论文的完整训练系统。更完整的张量、训练与系统实现仍在[手撕实现](../practice/index.md)中维护。
+
+## 一项“发布”常有多个日期
+
+论文首次公开、会议版本、权重、代码、API、产品与许可证变更可能发生在不同日期。模型家族记录至少区分：
 
 ```text
-模型与精确版本：
-对象类型：base / instruct / reasoning / multimodal / system
-参数：总参数 / 激活参数 / 未知
-输入与输出模态：
-上下文与最大生成：
-预训练与后训练口径：
-核心结构变化：
-权重、代码、许可证：
-论文 / API / 产品事件：
-核验日期与未知项：
+paper / revision
+checkpoint / weights
+training and inference code
+dataset and recipe
+API / product
+license
 ```
 
-若某字段没有公开证据，保留“未知”比从相邻版本外推更准确。
+同名产品也可能更换 checkpoint；一篇论文则可能在权重发布后继续修订。训练规模的可比口径见[训练 token](training-tokens.md)，怎样拆分一条复杂家族可参考[DeepSeek 演化案例](deepseek-timeline.md)。
 
-## 典型演化模式
+## 三种阅读路径
 
-### 从规模扩张到稀疏激活
+- **沿问题走**：从本页选择一条谱系，先理解矛盾怎样移动，再进入工作深读。
+- **沿机制走**：从[知识架构](../guide/architecture.md)进入 canonical 机制页，再回到谱系确认它在历史上的位置。
+- **沿实现走**：先运行[最小实现](../practice/minimal-implementations.md)，再阅读对应工作为什么需要这些 mask、状态、归一化或调度语义。
 
-MoE 把模型容量与单 token 计算部分解耦：
-
-$$
-y=\sum_{i\in \operatorname{TopK}(g(x))}p_i(x)E_i(x).
-$$
-
-总参数量反映容量上限，激活参数量更接近每 token 的专家计算；通信、负载均衡和专家缓存又会改变实际系统成本。见[稀疏与替代架构](../architecture/moe-alternatives.md)。
-
-### 从语言模型到可行动系统
-
-能力边界逐渐包含长上下文、工具调用、代码执行、环境反馈和多轮状态。此时 benchmark 分数不再只由 checkpoint 决定：
-
-$$
-\text{system quality}=f(\text{model},\text{context},\text{tools},\text{policy},\text{harness}).
-$$
-
-模型谱系与 agent 系统谱系应分别记录，详见[工具与智能体](../applications/agents.md)和[Coding Agent](../applications/coding-agents.md)。
-
-### 从外接视觉到原生多模态
-
-演化路径包括 projector 对齐、cross-attention、统一 token、自回归理解与生成，以及视觉工具旁路。所谓“原生”必须落到训练目标和计算图，不应只依据产品支持图片输入。见[多模态](../multimodal/index.md)。
-
-## 两张互补表
-
-- [训练 token 口径](training-tokens.md)关注数据暴露、阶段与可比性。
-- [DeepSeek 演化案例](deepseek-timeline.md)展示怎样把论文、权重、API 与产品事件拆开。
-
-具体家族页面适合作为案例，不应替代[基础](../foundations/index.md)、[模型结构](../architecture/index.md)和[训练](../training/index.md)中的通用机制。
+技术史的价值不是替今天的方案排祖先，而是让设计选择重新获得上下文：什么问题已经解决，什么只是换了成本位置，什么至今仍没有可靠答案。

@@ -4,6 +4,8 @@
 
 本页是稳定入口：目标推导和实现细节分别位于[监督微调](supervised-finetuning.md)、[知识蒸馏](distillation.md)、[奖励建模](reward-modeling.md)、[离线偏好优化](offline-preference.md)、[在线 RL](online-rl.md)与[推理后训练](reasoning-posttraining.md)。
 
+若先建立历史坐标，可从[后训练与对齐](../landscape/lineages/training-alignment.md)观察示范、reward model、KL 约束、偏好目标与可验证奖励如何改变反馈闭环，再用 [InstructGPT](../landscape/works/instructgpt.md)、[DPO](../landscape/works/dpo.md)和 [DeepSeek-R1](../landscape/works/deepseek-r1.md)比较三种不同问题设定。
+
 ## 先看反馈接口
 
 | 可获得信号 | 自然起点 | 不应忽略 |

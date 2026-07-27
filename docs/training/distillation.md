@@ -84,7 +84,7 @@ student 先生成 prefix，再由 teacher 对这些 prefix 给出目标。[Gener
 - step-level process labels；
 - student rollout 上的 teacher correction。
 
-[DeepSeek-R1](https://arxiv.org/abs/2501.12948) 报告了把推理行为蒸馏到较小模型的实验。该结果属于具体 teacher、数据和模型族；长推理文本本身不是正确性证明，必须用独立 verifier 和新题评测。搜索到训练的闭环见[推理后训练](reasoning-posttraining.md)。
+[DeepSeek-R1 深读](../landscape/works/deepseek-r1.md)还原了把推理行为蒸馏到较小模型的实验及其与在线 RL 的边界。该结果属于具体 teacher、数据和模型族；长推理文本本身不是正确性证明，必须用独立 verifier 和新题评测。搜索到训练的闭环见[推理后训练](reasoning-posttraining.md)。
 
 ### 剪枝后的恢复
 

@@ -2,6 +2,8 @@
 
 离线偏好优化只使用已经收集的回答和偏好，不在训练环中向当前策略采样。它容易重放、部署简单，却只能重新分配数据支持集中的概率；若高质量行为从未出现在候选中，离线目标无法凭空探索出来。
 
+[DPO 深读](../landscape/works/dpo.md)把 KL 正则化、Bradley–Terry 偏好似然和 reference policy 的关系放回原论文推导，并给出带 response mask 的紧凑实现；更长的算法脉络见[后训练与对齐](../landscape/lineages/training-alignment.md)。
+
 ## 从 KL 正则化到最优策略
 
 对固定 prompt $x$，考虑

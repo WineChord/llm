@@ -2,6 +2,8 @@
 
 视觉语言模型需要解决三个独立问题：怎样把像素变成视觉 token，怎样与语言空间对齐，以及怎样在对话、定位与生成中保持空间信息。把 vision encoder 接到 LLM 只是接口起点。
 
+这条路线可从 [CLIP](../landscape/works/clip.md)的开放词表对齐开始，再比较 [Flamingo、BLIP-2 与 LLaVA](../landscape/works/visual-language-bridges.md)怎样在冻结主干、视觉压缩和指令数据之间作出不同选择；完整脉络见[多模态理解与生成](../landscape/lineages/multimodal-generation.md)。
+
 ## Vision Transformer
 
 给定图像 $I\in\mathbb{R}^{H\times W\times C}$，将其切成 $P\times P$ patch，可得到

@@ -7,6 +7,8 @@
 
 prefill 更接近大矩阵计算，decode 常受权重/KV 带宽、batch shape 和调度限制。任何优化都应说明影响哪一段。
 
+这条系统路线并不是单个“高性能引擎”的发明史。[推理运行时与服务](../landscape/lineages/inference-serving.md)从静态 batch 的空槽与头阻塞讲起，依次解释 Orca 的迭代级调度、PagedAttention 的非连续 KV、chunked prefill 与 Prefill–Decode 分离。分页状态的核心抽象和最小实现见 [vLLM / PagedAttention](../landscape/works/vllm-pagedattention.md)。
+
 ## 请求链
 
 $$

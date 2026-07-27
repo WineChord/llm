@@ -2,6 +2,8 @@
 
 推理引擎把一组长度不同、动态到达的请求映射为 GPU batch。核心状态不是一个输入 tensor，而是请求生命周期、KV block、调度预算、采样器和流式输出的组合。
 
+[推理运行时与服务](../landscape/lineages/inference-serving.md)给出从 Orca 到 PagedAttention、chunked prefill 与 P/D 分离的因果链；[vLLM / PagedAttention](../landscape/works/vllm-pagedattention.md)进一步把逻辑 token、物理 block、block table 与 copy-on-write 落成可执行模型。
+
 ## 请求状态机
 
 一个请求至少经历：
@@ -31,7 +33,7 @@ finish reason and cancellation token
 
 ## Continuous batching
 
-静态 batch 等所有序列结束再换批，短请求会等待最长请求。continuous batching 在每个模型迭代边界移除已完成请求、加入新请求。[Orca](https://arxiv.org/abs/2206.02658)给出了迭代级调度的代表性设计。
+静态 batch 等所有序列结束再换批，短请求会等待最长请求。continuous batching 在每个模型迭代边界移除已完成请求、加入新请求。[Orca](https://www.usenix.org/conference/osdi22/presentation/yu)给出了迭代级调度的代表性设计。
 
 调度器每轮决定：
 
@@ -89,7 +91,7 @@ N_{\text{scheduled}}
 =N_{\text{decode}}+N_{\text{prefill chunk}}.
 $$
 
-[Sarathi-Serve](https://arxiv.org/abs/2403.02310)展示了用 chunked prefill 控制 throughput–latency 权衡的路线。chunk 越大，prefill GEMM 越高效；越小，decode stall 越低但 launch 和重复调度更多。
+[Sarathi-Serve](https://www.usenix.org/conference/osdi24/presentation/agrawal)展示了用 chunked prefill 控制 throughput–latency 权衡的路线。chunk 越大，prefill GEMM 越高效；越小，decode stall 越低但 launch 和重复调度更多。
 
 ## 抢占
 

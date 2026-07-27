@@ -4,6 +4,8 @@
 
 本页保留为选择总览。collective、DDP、ZeRO 与 FSDP 的数据布局见[集合通信与状态分片](collectives-sharding.md)；column/row TP、pipeline schedule、Ring Attention 与 expert parallel 的计算路径见[模型并行](model-parallelism.md)。
 
+若先追踪历史问题怎样移动，[Megatron-LM 与 ZeRO 深读](../landscape/works/megatron-zero.md)把层内算子切分和训练状态分片放在同一张内存—通信账本中比较。
+
 ## Data Parallel
 
 每个 rank 持有模型副本并处理不同数据，随后同步梯度。Distributed Data Parallel 通常 all-reduce 梯度；ZeRO/FSDP 进一步分片 optimizer state、梯度与参数。

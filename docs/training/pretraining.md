@@ -15,6 +15,8 @@ $$
 
 其中 $m_t$ 排除 padding、损坏位置和不应跨越的边界。encoder 或 encoder-decoder 模型还可使用 masked language modeling、span corruption 与 sequence-to-sequence denoising；目标选择改变可见上下文，不能仅靠推理时 prompt 修正。
 
+三种经典选择可分别从 [GPT-1](../landscape/works/generative-pretraining-gpt.md)、[BERT](../landscape/works/bert.md)与 [T5](../landscape/works/t5.md)进入；它们比较的是 causal、masked 与 span-corruption 信息流，不是简单的版本替代。
+
 对 packed sequence，attention mask 和 loss mask 是不同契约：前者决定能看到什么，后者决定哪些 token 产生梯度。文档可见性、EOS 与 position 的选择见[序列构造与打包](../data/sequence-construction.md)。
 
 ## Batch 与有效 token

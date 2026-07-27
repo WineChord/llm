@@ -11,6 +11,8 @@ $$
 \rightarrow \text{correctness and SLO}.
 $$
 
+系统机制也有清楚的因果脉络。[分布式训练系统](../landscape/lineages/distributed-training-systems.md)从数据并行的全量复制，走到 Megatron 的算子切分、ZeRO 的状态分片与多维并行；[推理运行时与服务](../landscape/lineages/inference-serving.md)则从静态 batching 走到迭代级调度、分页 KV 与 P/D 分离。对应实现可深入 [Megatron 与 ZeRO](../landscape/works/megatron-zero.md)、[FlashAttention](../landscape/works/flashattention.md)和 [vLLM / PagedAttention](../landscape/works/vllm-pagedattention.md)。
+
 ## 定量起点
 
 [性能模型](performance-model.md)先计算：

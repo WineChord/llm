@@ -2,6 +2,7 @@
 
 ## 2026-07-27
 
+- 建立带有历史脉络的[技术谱系](landscape/index.md)：从[计数模型到可学习状态](landscape/lineages/counts-to-learned-state.md)、[递归到注意力](landscape/lineages/transduction-to-attention.md)、[预训练目标](landscape/lineages/pretraining-objectives.md)延伸到[后训练与对齐](landscape/lineages/training-alignment.md)、[分布式训练](landscape/lineages/distributed-training-systems.md)、[推理服务](landscape/lineages/inference-serving.md)、[多模态](landscape/lineages/multimodal-generation.md)、[检索与智能体](landscape/lineages/retrieval-agents.md)及[评测](landscape/lineages/evaluation.md)，并新增 21 篇带公式、来源、实现边界与可执行代码的关键工作深读。
 - 统一入口层：[首页](index.md)提供主题地图，[学习路线](guide/roadmap.md)提供递进路径，[知识架构](guide/architecture.md)定义章节边界，[覆盖地图](guide/coverage.md)连接概念、机制、实现与验证。
 - 扩展基础链路：[上下文学习](foundations/in-context-learning.md)、[概率与目标函数](foundations/probability-objectives.md)、[数据来源与谱系](data/sources-provenance.md)、[过滤与去重](data/filtering-dedup.md)、[数据混合与课程](data/mixtures-curricula.md)、[合成数据](data/synthetic-data.md)和[记忆与隐私](data/memorization-privacy.md)。
 - 完善模型结构：[Decoder Block](architecture/decoder-block.md)、[注意力变体](architecture/attention-variants.md)、[位置编码](architecture/position-encoding.md)、[长上下文](architecture/long-context.md)、[MoE](architecture/moe.md)、[状态空间与线性注意力](architecture/state-space-linear-attention.md)和[记忆架构](architecture/memory-architectures.md)。

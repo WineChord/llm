@@ -59,6 +59,8 @@ privacy / deletion contact path
 
 [Dolma](https://arxiv.org/abs/2402.00159) 公开了来源组成与处理过程，[OLMo](https://arxiv.org/abs/2402.00838) 进一步把训练数据、代码、模型和评测放在可研究链路中。这里可借鉴的是可追溯性，而不是照搬其来源选择。
 
+数据、代码、中间 checkpoint、日志与许可证分别开放到什么程度，决定了外部研究真正能复查哪一层；这条演进见[开放模型生态](../landscape/lineages/open-model-ecosystem.md)。
+
 ### 结构化解析
 
 解析不能只输出一段扁平文本。标题、段落、列表、代码块、表格、链接和时间戳会影响：

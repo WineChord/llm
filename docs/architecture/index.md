@@ -2,6 +2,8 @@
 
 模型结构规定信息在 token、时间、通道、层、专家和模态之间怎样流动。比较结构时要同时追踪表达能力、训练稳定性、状态容量、硬件执行和评测失效。
 
+结构史更适合按“旧瓶颈怎样逼出新接口”来读：[从递归到注意力](../landscape/lineages/transduction-to-attention.md)串起 seq2seq bottleneck、可微对齐与 self-attention；[条件计算](../landscape/lineages/conditional-compute.md)解释稀疏专家为何同时是模型问题和通信问题；[线性时间序列模型](../landscape/lineages/linear-time-sequence-models.md)追踪卷积、状态空间与选择性递推如何重新处理长序列。
+
 ## Decoder 主干
 
 典型 decoder-only block：

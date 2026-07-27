@@ -126,6 +126,8 @@ $$
 
 这是错误上界式的诊断分解，不假设事件独立。应分别测 retrieval recall、evidence selection、entailment 和有证据时的 generation。
 
+[RAG 深读](../landscape/works/rag.md)解释原作的 latent-document marginalization 与今天 retrieve–rerank–generate 管线的区别；检索增强提供可更新证据路径，却不自动保证引用支持或来源追踪。
+
 ## 实现契约
 
 逐 claim 保存：

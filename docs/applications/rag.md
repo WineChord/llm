@@ -2,6 +2,8 @@
 
 RAG 把外部语料作为可检索的非参数记忆，在生成前选择证据。[Retrieval-Augmented Generation](https://arxiv.org/abs/2005.11401)给出了参数记忆与检索记忆联合建模的经典框架；工程系统还要处理索引、权限、新鲜度、引用和拒答。
 
+[RAG 深读](../landscape/works/rag.md)回到论文中的 RAG-Sequence、RAG-Token 与 latent-document marginalization，并用小型精确检索器展示概率融合；从 REALM 到工具智能体的更长脉络见[检索、工具与智能体](../landscape/lineages/retrieval-agents.md)。
+
 ## 闭环而非组件
 
 $$

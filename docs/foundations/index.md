@@ -11,6 +11,8 @@ $$
 \rightarrow \text{generation or action}.
 $$
 
+这些对象不是从 Transformer 才突然出现的。[从计数到可学习状态](../landscape/lineages/counts-to-learned-state.md)沿着统计语言模型、分布式表示、RNN 与 LSTM 追踪“怎样保存过去”；[预训练目标的分化](../landscape/lineages/pretraining-objectives.md)再解释 GPT、BERT 与 T5 为什么从相近的似然原则走向不同接口；[规模、数据与上下文](../landscape/lineages/scaling-and-context.md)则把模型能力放回计算预算与数据配比中。
+
 ## 六个基础对象
 
 | 对象 | 关键问题 | 入口 |

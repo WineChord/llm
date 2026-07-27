@@ -64,6 +64,8 @@ $$
 
 [Flamingo](https://arxiv.org/abs/2204.14198)使用 gated cross-attention 处理交错图文。Cross-attention 让文本 token 按需读取媒体，但改变主干结构，也增加每层媒体 K/V、checkpoint 转换和服务 runtime 的复杂度。
 
+Projector、Q-Former/Resampler 与深层 cross-attention 的资源约束不能只按参数量排序；[Flamingo、BLIP-2 与 LLaVA 深读](../landscape/works/visual-language-bridges.md)并排比较了三者的冻结策略、数据目标和注入位置。
+
 ## Early fusion
 
 另一条路线把媒体 token 投影到共同维度后，与文本一起进入 self-attention：
@@ -102,6 +104,8 @@ L_{\mathrm{CLIP}}
 L_{\mathrm{i2t}}+L_{\mathrm{t2i}}
 \right).
 $$
+
+[CLIP 深读](../landscape/works/clip.md)从 batch 内负例、temperature 与 zero-shot classifier 还原这套目标，并区分原论文证据与后续视觉语言生成接口。
 
 [SigLIP](https://arxiv.org/abs/2303.15343)改为 pairwise sigmoid loss：
 

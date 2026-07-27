@@ -131,6 +131,45 @@ REQUIRED_PAGES = (
     "practice/multimodal.md",
     "practice/evaluation-tooling.md",
 )
+LINEAGE_PAGES = (
+    "landscape/lineages/counts-to-learned-state.md",
+    "landscape/lineages/transduction-to-attention.md",
+    "landscape/lineages/pretraining-objectives.md",
+    "landscape/lineages/scaling-and-context.md",
+    "landscape/lineages/open-model-ecosystem.md",
+    "landscape/lineages/conditional-compute.md",
+    "landscape/lineages/linear-time-sequence-models.md",
+    "landscape/lineages/multimodal-generation.md",
+    "landscape/lineages/training-alignment.md",
+    "landscape/lineages/reasoning-verification.md",
+    "landscape/lineages/distributed-training-systems.md",
+    "landscape/lineages/inference-serving.md",
+    "landscape/lineages/retrieval-agents.md",
+    "landscape/lineages/evaluation.md",
+)
+WORK_PAGES = (
+    "landscape/works/lstm.md",
+    "landscape/works/seq2seq-and-neural-alignment.md",
+    "landscape/works/attention-is-all-you-need.md",
+    "landscape/works/generative-pretraining-gpt.md",
+    "landscape/works/bert.md",
+    "landscape/works/t5.md",
+    "landscape/works/scaling-laws-chinchilla.md",
+    "landscape/works/sparse-moe.md",
+    "landscape/works/s4-mamba.md",
+    "landscape/works/instructgpt.md",
+    "landscape/works/dpo.md",
+    "landscape/works/deepseek-r1.md",
+    "landscape/works/megatron-zero.md",
+    "landscape/works/flashattention.md",
+    "landscape/works/vllm-pagedattention.md",
+    "landscape/works/clip.md",
+    "landscape/works/visual-language-bridges.md",
+    "landscape/works/diffusion-dit-flow.md",
+    "landscape/works/rag.md",
+    "landscape/works/react-toolformer.md",
+    "landscape/works/helm-arena.md",
+)
 errors: list[str] = []
 
 
@@ -143,9 +182,35 @@ def table_cell_count(line: str) -> int:
     return len(re.split(r"(?<!\\)\|", body))
 
 
-for relative in REQUIRED_PAGES:
+for relative in (*REQUIRED_PAGES, *LINEAGE_PAGES, *WORK_PAGES):
     if not (ROOT / "docs" / relative).is_file():
         errors.append(f"docs/{relative}: 缺少知识架构核心页面")
+
+for relative in LINEAGE_PAGES:
+    path = ROOT / "docs" / relative
+    if not path.is_file():
+        continue
+    text = path.read_text(encoding="utf-8")
+    if len(text) < 2000:
+        errors.append(f"docs/{relative}: 技术谱系展开不足")
+    if len(re.findall(r"\]\(https://", text)) < 2:
+        errors.append(f"docs/{relative}: 技术谱系缺少足够的一手论文入口")
+    if len(re.findall(r"\]\((?!https?://)[^)]+\.md(?:#[^)]+)?\)", text)) < 2:
+        errors.append(f"docs/{relative}: 技术谱系缺少机制与工作页链接")
+
+for relative in WORK_PAGES:
+    path = ROOT / "docs" / relative
+    if not path.is_file():
+        continue
+    text = path.read_text(encoding="utf-8")
+    if len(text) < 2400:
+        errors.append(f"docs/{relative}: 关键工作深读不足")
+    if len(re.findall(r"\]\(https://", text)) < 2:
+        errors.append(f"docs/{relative}: 关键工作缺少足够的一手论文或官方实现")
+    if "```python" not in text or not re.search(r"\bassert\b|torch\.testing\.", text):
+        errors.append(f"docs/{relative}: 缺少带断言的可执行 reference")
+    if len(re.findall(r"\]\((?!https?://)[^)]+\.md(?:#[^)]+)?\)", text)) < 2:
+        errors.append(f"docs/{relative}: 关键工作缺少前后谱系与机制链接")
 
 for path in FILES:
     text = path.read_text(encoding="utf-8")

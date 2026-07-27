@@ -11,6 +11,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 PRACTICE = ROOT / "docs" / "practice"
+WORKS = ROOT / "docs" / "landscape" / "works"
 BLOCK = re.compile(r"^```python[^\n]*\n(.*?)^```$", re.MULTILINE | re.DOTALL)
 MAX_NONBLANK_LINES = 60
 FORBIDDEN_SCAFFOLDING = (
@@ -78,11 +79,43 @@ def main() -> int:
                         f"docs/practice/{name}: Python 代码块 {index} "
                         f"包含项目脚手架：{marker}"
                     )
+    work_pages = sorted(WORKS.glob("*.md"))
+    if not work_pages:
+        errors.append("docs/landscape/works: 缺少关键工作深读页")
+    for path in work_pages:
+        text = path.read_text(encoding="utf-8")
+        blocks = BLOCK.findall(text)
+        relative = path.relative_to(ROOT)
+        if not blocks:
+            errors.append(f"{relative}: 缺少关键机制的可执行 reference")
+        if not re.search(r"\bassert\b|torch\.testing\.", text):
+            errors.append(f"{relative}: 缺少可执行断言")
+        for index, code in enumerate(blocks, 1):
+            total += 1
+            nonblank = sum(bool(line.strip()) for line in code.splitlines())
+            if nonblank > MAX_NONBLANK_LINES:
+                errors.append(
+                    f"{relative}: Python 代码块 {index} "
+                    f"过长 ({nonblank} > {MAX_NONBLANK_LINES})"
+                )
+            try:
+                ast.parse(code)
+            except SyntaxError as error:
+                errors.append(
+                    f"{relative}: Python 代码块 {index}: {error.msg}"
+                )
+            for marker in FORBIDDEN_SCAFFOLDING:
+                if marker in code:
+                    errors.append(
+                        f"{relative}: Python 代码块 {index} "
+                        f"包含项目脚手架：{marker}"
+                    )
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1
     print(
-        f"手撕实现检查通过：{len(REQUIRED)} 个专题，"
+        f"手撕实现检查通过：{len(REQUIRED)} 个专题、"
+        f"{len(work_pages)} 个关键工作，"
         f"{total} 个紧凑 Python 代码块"
     )
     return 0

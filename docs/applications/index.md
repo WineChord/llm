@@ -2,6 +2,8 @@
 
 模型只能根据当前输入与参数产生 token。应用系统真正扩展的是三种边界：可见知识、可执行动作与可持续状态。RAG、tool use 和 agent 分别解决其中一部分，不能互相替代。
 
+[检索、工具与智能体](../landscape/lineages/retrieval-agents.md)从把知识写进参数的边界讲起：REALM 与 RAG 把检索器纳入生成系统，ReAct 把推理轨迹和环境动作交错，Toolformer 又尝试让工具调用进入自监督学习。若要落到算法与失败边界，可继续读 [RAG](../landscape/works/rag.md)和 [ReAct / Toolformer](../landscape/works/react-toolformer.md)。
+
 ## 三个扩展面
 
 | 扩展面 | 新增对象 | 主要收益 | 主要风险 |

@@ -38,6 +38,8 @@ license / access and last verification date
 
 “静态”只表示题目集合相对冻结，不表示结果永久可比。model template、few-shot、normalization 和 harness task definition 仍需锁定。
 
+HELM 怎样把 scenario、adaptation 与多指标报告组成协议，以及它与后来的模型裁判和动态人类偏好有什么边界，见 [HELM、MT-Bench 与 Chatbot Arena 深读](../landscape/works/helm-arena.md)。
+
 ## 动态与时间切分基准
 
 动态 benchmark 试图降低公开答案污染和能力饱和，但版本管理更重要：
@@ -81,6 +83,8 @@ Agent benchmark 的文本回答只是轨迹的一部分。任务是否完成要�
 | [LongFact / SAFE](https://arxiv.org/abs/2403.18802) | 2024 | 开放域长文本事实性 | 搜索 snapshot 与 evaluator |
 
 这些方法不能合成一个“通用生成质量”。事实支持、完整性、风格和用户偏好属于不同 estimand。
+
+MT-Bench 的模型裁判与 Arena 的在线人类 pairwise 数据也不是同一测量器；二者的桥接关系见 [HELM、MT-Bench 与 Chatbot Arena](../landscape/works/helm-arena.md)。
 
 ## 安全与攻击
 

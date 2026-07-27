@@ -1,14 +1,22 @@
 # 文献
 
-主题页保留与具体主张相邻的来源；本页只提供贯穿全站的原始论文、官方实现与规范入口。技术事实最后核验于 2026-07-27，持续演进的软件应同时记录版本或 commit。
+主题页保留与具体主张相邻的来源；本页只提供贯穿全站的原始论文、官方实现与规范入口。[技术谱系](landscape/index.md)按问题演进组织阅读路径，并为关键工作提供论文、实现、公式与代码相互对照的深读页。技术事实最后核验于 2026-07-27，持续演进的软件应同时记录版本或 commit。
 
 ## 基础、数据与缩放
 
 对应[基础](foundations/index.md)、[数据](data/index.md)与[缩放实验设计](training/scaling-experiment-design.md)。
 
-- Vaswani et al., [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- Elman, [Finding Structure in Time](https://doi.org/10.1207/s15516709cog1402_1)
+- Hochreiter & Schmidhuber, [Long Short-Term Memory](https://doi.org/10.1162/neco.1997.9.8.1735)
+- Bengio et al., [A Neural Probabilistic Language Model](https://www.jmlr.org/papers/v3/bengio03a.html)
+- Sutskever et al., [Sequence to Sequence Learning with Neural Networks](https://arxiv.org/abs/1409.3215)
+- Bahdanau et al., [Neural Machine Translation by Jointly Learning to Align and Translate](https://arxiv.org/abs/1409.0473)
 - Sennrich et al., [Neural Machine Translation of Rare Words with Subword Units](https://arxiv.org/abs/1508.07909)
+- Vaswani et al., [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- Radford et al., [Improving Language Understanding by Generative Pre-Training](https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf)
+- Devlin et al., [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://aclanthology.org/N19-1423/)
 - Kudo & Richardson, [SentencePiece](https://arxiv.org/abs/1808.06226)
+- Raffel et al., [Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer](https://www.jmlr.org/papers/v21/20-074.html)
 - Brown et al., [Language Models are Few-Shot Learners](https://arxiv.org/abs/2005.14165)
 - Kaplan et al., [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361)
 - Hoffmann et al., [Training Compute-Optimal Large Language Models](https://arxiv.org/abs/2203.15556)
@@ -140,10 +148,10 @@
 - Qi et al., [Zero Bubble Pipeline Parallelism](https://arxiv.org/abs/2401.10241)
 - Liu et al., [Ring Attention](https://arxiv.org/abs/2310.01889)
 - Jacobs et al., [DeepSpeed Ulysses](https://arxiv.org/abs/2309.14509)
-- Yu et al., [Orca: A Distributed Serving System for Transformer-Based Generative Models](https://arxiv.org/abs/2206.02658)
+- Yu et al., [Orca: A Distributed Serving System for Transformer-Based Generative Models](https://www.usenix.org/conference/osdi22/presentation/yu)
 - Kwon et al., [Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/abs/2309.06180)
-- Agrawal et al., [Sarathi-Serve](https://arxiv.org/abs/2403.02310)
-- Zhong et al., [DistServe](https://arxiv.org/abs/2401.09670)
+- Agrawal et al., [Sarathi-Serve](https://www.usenix.org/conference/osdi24/presentation/agrawal)
+- Zhong et al., [DistServe](https://www.usenix.org/conference/osdi24/presentation/zhong-yinmin)
 - Leviathan et al., [Fast Inference from Transformers via Speculative Decoding](https://arxiv.org/abs/2211.17192)
 - Zheng et al., [SGLang: Efficient Execution of Structured Language Model Programs](https://arxiv.org/abs/2312.07104)
 

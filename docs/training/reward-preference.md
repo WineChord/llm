@@ -44,11 +44,11 @@ $$
 \left(\pi(\cdot\mid x)\,\|\,\pi_{\text{ref}}(\cdot\mid x)\right).
 $$
 
-reference 不是“旧权重备份”这么简单：它定义了偏离成本的坐标。tokenizer、模板和 support 不一致时，KL 失去清晰语义。[InstructGPT](https://arxiv.org/abs/2203.02155)给出了 SFT、reward model 与 PPO 串联的代表性管线。
+reference 不是“旧权重备份”这么简单：它定义了偏离成本的坐标。tokenizer、模板和 support 不一致时，KL 失去清晰语义。[InstructGPT 深读](../landscape/works/instructgpt.md)给出 SFT、reward model 与 PPO 串联的代表性管线、最小 clipped objective 和公开证据边界。
 
 ## Direct Preference Optimization
 
-[DPO](https://arxiv.org/abs/2305.18290)将上述带 reverse-KL 正则的最优策略关系代回 Bradley–Terry 模型，得到分类式目标。定义
+[DPO 深读](../landscape/works/dpo.md)将上述带 reverse-KL 正则的最优策略关系代回 Bradley–Terry 模型，得到分类式目标。定义
 
 $$
 \Delta_\theta

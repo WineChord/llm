@@ -2,6 +2,8 @@
 
 多模态模型把文本、图像、文档、音频、视频、传感器状态与动作映射到可共同计算的表示。核心问题不是模型能接受多少输入类型，而是信息怎样被编码、对齐、压缩、融合、监督和验证。
 
+[多模态理解与生成](../landscape/lineages/multimodal-generation.md)沿两条最初相对独立的路线展开：一条从对比式视觉—文本对齐走向可对话的视觉语言模型，另一条从离散表征和 diffusion 走向可扩展生成。关键接口可分别深读 [CLIP](../landscape/works/clip.md)、[Flamingo、BLIP-2 与 LLaVA](../landscape/works/visual-language-bridges.md)，以及 [DDPM、DiT 与 Flow Matching](../landscape/works/diffusion-dit-flow.md)。
+
 ## 统一计算图
 
 一个通用系统可写成

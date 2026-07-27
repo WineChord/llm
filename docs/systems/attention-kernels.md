@@ -2,6 +2,8 @@
 
 Attention kernel 的核心矛盾不是矩阵乘法不会算，而是 score 矩阵可能远大于片上存储。高性能实现需要在不物化完整 $S_q\times S_k$ score 的前提下，保持与标准 softmax attention 一致的语义。
 
+[FlashAttention 深读](../landscape/works/flashattention.md)从 IO complexity、online softmax 不变量和 blockwise reference 解释这次转折；它与模型结构中的 attention 定义相容，却改变了计算被搬运和重算的方式。
+
 ## 问题与成本
 
 单层 attention 可写为

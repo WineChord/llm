@@ -68,6 +68,8 @@ $$
 
 融合越大不一定越快：register spill、动态 shape、编译时间和 graph break 都可能抵消收益。kernel 细节见[Kernel 与性能](../systems/kernels-performance.md)。
 
+IO-aware exact attention 的转折见 [FlashAttention 深读](../landscape/works/flashattention.md)；分页 KV 与 block table 的执行语义见 [vLLM / PagedAttention 深读](../landscape/works/vllm-pagedattention.md)。
+
 ### 3. 增加有效并行
 
 - continuous batching 提高 decode 的有效 batch；

@@ -4,6 +4,8 @@
 
 代价是明确的：历史被压入有限状态后，不再拥有无损、任意位置的精确内容寻址。理解这一信息瓶颈，比只记住复杂度更重要。
 
+[线性时间序列模型](../landscape/lineages/linear-time-sequence-models.md)从 RNN、长卷积和结构化状态空间梳理到选择性递推；[LSTM](../landscape/works/lstm.md)给出门控有限状态的早期转折，[S4、Mamba 与 Mamba-2](../landscape/works/s4-mamba.md)进一步给出连续系统离散化、scan 等价和最小 selective recurrence。
+
 ## 统一递推
 
 最一般的离散递推可写为

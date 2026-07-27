@@ -23,6 +23,8 @@ $$
 
 其中 $N$ 是参数规模，$D$ 是训练 token，$L_\infty$、$a$、$b$、$\alpha$、$\beta$ 都需要在固定数据分布、tokenizer、架构和训练配方下估计。[Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361) 建立了早期经验框架，[Chinchilla](https://arxiv.org/abs/2203.15556) 重新研究固定计算下模型与数据的分配。
 
+两项工作的拟合问题、isoFLOP 证据与后来常见的误读见 [Scaling Laws 与 Chinchilla 深读](../landscape/works/scaling-laws-chinchilla.md)。
+
 若把训练计算近似为
 
 $$

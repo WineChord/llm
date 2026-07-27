@@ -15,6 +15,8 @@ $$
 
 它等价于在每个位置对真实 token 做交叉熵分类。教师强制训练时，位置 $t$ 的条件来自真实前缀；自由生成时，条件包含模型自己之前采样的 token，两者存在分布差异。
 
+若要理解这个目标怎样从计数模型走到神经网络，以及因果建模为何后来与掩码、span corruption 分化，可依次读[从计数到可学习状态](../landscape/lineages/counts-to-learned-state.md)和[预训练目标的分化](../landscape/lineages/pretraining-objectives.md)。
+
 ## 因果掩码
 
 decoder-only Transformer 使用 causal mask，使位置 $t$ 不能读取未来位置。掩码约束信息流，不负责阻止模型记住训练数据，也不等于产品层面的安全边界。

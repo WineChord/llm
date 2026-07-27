@@ -2,6 +2,8 @@
 
 在线强化学习从当前或近期策略采样，再根据 reward、verifier 或环境终态更新策略。它能探索离线数据中不存在的行为，也带来非平稳数据、昂贵 rollout、策略滞后和奖励投机。
 
+[InstructGPT](../landscape/works/instructgpt.md)适合核对经典 RLHF 中 SFT、reward model 与 PPO 的角色；[DeepSeek-R1](../landscape/works/deepseek-r1.md)则展示可验证奖励、group-relative 更新与蒸馏之间必须分开的证据边界。两者之间的演进见[后训练与对齐](../landscape/lineages/training-alignment.md)。
+
 ## 策略与轨迹契约
 
 一次训练更新可能涉及三个不同策略：

@@ -2,6 +2,8 @@
 
 工具调用把模型输出从自然语言建议变成可校验动作。一个可靠工具既有参数 schema，也有权限、幂等、错误和终态契约。
 
+[ReAct 与 Toolformer](../landscape/works/react-toolformer.md)展示两种不同起点：前者在推理时交错 reasoning、action 与 observation，后者从候选 API 调用中筛选能降低语言模型损失的训练样本。两者在应用系统演进中的位置见[检索、工具与智能体](../landscape/lineages/retrieval-agents.md)。
+
 ## 四段边界
 
 $$
