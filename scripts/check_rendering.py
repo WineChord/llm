@@ -725,6 +725,43 @@ def browser_audit(
                             ].filter((image) =>
                               image.complete && image.naturalWidth === 0
                             ).length;
+                            const documentOverflow =
+                              document.documentElement.scrollWidth
+                              > document.documentElement.clientWidth + 1;
+                            const overflowingElements = documentOverflow
+                              ? [...document.querySelectorAll(
+                                  'article.md-content__inner *'
+                                )]
+                                  .map((element) => {
+                                    const rect =
+                                      element.getBoundingClientRect();
+                                    return {
+                                      element,
+                                      right: rect.right,
+                                      width: rect.width,
+                                    };
+                                  })
+                                  .filter(({ right }) =>
+                                    right
+                                    > document.documentElement.clientWidth + 1
+                                  )
+                                  .sort((left, right) =>
+                                    right.right - left.right
+                                  )
+                                  .slice(0, 5)
+                                  .map(({ element, right, width }) => ({
+                                    tag: element.tagName.toLowerCase(),
+                                    className:
+                                      typeof element.className === 'string'
+                                        ? element.className
+                                        : '',
+                                    right: Math.round(right * 10) / 10,
+                                    width: Math.round(width * 10) / 10,
+                                    text: (
+                                      element.textContent || ''
+                                    ).trim().replace(/\\s+/g, ' ').slice(0, 80),
+                                  }))
+                              : [];
                             return {
                               version: window.MathJax
                                 && window.MathJax.version
@@ -737,9 +774,8 @@ def browser_audit(
                               brokenImages,
                               raw,
                               article: !!article,
-                              documentOverflow:
-                                document.documentElement.scrollWidth
-                                > document.documentElement.clientWidth + 1,
+                              documentOverflow,
+                              overflowingElements,
                             };
                             """
                         )
@@ -779,8 +815,20 @@ def browser_audit(
                                 f"{route}: {stats['brokenImages']} broken images"
                             )
                         if stats["documentOverflow"]:
+                            details = "; ".join(
+                                (
+                                    f"{item['tag']}"
+                                    f".{item['className'].replace(' ', '.')}"
+                                    f" right={item['right']}"
+                                    f" width={item['width']}"
+                                    f" text={item['text']!r}"
+                                )
+                                for item in stats["overflowingElements"]
+                            )
                             errors.append(
-                                f"{route}: page has horizontal overflow at {width}px"
+                                f"{route}: page has horizontal overflow at "
+                                f"{width}px"
+                                + (f": {details}" if details else "")
                             )
                         logs = driver.get_log("browser")
                         severe = [

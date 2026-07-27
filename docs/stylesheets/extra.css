@@ -1,3 +1,12 @@
 :root {
-  --md-text-font: "PingFang SC";
+  --md-text-font: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+.md-typeset span.arithmatex {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  vertical-align: -0.15em;
 }
