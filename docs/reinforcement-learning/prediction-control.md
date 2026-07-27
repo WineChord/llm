@@ -119,57 +119,63 @@ SARSA 对 target policy 取期望，Q-learning 则使用 greedy target。
 
 ```python
 import numpy as np
-
-def discounted_returns(rewards, gamma, bootstrap=0.0):
-    out = np.empty(len(rewards), dtype=float)
-    g = float(bootstrap)
-    for t in range(len(rewards) - 1, -1, -1):
-        g = rewards[t] + gamma * g
-        out[t] = g
-    return out
-
-def epsilon_probs(q, eps):
-    greedy = np.isclose(q, q.max())
-    p = np.full(q.size, eps / q.size)
-    p[greedy] += (1.0 - eps) / greedy.sum()
-    assert np.isclose(p.sum(), 1.0)
-    return p
-
-def control_target(Q, r, s_next, terminated, truncated, gamma,
-                   method, eps=0.1, a_next=None):
+def control_target(Q, r, s_next, terminated, truncated, gamma, method,
+                   target_probs=None, a_next=None):
     assert not (terminated and truncated)
     if terminated:
-        bootstrap = 0.0
+        return float(r)
     elif method == "sarsa":
-        assert a_next is not None
+        if a_next is None:
+            raise ValueError("SARSA needs the sampled next action")
         bootstrap = Q[s_next, a_next]
     elif method == "expected_sarsa":
-        bootstrap = epsilon_probs(Q[s_next], eps) @ Q[s_next]
+        if target_probs is None or not np.isclose(target_probs.sum(), 1.0):
+            raise ValueError("Expected SARSA needs normalized target probabilities")
+        bootstrap = target_probs @ Q[s_next]
     elif method == "q_learning":
         bootstrap = Q[s_next].max()
     else:
         raise ValueError(method)
     return r + gamma * bootstrap
-
-def update_q(Q, s, a, target, alpha):
-    Q[s, a] += alpha * (target - Q[s, a])
-
-assert np.allclose(
-    discounted_returns([1.0, 2.0], gamma=0.5, bootstrap=4.0),
-    [3.0, 4.0],
-)
 Q = np.array([[0.0, 0.0], [4.0, 2.0]])
+p = np.array([0.9, 0.1])
 q_cut = control_target(Q, 1.0, 1, False, True, 0.9, "q_learning")
 q_end = control_target(Q, 1.0, 1, True, False, 0.9, "q_learning")
-exp = control_target(Q, 1.0, 1, False, False, 0.9,
-                     "expected_sarsa", eps=0.2)
-assert np.isclose(q_cut, 4.6) and np.isclose(q_end, 1.0)
-assert np.isclose(exp, 4.42)
-update_q(Q, s=0, a=0, target=q_cut, alpha=0.5)
-assert np.isclose(Q[0, 0], 2.3)
+exp = control_target(Q, 1.0, 1, False, False, 0.9, "expected_sarsa", target_probs=p)
+assert np.isclose(q_cut, 4.6) and np.isclose(q_end, 1.0) and np.isclose(exp, 4.42)
 ```
 
+<details class="code-disclosure">
+<summary id="mc-return-q-update-tests">MC return 与 Q update 边界测试 <span class="code-disclosure__meta">Python · 18 行</span></summary>
+<div class="code-disclosure__body" markdown="1">
+
+```python
+import numpy as np
+def discounted_returns(rewards, gamma, bootstrap=0.0):
+    out = np.empty(len(rewards), dtype=float)
+    carry = float(bootstrap)
+    for index in range(len(rewards) - 1, -1, -1):
+        carry = rewards[index] + gamma * carry
+        out[index] = carry
+    return out
+def update_q(Q, state, action, target, alpha):
+    Q[state, action] += alpha * (target - Q[state, action])
+returns = discounted_returns([1.0, 2.0], gamma=0.5, bootstrap=4.0)
+assert np.allclose(returns, [3.0, 4.0])
+Q = np.zeros((2, 2))
+update_q(Q, state=0, action=0, target=4.6, alpha=0.5)
+assert np.isclose(Q[0, 0], 2.3)
+terminal = discounted_returns([1.0], gamma=0.9, bootstrap=0.0)
+truncated = discounted_returns([1.0], gamma=0.9, bootstrap=5.0)
+assert np.isclose(terminal[0], 1.0) and np.isclose(truncated[0], 5.5)
+```
+
+</div>
+</details>
+
 `discounted_returns` 的 `bootstrap` 只有在真终态才应设为零；截断时可传入边界 value。`control_target` 同时展示了 SARSA、Expected SARSA 与 Q-learning 的唯一核心分叉。完整训练循环还需要环境 reset、探索 schedule 和 visitation 条件，但这些不改变这里的估计量。
+
+MC、TD(0)、$n$-step return 与表格控制的组合实验见[手撕：强化学习 · n-step Return](../practice/reinforcement-learning.md#n-step-return)。
 
 ## On-policy、off-policy 与探索
 

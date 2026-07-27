@@ -112,6 +112,31 @@ $$
 
 动态重采样“有信号组”会改变训练任务分布。报告优化 token 时还要报告为筛选付出的全部 rollout token。
 
+RLOO 与 GRPO 的差别可以在一个张量接口中冻结。输入的第二维必须是同一 prompt 的独立 rollout；输出是 response-level 信号，不应在这里混入 response length、token mask 或 PPO ratio。
+
+```python
+import torch
+def critic_free_advantage(reward, estimator, eps=1e-6):
+    if reward.ndim != 2 or reward.size(1) < 2:
+        raise ValueError("expected [prompt, rollout], K >= 2")
+    if estimator == "rloo":
+        other = (reward.sum(1, keepdim=True) - reward) / (reward.size(1) - 1)
+        return (reward - other).detach()
+    if estimator == "grpo":
+        centered = reward - reward.mean(1, keepdim=True)
+        std = reward.std(1, keepdim=True, unbiased=False)
+        return torch.where(std > eps, centered / std, torch.zeros_like(centered)).detach()
+    raise ValueError(estimator)
+r = torch.tensor([[0., 1., 2.], [4., 4., 4.]])
+a_rloo = critic_free_advantage(r, "rloo")
+a_grpo = critic_free_advantage(r, "grpo")
+torch.testing.assert_close(a_rloo[0], 1.5 * (r[0] - r[0].mean()))
+torch.testing.assert_close(a_grpo.mean(1), torch.zeros(2))
+assert torch.count_nonzero(a_grpo[1]) == 0 and not a_rloo.requires_grad
+```
+
+生产输入还必须保留 invalid、timeout 与 verifier-missing 状态；把它们填成普通零分会同时污染 baseline 和题目难度。广播到 token 后，policy loss 只覆盖 action mask，且 reduction 仍要单独声明。
+
 ## 分母决定谁主导梯度
 
 设第 $i$ 个 response 长度为 $L_i$。至少有三种 reduction：

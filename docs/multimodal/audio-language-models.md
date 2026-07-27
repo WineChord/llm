@@ -78,6 +78,41 @@ $$
 
 更多码本提高码率和细节，也增加生成序列与同步复杂度。报告 codec 时应给出 sample rate、frame rate、codebook 数、codebook size、bitrate 与重建指标。
 
+### 最小语义实现 {#residual-vector-quantization}
+
+`residual_vector_quantize` 接收 latent `[...,D]` 与码本 `[M,K,D]`，逐层寻找当前残差的最近向量，并返回重建、每层索引和最终残差。恒等式 `reconstruction + residual == latent` 是比只检查 shape 更强的基本不变量。
+
+```python
+import torch
+
+def residual_vector_quantize(latent, codebooks):
+    residual = latent.float()
+    reconstruction = torch.zeros_like(residual)
+    indices = []
+    for codebook in codebooks.float():
+        flat = residual.reshape(-1, residual.size(-1))
+        distance = (flat.square().sum(1, keepdim=True)
+                    + codebook.square().sum(1) - 2 * flat @ codebook.T)
+        index = distance.argmin(-1)
+        quantized = codebook[index].view_as(residual)
+        reconstruction = reconstruction + quantized
+        residual = residual - quantized
+        indices.append(index.view(latent.shape[:-1]))
+    return (reconstruction.to(latent.dtype), torch.stack(indices, -1),
+            residual.to(latent.dtype))
+
+latent = torch.tensor([[1.2, .1], [.1, .8]])
+codebooks = torch.tensor([
+    [[0., 0.], [1., 0.], [0., 1.]],
+    [[0., 0.], [.2, 0.], [0., -.2]],
+])
+reconstruction, indices, residual = residual_vector_quantize(latent, codebooks)
+torch.testing.assert_close(reconstruction + residual, latent)
+assert indices.shape == (2, 2) and residual.norm() < latent.norm()
+```
+
+残差范数下降并非任意学习码本的自动保证，示例中的零向量只为建立可检查基线；训练还需定义 codebook/commitment 更新、dead-code 处理和 straight-through 梯度。完整实验见[多模态原语：Residual Vector Quantization](../practice/multimodal.md#residual-vector-quantization)。
+
 ## 语义与声学 token
 
 [AudioLM](https://arxiv.org/abs/2209.03143)把长程语义 token 与细粒度声学 token 分层建模。语义流控制内容和长期结构，声学流恢复音色与局部细节。

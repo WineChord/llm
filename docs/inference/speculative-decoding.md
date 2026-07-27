@@ -41,6 +41,52 @@ $$
 
 关键不是概率公式孤立成立，而是 $p_i$ 和 $q_i$ 必须已经应用同一套当前状态下的 temperature、penalty、grammar、禁用 token 与其他 logit processors。
 
+### 单位置接受 reference {#speculative-acceptance-reference}
+
+`target` 与 `draft` 是同一历史、同一 logit-processor 状态下的离散概率向量，`token` 是 draft 已采样的候选，`uniform` 是本次接受检验的均匀随机数。接受时返回 `(True, None)`；拒绝时返回归一化后的正残差分布，供调用者采样替代 token。
+
+```python
+import torch
+
+def verify_candidate(target, draft, token, uniform):
+    if target.ndim != 1 or target.shape != draft.shape or target.numel() == 0:
+        raise ValueError("target and draft must be aligned one-dimensional distributions")
+    if not isinstance(token, int) or not 0 <= token < target.numel():
+        raise ValueError("token must index the shared vocabulary")
+    if not torch.all(torch.isfinite(target) & (target >= 0)) or not torch.all(
+            torch.isfinite(draft) & (draft >= 0)):
+        raise ValueError("probabilities must be finite and non-negative")
+    torch.testing.assert_close(torch.stack((target.sum(), draft.sum())), target.new_ones(2))
+    if not 0 <= float(uniform) < 1:
+        raise ValueError("uniform must lie in [0, 1)")
+    if draft[token] <= 0:
+        raise ValueError("draft could not have sampled this token")
+    accept_probability = torch.minimum(
+        target.new_ones(()), target[token] / draft[token]
+    )
+    if uniform < accept_probability:
+        return True, None
+    residual = (target - draft).clamp_min(0)
+    if residual.sum() <= 0:
+        raise ValueError("rejection has no residual mass")
+    return False, residual / residual.sum()
+
+p, q = torch.tensor([0.8, 0.2]), torch.tensor([0.2, 0.8])
+accepted, residual = verify_candidate(p, q, token=1, uniform=0.9)
+torch.testing.assert_close(residual, torch.tensor([1., 0.]))
+assert verify_candidate(p, p, token=0, uniform=0.999)[0]
+impossible = verify_candidate(torch.tensor([0., 1.]), torch.tensor([1., 0.]), 0, 0.)
+assert not impossible[0] and impossible[1].tolist() == [0., 1.]
+for bad in [(p, q, -1, .5), (p, p[:, None], 0, .5)]:
+    try:
+        verify_candidate(*bad)
+    except ValueError:
+        continue
+    raise AssertionError("invalid distributions and token indices must be rejected")
+```
+
+正残差非负且和为 $1$，$p=q$ 时所有合法 draft token 都被接受。该函数只定义一个位置的分布语义；完整运行时还要负责候选链的条件历史、RNG 消耗、KV / grammar 回滚和“全接受后额外 target token”，这些状态不能在此函数外被静默跳过。
+
 ## 接受长度与速度模型
 
 为形成直觉，假设各位置条件接受率恒为 $a$，一次最多验证 $\gamma$ 个 draft token。每轮期望产出 token 数近似为

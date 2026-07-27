@@ -32,6 +32,47 @@ $$
 
 统计口径必须说明哪些句子需要外部证据，以及部分支持、冲突和来源间接转述如何计分。
 
+引用聚合应直接在 claim–evidence 边上计算，而不是以“答案里出现过几个链接”为分母。输入中 `requires_evidence=False` 的非事实句不进入 completeness；每条引用仍分别接受 support 判定。
+
+```python
+def citation_metrics(claims, known_evidence, supported_edges):
+    if len({claim["id"] for claim in claims}) != len(claims):
+        raise ValueError("claim IDs must be unique")
+    required, edges = [], []
+    for claim in claims:
+        citations = claim["evidence_ids"]
+        if len(citations) != len(set(citations)) or not set(citations) <= known_evidence:
+            raise ValueError("duplicate or unknown evidence ID")
+        if claim["requires_evidence"]:
+            required.append(claim)
+        edges.extend((claim["id"], evidence) for evidence in citations)
+    supported_edges = set(supported_edges)
+    if not supported_edges <= set(edges):
+        raise ValueError("support verdict references an undeclared edge")
+    covered = sum(bool(claim["evidence_ids"]) for claim in required)
+    precision = sum(edge in supported_edges for edge in edges) / len(edges) if edges else None
+    return covered / len(required) if required else 1., precision, len(edges)
+claims = [
+    {"id": "c1", "requires_evidence": True, "evidence_ids": ["e1", "e2"]},
+    {"id": "c2", "requires_evidence": True, "evidence_ids": []},
+]
+completeness, precision, edges = citation_metrics(claims, {"e1", "e2"}, {("c1", "e1")})
+assert (completeness, precision, edges) == (.5, .5, 2)
+optional = claims + [{"id": "c3", "requires_evidence": False, "evidence_ids": ["e1"]}]
+assert citation_metrics(optional, {"e1", "e2"}, {("c3", "e1")}) == (.5, 1 / 3, 3)
+def rejects(candidate):
+    try:
+        citation_metrics(candidate, {"e1", "e2"}, set())
+    except ValueError:
+        return True
+    return False
+duplicate_edge = [{"id": "c1", "requires_evidence": True, "evidence_ids": ["e1", "e1"]}]
+assert rejects(duplicate_edge)
+assert rejects(claims + [claims[0]])
+```
+
+每个 claim–evidence pair 在图中只能形成一条边；重复输入被拒绝，以便尽早暴露上游组装错误。空引用时 precision 返回 `None`，不能写成满分；completeness 则揭示必需 claim 没有证据。生产验证还要检查 evidence 权限、span、版本、freshness 与部分蕴含，且 support judge 的输出应与 claim extraction 版本一起保存。
+
 ## 生成策略
 
 三种常见路线：

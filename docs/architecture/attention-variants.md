@@ -23,6 +23,45 @@ $$
 
 [GQA](https://arxiv.org/abs/2305.13245)还给出从 MHA checkpoint uptrain 的路线，说明架构选择既可以从头训练，也可以通过受控转换获得。
 
+### 最小语义实现 {#grouped-query-attention}
+
+`grouped_query_attention` 接收 `q:[B,H_q,T_q,D]` 与 `k,v:[B,H_{kv},T_k,D]`，把连续的 $H_q/H_{kv}$ 个 query head 映射到同一 KV head。它还显式处理 suffix decode：当 $T_q<T_k$ 时，query 的逻辑位置从 $T_k-T_q$ 开始，而不是套用错位的方阵 mask。
+
+```python
+import math
+import torch
+
+def grouped_query_attention(q, k, v):
+    batch, query_heads, query_len, dim = q.shape
+    _, kv_heads, key_len, _ = k.shape
+    assert query_heads % kv_heads == 0 and query_len <= key_len
+    repeat = query_heads // kv_heads
+    k = k.repeat_interleave(repeat, dim=1)
+    v = v.repeat_interleave(repeat, dim=1)
+    score = q @ k.transpose(-1, -2) / math.sqrt(dim)
+    query_pos = torch.arange(key_len - query_len, key_len, device=q.device)
+    key_pos = torch.arange(key_len, device=q.device)
+    future = key_pos[None, :] > query_pos[:, None]
+    score.masked_fill_(future, -torch.inf)
+    probability = torch.softmax(score.float(), dim=-1).to(q.dtype)
+    return probability @ v
+
+torch.manual_seed(0)
+q = torch.randn(2, 4, 5, 8)
+k, v = torch.randn(2, 2, 5, 8), torch.randn(2, 2, 5, 8)
+full = grouped_query_attention(q, k, v)
+step = grouped_query_attention(q[:, :, -1:], k, v)
+assert full.shape == q.shape
+torch.testing.assert_close(step, full[:, :, -1:])
+mapping_q = torch.zeros(1, 4, 1, 1)
+mapping_k = torch.zeros(1, 2, 1, 1)
+mapping_v = torch.tensor([[[[1.]], [[7.]]]])
+mapped = grouped_query_attention(mapping_q, mapping_k, mapping_v)
+assert mapped.flatten().tolist() == [1., 1., 7., 7.]
+```
+
+这里的 `repeat_interleave` 只用于说明 head 映射，会真实复制 K/V；生产 kernel 应在不复制缓存的前提下完成分组寻址，并另行接入 padding、packed segment、RoPE、dropout 与低精度策略。逐张量实现见[张量原语：Grouped-Query Attention](../practice/tensor-primitives.md#grouped-query-attention)，完整 block 的 mask 组合见[Decoder-only Transformer：Attention](../practice/transformer-from-scratch.md#attention)。
+
 ## KV Cache 成本
 
 对 $L$ 层、batch $B$、缓存长度 $T$ 和每元素 $s$ 字节，

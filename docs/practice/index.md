@@ -52,7 +52,17 @@
 | 额外计算 | [推理时计算](test-time-compute.md) |
 | 结论可信度 | [评测工具](evaluation-tooling.md) |
 
-这些 reference 不包含 CLI、配置和部署脚手架。需要生产系统时读对应机制页与成熟实现；需要解释一个结果时，先让最小 reference 通过。
+## 与正文怎样配合
+
+每个通用机制的最小语义核先放在正文第一次完整解释它的位置：例如 [RoPE](../architecture/position-encoding.md)、[packed GAE](../reinforcement-learning/advantage-estimation-gae.md)、[KV page table](../inference/kv-cache.md)和[配对重采样](../evaluation/statistical-inference.md)。这些代码与公式共用符号，并用少量断言固定最容易写错的边界。
+
+本区在此基础上继续完成三件事：
+
+1. 把相邻机制组装成完整数据流或小系统；
+2. 扩展退化输入、故障注入、梯度和等价性测试；
+3. 对照直白 reference、向量化实现与生产系统必须保留的不变量。
+
+正文中的主实现默认展开。较长的辅助代码、状态机和完整测试可以折叠，但仍可搜索、复制并通过标题深链。这里的 reference 同样不包含 CLI、配置和部署脚手架；需要生产系统时继续核对正文契约与成熟实现。
 
 ## 正确性矩阵
 

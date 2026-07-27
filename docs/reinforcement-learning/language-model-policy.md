@@ -81,6 +81,31 @@ $m_t=1$ 应只覆盖由 behavior policy 实际采样且允许训练的动作。�
 
 summary 是否是 action 取决于它是否由当前 policy 采样并参与决策。例如 [CompactionRL](../landscape/works/sao-compactionrl.md#compactionrl)直接训练 summary token；把已有摘要复制到下一段 prompt 时，复制位置不应再次进入 loss。
 
+action mask 的最小语义是同时控制分子、分母和梯度。输入 `logp` 已经是 rollout action ID 在 learner 上的重算 log-probability；`advantage` 属于冻结 target，不能通过 policy loss 回传。
+
+```python
+import torch
+def masked_policy_loss(logp, advantage, action_mask):
+    if not (logp.shape == advantage.shape == action_mask.shape):
+        raise ValueError("token tensors must align")
+    mask = action_mask.bool()
+    if not mask.any():
+        raise ValueError("at least one policy action is required")
+    if not torch.isfinite(logp[mask]).all() or not torch.isfinite(advantage[mask]).all():
+        raise ValueError("selected policy terms must be finite")
+    return -(logp[mask] * advantage.detach()[mask]).mean()
+logp = torch.tensor([[float("nan"), -.2, -.7, float("nan")]], requires_grad=True)
+advantage = torch.tensor([[float("nan"), 2., 2., float("nan")]], requires_grad=True)
+mask = torch.tensor([[False, True, True, False]])
+loss = masked_policy_loss(logp, advantage, mask)
+loss.backward()
+torch.testing.assert_close(logp.grad, torch.tensor([[0., -1., -1., 0.]]))
+assert advantage.grad is None
+assert loss == .9
+```
+
+修改 mask 外的 prompt、observation 或 padding log-prob 不会影响 loss。生产 batch 还要区分 action、valid、trace 与 bootstrap mask，并用跨 rank 的全局有效 token 数归约；把无动作样本的分母钳到一会隐藏数据错误。
+
 ## Behavior distribution 不只由 logits 决定
 
 若 rollout 使用 temperature $T$，策略分布至少变成
@@ -136,6 +161,38 @@ $$
 - episode mean 让长短任务等权。
 
 最后两项仍需说明 prompt 内 response 和 episode 内 segment 怎样先聚合。不存在脱离 estimand 的“正确分母”；必须先决定想让谁在总体目标中等权，再实现分布式 numerator/denominator。
+
+三种常见 reduction 可以共享同一份 per-token term 和 action mask，却得到不同目标。`response` 让每条回答等权，`token` 让全局有效 token 等权，`fixed` 则让每条回答用预先声明的生成预算作分母。
+
+```python
+import torch
+def reduce_action_terms(term, action_mask, mode, budget=None):
+    if term.shape != action_mask.shape or term.ndim != 2:
+        raise ValueError("expected aligned [response, token] tensors")
+    mask = action_mask.bool()
+    length = mask.sum(1)
+    if torch.any(length == 0):
+        raise ValueError("every response needs an action")
+    if not torch.isfinite(term[mask]).all():
+        raise ValueError("selected action terms must be finite")
+    total = torch.where(mask, term, 0.).sum(1)
+    if mode == "response":
+        return (total / length).mean()
+    if mode == "token":
+        return total.sum() / length.sum()
+    if mode == "fixed":
+        if budget is None or budget <= 0:
+            raise ValueError("fixed mode needs a positive budget")
+        return (total / budget).mean()
+    raise ValueError(mode)
+term = torch.tensor([[2., float("nan"), float("nan"), float("nan")], [1., 1., 1., 1.]])
+mask = torch.tensor([[1, 0, 0, 0], [1, 1, 1, 1]])
+assert reduce_action_terms(term, mask, "response") == 1.5
+assert reduce_action_terms(term, mask, "token") == 1.2
+assert reduce_action_terms(term, mask, "fixed", budget=4) == .75
+```
+
+`fixed` 中预算是目标定义，不应随实际生成长度变化；mask 仍排除 prompt、observation 与 padding。分布式实现必须分别全局归约 numerator 和相应 denominator，不能先求各 rank mean 再平均。更完整的长度退化实验见[LLM 策略优化手撕实现](../practice/llm-policy-optimization.md#loss-reduction)。
 
 ## 终止语义
 

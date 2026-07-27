@@ -81,6 +81,41 @@ $$
 
 序列构造的完整契约见[序列构造与打包](../data/sequence-construction.md)。
 
+### 最小语义实现 {#token-normalized-cross-entropy}
+
+下面的 `token_ce` 接收 `[..., V]` logits、同前缀 shape 的标签与 loss mask，返回按**有效 token 数**归一化的标量损失。函数先用布尔 mask 选择有效行，再计算 `logsumexp` 与 gather；因此无效位置可以带 `label=-100`，其 logits 即使是 NaN 也不会进入目标。
+
+```python
+import torch
+
+def token_ce(logits, labels, mask):
+    if logits.ndim < 2 or logits.shape[:-1] != labels.shape:
+        raise ValueError("labels must match every non-vocabulary logit axis")
+    if labels.shape != mask.shape:
+        raise ValueError("labels and mask must have the same shape")
+    valid = mask.bool()
+    if not valid.any():
+        raise ValueError("token mean needs at least one valid target")
+    selected_logits, selected_labels = logits[valid], labels[valid]
+    logp = selected_logits - torch.logsumexp(selected_logits, -1, keepdim=True)
+    return -logp.gather(-1, selected_labels[:, None]).mean()
+
+z = torch.tensor([[1000., 1001., 999.], [float("nan")] * 3], requires_grad=True)
+y, m = torch.tensor([1, -100]), torch.tensor([True, False])
+loss = token_ce(z, y, m)
+torch.testing.assert_close(loss, token_ce(z + 37, y, m))
+loss.backward()
+assert torch.isfinite(z.grad).all() and z.grad[1].abs().sum() == 0
+rejected = False
+try:
+    token_ce(z, y, torch.zeros_like(m))
+except ValueError:
+    rejected = True
+assert rejected
+```
+
+这段代码的输出就是当前张量上的 token mean，因此有效集合为空时直接拒绝。它刻意不包含 label shift、跨 rank 归约和 fused kernel：分布式实现应先在各 rank 产生有效 token 的 loss sum/count，再全局归约。更完整的逐算子推导见[张量原语：Stable log-softmax 与交叉熵](../practice/tensor-primitives.md#stable-log-softmax)，跨 microbatch/rank 的实现见[训练目标：Token-normalized cross entropy](../practice/training-objectives.md#token-normalized-cross-entropy)。
+
 ## 困惑度
 
 若有效 token 的平均负对数似然为 $\bar{\mathcal L}$，困惑度为

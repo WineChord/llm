@@ -67,6 +67,50 @@ $$
 
 若为了保持参数量接近而调整中间宽度，必须说明比较的是相同 hidden width、相同参数量还是相同 FLOPs。激活函数名称不能代替矩阵形状。
 
+### 最小语义实现 {#pre-norm-decoder-block}
+
+下面把 pre-norm block 的三项核心语义放在同一计算图里：RMSNorm 用 FP32 归约后转回输入 dtype，SwiGLU 保留 gate/up 两条投影，两个子层都写回同一 residual stream。输入和输出均为 `[batch, time, dim]`；`attn` 是保持该 shape 的可替换模块。
+
+```python
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class RMSNorm(nn.Module):
+    def __init__(self, dim, eps=1e-6):
+        super().__init__()
+        self.weight = nn.Parameter(torch.ones(dim))
+        self.eps = eps
+    def forward(self, x):
+        scale = x.float().square().mean(-1, keepdim=True).add(self.eps).rsqrt()
+        return (x.float() * scale * self.weight.float()).to(x.dtype)
+
+class SwiGLU(nn.Module):
+    def __init__(self, dim, hidden):
+        super().__init__()
+        self.gate, self.up = nn.Linear(dim, hidden), nn.Linear(dim, hidden)
+        self.down = nn.Linear(hidden, dim)
+    def forward(self, x):
+        return self.down(F.silu(self.gate(x)) * self.up(x))
+
+class DecoderBlock(nn.Module):
+    def __init__(self, dim, hidden, attn):
+        super().__init__()
+        self.n1, self.attn, self.n2 = RMSNorm(dim), attn, RMSNorm(dim)
+        self.mlp = SwiGLU(dim, hidden)
+    def forward(self, x, **attn_kwargs):
+        x = x + self.attn(self.n1(x), **attn_kwargs)
+        return x + self.mlp(self.n2(x))
+
+x = torch.randn(2, 5, 16)
+y = DecoderBlock(16, 32, nn.Identity())(x)
+assert y.shape == x.shape and torch.isfinite(y).all()
+x16 = torch.randn(2, 5, 16, dtype=torch.float16)
+assert RMSNorm(16)(x16).dtype == x16.dtype
+```
+
+这是结构参考而非 checkpoint 兼容层：attention 的 head/position/cache 契约、bias、初始化、dropout、tensor parallel 与 fused residual-norm 都必须由具体模型补齐。逐算子版本见[张量原语：LayerNorm 与 RMSNorm](../practice/tensor-primitives.md#layernorm-rmsnorm)，带 causal attention 和增量缓存的组合见[Decoder-only Transformer：RMSNorm、SwiGLU 与 Block](../practice/transformer-from-scratch.md#rmsnormswiglu-block)。
+
 ## 残差尺度
 
 每层都把新分支写回 residual stream。深度增加后，初始化、norm 位置、分支 scale 与残差 dtype 共同决定方差传播。常见控制包括：

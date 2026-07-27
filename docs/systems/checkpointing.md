@@ -76,6 +76,39 @@ $$
 
 manifest 是一致性边界，不只是文件清单。恢复端必须先验证 schema，再验证全部必需 shard 和 checksum，最后才分配或加载模型状态。
 
+### Manifest 完整性检查 {#checkpoint-manifest-validation-reference}
+
+下面用 byte payload 简化表示逻辑 tensor shard。每项输入包含全局 `offset`、逻辑 `length`、不可变 payload 与记录的 SHA-256；只有 range 无缺口、无重叠且 checksum 全部匹配时才返回 `True`。
+
+```python
+import hashlib
+
+def make_shard(offset, payload):
+    return {
+        "offset": offset,
+        "length": len(payload),
+        "payload": payload,
+        "sha256": hashlib.sha256(payload).hexdigest(),
+    }
+
+def manifest_complete(shards, global_length):
+    cursor = 0
+    for shard in sorted(shards, key=lambda item: item["offset"]):
+        if shard["offset"] != cursor or shard["length"] != len(shard["payload"]):
+            return False
+        if hashlib.sha256(shard["payload"]).hexdigest() != shard["sha256"]:
+            return False
+        cursor += shard["length"]
+    return cursor == global_length
+
+a, b = make_shard(0, b"ab"), make_shard(2, b"cd")
+assert manifest_complete([b, a], 4)
+assert not manifest_complete([a], 4)
+assert not manifest_complete([a, {**b, "sha256": "0" * 64}], 4)
+```
+
+该不变量直接阻止缺 shard、重复 range 与静默损坏进入恢复路径。真实 tensor 的逻辑元素范围和对象字节范围应分别记录；持久化、跨 rank 共识与原子 marker 仍由存储协议保证，只有这个检查成功后 coordinator 才能发布 committed 状态。
+
 ## 原子提交协议
 
 对象存储或分布式文件系统通常不能让一组文件天然原子。可采用两阶段协议：

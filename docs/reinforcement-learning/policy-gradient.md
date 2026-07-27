@@ -199,20 +199,31 @@ def policy_gradient_loss(logp, adv, action_mask):
     """logp, adv, action_mask: [batch, time]."""
     if logp.shape != adv.shape or logp.shape != action_mask.shape:
         raise ValueError("shape mismatch")
-    mask = action_mask.to(logp.dtype)
-    denom = mask.sum().clamp_min(1)
-    return -((logp * adv.detach()) * mask).sum() / denom
+    mask = action_mask.bool()
+    if not mask.any():
+        raise ValueError("policy loss needs at least one action")
+    if not torch.isfinite(logp[mask]).all() or not torch.isfinite(adv[mask]).all():
+        raise ValueError("selected policy terms must be finite")
+    return -(logp[mask] * adv.detach()[mask]).mean()
 
-logp = torch.tensor([[-0.2, -0.7, -0.4]], requires_grad=True)
-adv = torch.tensor([[1.5, 1.5, 1.5]])
+logp = torch.tensor([[float("nan"), -0.7, -0.4]], requires_grad=True)
+adv = torch.tensor([[float("nan"), 1.5, 1.5]])
 mask = torch.tensor([[0, 1, 1]], dtype=torch.bool)
 loss = policy_gradient_loss(logp, adv, mask)
 loss.backward()
 assert logp.grad[0, 0] == 0
 assert torch.all(logp.grad[0, 1:] < 0)
+try:
+    policy_gradient_loss(logp, adv, torch.zeros_like(mask))
+except ValueError:
+    pass
+else:
+    raise AssertionError("an empty action set must be rejected")
 ```
 
 `adv.detach()` 很关键：policy loss 不应通过 advantage target 反向修改 reward 或 critic。若需要端到端可微环境，那已经是另一类 estimator，不能悄悄沿用这里的推导。
+
+response mask、padding 与 observation token 的组合断言见[手撕：强化学习 · LLM Action Mask](../practice/reinforcement-learning.md#llm-action-mask)。
 
 ## 实现契约
 

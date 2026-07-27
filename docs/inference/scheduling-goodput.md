@@ -133,6 +133,51 @@ $$
 
 时才允许继续入场。因为 $\widehat O_i$ 有误差，还需要 max tokens、动态水位和显式过载行为。P/D 系统中，prefill admission 还必须得到 decode slot 或 KV quota 的承诺。
 
+### 保守 KV reservation {#kv-admission-reference}
+
+下面按优先级和 deadline 遍历候选请求。每个候选声明尚未计算的 prompt、`max_output` 与单 token KV 字节数；函数只在最坏情况 reservation 不越过 `capacity - headroom` 时接纳，并返回被接纳的请求 ID 与新的已预留字节数。
+
+```python
+def admit_by_reservation(active_bytes, candidates, capacity, headroom):
+    if min(active_bytes, capacity, headroom) < 0 or active_bytes + headroom > capacity:
+        raise ValueError("active usage and headroom must fit non-negative capacity")
+    limit = capacity - headroom
+    reserved = active_bytes
+    admitted = []
+    order = sorted(candidates, key=lambda r: (-r["priority"], r["deadline"]))
+    for request in order:
+        terms = request["prompt_remaining"], request["max_output"], request["kv_bytes_per_token"]
+        if any(value < 0 for value in terms):
+            raise ValueError("token counts and per-token KV bytes must be non-negative")
+        future_tokens = request["prompt_remaining"] + request["max_output"]
+        required = future_tokens * request["kv_bytes_per_token"]
+        if reserved + required <= limit:
+            admitted.append(request["id"])
+            reserved += required
+    return admitted, reserved
+
+requests = [
+    {"id": "a", "priority": 1, "deadline": 10, "prompt_remaining": 2,
+     "max_output": 4, "kv_bytes_per_token": 100},
+    {"id": "b", "priority": 2, "deadline": 5, "prompt_remaining": 1,
+     "max_output": 3, "kv_bytes_per_token": 100},
+    {"id": "c", "priority": 1, "deadline": 20, "prompt_remaining": 8,
+     "max_output": 1, "kv_bytes_per_token": 100},
+]
+accepted, reserved = admit_by_reservation(200, requests, 1300, 100)
+assert accepted == ["b", "a"]
+assert reserved == 1200
+assert reserved <= 1300 - 100
+try:
+    admit_by_reservation(0, [{**requests[0], "max_output": -1}], 1300, 100)
+except ValueError:
+    pass
+else:
+    raise AssertionError("negative reservations must be rejected")
+```
+
+核心不变量是接纳、reservation 与队列入场共享同一个容量边界，任何失败都不能留下幽灵配额。reference 是保守 admission policy，不是完整调度器；生产实现还需加入 block 对齐、workspace、预测误差校准、并发原子更新和显式拒绝原因。continuous batching、状态推进与 goodput 计算的组合实验见[手撕：推理引擎](../practice/inference-engine.md)。
+
 ## 公平与优先级
 
 FIFO 简单，但长 prefill 会阻塞短交互；最短作业优先改善平均延迟，却可能饿死长请求；deadline 优先在预测准确时有效，但会压缩无 deadline 流量。

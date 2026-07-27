@@ -82,6 +82,30 @@ $$
 
 布局 schema 是持久状态的一部分。仅凭 tensor shape 相同，不能认定两个 cache 可互换。
 
+### Page-table 寻址 {#physical-slot-reference}
+
+`block_table[j]` 给出逻辑块 $j$ 对应的物理块号；输入 token 位置后，reference 返回线性 KV pool 中唯一的 `physical_slot`。逻辑位置连续并不要求物理块连续。
+
+```python
+def physical_slot(block_table, block_size, token_pos):
+    if block_size <= 0 or token_pos < 0:
+        raise ValueError("invalid block size or token position")
+    logical_block, offset = divmod(token_pos, block_size)
+    if logical_block >= len(block_table):
+        raise IndexError("logical block is not allocated")
+    physical_block = block_table[logical_block]
+    if physical_block < 0:
+        raise ValueError("physical block id must be non-negative")
+    return physical_block * block_size + offset
+
+table = [9, 2, 17]
+assert physical_slot(table, 4, 0) == 36
+assert physical_slot(table, 4, 5) == 9
+assert physical_slot(table, 4, 11) == 71
+```
+
+映射的不变量是每个已分配逻辑位置恰好落到 table 指定 block 的同一 offset，越过已分配范围必须失败。生产 kernel 还需把 layer、K/V、head、vector lane、dtype 和 shard stride 纳入地址计算，并在读取前验证 computed-token count；page table 与分配器的组合实验见[手撕：推理引擎 · Page table](../practice/inference-engine.md#page-table-reference)。
+
 ## 生命周期与所有权
 
 物理 block 至少有三种状态：
@@ -102,6 +126,41 @@ shared-read-only
 6. 未初始化 slot 永远不能被 attention 读取。
 
 最后一块尤其危险：两个请求可能共享完整前缀，却各自继续写入同一个未填满 block。若没有 copy-on-write，错误通常只在并发或特定长度下出现，很难由单请求 logits 回归发现。
+
+### 引用计数与尾块 COW {#kv-tail-copy-on-write-reference}
+
+下面只建模 block table 的所有权：`logical_length` 是已经提交的 token 数，返回值是下一 token 应写入的物理 block 与 block 内 offset。分叉会增加共享 block 的引用计数；若共享尾块尚未填满，续写前必须分配新 block。
+
+```python
+def fork_blocks(block_table, refcount):
+    child = block_table.copy()
+    for block in child:
+        refcount[block] += 1
+    return child
+
+def writable_tail(block_table, refcount, free_blocks, logical_length, block_size):
+    logical_block, offset = divmod(logical_length, block_size)
+    if offset == 0:
+        block = free_blocks.pop()
+        refcount[block] = 1
+        block_table.append(block)
+    elif refcount[block_table[logical_block]] > 1:
+        old = block_table[logical_block]
+        block = free_blocks.pop()
+        refcount[old] -= 1
+        refcount[block] = 1
+        block_table[logical_block] = block
+    return block_table[logical_block], offset
+
+parent, refs, free = [7], {7: 1, 9: 0}, [9]
+child = fork_blocks(parent, refs)
+block, offset = writable_tail(child, refs, free, 3, 4)
+assert (block, offset) == (9, 3)
+assert parent == [7] and child == [9]
+assert refs == {7: 1, 9: 1}
+```
+
+真实 COW 必须在发布新 block table 前复制旧尾块中已经提交的 K/V 与量化 scale；这个 reference 只展示所有权转换。GPU event、并发 allocator、OOM 回滚和取消幂等仍属于生产边界，不能仅靠 Python 引用计数保证。
 
 运行时状态机、block table 与抢占见[推理运行时](runtime.md)；跨 worker 的布局转换与安装见[Prefill–Decode 分离](disaggregation.md)。
 

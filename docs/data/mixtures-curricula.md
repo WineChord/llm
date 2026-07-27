@@ -20,6 +20,80 @@ $$
 
 只有当各来源都生成等长、等 mask 比例的训练序列时，才近似有 $q_i=p_i$。因此 sampler 配置必须与训练日志中的实际 token 计数同时保存。
 
+### 最小语义实现 {#document-probability-from-token-share}
+
+若已经给定目标 token share $q_i$ 与每次抽样的平均有效长度 $\mu_i$，`document_prob` 反解文档采样概率 $p_i\propto q_i/\mu_i$；`observed_token_share` 则把候选概率映射回预期 token 占比。输入输出都位于概率单纯形上。
+
+```python
+import torch
+
+def mixture_inputs(probability, mean_loss_tokens):
+    probability = torch.as_tensor(probability, dtype=torch.float64)
+    mean_loss_tokens = torch.as_tensor(
+        mean_loss_tokens, dtype=torch.float64, device=probability.device
+    )
+    if (probability.ndim != 1 or probability.numel() == 0
+            or probability.shape != mean_loss_tokens.shape):
+        raise ValueError("probability and token mass must be aligned vectors")
+    if not torch.isfinite(probability).all() or not torch.isfinite(mean_loss_tokens).all():
+        raise ValueError("mixture inputs must be finite")
+    if torch.any(probability < 0) or not torch.isclose(
+            probability.sum(), probability.new_tensor(1.)):
+        raise ValueError("probability must lie on the simplex")
+    if torch.any(mean_loss_tokens <= 0):
+        raise ValueError("mean loss-token mass must be positive")
+    return probability, mean_loss_tokens
+
+def document_prob(target_token_share, mean_loss_tokens):
+    q, mu = mixture_inputs(target_token_share, mean_loss_tokens)
+    unnormalized = q / mu
+    mass = unnormalized.sum()
+    if not torch.isfinite(unnormalized).all() or not torch.isfinite(mass) or mass <= 0:
+        raise ValueError("derived document probability has invalid mass")
+    return unnormalized / mass
+
+def observed_token_share(prob, mean_loss_tokens):
+    prob, mu = mixture_inputs(prob, mean_loss_tokens)
+    mass = prob * mu
+    total = mass.sum()
+    if not torch.isfinite(mass).all() or not torch.isfinite(total) or total <= 0:
+        raise ValueError("observed token share has invalid mass")
+    return mass / total
+```
+
+正常 round-trip 之外，回归还覆盖 shape 广播、非有限数、非单纯形，以及零、负或非有限 token mass。
+
+```python
+q = torch.tensor([0.5, 0.5], dtype=torch.float64)
+p = document_prob(q, [100., 400.])
+torch.testing.assert_close(p, torch.tensor([0.8, 0.2], dtype=torch.float64))
+torch.testing.assert_close(observed_token_share(p, [100., 400.]), q)
+bad_inputs = [
+    ([.5, .5], [100.]),
+    ([.5, float("nan")], [100., 400.]),
+    ([1.1, -.1], [100., 400.]),
+    ([.4, .4], [100., 400.]),
+    ([.5, .5], [100., 0.]),
+    ([.5, .5], [100., -1.]),
+    ([.5, .5], [100., float("inf")]),
+]
+for probability, token_mass in bad_inputs:
+    try:
+        document_prob(probability, token_mass)
+    except ValueError:
+        continue
+    raise AssertionError("invalid mixture input must be rejected")
+for probability, token_mass in [
+        ([[.5, .5]], [[100., 400.]]), ([0., 0.], [100., 400.])]:
+    try:
+        observed_token_share(probability, token_mass)
+    except ValueError:
+        continue
+    raise AssertionError("broadcast or zero-mass probability must be rejected")
+```
+
+这是稳态期望而不是执行器：截断、过滤失败、无放回采样和随时间变化的长度都会让实测比例偏离，因此训练日志仍要按来源累计真实 loss token。每个 token 的归一化怎样影响最终梯度，可继续对照[训练目标：Token-normalized cross entropy](../practice/training-objectives.md#token-normalized-cross-entropy)。
+
 若来源 $i$ 有 $N_i$ 个可用 token，整个训练消费 $T$ 个有效 token，则平均重复暴露约为
 
 $$

@@ -185,6 +185,8 @@ assert np.isclose(td_target(1.0, 5.0, 0.9, terminated=True), 1.0)
 
 最后两个断言是容易遗漏的契约：真正终止不 bootstrap，外部截断仍保留 $V(s_{t+1})$。这段实现只适用于小型、模型已知的离散 POMDP；大状态空间需要近似 filtering 或直接学习 history representation。
 
+有限 MDP 的完整 value-iteration 对照与边界断言见[手撕：强化学习](../practice/reinforcement-learning.md)。
+
 ## 映射到语言模型
 
 语言任务可落在不同决策抽象上：

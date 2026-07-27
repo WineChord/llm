@@ -89,7 +89,7 @@ torch.testing.assert_close(final, chunk_final)
 
 低精度下，不同 scan 树会有舍入差异；应分别检查短序列 reference 与真实长度稳定性。
 
-## Delta-rule fast weight
+## Delta-rule fast weight {#delta-rule-fast-weight}
 
 状态 $S_t\in\mathbb R^{D_k\times D_v}$ 保存 key 到 value 的线性映射。先读预测，再用误差写入：
 
@@ -117,7 +117,7 @@ def delta_memory(keys, values, beta, initial=None):
 
 key 的范数、$\beta$ 与 state dtype 决定稳定性。固定维度 state 在大量相似 key 下会发生干扰，不能等同于精确 KV cache。
 
-## Transformer-XL segment memory
+## Transformer-XL segment memory {#transformer-xl-segment-memory}
 
 段级记忆保存过去 hidden state，但切断跨段梯度：
 

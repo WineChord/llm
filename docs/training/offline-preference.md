@@ -83,6 +83,53 @@ $$
 
 DPO 避免显式 reward model 和在线 rollout，不等于没有奖励假设，也不自动解决标签噪声、分布外回答或 benchmark 污染。
 
+### DPO 的可执行语义 {#dpo-semantic-reference}
+
+下面的 reference 接收已经与目标 token 对齐的 logits、token ID 和 response mask，先得到每条回答的序列 log-probability，再计算逐 pair 的 DPO loss。输出保留 batch 维，便于在外层选择样本权重和全局归约；`normalize=True` 明确切换到 token mean，不能在实验中静默改变。
+
+```python
+import torch
+import torch.nn.functional as F
+
+def response_logp(logits, tokens, response_mask, normalize=False):
+    if logits.ndim < 2 or logits.shape[:-1] != tokens.shape or tokens.shape != response_mask.shape:
+        raise ValueError("logits, tokens and response mask must share batch and time axes")
+    valid = response_mask.bool()
+    if torch.any(valid.sum(-1) == 0): raise ValueError("every response needs a target token")
+    row_logits = logits.reshape(-1, logits.size(-2), logits.size(-1))
+    row_tokens = tokens.reshape(-1, tokens.size(-1))
+    row_valid = valid.reshape(-1, valid.size(-1))
+    output = []
+    for current_logits, current_tokens, current_valid in zip(
+            row_logits, row_tokens, row_valid):
+        selected_logits = current_logits[current_valid]
+        selected_tokens = current_tokens[current_valid]
+        logp = F.log_softmax(selected_logits, -1)
+        value = logp.gather(-1, selected_tokens[:, None]).sum()
+        output.append(value / current_valid.sum() if normalize else value)
+    return torch.stack(output).reshape(tokens.shape[:-1])
+
+def dpo_loss(pi_w, pi_l, ref_w, ref_l, beta):
+    margin = (pi_w - ref_w) - (pi_l - ref_l)
+    return F.softplus(-beta * margin)
+
+z = torch.tensor([[[float("nan")] * 2, [0., 2.], [2., 0.]]])
+y, m = torch.tensor([[-100, 1, 0]]), torch.tensor([[False, True, True]])
+base = response_logp(z, y, m)
+assert torch.isfinite(base).all()
+neutral = dpo_loss(base, base, base, base, beta=0.1)
+assert torch.allclose(neutral, torch.full_like(neutral, torch.log(torch.tensor(2.))))
+assert torch.all(dpo_loss(base + 1, base, base, base, 0.1) < neutral)
+rejected = False
+try:
+    response_logp(z, y, torch.zeros_like(m), normalize=True)
+except ValueError:
+    rejected = True
+assert rejected
+```
+
+核心不变量是 prompt 与 padding 在 `log_softmax` 之前被排除，masked `-100` 和 NaN 均不参与目标；每条回答若没有有效 token 则拒绝。policy/reference 还必须采用同一 token space，且 chosen margin 增大时 loss 下降。这里没有实现 chat template、label shift、分布式加权或 reference forward；生产训练必须对四组 log-probability 使用完全相同的序列语义。
+
 ## 序列 log-probability
 
 回答概率为
@@ -128,6 +175,38 @@ $$
 $$
 
 reference-free 和 length-normalized 是新的建模选择，不是免费简化；它们改变锚点与长度归纳偏置，必须与 DPO 在相同数据和调参预算下比较。
+
+三者可以共用 chosen/rejected 的序列级输入，但不能共用未声明的 reduction：DPO 与 IPO 的 `pi_*`、`ref_*` 通常是 response token log-probability 之和；SimPO 的 `pi_*` 在进入函数前已经按各自 response 长度取 mean。
+
+```python
+import torch
+import torch.nn.functional as F
+def preference_objective(pi_chosen, pi_rejected, ref_chosen, ref_rejected,
+                         kind, beta=.1, margin=0.):
+    if beta <= 0:
+        raise ValueError("beta must be positive")
+    policy_gap = pi_chosen - pi_rejected
+    if kind == "simpo":
+        return F.softplus(-(beta * policy_gap - margin))
+    if ref_chosen is None or ref_rejected is None:
+        raise ValueError(f"{kind} requires a reference policy")
+    relative_gap = policy_gap - (ref_chosen - ref_rejected)
+    if kind == "dpo":
+        return F.softplus(-beta * relative_gap)
+    if kind == "ipo":
+        return (relative_gap - 1 / (2 * beta)).square()
+    raise ValueError(kind)
+zero = torch.tensor([0.])
+neutral = preference_objective(zero, zero, zero, zero, "dpo", beta=.5)
+better = preference_objective(torch.tensor([1.]), zero, zero, zero, "dpo", beta=.5)
+assert better < neutral
+ipo = preference_objective(torch.tensor([1.]), zero, zero, zero, "ipo", beta=.5)
+torch.testing.assert_close(ipo, zero)
+simpo = preference_objective(torch.tensor([2.]), zero, None, None, "simpo", beta=.5, margin=.3)
+torch.testing.assert_close(simpo, F.softplus(torch.tensor([-.7])))
+```
+
+DPO 的 logistic loss 会持续奖励更大 relative gap；IPO 在 convention 对应的有限 target 处最小；SimPO 去掉 reference，并显式引入长度归一与 margin。函数返回逐 pair loss，样本权重、ties 和分布式分母留在外层。三种目标与 reduction 的完整小张量实验见[训练目标实现](../practice/training-objectives.md#dpo-ipo-simpo)。
 
 ## 数据与版本契约
 

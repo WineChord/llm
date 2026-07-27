@@ -39,6 +39,31 @@ $$
 
 当前 query 只来自 $H_\tau$，因此训练仍按 segment 推进。`stopgrad` 防止计算图跨全部历史无限增长；它也意味着模型不是通过反向传播直接修改旧 segment 表示。
 
+### Segment memory 更新 {#segment-memory-update}
+
+`update_segment_memory` 接收上一段 memory `[B,M,D]`、当前 hidden `[B,T,D]` 与保留上限，返回拼接后最靠近当前的 `limit` 个状态。`detach()` 是算法的一部分：当前段可以读取历史值，但反向图不会继续穿过旧 segment。
+
+```python
+import torch
+
+def update_segment_memory(memory, hidden, limit):
+    assert hidden.ndim == 3 and limit >= 0
+    if memory is not None:
+        assert memory.shape[0] == hidden.shape[0] and memory.shape[2] == hidden.shape[2]
+    history = hidden if memory is None else torch.cat((memory, hidden), dim=1)
+    return (history[:, -limit:] if limit else history[:, :0]).detach()
+
+hidden = torch.randn(2, 5, 7, requires_grad=True)
+memory = update_segment_memory(None, hidden, 3)
+assert memory.shape == (2, 3, 7) and not memory.requires_grad
+next_hidden = torch.randn(2, 4, 7, requires_grad=True)
+next_memory = update_segment_memory(memory, next_hidden, 4)
+torch.testing.assert_close(next_memory, torch.cat((memory, next_hidden), 1)[:, -4:])
+assert not next_memory.requires_grad
+```
+
+这只是单层、等长 batch 的状态更新；生产实现还要让 padding、per-sample reset、相对位置、层号、batch reorder 与 checkpointing 使用同一 memory 生命周期。更完整的边界实验见[递推与记忆模型：Transformer-XL segment memory](../practice/sequence-models.md#transformer-xl-segment-memory)。
+
 ### 相对位置
 
 复用旧 hidden 时，绝对位置会让同一缓存随 segment 改变语义。Transformer-XL 使用相对位置分解，使 query 与记忆中的 key 按相对距离交互。实现必须区分：
@@ -85,6 +110,36 @@ p(y\mid x)
 +
 (1-\lambda)p_{\mathrm{mem}}(y\mid q_x).
 $$
+
+### 最小语义实现 {#knn-token-memory}
+
+`knn_token_distribution` 接收单个 query、`[N,D]` memory keys 及其 token ID，返回词表上的概率和被选中的邻居。距离经过温度 softmax 后，相同 token 的多个近邻必须用 `scatter_add_` 汇总，而不是互相覆盖。
+
+```python
+import torch
+
+def knn_token_distribution(query, keys, token_ids, vocab_size, k, temperature=1.):
+    assert query.ndim == 1 and keys.ndim == 2 and query.numel() == keys.size(1)
+    assert 1 <= k <= keys.size(0) and temperature > 0
+    token_ids = torch.as_tensor(token_ids, device=keys.device)
+    assert token_ids.shape == (keys.size(0),) and token_ids.min() >= 0
+    assert vocab_size > 0 and token_ids.max() < vocab_size
+    distance = (keys.float() - query.float()).square().sum(-1)
+    value, index = distance.topk(k, largest=False)
+    weight = (-value / temperature).softmax(0)
+    probability = torch.zeros(vocab_size, dtype=weight.dtype, device=keys.device)
+    probability.scatter_add_(0, token_ids[index], weight)
+    return probability, index
+
+query = torch.tensor([.1, 0.])
+keys = torch.tensor([[0., 0.], [1., 0.], [0., 1.]])
+probability, neighbor = knn_token_distribution(query, keys, [2, 2, 4], 5, k=2)
+torch.testing.assert_close(probability.sum(), torch.tensor(1.))
+torch.testing.assert_close(probability[2], torch.tensor(1.))
+assert neighbor.numel() == 2
+```
+
+这是精确搜索的概率语义核，不包含 ANN 索引、batch query、LM 插值或权限过滤。生产 memory 必须让 key encoder、tokenizer、checkpoint 与租户域共同版本化，并在插值前分别校验两路分布；完整实验见[递推与记忆模型：kNN probability memory](../practice/sequence-models.md#knn-probability-memory)。
 
 外部记忆的优势是知识可更新、可删除、可追踪来源；代价是索引一致性、召回误差、额外延迟以及检索内容的权限与可信度。
 

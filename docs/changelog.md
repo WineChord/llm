@@ -1,5 +1,11 @@
 # 更新日志
 
+## 2026-07-28
+
+- 将最小可执行实现融入 canonical 机制页：从[概率目标](foundations/probability-objectives.md)、[序列构造](data/sequence-construction.md)、[Decoder Block](architecture/decoder-block.md)延伸到[训练](training/offline-preference.md)、[系统](systems/attention-kernels.md)、[推理运行时](inference/runtime.md)、[强化学习](reinforcement-learning/advantage-estimation-gae.md)、[智能体](applications/agent-runtime.md)与[统计推断](evaluation/statistical-inference.md)，让公式、状态语义和关键断言在同一阅读路径中相互校验。
+- 建立默认展开与折叠的代码层级：核心计算路径保持可见，较长的辅助实现与测试使用可搜索、可复制、可键盘操作并支持稳定深链的原生折叠区，在桌面与移动端保持一致的阅读体验。
+- 调整[阅读方法](guide/method.md)、[知识架构](guide/architecture.md)和[手撕实现](practice/minimal-implementations.md)的分工：正文维护通用语义核，实践页组织跨机制组合与完整验证，工作深读保留论文特有增量。
+
 ## 2026-07-27
 
 - 细化[推理策略优化谱系](landscape/lineages/reasoning-policy-optimization.md)与[推理 RL 配方地图](reinforcement-learning/reasoning-rl-recipes.md)：独立展开 [GAE](reinforcement-learning/advantage-estimation-gae.md)、[TRPO](reinforcement-learning/trust-region.md)、[PPO](reinforcement-learning/trust-region-ppo.md)、[GRPO](reinforcement-learning/grpo.md)、[DAPO](landscape/works/dapo.md)、[VAPO](landscape/works/vapo.md)、[Ratio、Clipping 与 Gate](reinforcement-learning/ratio-clipping-gating.md)及[训推分布与策略滞后](reinforcement-learning/training-inference-discrepancy.md)，并以[手撕 LLM 策略优化](practice/llm-policy-optimization.md)固定 packed GAE、PPO、RLOO/GRPO、DAPO、VAPO、GSPO、SAPO、CISPO/TIS/IcePop 与 DIS 的张量语义。

@@ -80,6 +80,49 @@ $$
 
 全 mask 行需要单独契约。若所有 score 都是 $-\infty$，则 $m=-\infty$ 会导致未定义的减法；实现应返回约定的零输出或显式错误，而不是传播 NaN。
 
+### Blockwise reference {#online-attention-reference}
+
+下面处理单条 query 的 score 行：`scores` 为 `[S_k]`，`values` 为 `[S_k,d]`，输出为 `[d]`。它逐块维护 $(m,\ell,o)$，不物化完整 probability；全 mask 行按本页约定返回零向量。
+
+```python
+import torch
+
+def online_attention(scores, values, block_size):
+    if (scores.ndim != 1 or values.ndim != 2 or values.shape[0] != scores.numel()
+            or scores.device != values.device or block_size <= 0):
+        raise ValueError("scores and values must align on a positive blocked sequence")
+    m = torch.tensor(float("-inf"), dtype=scores.dtype, device=scores.device)
+    normalizer = torch.zeros((), dtype=scores.dtype, device=scores.device)
+    numerator = torch.zeros(values.shape[-1], dtype=values.dtype, device=values.device)
+    for start in range(0, scores.numel(), block_size):
+        block = scores[start:start + block_size]
+        value = values[start:start + block_size]
+        if not torch.isfinite(block).any():
+            continue
+        block_max = block.max()
+        weight = torch.exp(block - block_max)
+        new_max = torch.maximum(m, block_max)
+        old_scale, block_scale = torch.exp(m - new_max), torch.exp(block_max - new_max)
+        numerator = old_scale * numerator + block_scale * (weight @ value)
+        normalizer = old_scale * normalizer + block_scale * weight.sum()
+        m = new_max
+    return numerator / normalizer if normalizer > 0 else torch.zeros_like(numerator)
+
+score = torch.tensor([1., -float("inf"), 3., -2., 0.])
+value = torch.arange(15, dtype=torch.float32).view(5, 3)
+expected = torch.softmax(score, dim=0) @ value
+torch.testing.assert_close(online_attention(score, value, 2), expected)
+assert torch.equal(online_attention(torch.full((5,), -float("inf")), value, 2), torch.zeros(3))
+try:
+    online_attention(score, torch.zeros(6, 3), 2)
+except ValueError:
+    pass
+else:
+    raise AssertionError("unmatched score and value rows must be rejected")
+```
+
+分块大小和遍历顺序可以改变，输出语义不应改变；mask 后的 $-\infty$ 也不得污染状态。这个 Python reference 用于定义算法，不代表 GPU kernel：生产实现还需处理 batch/head、累加 dtype、causal tile 跳过、GQA 映射和 backward 重放。与朴素 softmax 的更多逐块对照见[Tensor 原语](../practice/tensor-primitives.md)。
+
 ## FlashAttention 的稳定基础
 
 [FlashAttention](https://arxiv.org/abs/2205.14135)把 $Q$、$K$、$V$ 切成片上 tile，使用 online softmax 立即消费局部 score，从而避免将完整矩阵写回 HBM。它优化的是 IO，不是近似线性 attention。

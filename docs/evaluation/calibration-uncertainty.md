@@ -82,6 +82,47 @@ ECE 简单但不是 proper scoring rule，并且对 bin 数、边界、样本量
 
 不同实现的 ECE 不宜直接比较。
 
+下面把 equal-width ECE、Brier 和 risk–coverage 排序放在同一接口中。`confidence` 是最终预测正确的概率，`correct` 是该预测是否正确；两者必须逐 item 对齐。ECE 的 bin 规则是接口的一部分，不能只保存最终标量。
+
+```python
+import torch
+def calibration_summary(confidence, correct, bins=10):
+    confidence, correct = confidence.float(), correct.float()
+    if (confidence.ndim != 1 or confidence.shape != correct.shape or confidence.numel() == 0
+            or not isinstance(bins, int) or bins <= 0):
+        raise ValueError("aligned non-empty observations and positive integer bins required")
+    if (not torch.isfinite(confidence).all() or torch.any((confidence < 0) | (confidence > 1))
+            or not torch.all((correct == 0) | (correct == 1))):
+        raise ValueError("confidence must lie in [0, 1] and outcomes must be binary")
+    bucket = torch.bucketize(
+        confidence, torch.linspace(0, 1, bins + 1, device=confidence.device)[1:-1])
+    ece = confidence.new_zeros(())
+    for k in range(bins):
+        mask = bucket == k
+        if mask.any():
+            gap = (correct[mask].mean() - confidence[mask].mean()).abs()
+            ece += mask.float().mean() * gap
+    order = confidence.argsort(descending=True)
+    _, counts = torch.unique_consecutive(confidence[order], return_counts=True)
+    end = counts.cumsum(0) - 1
+    cumulative_error = (1 - correct[order]).cumsum(0)
+    coverage = (end + 1) / len(order)
+    risk = cumulative_error[end] / (end + 1)
+    brier = ((confidence - correct) ** 2).mean()
+    return {"brier": brier, "ece": ece, "coverage": coverage, "risk": risk}
+perfect = calibration_summary(torch.tensor([0., 1.]), torch.tensor([0, 1]), bins=2)
+assert perfect["brier"] == 0 and perfect["ece"] == 0
+tie = calibration_summary(torch.tensor([.5, .5]), torch.tensor([1, 0]))
+flipped = calibration_summary(torch.tensor([.5, .5]), torch.tensor([0, 1]))
+torch.testing.assert_close(tie["risk"], flipped["risk"])
+torch.testing.assert_close(tie["risk"], torch.tensor([.5]))
+try: calibration_summary(torch.tensor([]), torch.tensor([]))
+except ValueError: pass
+else: raise AssertionError("empty calibration data must be rejected")
+```
+
+曲线只在唯一置信度阈值的组末端报告点，因此同分 item 会一起纳入，结果不依赖它们在输入中的先后顺序。每个点表示保留不低于当前阈值的全部样本；它不会自动选择阈值，也不包含曲线的不确定区间。生产评测要冻结置信度抽取与等价答案规则，按 slice 报 bin count，并对同一 item 的重复生成做 cluster-aware 区间。
+
 ## Selective prediction
 
 阈值 $\tau$ 以上才回答：

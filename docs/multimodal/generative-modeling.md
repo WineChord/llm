@@ -51,6 +51,32 @@ $$
 
 前向使用 $z_q$，反向把 decoder 梯度传给 encoder。
 
+VQ 的语义核是“最近邻用于前向，straight-through 用于 encoder 梯度”。下面把 flattened latent 写为 `[position, dim]`；空间 layout 应在外围显式展平并原样恢复。
+
+```python
+import torch
+def vector_quantize(z_e, codebook, beta=.25):
+    if z_e.ndim != 2 or codebook.ndim != 2 or z_e.size(1) != codebook.size(1):
+        raise ValueError("expected [position, dim] and [code, dim]")
+    distance = (z_e.square().sum(1, keepdim=True)
+                + codebook.square().sum(1) - 2 * z_e @ codebook.T)
+    index = distance.argmin(1)
+    z_q = codebook[index]
+    z_st = z_e + (z_q - z_e).detach()
+    codebook_loss = (z_q - z_e.detach()).square().mean()
+    commitment = beta * (z_e - z_q.detach()).square().mean()
+    return z_st, index, codebook_loss + commitment
+z = torch.tensor([[.9, .1], [.1, .8]], requires_grad=True)
+codebook = torch.tensor([[1., 0.], [0., 1.]], requires_grad=True)
+z_st, index, vq_loss = vector_quantize(z, codebook)
+torch.testing.assert_close(z_st, codebook[index])
+assert index.tolist() == [0, 1]
+(z_st.sum() + vq_loss).backward()
+assert z.grad is not None and codebook.grad is not None
+```
+
+`z_st` 的数值等于码本向量，但对 decoder loss 的局部导数按恒等映射流向 `z_e`；codebook 与 commitment 两项各自 detach，避免错误地互相追逐。生产 tokenizer 还要监控 code usage、dead code、EMA 更新约定和 padding/特殊 code。
+
 [VQGAN](https://arxiv.org/abs/2012.09841)加入感知与对抗目标，提高重建的感知质量。重建更锐利不一定意味着码本更适合语义建模；tokenizer 需同时评估 reconstruction、code usage 与下游生成。
 
 ## 离散自回归与 masked generation
@@ -178,6 +204,49 @@ x_t+\Delta t\,v_\theta(x_t,t,c)
 $$
 
 是最简单 Euler 步。时间方向、边界分布和步长写反会生成完全错误的过程。
+
+加噪、CFG 和 flow 积分很短，却最容易因 broadcast、条件对齐或时间方向产生静默错误。下面约定 `alpha_bar` 已按 batch 选好并可广播，flow 从 $t=0$ 的 noise 积分到 $t=1$ 的 data；模型函数只接收当前状态与标量时间。
+
+<details class="code-disclosure">
+<summary id="diffusion-flow-semantic-reference">Diffusion 加噪、CFG 与 Euler flow <span class="code-disclosure__meta">Python · 29 行</span></summary>
+<div class="code-disclosure__body" markdown="1">
+
+```python
+import torch
+def q_sample(x0, noise, alpha_bar):
+    while alpha_bar.ndim < x0.ndim:
+        alpha_bar = alpha_bar.unsqueeze(-1)
+    return alpha_bar.sqrt() * x0 + (1 - alpha_bar).sqrt() * noise
+def classifier_free_guidance(unconditional, conditional, scale):
+    if unconditional.shape != conditional.shape:
+        raise ValueError("conditional branches must align")
+    return unconditional + scale * (conditional - unconditional)
+@torch.no_grad()
+def euler_flow(x, velocity, steps):
+    if steps <= 0:
+        raise ValueError("steps must be positive")
+    dt = 1 / steps
+    for step in range(steps):
+        t = x.new_tensor(step * dt)
+        x = x + dt * velocity(x, t)
+    return x
+x0 = torch.tensor([[1., -1.]])
+noise = torch.tensor([[3., 5.]])
+torch.testing.assert_close(q_sample(x0, noise, torch.tensor([1.])), x0)
+torch.testing.assert_close(q_sample(x0, noise, torch.tensor([0.])), noise)
+u, c = torch.zeros(2), torch.tensor([1., 2.])
+torch.testing.assert_close(classifier_free_guidance(u, c, 0), u)
+torch.testing.assert_close(classifier_free_guidance(u, c, 1), c)
+start = torch.zeros(2)
+end = euler_flow(start, lambda x, t: torch.ones_like(x), 4)
+torch.testing.assert_close(end, torch.ones(2))
+assert not end.requires_grad
+```
+
+</div>
+</details>
+
+这不是 DDPM/DDIM sampler：`q_sample` 只实现训练侧闭式前向边缘，Euler 只实现给定向量场的 ODE 积分。真实 sampler 必须把 prediction type、schedule、solver 与时间网格作为同一版本化契约；CFG 两个分支还需共享 latent、时间与 batch 顺序。
 
 ## 少步与一致性
 

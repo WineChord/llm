@@ -122,32 +122,45 @@ $\bar\rho$ 主要控制目标 policy 的校正强度，$\bar c$ 控制多步信�
 
 ```python
 import torch
-
+@torch.no_grad()
 def vtrace(reward, value, logp, behavior_logp, terminated,
            gamma=0.99, rho_bar=1.0, c_bar=1.0):
-    """reward/logp/terminated: [B,T], value: [B,T+1]."""
-    if value.shape[-1] != reward.shape[-1] + 1:
-        raise ValueError("value must include bootstrap state")
+    aligned = (logp.shape == behavior_logp.shape == terminated.shape == reward.shape)
+    if reward.ndim != 2 or not aligned or value.shape != (reward.size(0), reward.size(1) + 1):
+        raise ValueError("transition tensors and bootstrap value must align")
+    if terminated.dtype != torch.bool:
+        raise ValueError("terminated must be boolean")
     ratio = (logp - behavior_logp).exp()
-    rho = ratio.clamp(max=rho_bar)
-    c = ratio.clamp(max=c_bar)
-    cont = 1.0 - terminated.to(reward.dtype)
-    delta = rho * (reward + gamma * cont * value[:, 1:] - value[:, :-1])
+    rho, c = ratio.clamp(max=rho_bar), ratio.clamp(max=c_bar)
+    bootstrap = ~terminated
+    next_value = torch.where(bootstrap, value[:, 1:], 0.)
+    delta = rho * (reward + gamma * next_value - value[:, :-1])
     target = torch.empty_like(reward)
     carry = value[:, -1]
     for t in range(reward.shape[1] - 1, -1, -1):
-        carry = value[:, t] + delta[:, t] + (
-            gamma * cont[:, t] * c[:, t] * (carry - value[:, t + 1])
-        )
+        correction = torch.where(
+            bootstrap[:, t], c[:, t] * (carry - value[:, t + 1]), 0.)
+        carry = value[:, t] + delta[:, t] + gamma * correction
         target[:, t] = carry
     next_target = torch.cat([target[:, 1:], value[:, -1:]], dim=1)
-    advantage = rho * (
-        reward + gamma * cont * next_target - value[:, :-1]
-    )
+    next_target = torch.where(bootstrap, next_target, 0.)
+    advantage = rho * (reward + gamma * next_target - value[:, :-1])
     return target, advantage, ratio
+reward = torch.tensor([[1.0, 2.0]])
+value = torch.tensor([[0., 0., float("nan")]], requires_grad=True)
+terminated = torch.tensor([[False, True]])
+target, advantage, ratio = vtrace(
+    reward, value, torch.zeros_like(reward), torch.zeros_like(reward),
+    terminated, gamma=1.0
+)
+torch.testing.assert_close(target, torch.tensor([[3.0, 2.0]]))
+torch.testing.assert_close(advantage, torch.tensor([[3.0, 2.0]]))
+assert torch.isfinite(target).all() and not target.requires_grad and not advantage.requires_grad
 ```
 
 这段代码没有处理 padding。调用方必须使每条 batch row 的有效 transition 连续，或在递推中加入单独的 valid-step mask；把 padding reward 设零仍会让 `value` 和 `c` 穿过伪时间步传播。
+
+importance sampling、截断权重与极端 ratio 的组合实验见[手撕：强化学习](../practice/reinforcement-learning.md)。
 
 ## Retrace、ACER 与不同校正目标
 

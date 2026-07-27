@@ -13,6 +13,7 @@
 - 以技术谱系连接重要问题、代表工作、论文实现与后续分叉，并提供关键工作深读。
 - 从数据工程、预训练、后训练到分布式训练、推理服务与硬件效率。
 - 覆盖长上下文、MoE、多模态生成、AI Infra、检索增强、Coding Agent、Agentic RL、评测与生产可靠性。
+- 在机制正文中直接给出可执行语义核与关键断言，并用实践页组织组合实验和完整测试。
 - 区分稳定原理、工程经验、实验结果与时效性事实，优先引用论文和官方资料。
 
 ## 本地预览
@@ -25,9 +26,11 @@ python scripts/check_content.py
 python scripts/check_architecture.py
 python scripts/check_python.py
 python scripts/check_snippets.py
+python scripts/check_code_integration.py
 python scripts/check_rendering.py
 mkdocs build --strict
 python scripts/check_links.py --site-dir site
+python scripts/check_code_integration.py --site-dir site
 python scripts/check_rendering.py --site-dir site --browser
 mkdocs serve
 ```
@@ -35,7 +38,7 @@ mkdocs serve
 浏览器打开 `http://127.0.0.1:8000/llm/`。
 
 安装 PyTorch 后，可额外运行 `python scripts/run_reference_snippets.py`，
-逐页执行手撕实现与断言。
+逐页执行正文语义核、组合实验、关键工作 reference 与断言。
 
 ## 目录
 

@@ -36,6 +36,30 @@ $$
 
 这一区别对代码、数学公式、路径、URL 和结构化输出尤其重要。若模型必须逐字复制输入，应避免不可逆规范化，或保存原始字节旁路。
 
+### 规范化后的 round-trip {#unicode-normalized-roundtrip}
+
+`encode_normalized` 先按冻结的 Unicode form 规范化，再输出 UTF-8 byte；`decode_utf8` 恢复的是**规范化后的文本**。第二个断言单独验证不经过 normalizer 的 byte codec 对空白、emoji 和换行逐字可逆。
+
+```python
+import unicodedata
+
+def encode_normalized(text, form="NFC"):
+    assert form in {"NFC", "NFD", "NFKC", "NFKD"}
+    normalized = unicodedata.normalize(form, text)
+    return list(normalized.encode("utf-8"))
+
+def decode_utf8(token_bytes):
+    return bytes(token_bytes).decode("utf-8")
+
+decomposed = "e\u0301"
+encoded = encode_normalized(decomposed, "NFC")
+assert decode_utf8(encoded) == "é" and decode_utf8(encoded) != decomposed
+raw = "A\t🙂\n"
+assert decode_utf8(list(raw.encode("utf-8"))) == raw
+```
+
+这里没有处理非法 UTF-8、special token 或 offset mapping；生产接口必须把 normalizer form、Unicode 数据版本和错误策略写入 artifact，并让训练与服务加载同一份配置。更多视觉同形、兼容字符和关闭规范化的对照见[Tokenizer：Unicode 规范化](../practice/tokenizers.md#unicode)。
+
 ## Byte Pair Encoding
 
 [子词 BPE](https://arxiv.org/abs/1508.07909) 从较小的基础符号集合开始，反复合并语料中高频的相邻符号对。设当前序列集合中的相邻对频次为
@@ -63,6 +87,106 @@ $$
 - 文本起始、词首或空白是否有显式标记；
 - byte、Unicode code point 还是字符片段作为基础符号。
 
+### 最小语义实现 {#bpe-merge-rank}
+
+`bpe_encode` 的输入是**已经完成规范化和预切分**的一段基础符号，以及训练阶段冻结的 `pair -> rank` 表；输出是按 rank 反复合并后的符号序列。关键点是每轮选择最小 rank，并从左到右一次性合并该 pair，而不是重新统计待编码文本的频次。
+
+```python
+import math
+
+def bpe_encode(symbols, ranks):
+    pieces = list(symbols)
+    while len(pieces) > 1:
+        candidates = [(ranks.get((a, b), math.inf), i)
+                      for i, (a, b) in enumerate(zip(pieces, pieces[1:]))]
+        rank, first = min(candidates)
+        if math.isinf(rank):
+            break
+        pair = (pieces[first], pieces[first + 1])
+        merged, i = [], 0
+        while i < len(pieces):
+            if i + 1 < len(pieces) and tuple(pieces[i:i + 2]) == pair:
+                merged.append(pieces[i] + pieces[i + 1])
+                i += 2
+            else:
+                merged.append(pieces[i])
+                i += 1
+        pieces = merged
+    return pieces
+
+ranks = {("a", "b"): 0, ("ab", "ab"): 1, ("b", "a"): 2}
+assert bpe_encode("abab", ranks) == ["abab"]
+assert bpe_encode("aba", ranks) == ["ab", "a"]
+```
+
+它是算法语义的参考，不是大词表上的高性能实现：生产 tokenizer 会用链表、堆或专用数据结构避免每轮全扫描，还必须在外层补齐 byte 映射、预切分边界、特殊 token 与序列化。训练器、编码器与 Viterbi 的完整对照见[Tokenizer 手撕实现：BPE 编码与解码](../practice/tokenizers.md#bpe)。
+
+### Byte-level 训练与 codec {#byte-bpe-trainer-codec}
+
+下面把 `list[str]` 训练语料变成有序 byte-pair ranks，再用同一 ranks 编码新文本；token 本身保存合并后的原始 bytes，因此解码只需拼接。频次并列时按 pair 的 byte 序确定性选择，round-trip 不依赖字符是否见过。
+
+<details class="code-disclosure">
+<summary id="byte-bpe-end-to-end-reference">Byte-level BPE 训练、编码与解码 <span class="code-disclosure__meta">Python · 45 行</span></summary>
+<div class="code-disclosure__body" markdown="1">
+
+```python
+import math
+from collections import Counter
+
+def merge_byte_pair(tokens, pair):
+    output, index = [], 0
+    while index < len(tokens):
+        if index + 1 < len(tokens) and tuple(tokens[index:index + 2]) == pair:
+            output.append(tokens[index] + tokens[index + 1])
+            index += 2
+        else:
+            output.append(tokens[index])
+            index += 1
+    return output
+
+def train_byte_bpe(texts, merge_steps):
+    sequences = [[bytes([value]) for value in text.encode("utf-8")] for text in texts]
+    ranks = {}
+    for rank in range(merge_steps):
+        counts = Counter(
+            pair
+            for sequence in sequences
+            for pair in zip(sequence, sequence[1:])
+        )
+        if not counts:
+            break
+        pair = min(counts, key=lambda item: (-counts[item], item))
+        ranks[pair] = rank
+        sequences = [merge_byte_pair(sequence, pair) for sequence in sequences]
+    return ranks
+
+def encode_byte_bpe(text, ranks):
+    tokens = [bytes([value]) for value in text.encode("utf-8")]
+    while len(tokens) > 1:
+        candidates = [(ranks.get(pair, math.inf), pair)
+                      for pair in zip(tokens, tokens[1:])]
+        rank, pair = min(candidates)
+        if math.isinf(rank):
+            break
+        tokens = merge_byte_pair(tokens, pair)
+    return tokens
+
+def decode_byte_bpe(tokens):
+    return b"".join(tokens).decode("utf-8")
+
+corpus = ["低低低延迟", "低延迟", "🙂低延迟"]
+ranks = train_byte_bpe(corpus, merge_steps=16)
+sample = "🙂低低延迟"
+pieces = encode_byte_bpe(sample, ranks)
+assert decode_byte_bpe(pieces) == sample
+assert len(pieces) < len(sample.encode("utf-8")) and len(ranks) <= 16
+```
+
+</div>
+</details>
+
+它是小语料上的 $O(T^2)$ reference，不实现 pre-tokenizer boundary、streaming 计数、最小频次、词表 ID 序列化和 offset mapping；真实训练器可以换数据结构，但 tie-break、merge rank 与 round-trip 必须相同。分开的训练与 codec 实验见[Tokenizer：Byte-level BPE 训练](../practice/tokenizers.md#byte-level-bpe)和[BPE 编码与解码](../practice/tokenizers.md#bpe)。
+
 ## Unigram Language Model
 
 [Unigram 分词](https://arxiv.org/abs/1804.10959) 从较大的候选词表开始，为每个子词 $z$ 分配概率 $p(z)$。一个字符串 $x$ 的切分 $s=(z_1,\ldots,z_m)$ 满足
@@ -77,6 +201,42 @@ $$
 最优切分可以用 Viterbi 动态规划求解。训练时交替估计 token 概率并删除对似然贡献较小的候选，直到达到目标词表大小。
 
 与确定性 BPE 相比，Unigram 自然保留多个候选切分。训练时按候选后验采样可形成 subword regularization，使模型不依赖唯一边界；推理和评测仍应固定采样配置。
+
+### 可执行 Viterbi {#unigram-viterbi}
+
+下面把每个候选 token 的负对数概率作为边权，在字符位置构成的 DAG 上求最短路。未知字符保留一条显式高代价边，因此“可覆盖”与“高概率”不会混成同一件事。
+
+```python
+def unigram_viterbi(text, token_cost, unknown_cost=20.0):
+    n = len(text)
+    cost = [float("inf")] * (n + 1)
+    back = [None] * (n + 1)
+    cost[0] = 0.0
+    max_len = max(map(len, token_cost), default=1)
+    for end in range(1, n + 1):
+        for start in range(max(0, end - max_len), end):
+            token = text[start:end]
+            if token in token_cost:
+                candidate = cost[start] + token_cost[token]
+            elif start == end - 1:
+                candidate = cost[start] + unknown_cost
+            else:
+                continue
+            if candidate < cost[end]:
+                cost[end], back[end] = candidate, (start, token)
+    output, cursor = [], n
+    while cursor:
+        cursor, token = back[cursor]
+        output.append(token)
+    return output[::-1], cost[n]
+tokens, score = unigram_viterbi(
+    "北京大学", {"北": 3., "北京": 1., "大": 2., "大学": 1., "学": 2.}
+)
+assert tokens == ["北京", "大学"] and score == 2
+assert unigram_viterbi("🙂", {})[0] == ["🙂"]
+```
+
+这段实现固定的是解码，不包含 Unigram 训练中的 EM 与词表剪枝。字符索引也只是教学口径；byte fallback、规范化和 special token 必须在进入这张图之前冻结。更完整的 round-trip 与未知字符实验见[Tokenizer 手撕实现](../practice/tokenizers.md#unigram-viterbi-reference)。
 
 ## 字节回退
 

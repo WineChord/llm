@@ -44,6 +44,50 @@ $$
 
 固定压缩率有明确风险：全局语义可能保留，小文字、密集目标和稀有区域更容易被丢弃。应测性能随 $N_q$ 的曲线，而不是只报告一个配置。
 
+### Fixed-query resampler {#fixed-query-resampler}
+
+`QueryResampler` 接收可变长视觉序列 `[B,N,D]` 与 padding mask，始终返回 `[B,N_q,D]`。测试把被 mask 的最后一个 token 改成极端值，输出保持不变，从而同时检查固定 query 数与 padding 语义。
+
+```python
+import torch
+import torch.nn as nn
+
+class QueryResampler(nn.Module):
+    def __init__(self, width, query_count, heads):
+        super().__init__()
+        self.query = nn.Parameter(torch.randn(query_count, width) / width ** .5)
+        self.norm_query = nn.LayerNorm(width)
+        self.norm_visual = nn.LayerNorm(width)
+        self.attention = nn.MultiheadAttention(width, heads, batch_first=True)
+    def forward(self, visual, padding_mask=None):
+        if padding_mask is not None:
+            if padding_mask.shape != visual.shape[:2] or padding_mask.dtype != torch.bool:
+                raise ValueError("padding_mask must be bool [batch, visual_tokens]")
+            if padding_mask.all(dim=-1).any():
+                raise ValueError("every row needs at least one visible visual token")
+        query = self.query[None].expand(visual.size(0), -1, -1)
+        output, _ = self.attention(
+            self.norm_query(query), self.norm_visual(visual), self.norm_visual(visual),
+            key_padding_mask=padding_mask, need_weights=False,
+        )
+        return query + output
+
+torch.manual_seed(0)
+resampler = QueryResampler(width=8, query_count=3, heads=2)
+visual = torch.randn(2, 5, 8)
+padding = torch.tensor([[False] * 4 + [True]] * 2)
+output = resampler(visual, padding)
+changed = visual.clone()
+changed[:, -1] = 1_000
+torch.testing.assert_close(resampler(changed, padding), output)
+assert output.shape == (2, 3, 8) and torch.isfinite(output).all()
+try: resampler(visual, torch.ones(2, 5, dtype=torch.bool))
+except ValueError: pass
+else: raise AssertionError("fully padded rows must fail before attention")
+```
+
+这是单层 cross-attention bottleneck，不含多层 Q-Former、自注意力、模态位置或图像 tile 元数据；固定 $N_q$ 也不保证小目标信息仍在。可运行的 query-count 与 padding 实验见[多模态原语：Fixed-query resampler](../practice/multimodal.md#fixed-query-resampler)。
+
 ## Cross-attention
 
 在语言层中加入对模态特征的 cross-attention：
@@ -112,7 +156,7 @@ $$
 $$
 L
 =
-\frac1{B^2}
+\frac1B
 \sum_{i,j}
 \log
 \left(
@@ -120,7 +164,63 @@ L
 \right).
 $$
 
-全局对比学习建立语义对齐，但不自动提供字符、区域和关系级监督。重复 caption、同类图像和弱文本会形成 false negative 或错误对应。
+这里按 image batch size $B$ 归一，因此每个样本引入更多 negatives 时，目标尺度也会改变。全局对比学习建立语义对齐，但不自动提供字符、区域和关系级监督；重复 caption、同类图像和弱文本会形成 false negative 或错误对应。
+
+CLIP 目标的最小实现应先逐样本归一化，再用同一个配对索引计算双向交叉熵。输入是已经全局 gather 的 `[batch, dim]` 表示；分布式训练若只用本 rank 的 negatives，目标已经发生变化。
+
+```python
+import torch
+import torch.nn.functional as F
+def clip_loss(image_features, text_features, logit_scale):
+    if image_features.shape != text_features.shape or image_features.ndim != 2:
+        raise ValueError("paired [batch, dim] features required")
+    image = F.normalize(image_features, dim=-1)
+    text = F.normalize(text_features, dim=-1)
+    logits = logit_scale.exp() * image @ text.T
+    target = torch.arange(len(logits), device=logits.device)
+    loss_i = F.cross_entropy(logits, target)
+    loss_t = F.cross_entropy(logits.T, target)
+    return (loss_i + loss_t) / 2, logits
+image = torch.eye(3, requires_grad=True)
+text = torch.eye(3, requires_grad=True)
+loss, logits = clip_loss(image, text, torch.tensor(0.))
+loss.backward()
+assert logits.argmax(-1).tolist() == [0, 1, 2]
+torch.testing.assert_close(logits, logits.T)
+assert torch.isfinite(image.grad).all() and loss > 0
+```
+
+这段实现不处理重复 caption、多正例或跨设备梯度语义；这些情况需要修改 target，而不能只改 batch loader。`logit_scale` 在真实模型中常为可学习参数并受范围控制；图文有效样本 mask 也必须在 gather 和 loss 分母中一致。
+
+### SigLIP pairwise 目标 {#siglip-pairwise-loss}
+
+`siglip_loss` 对 batch 内全部图文 pair 独立做二分类：对角 pair 标签为 $+1$，其余为 $-1$。输入是同 shape 的 `[B,D]` 表示；返回按 image batch size 归一的 loss 与完整 logits。
+
+```python
+import torch
+import torch.nn.functional as F
+
+def siglip_loss(image_features, text_features, logit_scale, bias=0.):
+    assert image_features.shape == text_features.shape and image_features.ndim == 2
+    image = F.normalize(image_features.float(), dim=-1)
+    text = F.normalize(text_features.float(), dim=-1)
+    logits = logit_scale.exp().clamp(max=100) * image @ text.T + bias
+    target = torch.eye(logits.size(0), device=logits.device).mul(2).sub(1)
+    return F.softplus(-target * logits).sum() / logits.size(0), logits
+
+image = torch.eye(3, requires_grad=True)
+text = torch.eye(3)
+aligned, logits = siglip_loss(image, text, torch.tensor(2.3))
+misaligned, _ = siglip_loss(image, text.roll(1, 0), torch.tensor(2.3))
+assert aligned < misaligned and logits.argmax(-1).tolist() == [0, 1, 2]
+target = torch.eye(logits.size(0), device=logits.device).mul(2).sub(1)
+expected = F.softplus(-target * logits).sum() / logits.size(0)
+torch.testing.assert_close(aligned, expected)
+aligned.backward()
+assert torch.isfinite(image.grad).all()
+```
+
+这仍假设 batch 对角是一一正例；重复 caption、多正例和跨设备 gather 会改变标签矩阵与分母，不能只增大 batch。CLIP/SigLIP 并排实验见[多模态原语：CLIP 与 SigLIP](../practice/multimodal.md#clip-siglip)。
 
 ## 分辨率与 patch
 

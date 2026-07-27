@@ -10,24 +10,35 @@
 
 ```python
 import torch
+@torch.no_grad()
 def packed_gae(reward, value, next_value, terminated, boundary, gamma=.99, lam=.95):
-    delta = reward + gamma * (~terminated) * next_value - value
+    if not all(x.shape == reward.shape for x in (value, next_value, terminated, boundary)):
+        raise ValueError("all transition tensors must align")
+    if reward.ndim != 1 or reward.numel() == 0 or not boundary[-1]:
+        raise ValueError("packed fragments must be non-empty, one-dimensional and closed")
+    if terminated.dtype != torch.bool or boundary.dtype != torch.bool:
+        raise ValueError("terminated and boundary must be boolean")
+    if torch.any(terminated & ~boundary):
+        raise ValueError("terminal transitions must close their trajectory")
+    bootstrap = torch.where(terminated, torch.zeros_like(next_value), next_value)
+    delta = reward + gamma * bootstrap - value
     advantage = torch.empty_like(delta)
     carry = delta.new_zeros(())
     for t in range(delta.numel() - 1, -1, -1):
-        carry = delta[t] + gamma * lam * (~boundary[t]) * carry
+        carry = delta[t] if boundary[t] else delta[t] + gamma * lam * carry
         advantage[t] = carry
     return advantage
 reward = torch.tensor([1., 2., 10.])
 value = torch.tensor([.5, 1., 3.])
-next_value = torch.tensor([1., 4., 99.])
+next_value = torch.tensor([1., 4., float("nan")])
 terminated = torch.tensor([False, False, True])
 boundary = torch.tensor([False, True, True])
 advantage = packed_gae(reward, value, next_value, terminated, boundary, .5, .8)
-delta = reward + .5 * (~terminated) * next_value - value
+delta = reward + .5 * torch.where(terminated, torch.zeros_like(next_value), next_value) - value
 torch.testing.assert_close(advantage, torch.tensor([delta[0] + .4 * delta[1], delta[1], delta[2]]))
 assert delta[1] == 3
 assert delta[2] == 7
+assert not advantage.requires_grad and torch.isfinite(advantage).all()
 ```
 
 真实 LLM batch 还需要 `trajectory_id`、action mask 和 final-observation value。只用一个 `done` 往往无法同时表达 bootstrap 与 trace reset。
@@ -79,28 +90,40 @@ assert torch.count_nonzero(grpo[1]) == 0
 
 全对或全错组没有相对排序信息。给分母加极小常数只能避免除零，不能创造学习信号。若训练过滤这类组，就同时改变了 prompt 的有效采样分布。
 
-## Reduction 决定隐式权重
+## Reduction 决定隐式权重 {#loss-reduction}
 
 同一个 per-token objective，可以产生三种不同训练目标：每条 response 等权、每个 action token 等权，或用固定生成预算作分母。把它们都称作“取平均”会掩盖长度偏置。
 
 ```python
 import torch
 def reduce_losses(loss, mask, mode, budget=None):
-    mask = mask.to(loss.dtype)
-    per_response = (loss * mask).sum(1)
-    length = mask.sum(1).clamp_min(1)
+    if loss.shape != mask.shape or loss.ndim != 2:
+        raise ValueError("expected aligned [response, token] tensors")
+    mask = mask.bool()
+    length = mask.sum(1)
+    if torch.any(length == 0) or not torch.isfinite(loss[mask]).all():
+        raise ValueError("every response needs finite action losses")
+    per_response = torch.where(mask, loss, 0.).sum(1)
     if mode == "response":
         return (per_response / length).mean()
     if mode == "token":
-        return per_response.sum() / mask.sum().clamp_min(1)
+        return per_response.sum() / length.sum()
     if mode == "fixed":
+        if budget is None or budget <= 0:
+            raise ValueError("fixed reduction needs a positive budget")
         return (per_response / budget).mean()
     raise ValueError(mode)
-loss = torch.tensor([[2., 0., 0., 0.], [1., 1., 1., 1.]])
+loss = torch.tensor([[2., float("nan"), float("nan"), float("nan")], [1., 1., 1., 1.]])
 mask = torch.tensor([[1, 0, 0, 0], [1, 1, 1, 1]])
 assert reduce_losses(loss, mask, "response") == 1.5
 assert reduce_losses(loss, mask, "token") == 1.2
 assert reduce_losses(loss, mask, "fixed", budget=4) == .75
+try:
+    reduce_losses(loss, torch.tensor([[0, 0, 0, 0], [1, 1, 1, 1]]), "response")
+except ValueError:
+    pass
+else:
+    raise AssertionError("empty response action sets must be rejected")
 ```
 
 DAPO 使用 global token mean，是为了让有效 token 等权；Dr. GRPO 用固定生成预算讨论对原始 policy-gradient objective 的无偏实现。二者改的是不同分母，不能互换名称。
@@ -158,15 +181,28 @@ torch.testing.assert_close(lam[-1], torch.tensor(1 - 1 / (0.05 * 1024)))
 ```python
 import torch
 def geometric_sequence_ratio(new_logp, old_logp, mask):
-    mask = mask.to(new_logp.dtype)
-    length = mask.sum(1).clamp_min(1)
-    return (((new_logp - old_logp) * mask).sum(1) / length).exp()
-old_logp = torch.tensor([[-1., -2., 0.], [-1., -2., -3.]])
+    if new_logp.shape != old_logp.shape or new_logp.shape != mask.shape:
+        raise ValueError("new, old and action mask must align")
+    mask = mask.bool()
+    length = mask.sum(1)
+    if torch.any(length == 0):
+        raise ValueError("every response needs an action")
+    if not torch.isfinite(new_logp[mask]).all() or not torch.isfinite(old_logp[mask]).all():
+        raise ValueError("selected action log-probabilities must be finite")
+    delta = torch.where(mask, new_logp - old_logp, 0.)
+    return (delta.sum(1) / length).exp()
+old_logp = torch.tensor([[-1., -2., float("nan")], [-1., -2., -3.]])
 new_logp = old_logp + torch.tensor([[.1, .3, 9.], [.1, .3, .2]])
 mask = torch.tensor([[1, 1, 0], [1, 1, 1]])
 ratio = geometric_sequence_ratio(new_logp, old_logp, mask)
 torch.testing.assert_close(ratio, torch.tensor([.2, .2]).exp())
 assert ratio[0] == ratio[1]
+try:
+    geometric_sequence_ratio(new_logp, old_logp, torch.zeros_like(mask))
+except ValueError:
+    pass
+else:
+    raise AssertionError("empty sequence ratios must be rejected")
 ```
 
 sequence-coherent gate 会让整条回答共同保留或共同饱和。它更贴近 sequence reward 的粒度，却也可能因少数异常 token 放弃整条轨迹的信号。

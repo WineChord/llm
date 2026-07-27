@@ -145,6 +145,48 @@ $$
 
 一个常见错误是只保存 `done = terminated or truncated`，并同时用它关闭 bootstrap 与 trace。这样会把 time-limit truncation 的尾部价值系统性压低。另一个错误是在截断处读取 packed tensor 的 `value[t + 1]`；那个位置可能已经属于下一条 episode。正确的数据对象应显式保存 transition 自己的 `next_value`，它由该 transition 的真实后继 observation 计算。
 
+下面的语义实现直接接收一维 packed transition；`terminated[t]` 只关闭当前 TD bootstrap，`boundary[t]` 只阻止 carry 流入物理相邻的下一条轨迹。输出 advantage 与 $\lambda$-return 都被冻结，可分别交给 actor 和 critic；padding 应在调用前移除，action mask 则只在后续 policy loss 中使用。
+
+```python
+import torch
+@torch.no_grad()
+def packed_gae(reward, value, next_value, terminated, boundary, gamma=.99, lam=.95):
+    if not all(x.shape == reward.shape for x in (value, next_value, terminated, boundary)):
+        raise ValueError("all transition tensors must have the same shape")
+    if reward.ndim != 1 or reward.numel() == 0 or not boundary[-1]:
+        raise ValueError("a packed fragment must be non-empty, one-dimensional and boundary-closed")
+    if terminated.dtype != torch.bool or boundary.dtype != torch.bool:
+        raise ValueError("terminated and boundary must be boolean")
+    if torch.any(terminated & ~boundary):
+        raise ValueError("every terminal transition must also close its packed trajectory")
+    bootstrap = torch.where(terminated, torch.zeros_like(next_value), next_value)
+    delta = reward + gamma * bootstrap - value
+    advantage = torch.empty_like(delta)
+    carry = delta.new_zeros(())
+    for t in range(delta.numel() - 1, -1, -1):
+        carry = delta[t] if boundary[t] else delta[t] + gamma * lam * carry
+        advantage[t] = carry
+    return advantage, advantage + value
+reward, value, next_value = map(torch.tensor, ([1., 2., 10.], [.5, 1., 3.], [1., 4., float("nan")]))
+terminated = torch.tensor([False, False, True]); boundary = torch.tensor([False, True, True])
+adv, target = packed_gae(reward, value, next_value, terminated, boundary, .5, .8)
+delta = reward + .5 * torch.where(terminated, torch.zeros_like(next_value), next_value) - value
+torch.testing.assert_close(adv, torch.tensor([delta[0] + .4 * delta[1], delta[1], delta[2]]))
+assert not adv.requires_grad and target[1] == 4
+for bad_terminated, bad_boundary in [
+    (torch.tensor([False, True, False]), torch.tensor([False, False, True])),
+    (torch.zeros_like(terminated), torch.tensor([False, True, False])),
+    (terminated.long(), boundary.long()),
+]:
+    try:
+        packed_gae(reward, value, next_value, bad_terminated, bad_boundary)
+    except ValueError:
+        continue
+    raise AssertionError("invalid packed boundaries must be rejected")
+```
+
+第二个 transition 模拟 time-limit truncation：它仍用 `next_value=4` bootstrap，但 `boundary=True` 让第一条轨迹在此结束。生产 batch 还要按 `trajectory_id` 校验顺序，并把基础设施失败从可学习 transition 中剔除；单靠两个布尔量无法表达丢失的 final observation。
+
 ## Actor target 与 critic target 不能混成一个张量
 
 GAE 首先产生 actor 使用的 advantage target：

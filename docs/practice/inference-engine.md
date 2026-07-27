@@ -25,7 +25,7 @@ def kv_bytes(layers, batch, tokens, kv_heads, head_dim, element_bytes):
 
 只有 cache 实际按 TP rank 分片时，per-rank 大小才能再除以 TP size。
 
-## Page table
+## Page table {#page-table-reference}
 
 page 大小为 $q$，逻辑位置 $t$ 映射到：
 
@@ -43,7 +43,20 @@ def physical_slot(block_table, block_size, token_pos):
     logical, offset = divmod(token_pos, block_size)
     if logical >= len(block_table):
         raise IndexError("logical block is not allocated")
-    return block_table[logical] * block_size + offset
+    physical = block_table[logical]
+    if physical < 0:
+        raise ValueError("physical block id must be non-negative")
+    return physical * block_size + offset
+```
+
+```python
+assert physical_slot([9, 2], 4, 5) == 9
+try:
+    physical_slot([-1], 4, 0)
+except ValueError:
+    pass
+else:
+    raise AssertionError("negative physical blocks must be rejected")
 ```
 
 page table 允许逻辑序列连续而物理块离散。它不自动实现 prefix sharing 或 eviction。
@@ -51,6 +64,10 @@ page table 允许逻辑序列连续而物理块离散。它不自动实现 prefi
 ## Refcount 与 copy-on-write
 
 一个物理块只能是 free、exclusive 或 shared。共享块发生部分写入前必须 COW：
+
+<details class="code-disclosure">
+<summary id="kv-block-allocator-reference">KV block 引用计数与 copy-on-write <span class="code-disclosure__meta">Python · 48 行</span></summary>
+<div class="code-disclosure__body" markdown="1">
 
 ```python
 class BlockAllocator:
@@ -106,6 +123,9 @@ class BlockAllocator:
             if self.refcount[block] == 0:
                 self.free.add(block)
 ```
+
+</div>
+</details>
 
 ```python
 allocator = BlockAllocator(4)
@@ -201,7 +221,7 @@ class Request:
 
 运行时还要保存 block table、RNG、grammar、adapter、priority、deadline 与 finish reason。状态转移发生后再崩溃，恢复必须能判断对应资源是否已释放。
 
-## Continuous batching
+## Continuous batching {#continuous-batching-reference}
 
 decode 每个请求通常只需一个 token，prefill 可以切成 chunk。下面先服务 decode，再用剩余 token budget 放 prefill：
 
@@ -210,6 +230,9 @@ def build_batch(requests, token_budget, max_sequences, prefill_chunk):
     """Return [(request_id, phase, scheduled_tokens)] within both budgets."""
     if min(token_budget, max_sequences, prefill_chunk) <= 0:
         raise ValueError("scheduler budgets must be positive")
+    request_ids = [request.request_id for request in requests]
+    if len(request_ids) != len(set(request_ids)):
+        raise ValueError("request ids must be unique within a scheduling round")
     batch, used = [], 0
     decode = [r for r in requests if r.phase == Phase.DECODE]
     prefill = [r for r in requests if r.phase in {Phase.WAITING, Phase.PREFILL}]
@@ -223,6 +246,19 @@ def build_batch(requests, token_budget, max_sequences, prefill_chunk):
             batch.append((request.request_id, request.phase, tokens))
             used += tokens
     return batch
+```
+
+```python
+decode = Request("d0", 0, phase=Phase.DECODE)
+prefill = Request("p0", 3, phase=Phase.PREFILL)
+batch = build_batch([prefill, decode], 3, 2, 2)
+assert [request_id for request_id, _, _ in batch] == ["d0", "p0"]
+try:
+    build_batch([decode, decode], 3, 2, 2)
+except ValueError:
+    pass
+else:
+    raise AssertionError("one request cannot be scheduled twice in a round")
 ```
 
 这只是 decode-priority baseline，可能饿死长 prefill。生产调度还要加入 admission、age/deadline、公平性、KV 预算、cache affinity 与 overload 策略。
@@ -239,7 +275,8 @@ $$
 ```python
 def quantize_groups(x, bits=4, group_size=32):
     """x:[...,D] -> integer q:[...,D], scale:[...,D/group,1]."""
-    if bits < 2 or x.size(-1) % group_size:
+    if (x.ndim == 0 or not 2 <= bits <= 8 or group_size <= 0
+            or x.size(-1) % group_size):
         raise ValueError("invalid bits or non-divisible group size")
     qmax = 2 ** (bits - 1) - 1
     shape = (*x.shape[:-1], x.size(-1) // group_size, group_size)
@@ -262,6 +299,12 @@ q, scale = quantize_groups(x, bits=4, group_size=16)
 x_hat = dequantize_groups(q, scale, 16)
 assert q.dtype == torch.int8 and x_hat.shape == x.shape
 assert effective_bits(4, 16) == 5
+for bits, group_size in ((1, 16), (9, 16), (4, 0)):
+    try:
+        quantize_groups(x, bits, group_size)
+    except ValueError:
+        continue
+    raise AssertionError("unsupported bit width and group size must fail")
 ```
 
 checkpoint 位宽、运行时权重格式、activation dtype、accumulator dtype 和实际 GEMM kernel 必须分别报告。存成 4 bit 不代表执行了低比特 GEMM。
@@ -279,17 +322,40 @@ $$
 ```python
 def speculative_step(p, q, proposal, generator=None):
     """p/q:[V] normalized distributions -> token, accepted."""
-    if p.shape != q.shape or p.ndim != 1:
+    if p.shape != q.shape or p.ndim != 1 or p.numel() == 0:
         raise ValueError("p and q must share one token space")
+    if not isinstance(proposal, int) or not 0 <= proposal < p.numel():
+        raise ValueError("proposal must index the shared vocabulary")
     p, q = p.double(), q.double()
-    p, q = p / p.sum(), q / q.sum()
+    if not torch.all(torch.isfinite(p) & (p >= 0)) or not torch.all(
+            torch.isfinite(q) & (q >= 0)):
+        raise ValueError("probabilities must be finite and non-negative")
+    if not torch.allclose(
+            torch.stack((p.sum(), q.sum())), p.new_ones(2)):
+        raise ValueError("p and q must be normalized")
     qx = q[proposal]
-    accept = 1.0 if qx == 0 else min(1.0, (p[proposal] / qx).item())
+    if qx <= 0:
+        raise ValueError("draft could not have sampled this proposal")
+    accept = min(1.0, (p[proposal] / qx).item())
     if torch.rand((), generator=generator).item() < accept:
         return int(proposal), True
     residual = (p - q).clamp_min(0)
-    residual = p if residual.sum() == 0 else residual / residual.sum()
+    if residual.sum() <= 0:
+        raise ValueError("rejection has no residual mass")
+    residual = residual / residual.sum()
     return int(torch.multinomial(residual, 1, generator=generator)), False
+```
+
+```python
+p, q = torch.tensor([0., 1.]), torch.tensor([1., 0.])
+token, accepted = speculative_step(p, q, 0)
+assert (token, accepted) == (1, False)
+for bad in ((p, q, -1), (p, q, 1), (p, torch.tensor([.2, .2]), 0)):
+    try:
+        speculative_step(*bad)
+    except ValueError:
+        continue
+    raise AssertionError("invalid proposal, support, or probability mass must fail")
 ```
 
 draft 与 target 必须使用一致的 logit processor、grammar 与 token space。拒绝时还要回滚 KV、RNG 和 grammar state；近似 variant 应明确标注分布已改变。

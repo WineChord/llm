@@ -8,6 +8,8 @@ import re
 import sys
 import traceback
 
+from check_code_integration import CANONICAL_PAGES
+
 
 ROOT = Path(__file__).resolve().parents[1]
 PRACTICE = ROOT / "docs" / "practice"
@@ -42,6 +44,7 @@ def main() -> int:
     torch.set_num_threads(1)
     total = 0
     pages = [
+        *(ROOT / "docs" / name for name in CANONICAL_PAGES),
         *(PRACTICE / name for name in PRACTICE_PAGES),
         *sorted(WORKS.glob("*.md")),
     ]
@@ -49,7 +52,10 @@ def main() -> int:
         relative = path.relative_to(ROOT)
         namespace = {"__name__": "__reference_snippet__"}
         blocks = BLOCK.findall(path.read_text(encoding="utf-8"))
-        if path.parent == WORKS and not blocks:
+        if (
+            path.parent == WORKS
+            or path.relative_to(ROOT / "docs").as_posix() in CANONICAL_PAGES
+        ) and not blocks:
             print(f"{relative}: 缺少可执行 reference", file=sys.stderr)
             return 1
         for index, code in enumerate(blocks, 1):

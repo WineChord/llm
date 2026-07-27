@@ -41,6 +41,34 @@ $$
 
 局部结果需要 all-reduce 或 reduce-scatter。[Megatron-LM](https://arxiv.org/abs/1909.08053)通过组合 column/row parallel，使 Transformer MLP 和 attention 中的通信落在少数边界。
 
+### Tensor-parallel 线性层 {#tensor-parallel-linear-reference}
+
+为贴合公式，`weight` 使用 `[in,out]` 约定。column parallel 沿输出维切权重并拼接局部结果；row parallel 同时沿输入维切输入和权重，再对局部结果求和。reference 返回完整张量，以便直接与 dense 路径比较。
+
+```python
+import torch
+
+def column_parallel_linear(x, weight, parts):
+    assert weight.shape[1] % parts == 0
+    shards = torch.chunk(weight, parts, dim=1)
+    return torch.cat([x @ shard for shard in shards], dim=-1)
+
+def row_parallel_linear(x, weight, parts):
+    assert x.shape[-1] % parts == 0
+    xs = torch.chunk(x, parts, dim=-1)
+    shards = torch.chunk(weight, parts, dim=0)
+    return torch.stack([xi @ wi for xi, wi in zip(xs, shards)]).sum(dim=0)
+
+torch.manual_seed(0)
+x, weight = torch.randn(3, 8), torch.randn(8, 12)
+dense = x @ weight
+torch.testing.assert_close(column_parallel_linear(x, weight, 4), dense)
+torch.testing.assert_close(row_parallel_linear(x, weight, 4), dense)
+assert column_parallel_linear(x, weight, 4).shape == (3, 12)
+```
+
+核心不变量是每个 shard 对全局维度恰好覆盖一次。生产实现通常让 column 输出继续保持分片，并用 all-reduce 或 reduce-scatter 实现 row 的求和；bias placement、process group、通信 dtype 和异步生命周期不属于这个单进程 reference。并行 linear 与 pipeline bubble 的组合实验见[手撕：分布式与容错](../practice/distributed-systems.md)。
+
 TP 通信频繁、粒度随每层发生，通常优先放在 NVLink/NVSwitch 等高速节点内互联。
 
 ## Sequence Parallel

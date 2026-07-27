@@ -125,6 +125,8 @@ assert np.allclose(phi @ np.zeros(8), 0.0)  # true value under zero reward
 
 这里没有高维观察、深网络或 noisy reward；发散来自 bootstrap、共享参数与 behavior-state distribution 的组合。importance sampling 能校正已观察动作的概率，却不能凭空把 behavior 访问分布变成 target policy 的稳态分布。
 
+TD、$n$-step return 与 eligibility trace 的组合实现见[手撕：强化学习 · n-step Return](../practice/reinforcement-learning.md#n-step-return)。
+
 ## 深度强化学习怎样缓解失稳
 
 常见机制各自只处理问题的一部分：

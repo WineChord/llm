@@ -56,6 +56,42 @@ $$
 
 计算，而不是只用 $Nb/8$。
 
+### 对称 groupwise reference {#groupwise-quantization-reference}
+
+下面沿最后一维分组，用每组绝对最大值计算对称 scale。最后一维长度必须整除 `group_size`；输出依次是整数码、每组 scale 和反量化张量。全零 group 使用安全除数，但保存的 scale 仍为零。
+
+```python
+import torch
+
+def symmetric_groupwise_quantize(x, bits, group_size):
+    if x.ndim == 0 or group_size <= 0 or x.shape[-1] % group_size or not 2 <= bits <= 8:
+        raise ValueError("bits and group size must validly tile the last dimension")
+    qmax = 2 ** (bits - 1) - 1
+    groups = x.reshape(*x.shape[:-1], -1, group_size)
+    scale = groups.abs().amax(dim=-1, keepdim=True) / qmax
+    divisor = torch.where(scale > 0, scale, torch.ones_like(scale))
+    code = torch.round(groups / divisor).clamp(-qmax, qmax)
+    dequantized = code * scale
+    return code.to(torch.int8).view_as(x), scale, dequantized.view_as(x)
+
+x = torch.tensor([[0., -1., 0.5, 0.25], [3., -2., 1., 0.]])
+code, scale, restored = symmetric_groupwise_quantize(x, bits=4, group_size=4)
+assert code.min() >= -7 and code.max() <= 7
+error = (x - restored).abs().reshape(*scale.shape[:-1], 4)
+assert torch.all(error <= scale / 2 + 1e-6)
+zero_code, zero_scale, zero = symmetric_groupwise_quantize(torch.zeros(4), 4, 4)
+assert torch.equal(zero_code, torch.zeros(4, dtype=torch.int8))
+assert zero_scale.item() == 0 and torch.equal(zero, torch.zeros(4))
+try:
+    symmetric_groupwise_quantize(torch.ones(2, 3), 4, 2)
+except ValueError:
+    pass
+else:
+    raise AssertionError("groups cannot cross rows")
+```
+
+scale 的 axis、尾 group 与零值语义在这里都是可测试契约。reference 没有 bit packing、zero-point、outlier 通道或低比特 GEMM；生产收益只有在目标 kernel 直接消费这套码值与 metadata 时成立，不能用反量化后的数值正确性替代执行路径验证。含 scale metadata 与误差断言的更多实验见[手撕：推理引擎](../practice/inference-engine.md)。
+
 ## 四个独立维度
 
 量化方案至少要分别声明：

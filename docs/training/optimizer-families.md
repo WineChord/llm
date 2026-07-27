@@ -42,6 +42,38 @@ $$
 
 常见实现不对 bias、norm scale 或 embedding 的某些参数做 decay。若参数分组规则不同，即使超参数同名，更新也不相同。
 
+### 最小语义实现 {#adamw-step}
+
+`adamw_step` 原地更新参数及两个 moment。输入 `step` 从 $1$ 开始；bias correction 只作用于自适应梯度项，decoupled decay 则直接乘到参数上。示例与 PyTorch 在相同 FP64 状态下逐元素对齐。
+
+```python
+import torch
+
+@torch.no_grad()
+def adamw_step(parameter, gradient, first, second, step, lr,
+               betas=(.9, .999), eps=1e-8, decay=0.):
+    assert step >= 1 and parameter.shape == gradient.shape == first.shape == second.shape
+    beta1, beta2 = betas
+    first.mul_(beta1).add_(gradient, alpha=1 - beta1)
+    second.mul_(beta2).addcmul_(gradient, gradient, value=1 - beta2)
+    first_hat = first / (1 - beta1 ** step)
+    second_hat = second / (1 - beta2 ** step)
+    parameter.mul_(1 - lr * decay)
+    parameter.addcdiv_(first_hat, second_hat.sqrt().add(eps), value=-lr)
+
+parameter = torch.tensor([1., -2.], dtype=torch.float64)
+gradient = torch.tensor([.2, -.4], dtype=torch.float64)
+first, second = torch.zeros_like(parameter), torch.zeros_like(parameter)
+adamw_step(parameter, gradient, first, second, 1, lr=.1, decay=.01)
+reference = torch.tensor([1., -2.], dtype=torch.float64, requires_grad=True)
+reference.grad = gradient.clone()
+torch.optim.AdamW([reference], lr=.1, weight_decay=.01).step()
+torch.testing.assert_close(parameter, reference)
+assert first.ne(0).all() and second.gt(0).all()
+```
+
+这段代码没有替代参数分组、AMP unscale/finite check、全局梯度裁剪、状态 dtype 与分片恢复；它们必须发生在明确顺序中，且不能把 norm/bias 的 decay 选择藏进优化器名称。更多边界断言见[训练目标：AdamW](../practice/training-objectives.md#adamw)。
+
 ## Muon
 
 Muon 一类方法对二维矩阵参数的动量更新做近似正交化，使不同奇异方向的更新尺度更均衡。抽象地说，先得到矩阵更新 $M$，再近似

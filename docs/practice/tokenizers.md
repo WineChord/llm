@@ -2,7 +2,7 @@
 
 Tokenizer 是模型输入协议。训练合并表、编码优先级、Unicode 规范化、特殊 token 与 byte fallback 任一不一致，都会让同一 checkpoint 接收不同 token 序列。
 
-## Byte-level BPE 训练
+## Byte-level BPE 训练 {#byte-level-bpe}
 
 下面把 UTF-8 byte 作为初始符号，反复合并语料中频率最高的相邻 pair。`bytes` token 天然可拼回原输入：
 
@@ -42,7 +42,7 @@ def train_byte_bpe(texts, merge_steps):
 
 频率相同时显式按 byte pair 排序，保证相同语料与步数可复现。真实训练还应按词或 pre-tokenizer boundary 统计权重，处理大语料 streaming 与最小频率。
 
-## BPE 编码与解码
+## BPE 编码与解码 {#bpe}
 
 编码时，当前相邻 pair 中优先合并训练 rank 最小者：
 
@@ -76,7 +76,7 @@ assert len(encode_byte_bpe("banana", ranks)) < len("banana".encode())
 
 这段实现是 $O(T^2)$ reference。生产 encoder 会使用 merge rank、链表或堆减少重复扫描，但输出必须相同。
 
-## Unicode 规范化
+## Unicode 规范化 {#unicode}
 
 视觉相同字符串可以有不同 code point：
 
@@ -99,7 +99,7 @@ assert normalize_text(composed, "NFC") == normalize_text(decomposed, "NFC")
 
 规范化会改变某些兼容字符，不能在部署时临时开启。训练与推理必须固定同一规则，并保存 tokenizer artifact 哈希。
 
-## Unigram 的 Viterbi 编码
+## Unigram 的 Viterbi 编码 {#unigram-viterbi-reference}
 
 Unigram tokenizer 从候选 token 概率模型中选择总负对数概率最小的分词：
 

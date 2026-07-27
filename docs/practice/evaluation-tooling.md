@@ -27,7 +27,7 @@ def masked_perplexity(token_nll, mask):
 
 不同 tokenizer 的 token 平均 NLL 不可直接横比；还要固定 BOS/EOS、滑窗重叠和哪些 token 进入 mask。
 
-## pass@$k$
+## pass@$k$ {#pass-metrics}
 
 从 $n$ 个样本中有 $c$ 个成功，无放回抽 $k$ 个至少一个成功的估计：
 
@@ -225,7 +225,7 @@ def factuality_report(claims):
 
 “有链接”与“链接支持主张”是两个指标；unknown 保留在 decidable rate 的分母中。
 
-## Safety frontier
+## Safety frontier {#safety-frontier}
 
 安全评测同时报告 harmful-task attack success、benign false refusal 与真实未授权副作用：
 

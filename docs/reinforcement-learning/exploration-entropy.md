@@ -50,6 +50,8 @@ assert 0 <= ucb_action(q, n, step=24) < 3
 
 UCB 的置信界依赖 reward 范围、独立性和所选版本的假设。把同一公式直接贴到非平稳深度 RL 的 neural Q 上，不再自动拥有 bandit regret guarantee。
 
+探索如何进入 MC、TD 与策略更新，可结合[手撕：强化学习](../practice/reinforcement-learning.md)中的最小估计量逐项对照。
+
 ## 序贯探索为何更难
 
 MDP 中动作会改变未来能看到的状态。一个即时 reward 很低的动作，可能打开新的状态区域；一个高 entropy policy，也可能只在熟悉状态里随机打转。常见路线包括：
@@ -166,7 +168,6 @@ import math
 import torch
 import torch.nn.functional as F
 from torch.distributions import Normal
-
 def squashed_normal(mu, log_std, noise):
     log_std = log_std.clamp(-20.0, 2.0)
     std = log_std.exp()
@@ -175,30 +176,29 @@ def squashed_normal(mu, log_std, noise):
     logp = Normal(mu, std).log_prob(u)
     log_det = 2.0 * (math.log(2.0) - u - F.softplus(-2.0 * u))
     return action, (logp - log_det).sum(-1)
-
 @torch.no_grad()
-def sac_target(reward, next_q1, next_q2, next_logp,
-               terminated, truncated, gamma=0.99, alpha=0.2):
+def sac_target(reward, next_q1, next_q2, next_logp, terminated, truncated,
+               gamma=.99, alpha=.2):
     tensors = (next_q1, next_q2, next_logp, terminated, truncated)
     if any(x.shape != reward.shape for x in tensors):
         raise ValueError("all transition tensors must have shape [B]")
-    bootstrap = (~terminated).to(reward.dtype)
-    target = reward + gamma * bootstrap * (
-        torch.minimum(next_q1, next_q2) - alpha * next_logp)
+    if terminated.dtype != torch.bool or truncated.dtype != torch.bool:
+        raise ValueError("termination masks must be boolean")
+    bootstrap = torch.minimum(next_q1, next_q2) - alpha * next_logp
+    target = reward + gamma * torch.where(terminated, 0., bootstrap)
     return target, terminated | truncated
-
 mu = torch.zeros(2, 1)
 log_std = torch.zeros_like(mu)
 action, logp = squashed_normal(mu, log_std, torch.tensor([[0.0], [20.0]]))
 assert torch.isfinite(logp).all() and (action.abs() <= 1.0).all()
 r = torch.ones(2)
+q1 = torch.tensor([float("nan"), 4.], requires_grad=True)
+q2 = torch.tensor([float("nan"), 5.])
 target, reset = sac_target(
-    r, torch.full_like(r, 4.0), torch.full_like(r, 5.0),
-    torch.full_like(r, -1.0),
-    torch.tensor([True, False]), torch.tensor([False, True]),
-    gamma=0.5, alpha=0.2)
+    r, q1, q2, torch.tensor([float("nan"), -1.]),
+    torch.tensor([True, False]), torch.tensor([False, True]), gamma=.5, alpha=.2)
 torch.testing.assert_close(target, torch.tensor([1.0, 3.1]))
-assert reset.tolist() == [True, True]
+assert reset.tolist() == [True, True] and not target.requires_grad
 ```
 
 第二个样本在时间限制处 bootstrap 到 final observation 的 soft value，但 replay 序列必须重置；工具故障或缺失 observation 不应伪造成 reward 为零的 truncation。

@@ -42,6 +42,49 @@ $$
 
 其中 $c$ 是 capacity factor。负载超过容量时，可以丢 token、路由到备选专家、增加 padding 或使用无固定容量的动态 kernel。每种策略都改变质量、内存和最坏时延。
 
+### 最小语义实现 {#top-k-routing-with-capacity}
+
+`sparse_moe` 接收扁平 token `x:[N,D]`、router weight `[E,D]` 和 expert weights `[E,D,D]`，返回加权输出、实际专家负载、top-$k$ 索引与被保留的 assignment。capacity 的优先级先看 routing rank：全体 token 的 top-1 先于任何 top-2；同一 rank 内再按 token 输入顺序保留。
+
+```python
+import torch
+import torch.nn.functional as F
+def sparse_moe(x, router, experts, top_k=2, capacity=None):
+    if x.ndim != 2 or router.ndim != 2 or experts.ndim != 3: raise ValueError("invalid ranks")
+    tokens, hidden = x.shape
+    expert_count = experts.shape[0]
+    if router.shape != (expert_count, hidden): raise ValueError("router/expert mismatch")
+    if experts.shape[1:] != (hidden, hidden): raise ValueError("expert shape mismatch")
+    if not isinstance(top_k, int) or not 1 <= top_k <= expert_count:
+        raise ValueError("invalid top_k")
+    if capacity is not None and (not isinstance(capacity, int) or capacity <= 0):
+        raise ValueError("capacity must be a positive integer")
+    score, index = F.linear(x, router).float().topk(top_k, dim=-1)
+    gate = score.softmax(-1).to(x.dtype)
+    output, load = torch.zeros_like(x), torch.zeros(expert_count, dtype=torch.long)
+    kept = torch.zeros_like(index, dtype=torch.bool)
+    for slot in range(top_k):
+        for expert_id, expert in enumerate(experts):
+            token = torch.where(index[:, slot] == expert_id)[0]
+            if capacity is not None:
+                token = token[:max(capacity - load[expert_id].item(), 0)]
+            if token.numel():
+                output[token] += gate[token, slot, None] * F.linear(x[token], expert)
+                load[expert_id] += token.numel()
+                kept[token, slot] = True
+    return output, load, index, kept
+x = torch.tensor([[3., 0.], [2., 0.], [0., 3.]])
+router, experts = torch.eye(2), torch.eye(2).repeat(2, 1, 1)
+_, load, _, kept = sparse_moe(x, router, experts, top_k=2, capacity=1)
+assert kept.tolist() == [[True, False], [False, False], [True, False]]
+assert load.tolist() == [1, 1]
+try: sparse_moe(x, torch.randn(3, 2), experts, top_k=2)
+except ValueError: pass
+else: raise AssertionError("router/expert mismatch must fail")
+```
+
+`kept` 的断言锁定了 top-1 优先于 top-2、同 slot 按 token 顺序的容量语义。丢弃后不重归一化残余 gate；备选路由、其他 token-dropping 优先级和稳定 tie-breaking 都会改变结果。生产实现还要用 permutation 与 all-to-all 取代 Python 循环，并核对反向、跨 rank 容量和负载统计；具体张量变换见[分布式与容错：MoE dispatch 与 combine](../practice/distributed-systems.md#moe-dispatch-combine)。
+
 ## 负载均衡
 
 只优化语言建模损失时，router 可能把大量 token 送到少数专家。经典辅助项同时考察路由概率和实际分配，鼓励专家接收接近均匀的负载；但辅助梯度也可能干扰主目标。

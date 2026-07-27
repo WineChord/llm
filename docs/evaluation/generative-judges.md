@@ -72,6 +72,30 @@ run 2: candidate B, candidate A
 
 不能看到模型结果后选择最有利规则。[Judging the Judges](https://arxiv.org/abs/2406.07791) 系统研究了 pairwise judge 的位置偏置与顺序一致性问题。
 
+swap 聚合器必须先把“第一个/第二个”映射回原候选身份，再判断一致性。下面约定两次调用的输出只允许 `first`、`second` 或 `tie`，并保留 inconsistent 状态而不是静默删除。
+
+```python
+def aggregate_swapped_judgment(run_ab, run_ba):
+    allowed = {"first", "second", "tie"}
+    if run_ab not in allowed or run_ba not in allowed:
+        raise ValueError("invalid judge label")
+    map_ab = {"first": "A", "second": "B", "tie": "tie"}
+    map_ba = {"first": "B", "second": "A", "tie": "tie"}
+    original_ab = map_ab[run_ab]
+    original_ba = map_ba[run_ba]
+    if original_ab == original_ba:
+        return {"status": "consistent", "winner": original_ab}
+    return {"status": "inconsistent", "votes": (original_ab, original_ba)}
+stable_a = aggregate_swapped_judgment("first", "second")
+position_bias = aggregate_swapped_judgment("first", "first")
+stable_tie = aggregate_swapped_judgment("tie", "tie")
+assert stable_a == {"status": "consistent", "winner": "A"}
+assert position_bias["status"] == "inconsistent" and position_bias["votes"] == ("A", "B")
+assert stable_tie["winner"] == "tie"
+```
+
+这段代码不替系统决定如何给 inconsistent case 计分；人工复核、软计数或多 judge 投票必须预注册。生产评测还要保存 rubric、候选匿名化、随机种子和原始两次判定，并按长度、格式、模型家族与任务 cluster 报告 swap consistency。
+
 ## Pairwise 聚合与 BT 图
 
 将模型 $i$ 的潜在 score 记为 $s_i$：

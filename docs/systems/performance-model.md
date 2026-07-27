@@ -47,6 +47,31 @@ $$
 
 参数量公式应从真实配置推导：是否使用 bias、是否共享 embedding 与 LM head、MoE 每 token 激活几个 expert，都会改变后续计算量。把模型总参数直接乘常数只适合早期估算。
 
+### 可执行的静态账本 {#static-cost-ledger-reference}
+
+下面把配置映射为单层 attention / SwiGLU 参数量和整模型 KV 主体字节数。输入均为逻辑 shape，输出是用于交叉检查配置的整数账本；它不会把 padding、allocator、workspace 或通信 buffer 偷藏进一个经验系数。
+
+```python
+def dense_layer_ledger(hidden, query_heads, kv_heads, intermediate):
+    assert hidden % query_heads == 0
+    head_dim = hidden // query_heads
+    attention = 2 * hidden * hidden + 2 * hidden * kv_heads * head_dim
+    mlp = 3 * hidden * intermediate
+    return {"attention_parameters": attention, "mlp_parameters": mlp}
+
+def kv_cache_bytes(layers, batch, context, kv_heads, head_dim, element_bytes):
+    return 2 * layers * batch * context * kv_heads * head_dim * element_bytes
+
+h, qh, ff = 4096, 32, 11008
+mha = dense_layer_ledger(h, qh, qh, ff)
+gqa = dense_layer_ledger(h, qh, 8, ff)
+assert mha["attention_parameters"] == 4 * h * h
+assert gqa["attention_parameters"] < mha["attention_parameters"]
+assert kv_cache_bytes(32, 2, 1024, 8, h // qh, 2) == 268_435_456
+```
+
+这里的不变量是 head dimension 整除、参数重复关系与 K/V 的系数 $2$。生产容量规划还需从 checkpoint 核对 bias、共享权重和实际 placement，并把返回值作为显存账本的一项，而不是峰值显存本身；含 transient 与分片状态的组合账本见[手撕：分布式与容错](../practice/distributed-systems.md)。
+
 ## 训练计算
 
 对 dense Transformer，常见的

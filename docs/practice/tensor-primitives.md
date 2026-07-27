@@ -24,21 +24,28 @@ def stable_log_softmax(x, dim=-1):
 
 def cross_entropy(logits, labels, ignore_index=-100):
     """logits: [..., V], labels: [...] -> scalar token mean."""
+    if logits.ndim < 2 or logits.shape[:-1] != labels.shape:
+        raise ValueError("labels must match every non-vocabulary axis")
     keep = labels != ignore_index
-    safe = labels.masked_fill(~keep, 0)
-    loss = -stable_log_softmax(logits).gather(-1, safe[..., None]).squeeze(-1)
     if not keep.any():
         raise ValueError("cross entropy has no valid token")
-    return loss[keep].mean()
+    selected_logits, selected_labels = logits[keep], labels[keep]
+    logp = stable_log_softmax(selected_logits)
+    return -logp.gather(-1, selected_labels[:, None]).mean()
 ```
 
 ```python
-x = torch.tensor([[1000.0, 1001.0, 999.0]], dtype=torch.float64)
-y = torch.tensor([1])
+x = torch.tensor(
+    [[1000., 1001., 999.], [float("nan")] * 3],
+    dtype=torch.float64, requires_grad=True,
+)
+y = torch.tensor([1, -100])
 torch.testing.assert_close(
     cross_entropy(x, y),
-    torch.nn.functional.cross_entropy(x, y),
+    torch.nn.functional.cross_entropy(x[:1], y[:1]),
 )
+cross_entropy(x, y).backward()
+assert torch.isfinite(x.grad).all() and x.grad[1].abs().sum() == 0
 ```
 
 若一整行都被 attention mask，不能把全 $-\infty$ 直接送入 softmax；应在调用前定义该行是全零、保留哨兵，还是输入非法。
@@ -67,13 +74,24 @@ def layer_norm(x, weight, bias, eps=1e-5):
     mean = xf.mean(dim=-1, keepdim=True)
     var = (xf - mean).square().mean(dim=-1, keepdim=True)
     y = (xf - mean) * (var + eps).rsqrt()
-    return y.to(x.dtype) * weight + bias
+    return (y * weight.float() + bias.float()).to(x.dtype)
 
 def rms_norm(x, weight, eps=1e-6):
     """x: [..., H], weight: [H] -> [..., H]."""
     xf = x.float()
     y = xf * (xf.square().mean(dim=-1, keepdim=True) + eps).rsqrt()
-    return y.to(x.dtype) * weight
+    return (y * weight.float()).to(x.dtype)
+```
+
+```python
+half = torch.tensor([[1000., 1001., 999., 1002.]], dtype=torch.float16)
+weight, bias = torch.randn(4), torch.randn(4)
+ln, rms = layer_norm(half, weight, bias), rms_norm(half, weight)
+assert ln.dtype == half.dtype and rms.dtype == half.dtype
+ln32 = layer_norm(half.float(), weight, bias).half()
+rms32 = rms_norm(half.float(), weight).half()
+torch.testing.assert_close(ln, ln32)
+torch.testing.assert_close(rms, rms32)
 ```
 
 归约用 FP32 是实现选择的一部分。验证时覆盖常数输入、极大值、小方差与非连续 tensor，并与所用框架的 `eps` 位置保持一致。
@@ -141,10 +159,13 @@ assert rope(v.bfloat16(), torch.arange(5)).dtype == torch.bfloat16
 ```python
 def gqa(q, k, v, causal=True):
     """q:[B,A,Tq,D], k/v:[B,Akv,Tk,D] -> [B,A,Tq,D]."""
+    if q.ndim != 4 or k.ndim != 4 or v.ndim != 4:
+        raise ValueError("q, k, and v must be rank-four tensors")
     b, hq, tq, d = q.shape
-    _, hkv, tk, _ = k.shape
-    if hq % hkv:
-        raise ValueError("query heads must be divisible by KV heads")
+    bk, hkv, tk, dk = k.shape
+    if (k.shape != v.shape or b != bk or d != dk or hkv <= 0
+            or hq % hkv or tq > tk):
+        raise ValueError("incompatible GQA batch, head, sequence, or width")
     group = hq // hkv
     k = k.repeat_interleave(group, dim=1)
     v = v.repeat_interleave(group, dim=1)
@@ -154,6 +175,19 @@ def gqa(q, k, v, causal=True):
         kj = torch.arange(tk, device=q.device)
         score = score.masked_fill(kj[None, :] > qi[:, None], float("-inf"))
     return score.softmax(dim=-1) @ v
+```
+
+```python
+torch.manual_seed(0)
+q, k, v = torch.randn(2, 4, 3, 8), torch.randn(2, 2, 5, 8), torch.randn(2, 2, 5, 8)
+full = gqa(q, k, v)
+torch.testing.assert_close(gqa(q[:, :, -1:], k, v), full[:, :, -1:])
+for bad in ((q, k[:1], v[:1]), (torch.randn(2, 4, 6, 8), k, v)):
+    try:
+        gqa(*bad)
+    except ValueError:
+        continue
+    raise AssertionError("GQA must reject broadcast batches and Tq > Tk")
 ```
 
 生产 kernel 不应真的复制 K/V，而是在加载时把 query head 映射为 $\lfloor h_q/(A/A_{\mathrm{kv}})\rfloor$。reference 还需覆盖 $T_q=1$、带历史 cache 的 $T_k>T_q$ 和非整除 head 的错误路径。
@@ -180,9 +214,21 @@ def merge_softmax(m1, l1, u1, m2, l2, u2):
 def finish_softmax(state):
     """Return normalized output; every row must have positive mass."""
     _, l, u = state
-    if (l <= 0).any():
-        raise ValueError("softmax row has no valid element")
+    if (not torch.isfinite(l).all() or (l <= 0).any()
+            or not torch.isfinite(u).all()):
+        raise ValueError("softmax state must have finite output and positive mass")
     return u / l
+```
+
+```python
+state = (torch.tensor([2.]), torch.tensor([2.]), torch.tensor([4., 6.]))
+torch.testing.assert_close(finish_softmax(state), torch.tensor([2., 3.]))
+for mass in (0., float("nan"), float("inf")):
+    try:
+        finish_softmax((torch.tensor([0.]), torch.tensor([mass]), torch.ones(2)))
+    except ValueError:
+        continue
+    raise AssertionError("non-positive or non-finite softmax mass must fail")
 ```
 
 合并满足结合律的浮点近似版本，因此可以沿 key block 流式计算；不同合并顺序仍可能产生舍入差异。[FlashAttention](https://arxiv.org/abs/2205.14135)把这一思想与 IO-aware tiling 结合，系统实现见[Attention Kernel](../systems/attention-kernels.md)。

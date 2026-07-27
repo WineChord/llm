@@ -63,6 +63,39 @@ $$
 
 只累积 log-probability 会偏向模型熟悉的轨迹；只看 verifier 会产生 Goodhart。长度归一、重复惩罚和 hard constraint 必须在搜索前定义。
 
+Beam search 的语义核心是“统一扩展后再做全局 top-$K$”，而不是每个 parent 各留 $K$ 个 child。下面的状态和路径保持分离，`score` 可以组合 policy、verifier 与 cost；扩展函数必须是只读或在沙箱中运行。
+
+```python
+def beam_search(initial, expand, score, is_terminal, width, depth):
+    beam = [(initial, (initial,))]
+    for _ in range(depth):
+        candidates = []
+        for state, path in beam:
+            if is_terminal(state):
+                candidates.append((state, path))
+                continue
+            for child in expand(state):
+                candidates.append((child, path + (child,)))
+        if not candidates:
+            break
+        beam = sorted(candidates, key=lambda item: score(item[0], item[1]), reverse=True)[:width]
+    return beam
+graph = {"s": ["a", "b"], "a": ["a1", "a2"], "b": ["b1"], "a1": [], "a2": [], "b1": []}
+value = {"a": 1., "b": 2., "a1": 3., "a2": 0., "b1": 4.}
+beam = beam_search("s", lambda s: graph[s], lambda s, path: value[s],
+                   lambda s: not graph[s], width=2, depth=2)
+assert [state for state, _ in beam] == ["b1", "a1"]
+assert beam[0][1] == ("s", "b", "b1")
+assert len(beam) <= 2
+terminal_graph = {"s": ["done", "open"], "done": [], "open": ["worse"], "worse": []}
+terminal_value = {"done": 10., "open": 1., "worse": 0.}
+kept = beam_search("s", lambda s: terminal_graph[s], lambda s, _: terminal_value[s],
+                   lambda s: s == "done", width=2, depth=2)
+assert "done" in {state for state, _ in kept}
+```
+
+`is_terminal` 让已完成候选继续参加全局 top-$K$，但不会再次调用 `expand`；否则一个已经完成的高分答案会仅因另一分支还能扩展而消失。真实搜索还要区分 invalid 与 timeout，并定义它们是保留、惩罚还是淘汰。批量生成时，KV cache 生命周期、候选去重和 score 的长度归一必须与状态 ID 一起管理。
+
 ## Tree of Thoughts
 
 [Tree of Thoughts](https://arxiv.org/abs/2305.10601)把可读的中间“thought”作为搜索节点，并通过生成、评价、选择和回溯探索多条路径。核心不是固定一种 BFS/DFS，而是：
@@ -98,6 +131,45 @@ $$
 - terminal 条件；
 - value 来自 verifier、执行器还是 rollout；
 - 随机环境和工具副作用是否允许重放。
+
+PUCT 的选择与 backup 可以独立测试，而无需实现模型调用。下面约定 value 始终从 root player 视角计分，因此 backup 不交替取负；双人零和博弈若按 side-to-move 记 value，必须在跨层时翻转符号。
+
+<details class="code-disclosure">
+<summary id="puct-selection-backup-reference">PUCT 选择与路径回传 <span class="code-disclosure__meta">Python · 25 行</span></summary>
+<div class="code-disclosure__body" markdown="1">
+
+```python
+import math
+def puct_select(prior, visits, value_sum, c=1.5):
+    total = sum(visits.values())
+    def score(action):
+        n = visits[action]
+        q = value_sum[action] / n if n else 0.
+        u = c * prior[action] * math.sqrt(total + 1) / (1 + n)
+        return q + u
+    return max(prior, key=score)
+def backup(path, stats, value):
+    for node, action in path:
+        key = (node, action)
+        visits, value_sum = stats.get(key, (0, 0.))
+        stats[key] = (visits + 1, value_sum + value)
+prior = {"left": .2, "right": .8}
+visits = {"left": 0, "right": 0}
+value_sum = {"left": 0., "right": 0.}
+assert puct_select(prior, visits, value_sum) == "right"
+stats = {}
+path = [("root", "right"), ("right-state", "finish")]
+backup(path, stats, .75)
+backup(path, stats, .25)
+assert stats[("root", "right")] == (2, 1.)
+assert stats[("right-state", "finish")] == (2, 1.)
+assert puct_select(prior, {"left": 0, "right": 100}, {"left": 0., "right": 0.}) == "left"
+```
+
+</div>
+</details>
+
+生产树还要原子更新 visit/value、处理并行 virtual loss，并固定 transposition 的状态规范化。任何有副作用的工具 action 都不能在探索分支上直接重放；应使用模拟器、只读接口或可补偿的隔离环境。
 
 ## 可执行验证
 

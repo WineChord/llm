@@ -99,6 +99,27 @@ $$
 
 因此 PPO 不是把所有 ratio 数值夹进区间，也不是双侧丢样本。共享参数、其他 token 与 optimizer momentum 仍可能让某个已饱和 token 继续移动；PPO 也不保证全分布 KL 满足硬 trust region。完整推导见[PPO 与训练契约](trust-region-ppo.md)。
 
+下面直接对 `new_logp` 求导，因而同时检验 forward surrogate 与真正的梯度 gate。`advantage` 在进入 objective 前冻结；action mask 与 token/response reduction 属于外层 batch 契约。
+
+```python
+import torch
+def ppo_term(new_logp, old_logp, advantage, eps=.2):
+    ratio = (new_logp - old_logp).exp()
+    raw = ratio * advantage.detach()
+    clipped = ratio.clamp(1 - eps, 1 + eps) * advantage.detach()
+    return torch.minimum(raw, clipped), ratio
+ratio = torch.tensor([1.3, .7, 1.3, .7])
+new_logp = ratio.log().requires_grad_()
+advantage = torch.tensor([1., 1., -1., -1.])
+objective, observed = ppo_term(new_logp, torch.zeros(4), advantage)
+torch.testing.assert_close(objective, torch.tensor([1.2, .7, -1.3, -.8]))
+(-objective.mean()).backward()
+torch.testing.assert_close(new_logp.grad[[0, 3]], torch.zeros(2))
+assert new_logp.grad[1] < 0 and new_logp.grad[2] > 0
+```
+
+第 0 个正 advantage 样本已经越过上界，第 3 个负 advantage 样本已经越过下界，所以二者梯度为零；另外两侧仍保留纠正方向。生产实现应在乘 action mask 后同时从分子、分母排除 padding，并记录正负样本各自的 saturation fraction。
+
 ## Clip-Higher：不对称地抬高上界 {#clip-higher}
 
 DAPO 把 PPO 区间改为
@@ -331,6 +352,72 @@ DIS 只是 SAO recipe 的一部分；single-rollout 队列、critic 更新、Ski
 | [DIS](#dis) | $d$ | token | 双侧拒绝 | critic advantage |
 
 表中的方法不处在同一抽象层。GAE 是 estimator；PPO、GRPO、GSPO、SAPO、CISPO 是 objective 或算法层；DAPO、VAPO、SAO 是多组件 recipe；TIS、IcePop、DIS 处理 rollout/training distribution。它们也都不等于 RLHF、RLAIF 或 RLVR 这种[反馈制度](feedback-regimes.md)。
+
+下面把几种容易混淆的 coefficient 放在同一份可执行对照中。`ratio` 的来源仍由调用方负责：CISPO/GSPO/SAPO 读 current–old update ratio，TIS/IcePop 读 engine ratio，DIS 读 current–behavior direct ratio。所有 hard coefficient 都显式 detach；这只冻结 gate，不冻结真正提供梯度的 policy log-probability。
+
+<details class="code-disclosure">
+<summary id="ratio-gates-semantic-reference">Ratio gate、sequence ratio 与平滑 surrogate <span class="code-disclosure__meta">Python · 52 行</span></summary>
+<div class="code-disclosure__body" markdown="1">
+
+```python
+import torch
+def geometric_sequence_ratio(new_logp, old_logp, mask):
+    if new_logp.shape != old_logp.shape or new_logp.shape != mask.shape or new_logp.ndim != 2:
+        raise ValueError("expected aligned [response, token] tensors")
+    valid = mask.bool()
+    length = valid.sum(-1)
+    if torch.any(length == 0):
+        raise ValueError("every response needs at least one action")
+    if not torch.isfinite(new_logp[valid]).all() or not torch.isfinite(old_logp[valid]).all():
+        raise ValueError("selected action log-probabilities must be finite")
+    delta = torch.where(valid, new_logp - old_logp, 0.)
+    return (delta.sum(-1) / length).exp()
+def hard_coefficient(ratio, mode, low=.8, high=1.2, cap=2.):
+    if mode == "cispo":
+        weight = ratio.clamp(low, high)
+    elif mode == "tis":
+        weight = ratio.clamp(max=cap)
+    elif mode == "icepop":
+        weight = torch.where((ratio >= low) & (ratio <= high), ratio, 0.)
+    elif mode == "dis":
+        weight = torch.where((ratio > low) & (ratio < high), ratio, 0.)
+    else:
+        raise ValueError(mode)
+    return weight.detach()
+def sapo_term(new_logp, old_logp, advantage, tau_pos=1., tau_neg=2.):
+    ratio = (new_logp - old_logp).exp()
+    tau = torch.where(advantage >= 0, tau_pos, tau_neg)
+    term = 4 / tau * torch.sigmoid(tau * (ratio - 1)) * advantage.detach()
+    return term, ratio, tau
+old = torch.tensor([[-1., -2., float("nan")], [-1., -2., -3.]])
+new = old + torch.tensor([[.1, .3, 9.], [.1, .3, .2]])
+mask = torch.tensor([[1, 1, 0], [1, 1, 1]])
+seq_ratio = geometric_sequence_ratio(new, old, mask)
+torch.testing.assert_close(seq_ratio, torch.tensor([.2, .2]).exp())
+ratio = torch.tensor([.5, 1., 3.], requires_grad=True)
+assert hard_coefficient(ratio, "tis").tolist() == [.5, 1., 2.]
+assert hard_coefficient(ratio, "icepop").tolist() == [0., 1., 0.]
+boundary = torch.tensor([.8, 1., 1.2])
+assert hard_coefficient(boundary, "icepop").tolist() == boundary.tolist()
+assert hard_coefficient(boundary, "dis").tolist() == [0., 1., 0.]
+try:
+    geometric_sequence_ratio(new, old, torch.tensor([[0, 0, 0], [1, 1, 1]]))
+except ValueError:
+    pass
+else:
+    raise AssertionError("empty action rows must be rejected")
+logp = torch.tensor([-.7, 0., .7], requires_grad=True)
+term, observed, tau = sapo_term(logp, torch.zeros(3), torch.tensor([1., -1., 1.]))
+term.sum().backward()
+gate = torch.cosh(tau * (observed - 1) / 2).reciprocal().square()
+torch.testing.assert_close(logp.grad, observed * gate * torch.tensor([1., -1., 1.]))
+assert not hard_coefficient(ratio, "cispo").requires_grad
+```
+
+</div>
+</details>
+
+这份代码刻意不提供统一的 `loss(mode=...)`：这些方法的 forward 目标、梯度语义和 ratio 身份并不统一。生产实现还要在 mask 后归约，分别记录越界的上下尾、保留 token 的任务/长度分布，并为 `DIS` 的 ratio 是否进入 autograd 图固定可审计约定。
 
 ## 训练时怎样看 gate
 

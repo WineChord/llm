@@ -66,6 +66,36 @@ cost and replay metadata
 
 `terminated` 表示环境到达定义终态；`truncated` 表示预算、超时或外部中断。把二者都写成“失败”会污染价值估计与恢复训练。更严格的 token/action 契约见[轨迹与策略契约](../agentic-rl/trajectory-contract.md)。
 
+### 最小语义实现 {#terminated-versus-truncated}
+
+`discounted_returns` 接收逐步奖励、真正终止标记和截断点之后的价值估计。真正终止会切断 bootstrap；时间或预算截断在数据中保持 `terminated=False`，于是尾部价值仍能进入目标。
+
+```python
+import torch
+@torch.no_grad()
+def discounted_returns(reward, terminated, bootstrap, gamma=0.99):
+    reward = torch.as_tensor(reward, dtype=torch.float32)
+    terminated = torch.as_tensor(terminated, dtype=torch.bool, device=reward.device)
+    if reward.ndim != 1 or reward.numel() == 0 or reward.shape != terminated.shape:
+        raise ValueError("reward and termination flags must be aligned non-empty vectors")
+    tail = torch.as_tensor(bootstrap, dtype=reward.dtype, device=reward.device)
+    if tail.numel() != 1:
+        raise ValueError("bootstrap must be scalar")
+    output = []
+    for current, done in zip(reversed(reward), reversed(terminated)):
+        tail = current + gamma * torch.where(done, 0., tail)
+        output.append(tail)
+    return torch.stack(output[::-1])
+reward = torch.tensor([1., 2.], requires_grad=True)
+terminal = discounted_returns(reward, [False, True], bootstrap=float("nan"))
+truncated = discounted_returns([1., 2.], [False, False], bootstrap=9.)
+torch.testing.assert_close(terminal[-1], torch.tensor(2.))
+assert torch.isfinite(terminal).all() and not terminal.requires_grad
+assert truncated[-1] > terminal[-1]
+```
+
+它只展示数据语义，没有加入 $\lambda$-return、mask、变长 batch 或 critic 训练；生产数据必须另外区分基础设施错误和环境终态。优势估计的完整向量化实现见[LLM 策略优化：Packed trajectory 上的 GAE](../practice/llm-policy-optimization.md#gae)。
+
 ## 切分与污染
 
 随机切分单条记录往往泄漏：

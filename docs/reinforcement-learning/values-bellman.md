@@ -182,6 +182,8 @@ $$
 
 动作 1 立即获得 5 后终止。因此最优动作是继续。该实现是有限、模型已知 MDP 的语义参考，不包含大状态空间的采样、稀疏矩阵或异步更新优化。
 
+同一有限 MDP 上的 Bellman backup、策略提取与终止测试见[手撕：强化学习](../practice/reinforcement-learning.md)。
+
 ## 从模型 backup 到样本 backup
 
 动态规划计算完整期望

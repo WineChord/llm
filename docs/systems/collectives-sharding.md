@@ -92,6 +92,30 @@ $$
 
 当 $n_r$ 不同时，两者梯度不同。packed sequence、动态长度和过滤空目标会让这种差异经常出现。
 
+### 全局 token 归一化 {#global-token-reduction-reference}
+
+`local_loss_sums[r]` 是 rank $r$ 上尚未归一化的 token loss 总和，`local_token_counts[r]` 是相应有效 token 数。reference 模拟对两个标量分别做 sum reduction，再计算一个全局 mean；返回值是所有 rank 应共同使用的标量目标。
+
+```python
+import torch
+
+def global_token_mean(local_loss_sums, local_token_counts):
+    loss_sum = torch.stack(local_loss_sums).sum()
+    token_count = torch.stack(local_token_counts).sum()
+    if token_count <= 0:
+        raise ValueError("global batch has no supervised token")
+    return loss_sum / token_count
+
+sums = [torch.tensor(2.), torch.tensor(12.)]
+counts = [torch.tensor(1.), torch.tensor(3.)]
+correct = global_token_mean(sums, counts)
+local_mean_average = torch.stack([s / n for s, n in zip(sums, counts)]).mean()
+assert torch.allclose(correct, torch.tensor(3.5))
+assert not torch.allclose(correct, local_mean_average)
+```
+
+不变量是分子和分母使用相同 rank 集合，且除法只在全局归约后发生。真实 DDP/FSDP 路径还要根据框架的梯度平均语义补偿 world size，并保证所有 rank 以相同顺序调用 collective；这段代码不模拟通信或 autograd hook。分片 linear、通信体积与多 rank shape 对照见[手撕：分布式与容错](../practice/distributed-systems.md)。
+
 ## 通信与计算重叠
 
 只有异步 collective 在关键依赖之前完成，才算真正重叠。常见失效包括：

@@ -88,6 +88,34 @@ $$
 
 输入相关参数使模型能按内容控制“保留还是遗忘”。同时，它破坏了固定卷积核，因此训练依赖硬件感知的 parallel scan 或 chunkwise 算法。[Mamba 官方实现](https://github.com/state-spaces/mamba)是核对算子语义、状态 shape 和增量接口的首选参考。
 
+### 最小语义实现 {#selective-scan}
+
+`selective_scan` 接收逐位置、逐状态通道的 `a,b,c,x:[T,N]` 和可选初态，返回全部输出与终态。参数沿时间变化，因此它覆盖 selective recurrence 的关键语义；把同一序列任意切成两段，携带中间状态后应与整段扫描完全一致。
+
+```python
+import torch
+
+def selective_scan(a, b, c, x, state=None):
+    assert a.shape == b.shape == c.shape == x.shape
+    state = torch.zeros_like(x[0]) if state is None else state
+    output = []
+    for at, bt, ct, xt in zip(a, b, c, x):
+        state = at * state + bt * xt
+        output.append(ct * state)
+    return torch.stack(output), state
+
+torch.manual_seed(0)
+a = torch.sigmoid(torch.randn(7, 4))
+b, c, x = torch.randn(7, 4), torch.randn(7, 4), torch.randn(7, 4)
+whole, final = selective_scan(a, b, c, x)
+left, middle = selective_scan(a[:3], b[:3], c[:3], x[:3])
+right, final_from_chunks = selective_scan(a[3:], b[3:], c[3:], x[3:], middle)
+torch.testing.assert_close(torch.cat((left, right)), whole)
+torch.testing.assert_close(final_from_chunks, final)
+```
+
+Python 循环是递推真值而非训练 kernel；并行 scan、chunk 内矩阵化、padding reset、门控参数化和低精度累积都应逐项与它对照。显式矩阵与 chunk 路径见[递推与记忆模型：Selective scan](../practice/sequence-models.md#selective-scan)和[Chunked scan](../practice/sequence-models.md#chunked-scan)。
+
 ## State Space Duality
 
 [Mamba-2](https://arxiv.org/abs/2405.21060)把一类结构化 SSM 与半可分矩阵联系起来。展开后，位置 $i$ 对位置 $j$ 的线性映射可写成
@@ -165,6 +193,35 @@ k_t
 $$
 
 这里 $S_{t-1}\in\mathbb R^{d_k\times d_v}$，所以 $S_{t-1}^\top k_t\in\mathbb R^{d_v}$ 是旧状态对当前 key 的预测，$k_t(v_t-S_{t-1}^\top k_t)^\top$ 是 $d_k\times d_v$ 的残差写入。它改善有限状态的关联记忆，但仍受到状态秩、key 冲突和数值稳定性的约束。
+
+### Delta-rule 语义核 {#delta-fast-weight}
+
+`delta_fast_weight` 接收 `keys:[T,D_k]`、`values:[T,D_v]` 和逐步写入率，返回每次**写入前**的读取结果与终态。状态只写预测残差；对正交 key、$\beta=1$，两条关联可被精确写入而不互相覆盖。
+
+```python
+import torch
+
+def delta_fast_weight(keys, values, beta, state=None):
+    assert keys.ndim == values.ndim == 2 and keys.size(0) == values.size(0)
+    assert beta.shape == (keys.size(0),)
+    state = values.new_zeros(keys.size(1), values.size(1)) if state is None else state
+    reads = []
+    for key, value, rate in zip(keys, values, beta):
+        prediction = key @ state
+        error = value - prediction
+        state = state + rate * torch.outer(key, error)
+        reads.append(prediction)
+    return torch.stack(reads), state
+
+keys = torch.eye(2)
+values = torch.tensor([[2., -1.], [.5, 3.]])
+reads, state = delta_fast_weight(keys, values, torch.ones(2))
+torch.testing.assert_close(reads, torch.zeros_like(values))
+torch.testing.assert_close(keys @ state, values)
+assert state.shape == (2, 2)
+```
+
+真实模型会增加 batch/head 轴、key 归一化、门控与 chunkwise kernel；相似 key 下的干扰和低精度状态漂移仍需随长度测量。batched 版本与关联回忆压力测试见[递推与记忆模型：Delta-rule fast weight](../practice/sequence-models.md#delta-rule-fast-weight)。
 
 ## 其他稳定比较对象
 

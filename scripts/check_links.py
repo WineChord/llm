@@ -13,6 +13,13 @@ from urllib.parse import unquote, urljoin, urlsplit
 
 SITE_PREFIX = "/llm/"
 REQUIRED_DEEP_LINKS = {
+    "/foundations/tokenization/": {"bpe-merge-rank", "unigram-viterbi"},
+    "/architecture/decoder-block/": {"pre-norm-decoder-block"},
+    "/systems/attention-kernels/": {"online-attention-reference"},
+    "/inference/runtime/": {
+        "request-transition-reference",
+        "request-state-machine",
+    },
     "/reinforcement-learning/trust-region-ppo/": {"trpo"},
     "/reinforcement-learning/critic-free-baselines/": {"rloo"},
     "/landscape/works/sao-compactionrl/": {"sao", "compactionrl"},
@@ -28,6 +35,21 @@ REQUIRED_DEEP_LINKS = {
         "decoupled-gae",
         "length-adaptive-gae",
     },
+    "/reinforcement-learning/ratio-clipping-gating/": {
+        "ratio-gates-semantic-reference",
+    },
+    "/applications/agent-runtime/": {"agent-runtime-reducer-reference"},
+    "/evaluation/statistical-inference/": {
+        "cluster-bootstrap-semantic-reference",
+    },
+    "/multimodal/audio-language-models/": {
+        "residual-vector-quantization",
+    },
+    "/practice/distributed-systems/": {
+        "sharded-global-norm-reference",
+        "checkpoint-manifest-commit-reference",
+    },
+    "/practice/inference-engine/": {"kv-block-allocator-reference"},
 }
 
 

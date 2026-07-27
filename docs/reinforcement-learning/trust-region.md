@@ -230,6 +230,42 @@ CG 迭代在 Krylov 子空间中逐步逼近线性系统解。实践中要记录
 
 CG 收敛并不等于策略更新可接受。它只解了局部二次模型中的线性系统；advantage 有噪声、Fisher 来自有限 batch、网络又是非线性的，候选完整步长仍可能越出真实 trust region。
 
+CG 的核心接口不是 Fisher 矩阵，而是一个可调用的 $(F+\xi I)v$。下面实现保留 residual、方向和曲率三个不变量；返回值仍只是候选自然梯度方向，不会修改模型参数。
+
+```python
+import torch
+def conjugate_gradient(matvec, b, steps=10, tol=1e-10):
+    x = torch.zeros_like(b)
+    r = b.clone()
+    p = r.clone()
+    rr = torch.dot(r, r)
+    if rr.sqrt() <= tol:
+        return x
+    for _ in range(steps):
+        ap = matvec(p)
+        curvature = torch.dot(p, ap)
+        if curvature <= 0:
+            raise ValueError("Fisher-vector product is not positive definite")
+        alpha = rr / curvature
+        x = x + alpha * p
+        r = r - alpha * ap
+        new_rr = torch.dot(r, r)
+        if new_rr.sqrt() <= tol:
+            break
+        p = r + (new_rr / rr) * p
+        rr = new_rr
+    return x
+diag = torch.tensor([2., 5., 10.])
+b = torch.tensor([1., -2., 3.])
+x = conjugate_gradient(lambda v: diag * v, b)
+torch.testing.assert_close(diag * x, b)
+assert torch.dot(x, diag * x) > 0
+assert torch.linalg.vector_norm(diag * x - b) < 1e-6
+assert torch.equal(conjugate_gradient(lambda v: diag * v, torch.zeros_like(b)), torch.zeros_like(b))
+```
+
+生产 `matvec` 应由同一批 old-policy 状态上的平均 KL 二阶导数加 damping 构造，并用全局 mask/reduction；这里没有展示 autograd 图、分布式归约或混合精度策略。CG 输出及 advantage 都应在求方向时视为固定量，真正的参数写入只能发生在后续通过 KL 与 surrogate 检查的 line search 中。
+
 ## 为什么还需要 Line Search
 
 得到方向 $x$ 后，先按二次模型把它缩放为完整候选步长。随后对系数 $\alpha\in\{1,\beta,\beta^2,\ldots\}$ 做 backtracking：
@@ -351,6 +387,8 @@ distributed averaging and numerical precision
 6. 保持 action-state 输入不变、只修改被 mask 的非动作位置 log-prob 张量时，action-only KL 不变；
 7. 平均 KL、最大 slice KL、ratio 分位数与实际 return 同时报告；
 8. 固定 rollout 数、环境步数、训练 token 与 wall-clock 后再比较 PPO。
+
+PPO 的符号相关裁剪和小张量梯度断言见[手撕 LLM 策略优化](../practice/llm-policy-optimization.md)；它提供一阶近似的可执行对照，但不替代本页的 Fisher、CG 与 line-search 验证。
 
 Trust region 最重要的洞见不是“二阶方法一定更好”，而是任何由旧数据驱动的策略更新都有一个可信邻域。TRPO 把这个邻域显式写进优化问题；PPO、KL early stopping、ratio gate 与异步样本筛选则用不同近似管理同一个矛盾。理解各方法测量的距离、丢弃的信息和接受规则，比记住算法缩写更能迁移到新的语言模型训练配方。
 

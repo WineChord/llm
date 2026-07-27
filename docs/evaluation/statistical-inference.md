@@ -62,6 +62,35 @@ $$
 
 二元指标也应对 item-level 差值重采样，而不是分别 bootstrap 两个准确率。随机种子、重采样次数、区间方法和双侧/单侧目标都需记录。
 
+点估计的语义核只做一件事：在共同有效的配对 item 上先相减、再聚合。它返回差值向量，让区间、slice 与异常值检查都沿用同一 estimand。
+
+```python
+import numpy as np
+def paired_effect(baseline, candidate):
+    baseline = np.asarray(baseline, dtype=float)
+    candidate = np.asarray(candidate, dtype=float)
+    if baseline.ndim != 1 or baseline.shape != candidate.shape:
+        raise ValueError("paired one-dimensional observations required")
+    if baseline.size == 0:
+        raise ValueError("paired effect needs at least one item")
+    if not np.isfinite(baseline).all() or not np.isfinite(candidate).all():
+        raise ValueError("missing outcomes need an explicit policy")
+    difference = candidate - baseline
+    return difference.mean(), difference
+effect, difference = paired_effect([0, 1, 0], [1, 1, 0])
+assert np.isclose(effect, 1 / 3)
+np.testing.assert_allclose(difference, [1, 0, 0])
+assert len(difference) == 3
+try:
+    paired_effect([], [])
+except ValueError:
+    pass
+else:
+    raise AssertionError("an empty paired sample must be rejected")
+```
+
+这段代码拒绝缺失值，是为了迫使调用方先明确 end-to-end、conditional 或 coverage estimand；它不主张 complete-case 是默认答案。cluster bootstrap 在下节沿用同一逐 item 差值，只改变重采样单位。
+
 ## Cluster bootstrap
 
 若 item 属于 cluster $g$，先有放回抽 cluster，再带入该 cluster 的全部样本。估计单位取决于目标：
@@ -81,6 +110,47 @@ $$
 $$
 
 这样既保留 slice 权重，又不打破 cluster 相关性。
+
+下面给出 request-weighted paired cluster bootstrap：同一抽样索引同时作用于 A/B，抽到一个 cluster 时带入其中全部 item。返回点估计和 percentile interval；若 estimand 是 cluster 等权，应先把每个 cluster 的差值聚合为一行再调用。
+
+<details class="code-disclosure">
+<summary id="cluster-bootstrap-semantic-reference">配对 cluster bootstrap <span class="code-disclosure__meta">Python · 27 行</span></summary>
+<div class="code-disclosure__body" markdown="1">
+
+```python
+import numpy as np
+def paired_cluster_bootstrap(a, b, cluster, draws=2000, alpha=.05, seed=0):
+    a = np.asarray(a, dtype=float)
+    b = np.asarray(b, dtype=float)
+    cluster = np.asarray(cluster)
+    if not (a.shape == b.shape == cluster.shape) or a.ndim != 1:
+        raise ValueError("paired observations and cluster IDs must align")
+    if len(a) == 0 or not np.isfinite(a).all() or not np.isfinite(b).all():
+        raise ValueError("complete finite pairs are required")
+    groups = np.unique(cluster)
+    members = [np.flatnonzero(cluster == group) for group in groups]
+    rng = np.random.default_rng(seed)
+    sampled = np.empty(draws)
+    difference = b - a
+    for draw in range(draws):
+        chosen = rng.integers(0, len(groups), len(groups))
+        index = np.concatenate([members[i] for i in chosen])
+        sampled[draw] = difference[index].mean()
+    lo, hi = np.quantile(sampled, [alpha / 2, 1 - alpha / 2])
+    return difference.mean(), (lo, hi)
+a = np.array([0., 1., 0., 1., 0., 1.])
+b = a + np.array([.1, .1, .2, .2, .3, .3])
+cluster = np.array(["x", "x", "y", "y", "z", "z"])
+effect, interval = paired_cluster_bootstrap(a, b, cluster, seed=7)
+assert np.isclose(effect, .2)
+assert interval[0] <= effect <= interval[1]
+assert paired_cluster_bootstrap(a, b, cluster, seed=7) == (effect, interval)
+```
+
+</div>
+</details>
+
+这个实现要求调用方先按预注册规则处理 timeout、invalid 和 missing；静默 complete-case 删除会改变 estimand。生产报告还要给出 cluster 数、重采样次数、随机种子、区间方法与 slice 权重，并在 cluster 很少时做替代区间和逐 cluster 敏感性分析。
 
 ## Effect 与置信区间
 

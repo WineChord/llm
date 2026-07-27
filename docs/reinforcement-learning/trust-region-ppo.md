@@ -49,7 +49,11 @@ $$
 因此 clip 不是把所有 ratio 截到区间后再训练，而是选择更保守的一侧。一个常见错误实现是
 
 ```python
-torch.clamp(ratio, 1 - eps, 1 + eps) * advantage
+import torch
+ratio, eps = torch.tensor([1.5]), 0.2
+advantage = torch.tensor([1.0])
+wrong_surrogate = torch.clamp(ratio, 1 - eps, 1 + eps) * advantage
+torch.testing.assert_close(wrong_surrogate, torch.tensor([1.2]))
 ```
 
 它只保留 clipped 分支，丢失未裁剪目标，和 PPO surrogate 不等价。
@@ -155,21 +159,42 @@ import torch
 def ppo_policy_loss(new_logp, old_logp, adv, action_mask, eps=0.2):
     if not (new_logp.shape == old_logp.shape == adv.shape == action_mask.shape):
         raise ValueError("shape mismatch")
-    log_ratio = new_logp - old_logp
+    mask = action_mask.bool()
+    if not mask.any() or not 0 < eps < 1:
+        raise ValueError("PPO needs actions and a clipping radius in (0, 1)")
+    if not all(torch.isfinite(x[mask]).all() for x in (new_logp, old_logp, adv)):
+        raise ValueError("selected PPO terms must be finite")
+    log_ratio = new_logp[mask] - old_logp[mask]
+    advantage = adv.detach()[mask]
     ratio = log_ratio.exp()
-    unclipped = ratio * adv.detach()
-    clipped = ratio.clamp(1 - eps, 1 + eps) * adv.detach()
+    unclipped = ratio * advantage
+    clipped = ratio.clamp(1 - eps, 1 + eps) * advantage
     token_loss = -torch.minimum(unclipped, clipped)
-    mask = action_mask.to(token_loss.dtype)
-    loss = (token_loss * mask).sum() / mask.sum().clamp_min(1)
-    approx_kl = ((ratio - 1) - log_ratio) * mask
-    approx_kl = approx_kl.sum() / mask.sum().clamp_min(1)
-    clipfrac = (((ratio - 1).abs() > eps) * action_mask).float().sum()
-    clipfrac = clipfrac / action_mask.sum().clamp_min(1)
+    loss = token_loss.mean()
+    approx_kl = ((ratio - 1) - log_ratio).mean()
+    clipfrac = ((ratio - 1).abs() > eps).float().mean()
     return loss, approx_kl, clipfrac
+
+old = torch.tensor([[0., 0., float("nan")]])
+new = torch.tensor([[1.5, .5, float("nan")]]).log()
+adv = torch.tensor([[1., -1., float("nan")]])
+loss, approx_kl, clipfrac = ppo_policy_loss(
+    new, old, adv, torch.tensor([[True, True, False]]), eps=0.2
+)
+torch.testing.assert_close(loss, torch.tensor(-0.2))
+assert approx_kl > 0
+torch.testing.assert_close(clipfrac, torch.ones(()))
+try:
+    ppo_policy_loss(new, old, adv, torch.zeros_like(adv, dtype=torch.bool))
+except ValueError:
+    pass
+else:
+    raise AssertionError("an empty PPO action set must be rejected")
 ```
 
 这里的 `approx_kl` 是采样估计和诊断量，不是精确全词表 KL，也不是硬约束。若训练需要精确 token-distribution KL，需要保留 policy/reference logits 或计算相应分布，成本与语义都不同。
+
+符号相关裁剪与 token / sequence reduction 的组合测试见[手撕：LLM 策略优化 · Reduction](../practice/llm-policy-optimization.md#loss-reduction)。
 
 ## Update epoch 与数据新鲜度
 

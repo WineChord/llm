@@ -145,26 +145,27 @@ bootstrap mask: 终态边界是否保留下一状态价值
 
 ```python
 import torch
-
-def generalized_advantage(
-    reward, value, bootstrap_mask, trace_mask, gamma=0.99, lam=0.95
-):
-    """reward/masks: [B,T]; value: [B,T+1] with real final observations."""
-    if value.shape != (*reward.shape[:-1], reward.shape[-1] + 1):
-        raise ValueError("value must include the bootstrap state")
+@torch.no_grad()
+def generalized_advantage(reward, value, bootstrap_mask, trace_mask, gamma=.99, lam=.95):
+    if (reward.ndim != 2 or value.shape != (*reward.shape[:-1], reward.shape[-1] + 1)
+            or bootstrap_mask.shape != reward.shape or trace_mask.shape != reward.shape):
+        raise ValueError("reward, masks and bootstrap value must align")
+    if bootstrap_mask.dtype != torch.bool or trace_mask.dtype != torch.bool:
+        raise ValueError("bootstrap and trace masks must be boolean")
+    if torch.any(trace_mask & ~bootstrap_mask):
+        raise ValueError("trace continuation requires a valid bootstrap transition")
     adv = torch.zeros_like(reward)
     carry = torch.zeros_like(reward[:, 0])
     for t in range(reward.shape[1] - 1, -1, -1):
-        boot = bootstrap_mask[:, t].to(reward.dtype)
-        trace = trace_mask[:, t].to(reward.dtype)
-        delta = reward[:, t] + gamma * boot * value[:, t + 1] - value[:, t]
-        carry = delta + gamma * lam * trace * carry
+        boot, trace = bootstrap_mask[:, t], trace_mask[:, t]
+        next_value = torch.where(boot, value[:, t + 1], 0.)
+        delta = reward[:, t] + gamma * next_value - value[:, t]
+        carry = delta + gamma * lam * torch.where(trace, carry, 0.)
         adv[:, t] = carry
     target = adv + value[:, :-1]
     return adv, target
-
 r = torch.tensor([[1.0, 2.0]])
-v = torch.tensor([[0.3, 0.5, 4.0]])
+v = torch.tensor([[0.3, 0.5, float("nan")]], requires_grad=True)
 bootstrap = torch.tensor([[True, False]])
 trace = torch.tensor([[True, False]])
 a, target = generalized_advantage(
@@ -172,9 +173,15 @@ a, target = generalized_advantage(
 )
 assert torch.allclose(a, torch.tensor([[2.7, 1.5]]))
 assert torch.allclose(target, torch.tensor([[3.0, 2.0]]))
+assert torch.isfinite(a).all() and not a.requires_grad and not target.requires_grad
+try: generalized_advantage(r, v, bootstrap, torch.tensor([[True, True]]))
+except ValueError: pass
+else: raise AssertionError("terminal transitions cannot continue the trace")
 ```
 
 正常 transition 的两个 mask 都为真，真实 terminal 都为假；有真实 final observation 的 truncation 则 `bootstrap=True, trace=False`。这个实现假设 batch 中每条轨迹已经按时间对齐。padding 位置必须在外层用有效步 mask 排除，不能仅靠把 reward 置零；否则 padding 上的 value、loss 分母和递推仍可能污染结果。完整推导与边界测试见[Advantage 估计与 GAE](advantage-estimation-gae.md)。
+
+packed trajectory、bootstrap 与 valid-step mask 的组合实现见[手撕：LLM 策略优化 · GAE](../practice/llm-policy-optimization.md#gae)。
 
 ## Critic 的训练节奏
 

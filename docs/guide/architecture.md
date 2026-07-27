@@ -68,17 +68,17 @@
 motivation and scope
 variables, shapes or state
 derivation / mechanism
-minimal implementation contract
+minimal semantic reference and executable invariants
 system cost and trade-offs
 failure / attack surface
 evaluation and primary evidence
 ```
 
-公式说明变量和归一化；性能结论绑定 dtype、shape、硬件与软件；训练结论绑定数据、预算和评测。
+公式说明变量和归一化；紧邻的最小实现固定 mask、shape、状态边界与退化输入；性能结论绑定 dtype、shape、硬件与软件；训练结论绑定数据、预算和评测。主计算路径默认展开，辅助实现与长测试使用带稳定 fragment 的折叠区。
 
 ### 实践
 
-[实践页](../practice/index.md)用短实现固定关键语义，而不是复刻完整框架。每个实现以 reference、断言、退化输入和适用边界为核心，再与优化实现比较。
+[实践页](../practice/index.md)把多个 canonical 机制组装成可运行实验，并扩展测试矩阵、故障注入和优化前后对照。通用原子实现首先出现在对应机制页；实践页为保持代码可独立运行，可以重述必要的原子逻辑，但必须沿深链回到相同公式、边界与不变量。
 
 ### 技术谱系与工作深读
 
@@ -97,6 +97,7 @@ evaluation and primary evidence
 ## Canonical 边界
 
 - 一个概念保留一个主要解释页，其他页面只补充上下文并链接。
+- canonical 机制页维护通用公式、语义核和边界；实践页维护可运行组合与扩展测试，工作深读维护论文特有增量。出现必要重叠时，以相同断言和双向链接防止定义漂移。
 - 旧的宽主题 URL 可保留为稳定总览，例如[参数高效训练与压缩](../training/peft-compression.md)与[后训练总览](../training/post-training.md)。
 - 架构机制与实现优化分开：attention 定义在模型结构，kernel 在系统，KV 生命周期在推理。
 - 离线偏好、在线 RL、推理时搜索和 Agentic RL 在同一强化学习主线中保持独立页面，因为数据分布、状态和目标不同；GAE、PPO、GRPO 作为可复用机制维护 canonical 页面，DAPO、VAPO 则保留在工作深读层，避免把 recipe 与单一公式混成一层。

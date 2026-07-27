@@ -28,6 +28,45 @@ $$
 
 尺度也不是无关紧要：若所有 reward 乘常数，pairwise 排序可能不变，但在线 RL 中 reward 与 KL、value loss 和 clipping 的相对强度会变化。
 
+### Bradley–Terry loss {#bradley-terry-loss-reference}
+
+`reward_a` 与 `reward_b` 是同一 prompt 下两个候选的标量分数，`preference` 是 $a$ 胜出的概率；硬标签取 $0/1$，平局或软标签可取中间值。函数输出逐 pair loss，保留维度以便外层按标注置信度加权。
+
+```python
+import torch
+import torch.nn.functional as F
+
+def bradley_terry_loss(reward_a, reward_b, preference):
+    if not (reward_a.shape == reward_b.shape == preference.shape):
+        raise ValueError("one aligned preference is required per reward pair")
+    if not (reward_a.device == reward_b.device == preference.device):
+        raise ValueError("rewards and preferences must share a device")
+    if not torch.isfinite(reward_a).all() or not torch.isfinite(reward_b).all():
+        raise ValueError("rewards must be finite")
+    if not torch.isfinite(preference).all() or torch.any((preference < 0) | (preference > 1)):
+        raise ValueError("preference probabilities must lie in [0, 1]")
+    margin = reward_a - reward_b
+    return F.binary_cross_entropy_with_logits(
+        margin, preference.to(margin.dtype), reduction="none"
+    )
+
+ra = torch.tensor([2., -1., 0.])
+rb = torch.tensor([0., 1., 0.])
+q = torch.tensor([1., 0., 0.5])
+loss = bradley_terry_loss(ra, rb, q)
+assert torch.allclose(loss, bradley_terry_loss(ra + 7, rb + 7, q))
+assert torch.allclose(loss, bradley_terry_loss(rb, ra, 1 - q))
+assert loss[:2].max() < bradley_terry_loss(torch.zeros(2), torch.zeros(2), q[:2]).min()
+try:
+    bradley_terry_loss(ra, rb, torch.tensor([2., 0., .5]))
+except ValueError:
+    pass
+else:
+    raise AssertionError("out-of-range preference probabilities must be rejected")
+```
+
+加同一常数不改变输出，交换候选并翻转标签也不改变 loss；这两个断言正对应 pairwise 模型的可辨识边界。reference 不包含 reward head、padding mask、listwise 采样和跨 prompt 校准，生产路径还必须防止同一候选跨数据切分泄漏。
+
 ## 数据契约
 
 每个 pair 或 list 至少记录：

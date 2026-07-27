@@ -103,6 +103,48 @@ $$
 
 把所有 token 直接套用一个 triangular mask，常会无意中泄漏目标或限制理解。
 
+### 最小语义实现 {#context-target-mask-and-modality-loss}
+
+下面把统一序列的两个独立契约并列：`context_target_mask` 允许 context 内双向可见，而 target 只能读取全部 context 与过去 target；`modality_loss` 先在每个模态的有效 token 内求均值，再按显式权重组合。
+
+```python
+import torch
+
+def context_target_mask(role):
+    role = torch.as_tensor(role)
+    assert torch.all((role == 0) | (role == 1))
+    position = torch.arange(role.numel(), device=role.device)
+    causal = position[:, None] >= position[None, :]
+    query, key = role[:, None], role[None, :]
+    context_reads_context = (query == 0) & (key == 0)
+    target_reads_prefix = (query == 1) & ((key == 0) | causal)
+    return context_reads_context | target_reads_prefix
+
+def modality_loss(token_loss, modality, valid, weights):
+    total, present = token_loss.new_zeros(()), 0
+    for kind, weight in weights.items():
+        selected = valid.bool() & modality.eq(kind)
+        if selected.any():
+            total = total + weight * token_loss[selected].mean()
+            present += 1
+    assert present > 0
+    return total
+
+role = torch.tensor([0, 0, 1, 1])
+allowed = context_target_mask(role)
+assert allowed.device == role.device
+assert allowed[0].tolist() == [True, True, False, False]
+assert allowed[-1].all()
+loss = modality_loss(
+    torch.tensor([1., 3., 10., 10., 10.]),
+    torch.tensor([0, 0, 1, 1, 1]),
+    torch.ones(5, dtype=torch.bool), {0: 1., 1: 1.},
+)
+torch.testing.assert_close(loss, torch.tensor(12.))
+```
+
+这里的布尔矩阵是小序列真值，不应在长序列上直接物化；生产 kernel 要把 task/segment/position metadata 编译成等价 mask。模态权重也不能替代 batch mixture 审计。逐元素实验见[多模态原语：Context–target attention mask](../practice/multimodal.md#contexttarget-attention-mask)与[按模态归一的 loss](../practice/multimodal.md#loss)。
+
 ## 模态平衡
 
 设文本和图像 token 数分别为 $T_t,T_v$。直接对全部 token 平均时，梯度占比近似受

@@ -153,6 +153,40 @@ $$
 
 padding token 的 advantage 设为零还不够；它必须从 loss 分母、KL、entropy 和统计指标中排除。
 
+### 轨迹语义校验 {#trajectory-mask-validator-reference}
+
+输入 `tokens` 保留 token 顺序，每项声明来源 `kind`、policy mask 与 rollout 时保存的 `old_logprob`；`terminated` 表示环境真正终止，`truncated` 表示时间或预算截断。输出给出 action token 数和 value bootstrap mask。
+
+```python
+import math
+def validate_trajectory(tokens, terminated, truncated):
+    if terminated and truncated:
+        raise ValueError("termination and truncation are distinct outcomes")
+    action_tokens = 0
+    for index, token in enumerate(tokens):
+        kind = token["kind"]
+        if kind not in {"action", "observation"}:
+            raise ValueError(f"unknown token kind at {index}")
+        is_action = kind == "action"
+        if token["mask"] != int(is_action):
+            raise ValueError(f"policy mask disagrees with token kind at {index}")
+        old_logprob = token.get("old_logprob")
+        if is_action and (old_logprob is None or not math.isfinite(old_logprob)):
+            raise ValueError(f"missing behavior probability at {index}")
+        if not is_action and old_logprob is not None:
+            raise ValueError(f"observation carries behavior probability at {index}")
+        action_tokens += int(is_action)
+    return {"action_tokens": action_tokens, "bootstrap_mask": 0 if terminated else 1}
+trace = [{"kind": "observation", "mask": 0, "old_logprob": None},
+         {"kind": "action", "mask": 1, "old_logprob": -0.7}]
+assert validate_trajectory(trace, terminated=True, truncated=False) == {
+    "action_tokens": 1, "bootstrap_mask": 0
+}
+assert validate_trajectory(trace, terminated=False, truncated=True)["bootstrap_mask"] == 1
+```
+
+不变量是 observation 永不进入 policy loss，action 必须能追溯 behavior probability，termination 禁止 bootstrap，而 time-limit / budget truncation 保留 bootstrap。生产数据还需验证 episode / span ID、最终 observation、版本摘要与 padding 分母；action mask、ratio 和 bootstrap 的组合实验见[手撕：强化学习](../practice/reinforcement-learning.md)。
+
 ## 异步消费
 
 rollout 进入 buffer 后，learner 已可能更新多次。每批至少统计：

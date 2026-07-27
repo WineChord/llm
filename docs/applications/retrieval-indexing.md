@@ -22,6 +22,32 @@ $$
 
 固定 token 长度加 overlap 是基线，不是最终答案。层级文档可先按章节结构切分，再对过长节点递归切分；表格、代码、对话和扫描 PDF 需要各自的解析契约。
 
+### 保留 span 的窗口基线 {#span-preserving-chunking-reference}
+
+输入是带稳定顺序的 token 序列、窗口大小与 overlap；输出保留半开原文区间 `[start,end)` 及其内容，因此任何候选都能精确回到同一 token snapshot。
+
+```python
+def chunk_with_spans(tokens, size, overlap=0):
+    if size <= 0 or not 0 <= overlap < size:
+        raise ValueError("require 0 <= overlap < size")
+    chunks, step = [], size - overlap
+    for start in range(0, len(tokens), step):
+        end = min(start + size, len(tokens))
+        chunks.append({"start": start, "end": end, "tokens": tokens[start:end]})
+        if end == len(tokens):
+            break
+    return chunks
+
+tokens = list("abcdefghijk")
+chunks = chunk_with_spans(tokens, size=5, overlap=2)
+assert chunks[0] == {"start": 0, "end": 5, "tokens": list("abcde")}
+assert chunks[-1]["end"] == len(tokens)
+assert all(tokens[c["start"]:c["end"]] == c["tokens"] for c in chunks)
+assert all(a["end"] - b["start"] == 2 for a, b in zip(chunks, chunks[1:]))
+```
+
+不变量是 span 与内容可逆、最后一块不越界、相邻窗口共享明确的 overlap。生产解析还要把文档版本、字符 / byte offset、标题路径、权限和结构边界写入 chunk identity；结构化切分与边界测试见[手撕：检索与智能体 · 带 span 的切分](../practice/retrieval-agents.md#span-preserving-chunking-reference)。
+
 ## Sparse retrieval
 
 BM25 对查询 $q$ 和文档 $d$ 的常用形式为：
@@ -37,6 +63,40 @@ $$
 $f(t,d)$ 是词频，$b$ 控制长度归一化，$k_1$ 控制词频饱和。它对产品编号、报错文本、人名和稀有术语通常很有价值。BM25 的概率相关性脉络可从 Robertson 与 Spärck Jones 的[技术报告](https://www.microsoft.com/en-us/research/publication/simple-proven-approaches-to-text-retrieval/)回溯。
 
 关键词方法依赖分词、字段权重和查询语言。代码符号、中文粒度、同义词扩展与停用词规则都会改变结果，必须把 analyzer 版本视为索引版本的一部分。
+
+BM25 的原子实现应接收已经由同一 analyzer 处理的 token，而不是在评分函数里偷偷选择分词规则。下面返回一条 query 对每篇文档的分数；`df` 与 `avgdl` 必须来自同一索引 snapshot。
+
+```python
+import math
+from collections import Counter
+def bm25(query, documents, k1=1.2, b=.75):
+    if not documents:
+        return []
+    counts = [Counter(doc) for doc in documents]
+    avgdl = sum(map(len, documents)) / len(documents)
+    if avgdl == 0:
+        return [0.] * len(documents)
+    df = {term: sum(term in c for c in counts) for term in set(query)}
+    scores = []
+    for doc, tf in zip(documents, counts):
+        score = 0.
+        for term in query:
+            freq = tf[term]
+            if not freq:
+                continue
+            idf = math.log(1 + (len(documents) - df[term] + .5) / (df[term] + .5))
+            score += idf * freq * (k1 + 1) / (freq + k1 * (1 - b + b * len(doc) / avgdl))
+        scores.append(score)
+    return scores
+docs = [["red", "apple"], ["green", "apple", "tree"], ["banana"]]
+scores = bm25(["green", "apple"], docs)
+assert scores[1] > scores[0] > scores[2]
+assert bm25(["missing"], docs) == [0., 0., 0.]
+assert bm25(["apple"], []) == []
+assert bm25(["apple"], [[], []]) == [0., 0.]
+```
+
+这里没有字段权重、权限过滤或索引增量；生产召回必须先把租户、版本与可见范围绑定到候选集合。重复 query term 是否重复计权也是 analyzer/query-language 契约的一部分，不能在不同服务中各自猜测。
 
 ## Dense retrieval
 
@@ -57,6 +117,37 @@ $$
 $$
 
 负例决定模型学会区分什么。随机负例过易，hard negative 过度集中又可能包含未标注正例。训练、离线评测和线上语料之间的领域偏移，也会让高相似度不再等于可回答。
+
+### 精确 cosine top-$k$ {#exact-cosine-topk-reference}
+
+输入 query `[D]`、document matrix `[N,D]` 与 $k$，输出完整扫描后的相似度和 document row ID，作为 ANN 的 correctness oracle。零向量的 cosine 未定义，因此 reference 明确拒绝，而不是静默产生一个伪分数。
+
+```python
+import torch
+
+def exact_cosine_topk(query, documents, k):
+    if query.ndim != 1 or documents.ndim != 2:
+        raise ValueError("expected query [D] and documents [N,D]")
+    if query.numel() != documents.shape[1] or not 0 < k <= documents.shape[0]:
+        raise ValueError("incompatible shape or k")
+    query, documents = query.float(), documents.float()
+    query_norm = query.norm()
+    document_norm = documents.norm(dim=-1)
+    if query_norm == 0 or torch.any(document_norm == 0):
+        raise ValueError("cosine similarity requires non-zero vectors")
+    score = (documents @ query) / (document_norm * query_norm)
+    index = torch.argsort(score, descending=True, stable=True)[:k]
+    return score[index], index
+
+query = torch.tensor([1., 0.])
+documents = torch.tensor([[1., 0.], [0., 1.], [-1., 0.], [1., 1.]])
+score, index = exact_cosine_topk(query, documents, k=2)
+assert index.tolist() == [0, 3]
+torch.testing.assert_close(score, torch.tensor([1., 2 ** -0.5]))
+assert torch.all(score[:-1] >= score[1:])
+```
+
+分数必须由同一 embedding revision、同一归一化规则和同一可见候选集产生；稳定排序只定义相同分数时的 row-order tie-break。生产检索应先做权限约束，再用这个 oracle 测 ANN recall–latency 曲线，而不是在线全扫；更完整的零向量与候选对照见[手撕：检索与智能体 · 精确 dense retrieval](../practice/retrieval-agents.md#exact-dense-retrieval-reference)。
 
 [ColBERT](https://arxiv.org/abs/2004.12832)保留 token 级表示并用 late interaction：
 

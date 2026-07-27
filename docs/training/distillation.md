@@ -41,6 +41,47 @@ $$
 
 $\lambda$、$T$、KL 方向和 token 归一化共同定义目标。只写“使用 KD”不足以复现。
 
+### 最小语义实现 {#masked-temperature-kl}
+
+`masked_kd` 接收对齐的 teacher/student logits `[B,T,V]` 和有效 token mask，计算 $T^2D_{\mathrm{KL}}(q_T\Vert p_T)$。teacher 在函数内停止梯度；布尔选择发生在 softmax 之前，所以无效位置的 NaN 不会先污染 KL 再被乘以零。
+
+```python
+import torch
+import torch.nn.functional as F
+
+def masked_kd(student, teacher, mask, temperature=2.):
+    assert student.shape == teacher.shape and student.shape[:-1] == mask.shape
+    assert temperature > 0
+    valid = mask.bool()
+    if not valid.any():
+        raise ValueError("token-mean KL needs at least one valid target")
+    selected_student = student[valid]
+    selected_teacher = teacher.detach()[valid]
+    log_student = F.log_softmax(selected_student / temperature, dim=-1)
+    log_teacher = F.log_softmax(selected_teacher / temperature, dim=-1)
+    teacher_probability = log_teacher.exp()
+    return temperature ** 2 * (
+        teacher_probability * (log_teacher - log_student)
+    ).sum(-1).mean()
+
+student = torch.tensor([[[2., 0.], [float("nan")] * 2]], requires_grad=True)
+teacher = student.detach().clone()
+mask = torch.tensor([[True, False]])
+loss = masked_kd(student, teacher, mask)
+assert loss.abs() < 1e-7
+loss.backward()
+assert torch.isfinite(student.grad).all()
+assert student.grad[0, 1].abs().sum() == 0
+rejected = False
+try:
+    masked_kd(student, teacher, torch.zeros_like(mask))
+except ValueError:
+    rejected = True
+assert rejected
+```
+
+它输出当前张量的 token-mean soft target，因而空有效集合直接拒绝。hard-label 混合也必须先选有效 label，不能让 masked `-100` 进入普通 gather；不同词表映射、缓存 top-$k$ 残余质量与跨 rank 分母则要在外层明确定义。完整 hard/soft 组合见[训练目标：Knowledge distillation](../practice/training-objectives.md#knowledge-distillation)。
+
 ## 数据与计算契约
 
 Token-level KD 需要：

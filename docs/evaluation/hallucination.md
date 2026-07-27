@@ -40,6 +40,38 @@ not factual / not applicable
 
 [FActScore](https://arxiv.org/abs/2305.14251) 提出将长文本分解为 atomic facts，并计算可靠知识源支持的比例。[LongFact / SAFE](https://arxiv.org/abs/2403.18802) 进一步研究搜索增强的长文本事实评测。两者提供可复用框架，但 claim extraction、检索和 judge 都是可能出错的测量组件。
 
+原子事实聚合必须保留 unknown，并把引用覆盖与事实支持分开。下面每个 item 已是 claim extractor 输出的最小事实；`citations` 只表示答案声称的 evidence edge，不代表该边已经被判定为支持。
+
+```python
+def atomic_fact_report(claims):
+    factual = [claim for claim in claims if claim["label"] != "not_factual"]
+    allowed = {"supported", "contradicted", "not_supported", "unknown", "stale"}
+    if any(claim["label"] not in allowed for claim in factual):
+        raise ValueError("unknown factuality label")
+    supported = sum(claim["label"] == "supported" for claim in factual)
+    negative = {"contradicted", "not_supported", "stale"}
+    unsupported = sum(claim["label"] in negative for claim in factual)
+    unknown = sum(claim["label"] == "unknown" for claim in factual)
+    decidable = supported + unsupported
+    support_precision = supported / decidable if decidable else None
+    decidable_rate = decidable / len(factual) if factual else 1.
+    cited = sum(bool(claim["citations"]) for claim in factual)
+    citation_coverage = cited / len(factual) if factual else 1.
+    return support_precision, decidable_rate, citation_coverage, unknown
+claims = [
+    {"label": "supported", "citations": ["e1"]},
+    {"label": "contradicted", "citations": ["e2"]},
+    {"label": "unknown", "citations": []},
+    {"label": "not_factual", "citations": []},
+]
+precision, decidable, coverage, unknown = atomic_fact_report(claims)
+assert precision == .5 and decidable == 2 / 3
+assert coverage == 2 / 3
+assert unknown == 1
+```
+
+若所有事实都是 unknown，support precision 返回 `None` 而不是零或满分。生产 pipeline 还要版本化 claim extraction、检索截止时间、evidence span 与 entailment judge，并用人工标注量化每一层误差；citation coverage 高不等于 citation correctness。
+
 ## 分母与指标
 
 设 $S$、$U$、$K$ 分别为 supported、unsupported/contradicted 与 unknown 的可判定计数，$A=S+U+K$ 为全部事实主张。

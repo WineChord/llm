@@ -77,6 +77,35 @@ JSON schema、正则或 grammar 可将非法 token 置为 $-\infty$，保证输�
 
 若 grammar 在某状态屏蔽全部 token，应返回明确错误，而不是产生 NaN 或静默解除约束。
 
+增量 decode 的关键正确性不变量是：同一 token prefix 上，prefill/step 路径的下一 token logits 必须与完整重算一致。下面把模型接口抽象成 `prefill`、`step` 和 `full`，并用一个累加状态的玩具核验证 harness；真实 Transformer 的 state 则是逐层 KV、position 与 processor 状态。
+
+```python
+import torch
+def assert_incremental_consistency(prefill, step, full, prompt, continuation):
+    prefix = list(prompt)
+    state, logits = prefill(prefix)
+    torch.testing.assert_close(logits, full(prefix))
+    for token in continuation:
+        prefix.append(token)
+        state, logits = step(state, token)
+        torch.testing.assert_close(logits, full(prefix))
+    return logits
+embedding = torch.tensor([[1., 0.], [0., 1.], [1., 1.]])
+projection = torch.tensor([[1., -1., 0.], [0., 1., -1.]])
+full = lambda ids: embedding[ids].sum(0) @ projection
+prefill = lambda ids: (embedding[ids].sum(0), full(ids))
+step = lambda state, token: (
+    state + embedding[token],
+    (state + embedding[token]) @ projection,
+)
+last = assert_incremental_consistency(prefill, step, full, [0, 1], [2, 0])
+torch.testing.assert_close(last, full([0, 1, 2, 0]))
+assert last.shape == (3,)
+assert torch.isfinite(last).all()
+```
+
+这个 harness 不把近似量化误差自动视为正确；生产测试应为 dtype/布局设显式容差，并逐位置比较 logits 或概率。遇到 beam 重排、speculative rejection、字符串 stop 或 grammar 状态时，还要确认 KV rollback、RNG counter 与增量 detokenizer 一起恢复。
+
 ## 停止语义
 
 停止条件可能是：
@@ -130,6 +159,8 @@ stop and detokenization rules
 ```
 
 KV 分支与分页见[KV Cache](kv-cache.md)，请求级状态见[推理运行时](runtime.md)，加速选择见[加速与量化](acceleration.md)。
+
+连续批处理、增量状态与 decode 一致性测试见[推理引擎手撕实现](../practice/inference-engine.md)。
 
 ## Reference {#reference}
 

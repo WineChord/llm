@@ -185,6 +185,31 @@ binary verifier 下：
 
 去掉 group std 的 [Dr. GRPO](https://arxiv.org/abs/2503.20783)正是针对这种 question-level difficulty weighting，而不是简单“少做一次归一化”。
 
+下面把输入固定为 `[prompt, rollout]`，因此中心化绝不会跨 prompt。输出仍是 response-level advantage；广播到 token 后必须再乘 action mask。`unbiased=False` 对应 population std，而显式零方差分支保证全同组没有伪信号。
+
+```python
+import torch
+def group_advantage(reward, mode="grpo", eps=1e-6):
+    if reward.ndim != 2 or reward.size(1) < 2:
+        raise ValueError("expected [prompt, rollout] with group size >= 2")
+    if mode == "rloo":
+        baseline = (reward.sum(1, keepdim=True) - reward) / (reward.size(1) - 1)
+        return (reward - baseline).detach()
+    if mode == "grpo":
+        centered = reward - reward.mean(1, keepdim=True)
+        scale = reward.std(1, keepdim=True, unbiased=False)
+        return torch.where(scale > eps, centered / scale, torch.zeros_like(centered)).detach()
+    raise ValueError(mode)
+reward = torch.tensor([[0., 1., 1.], [1., 1., 1.]])
+rloo = group_advantage(reward, "rloo")
+grpo = group_advantage(reward)
+torch.testing.assert_close(rloo[0], 1.5 * (reward[0] - reward[0].mean()))
+torch.testing.assert_close(grpo.mean(1), torch.zeros(2))
+assert torch.count_nonzero(grpo[1]) == 0 and not grpo.requires_grad
+```
+
+这里的 `detach()` 是 actor target 边界，不是把 policy log-probability 也冻结。生产实现还要保存 group ID、缺失 reward 状态和跨 rank 归约范围；若某条 rollout 无效，不能先把它填成零再参与均值与标准差。
+
 ## Response mean 引入的长度权重
 
 原始 GRPO 先对每条 response 的 action token 求平均：

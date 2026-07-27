@@ -572,7 +572,7 @@ def browser_audit(
     site_dir: Path,
     explicit_chrome: Optional[str],
     errors: list[str],
-) -> tuple[int, str, int]:
+) -> tuple[int, str, int, int]:
     try:
         from selenium import webdriver
         from selenium.webdriver.chrome.options import Options
@@ -580,11 +580,11 @@ def browser_audit(
         from selenium.webdriver.support.ui import WebDriverWait
     except ImportError:
         errors.append("browser audit requires Selenium")
-        return 0, "unknown", 0
+        return 0, "unknown", 0, 0
     binary = chrome_binary(explicit_chrome)
     if binary is None:
         errors.append("browser audit could not find Chrome or Chromium")
-        return 0, "unknown", 0
+        return 0, "unknown", 0, 0
     pages = sorted(site_dir.glob("**/index.html"))
     options = Options()
     options.binary_location = binary
@@ -603,12 +603,14 @@ def browser_audit(
     rendered = 0
     version = "unknown"
     visits = 0
+    disclosure_interactions = 0
     with serve_directory(site_dir) as base_url:
         try:
             for width, height, mobile in (
                 (1440, 1000, False),
                 (390, 844, True),
             ):
+                disclosure_checked = False
                 driver.execute_cdp_cmd(
                     "Emulation.setDeviceMetricsOverride",
                     {
@@ -728,6 +730,36 @@ def browser_audit(
                             const documentOverflow =
                               document.documentElement.scrollWidth
                               > document.documentElement.clientWidth + 1;
+                            const disclosures = [
+                              ...document.querySelectorAll(
+                                'details.code-disclosure'
+                              )
+                            ];
+                            const invalidDisclosures = disclosures.filter(
+                              (details) => {
+                                const summary = details.firstElementChild;
+                                return !summary
+                                  || summary.tagName !== 'SUMMARY'
+                                  || !summary.id
+                                  || details.querySelectorAll(
+                                    ':scope > summary'
+                                  ).length !== 1
+                                  || !details.querySelector('pre > code')
+                                  || !!details.querySelector(
+                                    'details.code-disclosure'
+                                  );
+                              }
+                            ).length;
+                            const openDisclosures = disclosures.filter(
+                              (details) => details.open
+                            ).length;
+                            const missingDisclosureCopies = disclosures.filter(
+                              (details) =>
+                                details.querySelectorAll(
+                                  '.md-code__button[data-md-type="copy"]'
+                                ).length
+                                < details.querySelectorAll('pre > code').length
+                            ).length;
                             const overflowingElements = documentOverflow
                               ? [...document.querySelectorAll(
                                   'article.md-content__inner *'
@@ -776,6 +808,10 @@ def browser_audit(
                               article: !!article,
                               documentOverflow,
                               overflowingElements,
+                              disclosures: disclosures.length,
+                              invalidDisclosures,
+                              openDisclosures,
+                              missingDisclosureCopies,
                             };
                             """
                         )
@@ -814,6 +850,21 @@ def browser_audit(
                             errors.append(
                                 f"{route}: {stats['brokenImages']} broken images"
                             )
+                        if stats["invalidDisclosures"]:
+                            errors.append(
+                                f"{route}: {stats['invalidDisclosures']} "
+                                "invalid code disclosures"
+                            )
+                        if stats["openDisclosures"]:
+                            errors.append(
+                                f"{route}: {stats['openDisclosures']} code "
+                                "disclosures are initially open"
+                            )
+                        if stats["missingDisclosureCopies"]:
+                            errors.append(
+                                f"{route}: {stats['missingDisclosureCopies']} "
+                                "code disclosures are missing copy controls"
+                            )
                         if stats["documentOverflow"]:
                             details = "; ".join(
                                 (
@@ -830,6 +881,86 @@ def browser_audit(
                                 f"{width}px"
                                 + (f": {details}" if details else "")
                             )
+                        if stats["disclosures"] and not disclosure_checked:
+                            summary_id = driver.execute_script(
+                                "return document.querySelector("
+                                "'details.code-disclosure > summary').id"
+                            )
+                            enter_handled = driver.execute_script(
+                                """
+                                const summary = document.getElementById(
+                                  arguments[0]
+                                );
+                                summary.focus();
+                                const event = new KeyboardEvent('keydown', {
+                                  key: 'Enter',
+                                  code: 'Enter',
+                                  bubbles: true,
+                                  cancelable: true,
+                                });
+                                summary.dispatchEvent(event);
+                                return event.defaultPrevented;
+                                """,
+                                summary_id,
+                            )
+                            if not enter_handled:
+                                raise RuntimeError(
+                                    "Enter was not handled by the disclosure"
+                                )
+                            wait.until(
+                                lambda current: current.execute_script(
+                                    "return document.getElementById("
+                                    "arguments[0]).closest('details').open",
+                                    summary_id,
+                                )
+                            )
+                            space_handled = driver.execute_script(
+                                """
+                                const summary = document.getElementById(
+                                  arguments[0]
+                                );
+                                const event = new KeyboardEvent('keydown', {
+                                  key: ' ',
+                                  code: 'Space',
+                                  bubbles: true,
+                                  cancelable: true,
+                                });
+                                summary.dispatchEvent(event);
+                                return event.defaultPrevented;
+                                """,
+                                summary_id,
+                            )
+                            if not space_handled:
+                                raise RuntimeError(
+                                    "Space was not handled by the disclosure"
+                                )
+                            wait.until(
+                                lambda current: not current.execute_script(
+                                    "return document.getElementById("
+                                    "arguments[0]).closest('details').open",
+                                    summary_id,
+                                )
+                            )
+                            driver.execute_script(
+                                "location.hash = arguments[0];",
+                                summary_id,
+                            )
+                            wait.until(
+                                lambda current: current.execute_script(
+                                    "return document.getElementById("
+                                    "arguments[0]).closest('details').open",
+                                    summary_id,
+                                )
+                            )
+                            driver.execute_script(
+                                "document.getElementById(arguments[0])"
+                                ".closest('details').open = false; "
+                                "history.replaceState(null, '', "
+                                "location.pathname + location.search);",
+                                summary_id,
+                            )
+                            disclosure_checked = True
+                            disclosure_interactions += 1
                         logs = driver.get_log("browser")
                         severe = [
                             item["message"]
@@ -854,7 +985,7 @@ def browser_audit(
             driver.execute_cdp_cmd("Emulation.clearDeviceMetricsOverride", {})
         finally:
             driver.quit()
-    return rendered, version, visits
+    return rendered, version, visits, disclosure_interactions
 
 
 def source_paths(root: Path) -> list[Path]:
@@ -961,14 +1092,15 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         if not site_dir.is_dir():
             errors.append(f"browser site directory does not exist: {site_dir}")
         else:
-            rendered, version, visits = browser_audit(
+            rendered, version, visits, disclosure_interactions = browser_audit(
                 site_dir,
                 args.chrome_binary,
                 errors,
             )
             print(
                 f"browser: {rendered} rendered expressions across "
-                f"{visits} page visits with MathJax {version}"
+                f"{visits} page visits with MathJax {version}; "
+                f"{disclosure_interactions} disclosure interaction checks"
             )
     if errors:
         print("\nRendering check failed:", file=sys.stderr)

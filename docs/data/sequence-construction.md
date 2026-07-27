@@ -56,6 +56,38 @@ $$
 
 role marker、EOS 和工具结果是否参与训练是建模选择，应显式记录。
 
+### 最小语义实现 {#shift-mask-and-segment}
+
+`causal_example` 接收同长的 token、目标资格标记和 segment ID，返回显式 shift 后的输入、标签、loss mask 与布尔 attention mask。目标资格跟随被预测的 token；跨 segment 的首个 token 不计损失，attention 也不会穿过样本边界。
+
+```python
+import torch
+
+def causal_example(ids, supervised, segment):
+    ids, supervised, segment = map(torch.as_tensor, (ids, supervised, segment))
+    inputs, labels = ids[:-1], ids[1:]
+    same_target_segment = segment[1:] == segment[:-1]
+    loss_mask = supervised[1:].bool() & same_target_segment
+    pos = torch.arange(inputs.numel(), device=inputs.device)
+    causal = pos[:, None] >= pos[None, :]
+    same_visible_segment = segment[:-1, None] == segment[None, :-1]
+    return inputs, labels, loss_mask, causal & same_visible_segment
+
+x, y, lm, am = causal_example(
+    [10, 11, 12, 20, 21],
+    [0, 0, 1, 1, 1],
+    [0, 0, 0, 1, 1],
+)
+assert y.tolist() == [11, 12, 20, 21]
+assert lm.tolist() == [False, True, False, True]
+assert all(tensor.device == x.device for tensor in (y, lm, am))
+assert not am[3, 0] and torch.equal(
+    am.diag(), torch.ones(4, dtype=torch.bool, device=x.device)
+)
+```
+
+这里用稠密矩阵把语义写清楚，复杂度是 $O(T^2)$；生产 packing 通常把 segment offsets 传给支持 varlen/block-diagonal 的 kernel，而不是物化整张 mask。得到的 `loss_mask` 应交给[训练目标：Token-normalized cross entropy](../practice/training-objectives.md#token-normalized-cross-entropy)，不能先按样本各自求均值再无权相加。
+
 ## Padding 与 packing
 
 ### Padding

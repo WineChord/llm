@@ -113,6 +113,51 @@ $a_{\max}$ 可来自当前张量，也可来自历史窗口：
 
 scale 不是可随意丢弃的临时量。训练恢复、权重导出、跨节点通信和推理部署都需要知道它的轴、粒度、格式与版本。
 
+### Block scale 与饱和 {#block-scale-saturation-reference}
+
+下面只定义低精度浮点路径的范围语义，不复刻整数 groupwise quantization：输入沿最后一维切块，`scale_amax=None` 表示 current scaling；传入历史 amax 则模拟 delayed scaling。输出为缩放并截断到 $[-q_{\max},q_{\max}]$ 的 payload、block scale、饱和位置和反缩放结果。
+
+```python
+import torch
+
+def block_scale_and_saturate(x, block_size, qmax, scale_amax=None):
+    if x.ndim == 0 or block_size <= 0 or x.shape[-1] % block_size or qmax <= 0:
+        raise ValueError("positive block_size and qmax must tile the last dimension")
+    block = x.reshape(*x.shape[:-1], -1, block_size)
+    current_amax = block.abs().amax(dim=-1, keepdim=True)
+    amax = current_amax if scale_amax is None else scale_amax.reshape_as(current_amax)
+    if not torch.isfinite(amax).all() or torch.any(amax < 0):
+        raise ValueError("scale amax must be finite and non-negative")
+    if torch.any((amax == 0) & (current_amax > 0)):
+        raise ValueError("zero delayed amax cannot encode a nonzero block")
+    scale = amax / qmax
+    safe_scale = torch.where(scale > 0, scale, torch.ones_like(scale))
+    normalized = block / safe_scale
+    saturated = normalized.abs() > qmax
+    payload = normalized.clamp(-qmax, qmax)
+    restored = payload * scale
+    return payload, scale.squeeze(-1), saturated, restored.view_as(x)
+
+x = torch.tensor([0., 1., 8., 16.])
+payload, scale, saturated, restored = block_scale_and_saturate(x, 2, qmax=4)
+assert torch.equal(scale, torch.tensor([0.25, 4.])) and not saturated.any()
+torch.testing.assert_close(restored, x)
+_, delayed_scale, delayed_saturation, delayed = block_scale_and_saturate(
+    x, 2, qmax=4, scale_amax=torch.tensor([1., 8.])
+)
+assert delayed_scale.tolist() == [0.25, 2.] and delayed_saturation.tolist()[-1] == [False, True]
+assert delayed[-1].item() == 8
+for args in [(torch.tensor([1.]), 1, 4, torch.tensor([0.])),
+             (torch.ones(2, 3), 2, 4, None)]:
+    try:
+        block_scale_and_saturate(*args)
+    except ValueError:
+        continue
+    raise AssertionError("invalid block scales and cross-row blocks must be rejected")
+```
+
+block 边界、scale 轴和饱和判定是这里的核心不变量；历史 amax 落后于分布时，超范围值必须可观察，不能静默包装。历史 scale 为零而当前 block 非零时连量化方向都没有定义，reference 会直接拒绝，而不是用临时除数计算后再乘回零。它没有模拟 E4M3/E5M2 的舍入、subnormal 与 NaN 编码，生产实现还需保存 amax history、格式版本和 scale layout，并用实际 cast kernel 对照；稳定 softmax 与 norm 的组合断言见[Tensor 原语](../practice/tensor-primitives.md)。
+
 ## MXFP8 与 NVFP4
 
 [MXFP8](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/features/low_precision_training/mxfp8/mxfp8.html)把连续小块元素与块级 E8M0 scale 绑定，使不同幅度区域不必共享一个 tensor-wide scale。其收益依赖特定数据布局、转置策略和硬件支持；块边界改变会改变量化结果。

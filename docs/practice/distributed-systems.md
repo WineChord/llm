@@ -53,6 +53,10 @@ $$
 \sqrt{\sum_r\sum_{p\in\mathcal P_r}\lVert g_p\rVert_2^2}.
 $$
 
+<details class="code-disclosure">
+<summary id="sharded-global-norm-reference">Sharded global norm 与裁剪 <span class="code-disclosure__meta">Python · 37 行</span></summary>
+<div class="code-disclosure__body" markdown="1">
+
 ```python
 @torch.no_grad()
 def sharded_grad_norm(parameters, collective_device=None,
@@ -93,6 +97,9 @@ def clip_sharded_grad_norm_(parameters, max_norm, collective_device=None,
             p.grad.mul_(scale)
     return norm
 ```
+
+</div>
+</details>
 
 默认用设备侧 FP32 累加，只有确有精度需要且 collective backend 支持时才切换 FP64。没有本地梯度的 rank 无法从 tensor 推断设备，必须显式传入 `collective_device`。若参数被复制在多个 rank，必须只计一次或先按复制组归约；否则 global norm 会被重复放大。
 
@@ -226,6 +233,10 @@ def training_memory_bytes(parameters, replicated_bpp, sharded_bpp, world_size,
 
 checkpoint 只有在所有 shard 完成并校验后才能被读取。数据文件使用不可变 snapshot ID，最后原子提交 manifest：
 
+<details class="code-disclosure">
+<summary id="checkpoint-manifest-commit-reference">Checkpoint manifest 的原子提交 <span class="code-disclosure__meta">Python · 51 行</span></summary>
+<div class="code-disclosure__body" markdown="1">
+
 ```python
 def file_sha256(path):
     digest = hashlib.sha256()
@@ -281,6 +292,9 @@ def commit_manifest(root, snapshot_id, shards, metadata):
         temp.unlink(missing_ok=True)
     return target
 ```
+
+</div>
+</details>
 
 ```python
 def verify_manifest(root, manifest_path):

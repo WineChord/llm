@@ -71,6 +71,32 @@ $$
 
 但字节编码、normalization 和文档边界仍需一致。[PALOMA](https://arxiv.org/abs/2312.10523) 展示了按众多领域分层评估语言模型 fit，并强调 decontamination、训练顺序、词表与评测格式等控制。
 
+masked PPL 的语义核是先在词表维取目标 token 的 NLL，再让有效 token mask 同时控制总和与分母。这里假定 logits 已与“要预测的下一个 token”对齐；shift、滑窗重叠和文档边界应由 harness 显式构造。
+
+```python
+import torch
+import torch.nn.functional as F
+def masked_perplexity(logits, target, valid_mask):
+    if logits.shape[:-1] != target.shape or target.shape != valid_mask.shape:
+        raise ValueError("next-token logits, targets and mask must align")
+    mask = valid_mask.bool()
+    if not mask.any():
+        raise ValueError("no scored tokens")
+    mean_nll = F.cross_entropy(logits[mask], target[mask])
+    return mean_nll.exp(), mean_nll
+logits = torch.tensor(
+    [[[4., 0.], [0., 4.], [float("nan"), float("nan")]]], requires_grad=True)
+target = torch.tensor([[0, 1, -100]])
+mask = torch.tensor([[True, True, False]])
+ppl, loss = masked_perplexity(logits, target, mask)
+loss.backward()
+torch.testing.assert_close(ppl, F.cross_entropy(logits[0, :2], target[0, :2]).exp())
+torch.testing.assert_close(logits.grad[0, 2], torch.zeros(2))
+assert 1 <= ppl < 1.1
+```
+
+mask 外 logits 即使极端错误也不影响结果。生产实现必须用跨 rank 的全局 NLL sum 与 token count 归约，并明确 BOS/EOS、padding、重叠窗口只计一次以及 infra failure 的 coverage；不同 tokenizer 间仍不能直接比较 token PPL。
+
 ## 多项选择
 
 ### 标签概率

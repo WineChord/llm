@@ -24,6 +24,38 @@ $$
 
 均匀采样简单但会漏掉短事件；问题驱动采样可能在尚未理解视频时选错时间段。长视频系统常先低成本粗扫，再对候选片段提高帧率与分辨率。
 
+### 最小语义实现 {#video-tubelet}
+
+`tubelet_patchify` 把 `[B,C,T,H,W]` 视频按 `(P_t,P_h,P_w)` 展开为时空 token，并返回三维 grid；逆函数用同一 layout 恢复视频。往返断言能同时发现时间/通道轴互换和错误的 flatten 顺序。
+
+```python
+import torch
+
+def tubelet_patchify(video, tubelet):
+    batch, channels, time, height, width = video.shape
+    pt, ph, pw = tubelet
+    assert time % pt == height % ph == width % pw == 0
+    grid = time // pt, height // ph, width // pw
+    nt, nh, nw = grid
+    x = video.view(batch, channels, nt, pt, nh, ph, nw, pw)
+    patches = x.permute(0, 2, 4, 6, 1, 3, 5, 7).reshape(batch, nt * nh * nw, -1)
+    return patches, grid
+
+def tubelet_unpatchify(patches, channels, grid, tubelet):
+    batch, (nt, nh, nw), (pt, ph, pw) = patches.size(0), grid, tubelet
+    x = patches.view(batch, nt, nh, nw, channels, pt, ph, pw)
+    return x.permute(0, 4, 1, 5, 2, 6, 3, 7).reshape(
+        batch, channels, nt * pt, nh * ph, nw * pw
+    )
+
+video = torch.arange(2 * 3 * 4 * 8 * 6).view(2, 3, 4, 8, 6)
+tubelets, grid = tubelet_patchify(video, (2, 4, 3))
+assert tubelets.shape == (2, 8, 72)
+torch.testing.assert_close(tubelet_unpatchify(tubelets, 3, grid, (2, 4, 3)), video)
+```
+
+真实视频管线还要保存 frame timestamp、可变帧率、crop/tile 坐标和 padding mask；tubelet 只减少 token 数，不会恢复被稀疏采样漏掉的短事件。可运行的 layout 实验见[多模态原语：Video tubelet](../practice/multimodal.md#video-tubelet)。
+
 ## 时空位置
 
 每个 token 至少有

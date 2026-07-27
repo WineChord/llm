@@ -52,6 +52,52 @@ $$
 
 第 2–4 步不是普通 GEMM。它们涉及 reduction、scan、动态地址和 scatter；小 batch 下可能比 expert GEMM 更突出。
 
+### 路由、执行与归并 {#moe-dispatch-combine-reference}
+
+下面的 `x` 为 `[tokens,hidden]`，router logits 为 `[tokens,experts]`，expert 权重为 `[experts,out,hidden]`。reference 对 top-$k$ 权重重新归一化；`capacity=None` 时无 token drop，正整数 capacity 则按 routing rank、token 顺序截断，再把结果加权归并到原 token 顺序。
+
+```python
+import torch
+import torch.nn.functional as F
+
+def moe_reference(x, router_logits, expert_weights, top_k, capacity=None):
+    if x.ndim != 2 or router_logits.ndim != 2 or expert_weights.ndim != 3:
+        raise ValueError("expected x [N,H], router [N,E], experts [E,O,H]")
+    tokens, hidden = x.shape
+    expert_count, output_size, expert_hidden = expert_weights.shape
+    if router_logits.shape != (tokens, expert_count) or expert_hidden != hidden:
+        raise ValueError("token, hidden, or expert dimensions disagree")
+    if not isinstance(top_k, int) or not 1 <= top_k <= expert_count:
+        raise ValueError("top_k must select existing experts")
+    if capacity is not None and (not isinstance(capacity, int) or capacity <= 0):
+        raise ValueError("capacity must be a positive integer")
+    probability = torch.softmax(router_logits, dim=-1)
+    gate, expert_id = probability.topk(top_k, dim=-1)
+    gate = gate / gate.sum(dim=-1, keepdim=True)
+    output, counts = x.new_zeros(tokens, output_size), torch.zeros(expert_count, dtype=torch.long)
+    for slot in range(top_k):
+        for expert, weight in enumerate(expert_weights):
+            selected = expert_id[:, slot] == expert
+            if selected.any():
+                token = torch.where(selected)[0]
+                if capacity is not None:
+                    token = token[:max(capacity - counts[expert].item(), 0)]
+                output[token] += gate[token, slot, None] * F.linear(x[token], weight)
+                counts[expert] += token.numel()
+    return output, counts
+
+x, router = torch.randn(5, 4), torch.randn(5, 3)
+identity_experts = torch.eye(4).repeat(3, 1, 1)
+y, counts = moe_reference(x, router, identity_experts, top_k=2)
+torch.testing.assert_close(y, x)
+assert counts.sum().item() == 2 * x.shape[0] and counts.shape[0] == identity_experts.shape[0]
+try: moe_reference(x, torch.randn(5, 4), identity_experts, top_k=2)
+except ValueError: pass
+else: raise AssertionError("router/expert mismatch must fail")
+```
+
+无容量截断时，每个 token 恰好产生 $k$ 条路由记录，gate 和为 $1$，归并后回到唯一逻辑位置；错配的 router expert 维会在路由前失败。生产实现把中间记录 permutation 后交给 all-to-all / grouped GEMM；tie-breaking、跨 rank split、低精度累加和 backward collective 必须额外固定，不能由这个单进程 reference 推断。
+
 若每个 token 的 hidden activation 为 $H$ 个、元素字节数为 $s$，dispatch 与 combine 的逻辑 payload 数量级为
 
 $$

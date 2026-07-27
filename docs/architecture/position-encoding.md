@@ -66,6 +66,36 @@ $$
 q_m^\top R_{n-m}k_n.
 $$
 
+### 最小语义实现 {#rotary-position-embedding}
+
+`apply_rope` 接收 `[T,D]` 张量和每个 token 的逻辑 position ID，按相邻偶/奇通道配对后返回同 shape 张量。两个断言分别验证旋转保持向量范数，以及 query/key 同时平移时点积只依赖相对位移。
+
+```python
+import torch
+
+def apply_rope(x, position, base=10_000.):
+    assert x.ndim == 2 and x.shape[-1] % 2 == 0
+    half = x.shape[-1] // 2
+    index = torch.arange(half, device=x.device)
+    inv_freq = base ** (-index / half)
+    angle = torch.as_tensor(position, device=x.device)[:, None] * inv_freq[None, :]
+    even, odd = x[:, 0::2], x[:, 1::2]
+    cos, sin = angle.cos(), angle.sin()
+    return torch.stack(
+        (even * cos - odd * sin, even * sin + odd * cos), dim=-1
+    ).flatten(-2)
+
+torch.manual_seed(0)
+q, k = torch.randn(3, 8), torch.randn(3, 8)
+position = torch.arange(3)
+torch.testing.assert_close(apply_rope(q, position).norm(dim=-1), q.norm(dim=-1))
+lhs = (apply_rope(q[:1], [7]) * apply_rope(k[:1], [11])).sum()
+rhs = (apply_rope(q[:1], [0]) * apply_rope(k[:1], [4])).sum()
+torch.testing.assert_close(lhs, rhs)
+```
+
+真实模型还要固定 split-half/interleaved 约定、partial rotary dimension、batch broadcast、角度计算精度与 cache 中 K 的存储形态；仅凭公式无法保证 checkpoint 对齐。支持高维张量的实现见[张量原语：Rotary Position Embedding](../practice/tensor-primitives.md#rotary-position-embedding)，prefill/decode 的 position 与 mask 应同[Decoder-only Transformer：Attention](../practice/transformer-from-scratch.md#attention)联合测试。
+
 不同通道使用不同角频率。常见定义为
 
 $$

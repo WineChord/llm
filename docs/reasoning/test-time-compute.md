@@ -42,6 +42,33 @@ $$
 
 若答案是自由文本，可先聚类语义等价候选，再按簇大小与可信度选择；直接比较原始字符串会严重低估一致性。
 
+聚合器应接收显式的答案归一函数，并把票数一起返回，便于实现预注册的停止阈值。下面还给出无放回 pass@$k$；它只衡量候选覆盖，不能复用作最终选择准确率。
+
+```python
+import math
+from collections import Counter
+def self_consistency(samples, normalize):
+    answers = [normalize(sample) for sample in samples]
+    if not answers or any(answer is None for answer in answers):
+        raise ValueError("every sample needs an extractable answer")
+    counts = Counter(answers)
+    answer, votes = max(counts.items(), key=lambda item: (item[1], item[0]))
+    return answer, votes, counts
+def pass_at_k(n, correct, k):
+    if not 0 <= correct <= n or not 1 <= k <= n:
+        raise ValueError("invalid counts")
+    if n - correct < k:
+        return 1.
+    return 1 - math.comb(n - correct, k) / math.comb(n, k)
+normalize = lambda text: text.strip().lower().replace("4.0", "4")
+answer, votes, counts = self_consistency(["4", " 4.0 ", "5"], normalize)
+assert answer == "4" and votes == 2 and sum(counts.values()) == 3
+assert pass_at_k(10, 0, 3) == 0
+assert pass_at_k(10, 2, 9) == 1
+```
+
+平票规则在这里按规范化答案字典序固定，避免依赖并发完成顺序；实际系统可改用 verifier，但必须预先声明。生产归一器需要覆盖单位、数值容差、集合与代码语义，并把 parse failure、timeout 和取消分支与错误答案分开计数。
+
 ## Best-of-$N$
 
 给定 verifier $v(x,y)$：

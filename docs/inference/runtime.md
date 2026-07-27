@@ -18,6 +18,104 @@ waiting
 
 被抢占的请求还可能进入 `swapped` 或 `recompute` 状态。每次转移都要同时更新队列、KV 所有权、token 数、采样状态和客户端流。
 
+### 核心转移不变量 {#request-transition-reference}
+
+最小转移函数接收当前状态、目标状态和当前 KV block 数，返回新的状态与资源数；任何终态都释放请求所有权，非法边直接失败。
+
+```python
+ALLOWED = {
+    "waiting": {"admitted", "cancelled", "failed"},
+    "admitted": {"prefilling", "cancelled", "failed"},
+    "prefilling": {"decoding", "cancelled", "failed"},
+    "decoding": {"finished", "cancelled", "failed"},
+}
+TERMINAL = {"finished", "cancelled", "failed"}
+
+def apply_transition(state, target, kv_blocks):
+    if not isinstance(kv_blocks, int) or kv_blocks < 0:
+        raise ValueError("kv_blocks must be a non-negative integer")
+    if target not in ALLOWED.get(state, set()):
+        raise ValueError(f"illegal transition: {state} -> {target}")
+    return target, 0 if target in TERMINAL else kv_blocks
+
+state, blocks = apply_transition("waiting", "admitted", 0)
+state, blocks = apply_transition(state, "prefilling", 2)
+state, blocks = apply_transition(state, "cancelled", blocks)
+assert state == "cancelled" and blocks == 0
+assert "decoding" not in ALLOWED.get(state, set())
+try:
+    apply_transition("waiting", "admitted", -1)
+except ValueError:
+    pass
+else:
+    raise AssertionError("negative KV ownership must be rejected")
+```
+
+状态机的输入是当前状态、目标状态与资源变化，输出是一个新的可枚举状态；终态必须同步清空 KV 所有权。完整请求类比单个转移函数更长，因此默认折叠，但其中的状态集合、合法边和终态回收仍是正文语义的一部分。
+
+<details class="code-disclosure">
+<summary id="request-state-machine">请求状态转移与资源回滚 <span class="code-disclosure__meta">Python · 51 行</span></summary>
+<div class="code-disclosure__body" markdown="1">
+
+```python
+from dataclasses import dataclass
+from enum import Enum, auto
+class State(Enum):
+    WAITING = auto()
+    ADMITTED = auto()
+    PREFILLING = auto()
+    DECODING = auto()
+    FINISHED = auto()
+    CANCELLED = auto()
+    FAILED = auto()
+TERMINAL = {State.FINISHED, State.CANCELLED, State.FAILED}
+ALLOWED = {
+    State.WAITING: {State.ADMITTED, State.CANCELLED, State.FAILED},
+    State.ADMITTED: {State.PREFILLING, State.CANCELLED, State.FAILED},
+    State.PREFILLING: {State.DECODING, State.CANCELLED, State.FAILED},
+    State.DECODING: TERMINAL,
+}
+@dataclass
+class Request:
+    request_id: str
+    state: State = State.WAITING
+    kv_blocks: int = 0
+    computed_tokens: int = 0
+    def transition(self, target):
+        if target not in ALLOWED.get(self.state, set()):
+            raise ValueError(f"illegal transition: {self.state} -> {target}")
+        self.state = target
+        if target in TERMINAL:
+            self.kv_blocks = 0
+    def reserve_blocks(self, count):
+        if self.state not in {State.ADMITTED, State.PREFILLING, State.DECODING}:
+            raise ValueError("request does not own runtime resources")
+        if not isinstance(count, int) or count <= 0:
+            raise ValueError("reservation count must be a positive integer")
+        self.kv_blocks += count
+r = Request("r0")
+r.transition(State.ADMITTED)
+r.reserve_blocks(2)
+try: r.reserve_blocks(0)
+except ValueError: pass
+else: raise AssertionError("non-positive reservation must be rejected")
+r.transition(State.PREFILLING)
+r.transition(State.DECODING)
+r.computed_tokens = 8
+r.transition(State.FINISHED)
+assert r.kv_blocks == 0 and r.computed_tokens == 8
+try:
+    r.transition(State.DECODING)
+    raise AssertionError("terminal request was revived")
+except ValueError:
+    pass
+```
+
+</div>
+</details>
+
+reference 把非法跳转和终态复活变为显式错误，并保持 `computed_tokens` 作为已提交历史。生产引擎还需让队列移动、block 分配、采样状态和客户端事件在同一事务边界提交；尤其不能把“字段已改”误当作 GPU 使用已经结束。block table、连续批处理与回滚的组合实现见[手撕：推理引擎](../practice/inference-engine.md)。
+
 最小请求对象包括：
 
 ```text
@@ -45,6 +143,49 @@ finish reason and cancellation token
 - 哪些请求因 SLO 或公平性优先。
 
 “batch size”因此是动态的；性能报告应同时给出 scheduled sequences 与 scheduled tokens。
+
+### `build_batch` baseline {#continuous-batching-build-batch-reference}
+
+输入是一轮开始时的请求快照，以及 token、序列和 prefill chunk 三个预算；输出为 `(request_id, phase, scheduled_tokens)` 列表。baseline 先给每个 decode 请求一个 token，再用剩余预算放入 waiting / prefill 请求。
+
+```python
+def build_batch(requests, token_budget, max_sequences, prefill_chunk):
+    if min(token_budget, max_sequences, prefill_chunk) <= 0:
+        raise ValueError("scheduler budgets must be positive")
+    request_ids = [request["id"] for request in requests]
+    if len(request_ids) != len(set(request_ids)):
+        raise ValueError("request ids must be unique within a scheduling round")
+    batch, used = [], 0
+    decode = [r for r in requests if r["phase"] == "decode"]
+    prefill = [r for r in requests if r["phase"] in {"waiting", "prefill"}]
+    for request in decode + prefill:
+        if len(batch) == max_sequences or used == token_budget:
+            break
+        available = token_budget - used
+        tokens = 1 if request["phase"] == "decode" else min(
+            request["prompt_left"], prefill_chunk, available
+        )
+        if tokens > 0 and tokens <= available:
+            batch.append((request["id"], request["phase"], tokens))
+            used += tokens
+    return batch
+
+requests = [{"id": "d0", "phase": "decode", "prompt_left": 0},
+            {"id": "p0", "phase": "prefill", "prompt_left": 6},
+            {"id": "d1", "phase": "decode", "prompt_left": 0}]
+batch = build_batch(requests, token_budget=5, max_sequences=3, prefill_chunk=3)
+assert [item[0] for item in batch] == ["d0", "d1", "p0"]
+assert sum(item[2] for item in batch) == 5
+assert all(tokens == 1 for _, phase, tokens in batch if phase == "decode")
+try:
+    build_batch(requests + [requests[0]], 5, 4, 3)
+except ValueError:
+    pass
+else:
+    raise AssertionError("one request cannot be scheduled twice in a round")
+```
+
+每个请求在一轮中最多出现一次，decode 恰好消费一个 token，且两个预算都不得越界。函数不修改请求状态，也不承诺公平性；生产调度还必须联合 KV / workspace reservation、age、deadline、cache affinity、抢占和原子提交。状态推进与更多预算断言见[手撕：推理引擎 · Continuous batching](../practice/inference-engine.md#continuous-batching-reference)。
 
 ## 分页 KV
 

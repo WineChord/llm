@@ -14,6 +14,51 @@ $$
 
 若整段对话中只训练 assistant token，loss mask 应与消息边界严格一致。是否训练 system、user、tool result、role marker 与 EOS 是配方的一部分，详见[序列构造与打包](../data/sequence-construction.md)。
 
+### Completion-only loss {#completion-only-loss-reference}
+
+下面的输入已经完成 next-token 对齐：`labels[b,t]` 是 `logits[b,t]` 要预测的 token，`response_mask` 只在纳入监督的 assistant 位置为 $1$，`sample_weight` 为每条样本的权重。函数返回分子与加权 token 分母，分布式路径必须先分别归约二者。
+
+```python
+import torch
+import torch.nn.functional as F
+
+def completion_only_terms(logits, labels, response_mask, sample_weight):
+    if (logits.ndim != 3 or logits.shape[:2] != labels.shape
+            or labels.shape != response_mask.shape):
+        raise ValueError("logits, labels and response mask must align on [batch, time]")
+    if sample_weight.ndim != 1 or sample_weight.shape[0] != logits.shape[0]:
+        raise ValueError("sample_weight must contain one value per sample")
+    if not torch.isfinite(sample_weight).all() or (sample_weight < 0).any():
+        raise ValueError("sample weights must be finite and non-negative")
+    valid = response_mask.bool() & sample_weight[:, None].ne(0)
+    weight = sample_weight[:, None].expand_as(labels)[valid].to(logits.dtype)
+    if not valid.any():
+        return logits[valid].sum(), weight.sum()
+    nll = F.cross_entropy(logits[valid], labels[valid], reduction="none")
+    return (nll * weight).sum(), weight.sum()
+
+z = torch.tensor([[[float("nan")] * 3, [0.] * 3, [0.] * 3]], requires_grad=True)
+labels = torch.tensor([[-100, 1, 2]])
+mask = torch.tensor([[False, True, True]])
+num, den = completion_only_terms(z, labels, mask, torch.tensor([2.]))
+assert den.item() == 4 and torch.isfinite(num)
+(num / den).backward()
+assert torch.isfinite(z.grad).all() and z.grad[:, 0].abs().sum() == 0
+empty_num, empty_den = completion_only_terms(
+    z, torch.full_like(labels, -100), torch.zeros_like(mask), torch.tensor([2.])
+)
+assert empty_num == 0 and empty_den == 0
+try:
+    completion_only_terms(z.expand(2, -1, -1), labels.expand(2, -1),
+                          mask.expand(2, -1), torch.ones(2, 1))
+except ValueError:
+    pass
+else:
+    raise AssertionError("rank-two sample weights must be rejected")
+```
+
+不变量是非 response token 在交叉熵之前被排除，对 loss 与梯度均无贡献；样本权重同时作用于分子和分母。局部 batch 没有有效目标时返回 `(0, 0)`，data-parallel 调用方归约后必须拒绝全局分母仍为零的更新。这里没有解析 role 或 chat template；这些边界必须由版本化的序列构造器产生。多种归一化与目标的组合测试见[训练目标实现](../practice/training-objectives.md)。
+
 ## 数据比数量更重要的地方
 
 一条示范同时提供：

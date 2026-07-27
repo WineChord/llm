@@ -19,6 +19,52 @@ $$
 
 对 packed sequence，attention mask 和 loss mask 是不同契约：前者决定能看到什么，后者决定哪些 token 产生梯度。文档可见性、EOS 与 position 的选择见[序列构造与打包](../data/sequence-construction.md)。
 
+### Causal loss 的最小实现 {#causal-loss-semantic-reference}
+
+输入 `logits` 的形状为 $[B,T,V]$，`token_ids` 与 `loss_mask` 为 $[B,T]$。函数在内部完成 next-token shift，返回尚未归一化的 loss 总和与有效 token 数；跨 data-parallel rank 时应分别对这两个标量求和，最后只做一次除法。
+
+```python
+import torch
+import torch.nn.functional as F
+
+def causal_lm_terms(logits, token_ids, loss_mask):
+    if logits.ndim != 3 or token_ids.shape != logits.shape[:2]:
+        raise ValueError("expected logits [B,T,V] and token IDs [B,T]")
+    if loss_mask.shape != token_ids.shape:
+        raise ValueError("loss mask must align with token IDs")
+    pred, target = logits[:, :-1].contiguous(), token_ids[:, 1:].contiguous()
+    valid = loss_mask[:, 1:].bool()
+    count = valid.sum()
+    if not valid.any():
+        return pred[valid].sum(), count
+    return F.cross_entropy(pred[valid], target[valid], reduction="sum"), count
+
+def global_token_mean(local_sums, local_counts):
+    count = torch.stack(local_counts).sum()
+    if count <= 0: raise ValueError("global batch has no target token")
+    return torch.stack(local_sums).sum() / count
+
+z = torch.zeros(1, 4, 3).index_fill(1, torch.tensor([2]), float("nan")).requires_grad_()
+ids = torch.tensor([[0, 1, 2, -100]])
+mask = torch.tensor([[False, True, True, False]])
+loss_sum, count = causal_lm_terms(z, ids, mask)
+assert count.item() == 2 and torch.isfinite(loss_sum)
+(loss_sum / count).backward()
+assert torch.isfinite(z.grad).all() and z.grad[:, 2].abs().sum() == 0
+mean = global_token_mean([loss_sum, 3 * loss_sum], [count, count])
+assert torch.allclose(mean, 2 * loss_sum / count)
+empty_sum, empty_count = causal_lm_terms(z, ids, torch.zeros_like(mask))
+assert empty_sum == 0 and empty_count == 0
+rejected = False
+try:
+    global_token_mean([empty_sum], [empty_count])
+except ValueError:
+    rejected = True
+assert rejected
+```
+
+这里最重要的不变量是 shift 只发生一次、mask 跟随目标 token，并在交叉熵之前完成布尔选择。单个 rank 可以返回 `(0, 0)`，使 ragged data parallel 仍能归约；只有全局 count 为零才拒绝更新。reference 不负责构造跨文档 attention mask，也没有执行真实 collective；生产实现应以 FP32 累积归约量。
+
 ## Batch 与有效 token
 
 样本维度的 global batch 为

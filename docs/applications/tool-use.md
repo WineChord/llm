@@ -46,6 +46,28 @@ $$
 
 这些必须由执行层验证。
 
+最小 schema 核应是一个确定性函数：它只接受声明过的字段、返回规范化值，并在任何副作用前失败。下面的 `allowed_projects` 代表执行身份已经获得的资源范围；模型给出的项目名不能自行扩大它。
+
+```python
+def validate_report_args(arguments, allowed_projects):
+    if not isinstance(arguments, dict):
+        raise ValueError("arguments must be an object")
+    if set(arguments) != {"project", "title"}:
+        raise ValueError("unexpected or missing field")
+    project, title = arguments["project"], arguments["title"]
+    if project not in allowed_projects:
+        raise PermissionError("project is outside delegated scope")
+    if not isinstance(title, str) or not 1 <= len(title.strip()) <= 120:
+        raise ValueError("invalid title")
+    return {"project": project, "title": title.strip()}
+args = validate_report_args({"project": "alpha", "title": " Q2 "}, {"alpha"})
+assert args == {"project": "alpha", "title": "Q2"}
+assert validate_report_args(args, {"alpha"}) == args
+assert set(args) == {"project", "title"}
+```
+
+这只冻结了 schema、简单业务边界和规范化顺序；真实授权必须绑定调用主体、租户、资源版本和操作类型。规范化结果而非原始模型文本才可进入审批、幂等哈希与执行。
+
 ## 参数规范化
 
 执行前按确定性顺序处理：
@@ -82,6 +104,72 @@ $$
 - 非幂等操作。
 
 运行时需要按错误类型决定 retry、repair、compensate、ask 或 stop。
+
+下面的最小写路径接收已经规范化并授权的 command。`dispatch_once` 在调用外部系统前，先通过原子 `reserve` 持久化 `in_flight`；若执行抛出异常或没有返回明确终态，就写入 `needs_reconcile`，同一 key 的后续请求只能对账，不能再次执行。
+
+<details class="code-disclosure">
+<summary id="tool-dispatch-semantic-reference">持久占位与幂等 dispatch <span class="code-disclosure__meta">Python · 52 行</span></summary>
+<div class="code-disclosure__body" markdown="1">
+
+```python
+class MemoryStore:
+    def __init__(self):
+        self.data = {}
+    def reserve(self, key, value):
+        if key in self.data:
+            return False
+        self.data[key] = dict(value)
+        return True
+    def load(self, key):
+        return dict(self.data[key])
+    def save(self, key, value):
+        self.data[key] = dict(value)
+def dispatch_once(command, store, execute):
+    key = command["key"]
+    if not store.reserve(key, {"status": "in_flight"}):
+        current = store.load(key)
+        if current["status"] in {"succeeded", "failed"}:
+            return current
+        raise RuntimeError("operation requires reconciliation")
+    try:
+        result = execute(command["args"])
+        if result.get("status") not in {"succeeded", "failed"}:
+            raise RuntimeError("execution did not reach a known terminal state")
+    except Exception:
+        store.save(key, {"status": "needs_reconcile"})
+        raise
+    store.save(key, result)
+    return result
+command = {"key": "op-7", "args": {"project": "alpha", "title": "Q2"}}
+calls, store = [], MemoryStore()
+execute = lambda args: (calls.append(args) or {"status": "succeeded", "id": "r-1"})
+first = dispatch_once(command, store, execute)
+second = dispatch_once(command, store, execute)
+assert first == second and len(calls) == 1
+assert first["id"] == "r-1"
+unknown_calls, unknown_store = [], MemoryStore()
+unknown = lambda args: (unknown_calls.append(args) or {"status": "unknown"})
+for _ in range(2):
+    try:
+        dispatch_once(command, unknown_store, unknown)
+    except RuntimeError:
+        pass
+assert len(unknown_calls) == 1
+assert unknown_store.load("op-7")["status"] == "needs_reconcile"
+failed_store = MemoryStore()
+def raises_after_call(args):
+    raise OSError("response lost")
+try:
+    dispatch_once(command, failed_store, raises_after_call)
+except OSError:
+    pass
+assert failed_store.load("op-7")["status"] == "needs_reconcile"
+```
+
+</div>
+</details>
+
+`MemoryStore` 只展示状态协议；生产 `reserve` 必须是 durable、atomic create-if-absent，`save` 也要在崩溃恢复后可见。若进程在外部副作用发生后、写入终态前崩溃，持久状态仍停在 `in_flight`，恢复逻辑同样只能按 operation ID 对账。身份凭据、审批、事务边界和审计脱敏仍由执行层负责。
 
 ## 结果语义
 

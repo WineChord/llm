@@ -73,6 +73,46 @@ $$
 
 pass@$k$ 随机会增加，pass$^k$ 随 $k$ 增大更严格；二者不能混写。实现还必须冻结随机种子、用户模拟器和“独立 trial”的定义。
 
+组合式实现可以避免先计算巨大二项式。输入 `n` 是实际完成的预注册 trial 数，`correct` 只统计满足终态与权限谓词的成功；timeout、invalid 和 infra failure 是否进入 $n$ 必须由评测协议先决定。
+
+```python
+def pass_at_k(n, correct, k):
+    if not 0 <= correct <= n or not 1 <= k <= n:
+        raise ValueError("invalid trial counts")
+    if n - correct < k:
+        return 1.
+    miss = 1.
+    for i in range(k):
+        miss *= (n - correct - i) / (n - i)
+    return 1 - miss
+assert pass_at_k(10, 0, 3) == 0
+assert pass_at_k(10, 2, 9) == 1
+assert abs(pass_at_k(10, 2, 1) - .2) < 1e-12
+```
+
+pass$^k$ 则要求每个 task 的全部预注册运行都成功，再跨 task 平均。输入保留 task 边界，不能把所有 trial 展平后计算总体成功率的 $k$ 次方。
+
+```python
+def pass_power_k(outcomes):
+    if not outcomes or any(not trials for trials in outcomes):
+        raise ValueError("every task needs repeated trials")
+    widths = {len(trials) for trials in outcomes}
+    if len(widths) != 1:
+        raise ValueError("all tasks must use the same pre-registered k")
+    if any(type(result) is not bool for trials in outcomes for result in trials):
+        raise ValueError("trial outcomes must be explicit booleans")
+    per_task = [all(trials) for trials in outcomes]
+    return sum(per_task) / len(per_task), per_task
+rate, per_task = pass_power_k([
+    [True, True], [True, False], [False, False],
+])
+assert rate == 1 / 3
+assert per_task == [True, False, False]
+assert pass_power_k([[True, True], [True, True]])[0] == 1
+```
+
+pass@$k$ 回答多次候选中“至少一次成功”的覆盖能力，pass$^k$ 回答同一系统能否连续可靠成功，随 $k$ 的方向相反。两者的组合实验见[评测工具](../practice/evaluation-tooling.md#pass-metrics)。生产报告要按 task 先计算并再聚合，保留随机种子、环境版本、trial 相关性和权限违规；“主任务完成但越权”不能计为成功。
+
 ## 指标分解
 
 ### 任务与过程

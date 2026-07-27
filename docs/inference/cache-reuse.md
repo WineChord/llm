@@ -74,6 +74,33 @@ tenant and permission boundary
 
 若 tokenizer 会把相同文本编码为不同 token，或模板在不可见位置插入控制 token，字符串级缓存会产生静默错误。
 
+最长命中应沿父前缀逐块推进：即使目录中偶然存在更长孤儿 key，也不能跳过缺失的中间 block。下面的 `identity` 是模型、adapter、布局与安全域组成的不可变元组，cache value 代表已发布的只读 KV block chain。
+
+```python
+def longest_cached_prefix(token_ids, identity, cache, block_size):
+    if block_size <= 0:
+        raise ValueError("block_size must be positive")
+    hit = (0, None)
+    for end in range(block_size, len(token_ids) + 1, block_size):
+        key = (identity, tuple(token_ids[:end]))
+        if key not in cache:
+            break
+        hit = (end, cache[key])
+    return hit
+identity = ("model-v3", "adapter-0", "bf16-layout", "tenant-a")
+tokens = [11, 12, 13, 14, 15]
+cache = {
+    (identity, (11, 12)): "blocks-0",
+    (identity, (11, 12, 13, 14)): "blocks-0-1",
+}
+length, handle = longest_cached_prefix(tokens, identity, cache, 2)
+assert (length, handle) == (4, "blocks-0-1")
+assert longest_cached_prefix(tokens, identity[:-1] + ("tenant-b",), cache, 2) == (0, None)
+assert longest_cached_prefix([11], identity, cache, 2) == (0, None)
+```
+
+命中长度只覆盖完整共享 block；非满尾块继续写入前仍要 copy-on-write。生产目录必须防 hash collision、原子增加引用并在远端数据 checksum 与 install 完成后才发布 computed-token count；这段查找本身不授权跨租户共享。
+
 ## 多层缓存
 
 KV 可以驻留于 GPU、CPU、节点间内存或持久存储。层级越远，容量越大，访问越慢：
@@ -166,6 +193,8 @@ $$
 - TTFT、goodput、显存机会成本和失败恢复。
 
 只报告命中率会把大量无价值短命中误判为成功。
+
+分页、引用计数与复用收益的完整小实验见[推理引擎手撕实现](../practice/inference-engine.md)。
 
 ## Reference {#reference}
 

@@ -47,6 +47,35 @@ $$
 
 常见初始化让 $A$ 随机、$B=0$，于是初始 $\Delta W=0$，模型输出与 base 精确一致。若两侧都随机初始化，就失去这一不变量。
 
+### LoRA 前向与合并 {#lora-forward-merge-reference}
+
+下面沿用 PyTorch `linear` 的权重约定：$W$ 为 `[out, in]`、$A$ 为 `[rank, in]`、$B$ 为 `[out, rank]`，输入最后一维为 `in`。双分支前向与把 $\Delta W$ 合入 base 的单分支前向应在目标 dtype 的误差范围内一致。
+
+```python
+import torch
+import torch.nn.functional as F
+
+def lora_linear(x, weight, a, b, alpha):
+    scale = alpha / a.shape[0]
+    return F.linear(x, weight) + scale * F.linear(F.linear(x, a), b)
+
+def merged_weight(weight, a, b, alpha):
+    return weight + (alpha / a.shape[0]) * (b @ a)
+
+torch.manual_seed(0)
+x, weight = torch.randn(3, 5), torch.randn(4, 5)
+a, b0 = torch.randn(2, 5), torch.zeros(4, 2)
+base = F.linear(x, weight)
+assert torch.equal(lora_linear(x, weight, a, b0, 8), base)
+b = torch.randn(4, 2)
+branch = lora_linear(x, weight, a, b, 8)
+merged = F.linear(x, merged_weight(weight, a, b, 8))
+torch.testing.assert_close(branch, merged, rtol=1e-5, atol=1e-6)
+assert merged_weight(weight, a, b, 8).shape == weight.shape
+```
+
+零初始化 $B$ 保证初始函数不变，merge 等价保证部署时没有漏加或重复增量。reference 刻意不包含 dropout、fan-in/fan-out 特例、量化打包和 adapter 路由；生产实现必须把这些语义写入 adapter 元数据，并把 merge 状态设计为幂等。
+
 ### Merge 与 unmerge
 
 部署前可计算

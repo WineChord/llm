@@ -14,6 +14,29 @@
 
 [HyDE](https://arxiv.org/abs/2212.10496)先生成假设文档再编码检索。它可能缩小 query–document 表达差距，也可能把生成器的错误假设注入检索。查询变换必须保留原问题和变换轨迹，并分别评估原查询、变换查询与二者融合。
 
+多路查询或稀疏/稠密召回的分数不可直接相加时，RRF 只使用名次。输入的每个 ranking 都按最佳到最差排列；重复文档在每一路最多计一次。
+
+```python
+from collections import defaultdict
+def reciprocal_rank_fusion(rankings, k=60):
+    if k < 0:
+        raise ValueError("k must be non-negative")
+    score = defaultdict(float)
+    for ranking in rankings:
+        seen = set()
+        for rank, document in enumerate(ranking, 1):
+            if document not in seen:
+                score[document] += 1 / (k + rank)
+                seen.add(document)
+    return sorted(score, key=lambda document: (-score[document], document)), dict(score)
+order, score = reciprocal_rank_fusion([["a", "b", "c"], ["b", "d", "a"]], k=10)
+assert order[0] == "b"
+assert score["a"] == 1 / 11 + 1 / 13
+assert score["d"] == 1 / 12
+```
+
+RRF 不知道文档是否有权限、过期或重复，只能融合已经过相同安全过滤的候选。生产实现还要固定截断深度、缺失名次和稳定 tie-break，并记录每一路 analyzer/encoder 版本。
+
 ## Reranker
 
 双编码器先独立编码 query 与 document，适合大规模召回；cross-encoder 联合编码二者：
@@ -58,6 +81,33 @@ $$
 $$
 
 这不是统一标准，而是一种把选择目标写清楚的工程模板。
+
+MMR 每一步都相对已选集合重算冗余项。下面的相似度回调必须对称且已校准到与 relevance 可组合的尺度；第一步没有冗余惩罚。
+
+```python
+def maximal_marginal_relevance(items, relevance, similarity, limit, weight=.5):
+    if not 0 <= weight <= 1 or limit < 0:
+        raise ValueError("invalid MMR configuration")
+    selected = []
+    remaining = list(items)
+    while remaining and len(selected) < limit:
+        def score(item):
+            redundancy = max((similarity(item, other) for other in selected), default=0.)
+            return weight * relevance[item] - (1 - weight) * redundancy
+        best = max(remaining, key=lambda item: (score(item), item))
+        selected.append(best)
+        remaining.remove(best)
+    return selected
+relevance = {"a": 1., "b": .95, "c": .8}
+pair = {frozenset(("a", "b")): .99, frozenset(("a", "c")): .1}
+similarity = lambda x, y: pair.get(frozenset((x, y)), 0.)
+selected = maximal_marginal_relevance(["a", "b", "c"], relevance, similarity, 2, .5)
+assert selected == ["a", "c"]
+assert len(set(selected)) == 2
+assert maximal_marginal_relevance(["a"], relevance, similarity, 0) == []
+```
+
+MMR 输出只是上下文候选顺序，不是证据支持结论。生产组装还要应用 token budget、来源配额、claim coverage 和稳定 span；若相似度模型换版，$\lambda$ 也需重新校准。
 
 ## 上下文顺序
 

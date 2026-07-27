@@ -82,6 +82,38 @@ $$
 
 模型输出坐标必须沿逆变换映射回原图。动态 tile 还要保存 tile ID、tile 原点、padding 和重叠区域；只记录最终截图尺寸不足以恢复坐标。
 
+### 最小语义实现 {#box-coordinate-roundtrip}
+
+`transform_box` 实现上式：先把原图 `xyxy` 坐标按 $s_x,s_y$ 缩放，再减去**缩放后画布**中的 crop offset；`invert_box` 执行严格逆变换。输入输出均使用连续像素坐标，量化应放在完整几何链之后。
+
+```python
+import torch
+
+def transform_box(box, scale_xy, crop_offset):
+    box = torch.as_tensor(box, dtype=torch.float64)
+    sx, sy = scale_xy
+    ox, oy = crop_offset
+    assert sx > 0 and sy > 0
+    scale = box.new_tensor([sx, sy, sx, sy])
+    offset = box.new_tensor([ox, oy, ox, oy])
+    return box * scale - offset
+
+def invert_box(box, scale_xy, crop_offset):
+    box = torch.as_tensor(box, dtype=torch.float64)
+    sx, sy = scale_xy
+    ox, oy = crop_offset
+    scale = box.new_tensor([sx, sy, sx, sy])
+    offset = box.new_tensor([ox, oy, ox, oy])
+    return (box + offset) / scale
+
+original = torch.tensor([10., 20., 30., 50.], dtype=torch.float64)
+mapped = transform_box(original, (2., .5), (4., 5.))
+torch.testing.assert_close(mapped, torch.tensor([16., 5., 56., 20.]).double())
+torch.testing.assert_close(invert_box(mapped, (2., .5), (4., 5.)), original)
+```
+
+真实 preprocessing 还可能加入 letterbox padding、tile 原点、viewport scroll 与坐标裁剪；应把每一步组成可逆变换并保存，而不是只记最终尺寸。离散化误差与 crop-first 变体见[多模态原语：坐标离散与几何变换](../practice/multimodal.md#coordinate-geometry)。
+
 ## Grounding 指标
 
 预测框 $B_p$ 与真值 $B_g$ 的 IoU：

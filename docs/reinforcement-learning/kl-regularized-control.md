@@ -118,7 +118,82 @@ $$
 3. **behavior-sampled log-ratio**：若样本来自 $\mu^{\mathrm{rollout}}\ne\pi_\theta$，一般不是当前策略 KL 的无偏估计；
 4. **token mean**：除以 response length 后不再等于 sequence KL，只是长度归一化诊断。
 
+完整词表的 categorical KL 在每个 prefix 上精确求动作期望，因此理论上非负。下面的 `policy_logits` 与 `reference_logits` 必须使用同一 vocabulary 和 action support；mask 只决定哪些 prefix 进入 sequence 聚合。
+
+```python
+import torch
+import torch.nn.functional as F
+def exact_token_kl(policy_logits, reference_logits, action_mask):
+    if (policy_logits.shape != reference_logits.shape
+            or policy_logits.shape[:-1] != action_mask.shape):
+        raise ValueError("policy, reference and prefix mask shapes must align")
+    reference_logits = reference_logits.detach()
+    mask = action_mask.bool()
+    if torch.any(mask.sum(-1) == 0):
+        raise ValueError("every sequence needs an action prefix")
+    active = mask[..., None]
+    if (torch.isnan(policy_logits) | torch.isposinf(policy_logits)).any() or (
+        torch.isnan(reference_logits) | torch.isposinf(reference_logits)).any():
+        raise ValueError("categorical logits cannot contain NaN or positive infinity")
+    policy_support = ~torch.isneginf(policy_logits)
+    reference_support = ~torch.isneginf(reference_logits)
+    if torch.any(active & policy_support & ~reference_support):
+        raise ValueError("reference support must cover active policy support")
+    if torch.any(mask & ~policy_support.any(-1)):
+        raise ValueError("every active prefix needs a finite action")
+    safe_policy = torch.where(active, policy_logits, torch.zeros_like(policy_logits))
+    safe_reference = torch.where(active, reference_logits, torch.zeros_like(reference_logits))
+    log_policy = F.log_softmax(safe_policy, dim=-1)
+    log_reference = F.log_softmax(safe_reference, dim=-1)
+    support = active & policy_support
+    log_ratio = torch.where(support, log_policy, 0.) - torch.where(support, log_reference, 0.)
+    token_kl = (torch.where(support, log_policy, -torch.inf).exp() * log_ratio).sum(-1)
+    return token_kl, token_kl.sum(-1), token_kl.sum(-1) / mask.sum(-1)
+policy = torch.tensor([[[2., -torch.inf], [0., 2.], [9., -9.]]], requires_grad=True)
+reference = torch.tensor([[[2., 0.], [1., 1.], [-9., 9.]]], requires_grad=True)
+mask = torch.tensor([[True, True, False]])
+token_kl, sequence_kl, mean_kl = exact_token_kl(policy, reference, mask)
+assert torch.isfinite(token_kl).all() and token_kl[0, 0] > 0 and token_kl[0, 2] == 0
+sequence_kl.sum().backward()
+assert reference.grad is None and torch.isfinite(policy.grad).all()
+```
+
+mask 外的极端分布差不会进入聚合；mask 内若 reference 对 policy 的正概率动作给零 support，forward KL 应为无穷而非被 epsilon 悄悄截平。可执行的 sampled reference-KL 对照见[强化学习手撕实现](../practice/reinforcement-learning.md#reference-policy-kl)。
+
 不要把任何平均 log-ratio 都命名为 `kl`。日志应写清采样分布、方向、词表是否完整以及 reduction。
+
+采样 token estimator 的最小接口应同时返回 sequence sum 与 token mean，避免同一个变量名掩盖两种量。输入 `policy_logp` 和 `reference_logp` 必须在完全相同的 prefix、token ID 与词表 support 上重算；`action_mask` 排除 prompt、observation 和 padding。
+
+```python
+import torch
+def sampled_forward_kl(policy_logp, reference_logp, action_mask):
+    if not (policy_logp.shape == reference_logp.shape == action_mask.shape):
+        raise ValueError("log-probabilities and mask must align")
+    reference_logp = reference_logp.detach()
+    mask = action_mask.bool()
+    if torch.any(mask.sum(-1) == 0):
+        raise ValueError("every sequence needs a sampled action")
+    policy_finite = torch.isfinite(policy_logp[mask]).all()
+    reference_finite = torch.isfinite(reference_logp[mask]).all()
+    if not policy_finite or not reference_finite:
+        raise ValueError("sampled action log-probabilities must be finite")
+    token_log_ratio = torch.zeros_like(policy_logp)
+    token_log_ratio[mask] = policy_logp[mask] - reference_logp[mask]
+    sequence_sum = token_log_ratio.sum(-1)
+    token_mean = sequence_sum / mask.sum(-1)
+    return token_log_ratio, sequence_sum, token_mean
+logp = torch.tensor([[torch.nan, -.2, -.7], [-torch.inf, -.1, -.4]], requires_grad=True)
+ref = torch.tensor([[torch.nan, -.3, -.5], [torch.inf, -.1, -.4]], requires_grad=True)
+mask = torch.tensor([[0, 1, 1], [0, 1, 1]], dtype=torch.bool)
+token_lr, seq_kl, mean_kl = sampled_forward_kl(logp, ref, mask)
+assert token_lr[:, 0].eq(0).all()
+torch.testing.assert_close(seq_kl, torch.tensor([-.1, 0.]))
+torch.testing.assert_close(mean_kl, seq_kl / 2)
+seq_kl.sum().backward()
+assert ref.grad is None and torch.isfinite(logp.grad).all()
+```
+
+单条序列的 `sequence_sum` 可以为负，这不违背 forward KL 非负性：非负性属于对当前策略动作和访问前缀取期望后的量。若样本来自 rollout behavior，必须先处理分布偏移，不能把这段代码的输出直接当作当前策略 KL。
 
 ## Reward shaping 与 loss penalty
 

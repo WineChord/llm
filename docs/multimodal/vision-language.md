@@ -22,6 +22,34 @@ $$
 
 更小的 patch 或更高分辨率都会增加 $N$。若视觉 token 直接进入语言主干，prefill attention 与 KV 成本随 token 数增长，分辨率不能脱离系统预算讨论。
 
+### 最小语义实现 {#vit-patchify}
+
+`patchify` 把 `[B,C,H,W]` 图像变为按 row-major 排列的 `[B,N,C P^2]` token；`unpatchify` 用已知画布恢复原图。往返断言同时约束 patch 内通道顺序和二维网格顺序。
+
+```python
+import torch
+
+def patchify(image, patch):
+    batch, channels, height, width = image.shape
+    assert height % patch == 0 and width % patch == 0
+    grid_h, grid_w = height // patch, width // patch
+    x = image.view(batch, channels, grid_h, patch, grid_w, patch)
+    return x.permute(0, 2, 4, 1, 3, 5).reshape(batch, grid_h * grid_w, -1)
+
+def unpatchify(tokens, channels, height, width, patch):
+    batch = tokens.size(0)
+    grid_h, grid_w = height // patch, width // patch
+    x = tokens.view(batch, grid_h, grid_w, channels, patch, patch)
+    return x.permute(0, 3, 1, 4, 2, 5).reshape(batch, channels, height, width)
+
+image = torch.arange(2 * 3 * 8 * 12).view(2, 3, 8, 12)
+tokens = patchify(image, 4)
+assert tokens.shape == (2, 6, 48)
+torch.testing.assert_close(unpatchify(tokens, 3, 8, 12, 4), image)
+```
+
+这个核不做 resize、padding、position embedding 或线性投影；dynamic tiling 还必须把原图坐标、tile 顺序与有效区域随 token 一起保存。可运行的分块实验见[多模态原语：ViT patchify](../practice/multimodal.md#vit-patchify)，固定 token 预算则见同页的[Fixed-query resampler](../practice/multimodal.md#fixed-query-resampler)。
+
 ## 对比式视觉—文本对齐
 
 [CLIP](https://arxiv.org/abs/2103.00020)分别编码一批图像和文本，并使匹配 pair 的相似度高于不匹配 pair。归一化 embedding 为 $u_i,v_j$，温度为 $\tau$：

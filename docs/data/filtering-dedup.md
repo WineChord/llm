@@ -89,6 +89,34 @@ $$
 
 LSH 只负责召回候选，最终仍应使用精确相似度、长度比和结构信息确认。[Deduplicating Training Data Makes Language Models Better](https://arxiv.org/abs/2107.06499) 展示了训练语料重复与记忆、评测之间的联系，并提供了[官方实现](https://github.com/google-research/deduplicate-text-datasets)。
 
+### 最小语义实现 {#shingle-jaccard-confirmation}
+
+下面的实现接收两段文本，返回 shingle Jaccard 分数与阈值判断。它对应的是 LSH 召回之后的**精确候选确认**：规范化、token 边界、$k$ 和阈值都显式可见，空文本也有确定语义。
+
+```python
+import re
+
+def shingles(text, k=3):
+    tokens = re.findall(r"\w+|[^\w\s]", text.casefold())
+    if len(tokens) < k:
+        return {tuple(tokens)} if tokens else set()
+    return {tuple(tokens[i:i + k]) for i in range(len(tokens) - k + 1)}
+
+def jaccard(left, right):
+    union = left | right
+    return len(left & right) / len(union) if union else 1.0
+
+def confirm_near_duplicate(left, right, threshold=0.8):
+    score = jaccard(shingles(left), shingles(right))
+    return score, score >= threshold
+
+assert confirm_near_duplicate("a b c d", "a b c d") == (1.0, True)
+score, duplicate = confirm_near_duplicate("a b c d", "a b c e")
+assert 0 < score < 1 and not duplicate
+```
+
+真实流水线还要在不同语言与文档结构上校准 tokenizer、长度比和阈值，并用 MinHash/LSH 或倒排索引缩小候选集；这段代码不能替代来源级分组、语义改写检测和人工复核。污染率的置信区间与切片统计可接到[评测工具：Cluster bootstrap](../practice/evaluation-tooling.md#cluster-bootstrap)。
+
 ### 代表样本
 
 cluster 代表不应简单取第一条。可按来源使用条件、解析完整度、时间、结构保留和文本质量排序。cluster 成员及理由必须保留，否则删除或来源撤回时无法重选代表。

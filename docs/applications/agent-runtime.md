@@ -24,6 +24,31 @@ created → planning → ready → executing → observing ┐
 
 终态必须由确定性谓词或外部证据确认。对外部写入，`executing` 超时不能直接转为 `ready` 重试，应先进入 reconciliation。
 
+先把单步状态转移写成总是可测试的纯函数。这里故意没有 `("executing", "ToolUnknown") → "ready"`：不知道外部写入结果时，必须先对账。
+
+```python
+TRANSITION = {
+    ("created", "PlanProposed"): "ready",
+    ("ready", "ToolStarted"): "executing",
+    ("executing", "ToolSucceeded"): "observing",
+    ("executing", "ToolFailed"): "ready",
+    ("executing", "ToolUnknown"): "reconciling",
+    ("reconciling", "OperationAbsent"): "ready",
+    ("reconciling", "OperationFound"): "observing",
+    ("observing", "GoalVerified"): "succeeded",
+}
+def advance(phase, event):
+    try:
+        return TRANSITION[(phase, event)]
+    except KeyError as error:
+        raise ValueError(f"illegal transition: {phase}, {event}") from error
+assert advance("created", "PlanProposed") == "ready"
+assert advance("executing", "ToolUnknown") == "reconciling"
+assert ("executing", "GoalVerified") not in TRANSITION
+```
+
+纯状态核不执行工具、不持久化事件，也不判断目标真假；这些都要由带版本和证据的外围协议提供。终态一旦写入，后续事件只能开启显式的新 task 或补偿流程，不能覆盖历史。
+
 ## Event sourcing
 
 与其反复覆盖一份不可解释的状态，不如追加事件：
@@ -46,6 +71,59 @@ GoalVerified
 - 崩溃后从最后一个已确认事件恢复；
 - 解释某个动作为什么执行；
 - 用真实轨迹重放评测，但不重放副作用。
+
+状态机可以先写成纯函数，再把持久化和工具执行放在边界外。下面的 reducer 只接受合法事件序列；`ToolUnknown` 进入 `reconciling`，不会假设失败后安全重试。输出是可序列化状态，输入事件本身应由追加式日志保存。
+
+<details class="code-disclosure">
+<summary id="agent-runtime-reducer-reference">可恢复事件归约器 <span class="code-disclosure__meta">Python · 39 行</span></summary>
+<div class="code-disclosure__body" markdown="1">
+
+```python
+TRANSITIONS = {
+    ("created", "PlanProposed"): "ready",
+    ("ready", "ToolStarted"): "executing",
+    ("executing", "ToolSucceeded"): "observing",
+    ("executing", "ToolFailed"): "ready",
+    ("executing", "ToolUnknown"): "reconciling",
+    ("reconciling", "OperationAbsent"): "ready",
+    ("reconciling", "OperationFound"): "observing",
+    ("observing", "GoalVerified"): "succeeded",
+    ("observing", "ReplanRequested"): "ready",
+}
+TERMINAL = {"succeeded", "failed", "cancelled", "partial", "blocked"}
+def reduce_events(events, step_budget):
+    state = {"phase": "created", "steps_left": step_budget, "evidence": []}
+    for event in events:
+        kind = event["kind"]
+        if state["phase"] in TERMINAL:
+            raise ValueError("terminal task cannot consume more events")
+        key = (state["phase"], kind)
+        if key not in TRANSITIONS:
+            raise ValueError(f"illegal transition: {key}")
+        if kind == "ToolStarted":
+            if state["steps_left"] <= 0:
+                raise RuntimeError("step budget exhausted")
+            state["steps_left"] -= 1
+        state["phase"] = TRANSITIONS[key]
+        if "evidence" in event:
+            state["evidence"].append(event["evidence"])
+    return state
+happy = reduce_events([
+    {"kind": "PlanProposed"}, {"kind": "ToolStarted"},
+    {"kind": "ToolSucceeded", "evidence": "op-1"}, {"kind": "GoalVerified"}
+], 1)
+assert happy == {"phase": "succeeded", "steps_left": 0, "evidence": ["op-1"]}
+unknown = reduce_events([
+    {"kind": "PlanProposed"}, {"kind": "ToolStarted"}, {"kind": "ToolUnknown"}
+], 2)
+assert unknown["phase"] == "reconciling" and unknown["steps_left"] == 1
+assert "GoalVerified" not in {kind for phase, kind in TRANSITIONS if phase == "executing"}
+```
+
+</div>
+</details>
+
+真实 reducer 还要固定 event schema/version、task/step/attempt ID、并发序号与预算维度；日志追加和业务副作用之间需要 outbox、workflow engine 或等价的一致性方案。重放时只能重算状态，不能再次调用工具；`GoalVerified` 也必须携带外部证据或确定性成功谓词。
 
 ## Step contract
 

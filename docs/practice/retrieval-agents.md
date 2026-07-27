@@ -2,7 +2,7 @@
 
 本页实现从候选召回到工具执行的最短闭环。检索代码保留分数定义，智能体代码把 schema、权限、幂等和终态放在模型之外。
 
-## 带 span 的切分
+## 带 span 的切分 {#span-preserving-chunking-reference}
 
 chunk 必须能回到原文位置。以下函数在 token 序列上滑窗，并保留半开区间 $[start,end)$：
 
@@ -67,7 +67,7 @@ assert scores[1] > scores[0] > scores[2]
 
 分词、字段权重、同义词和语言分析器都是 BM25 配置的一部分。[索引与召回](../applications/retrieval-indexing.md)给出公式与边界。
 
-## 精确 dense retrieval
+## 精确 dense retrieval {#exact-dense-retrieval-reference}
 
 ```python
 def cosine_topk(query, documents, k):
@@ -186,6 +186,10 @@ def validate_arguments(arguments, schema):
 
 ## 有权限、幂等的 dispatch
 
+<details class="code-disclosure">
+<summary id="durable-tool-dispatch-reference">可恢复的 tool dispatch <span class="code-disclosure__meta">Python · 49 行</span></summary>
+<div class="code-disclosure__body" markdown="1">
+
 ```python
 @dataclass
 class Tool:
@@ -198,7 +202,7 @@ class Tool:
 class ToolRuntime:
     tools: dict
     max_risk: int
-    completed: dict = field(default_factory=dict)
+    operations: dict = field(default_factory=dict)
 
     def dispatch(self, name, arguments, operation_id):
         if name not in self.tools:
@@ -207,22 +211,80 @@ class ToolRuntime:
         if tool.risk > self.max_risk:
             raise PermissionError("tool exceeds delegated risk")
         args = validate_arguments(arguments, tool.schema)
-        if operation_id in self.completed:
-            entry = self.completed[operation_id]
+        if operation_id in self.operations:
+            entry = self.operations[operation_id]
             if entry["tool"] != name or entry["arguments"] != args:
                 raise ValueError("operation_id was reused for a different request")
-            return entry["result"]
-        result = tool.execute(**args)
-        if result.get("status") == "succeeded":
-            self.completed[operation_id] = {
-                "tool": name,
-                "arguments": args,
-                "result": result,
-            }
-        return result
+            if entry["status"] in {"succeeded", "failed"}:
+                return dict(entry["result"])
+            entry["status"] = "needs_reconcile"
+            return {"status": "needs_reconcile", "operation_id": operation_id}
+        self.operations[operation_id] = {
+            "tool": name,
+            "arguments": args,
+            "status": "in_flight",
+        }
+        try:
+            result = tool.execute(**args)
+            if not isinstance(result, dict) or result.get("status") not in {
+                "succeeded", "failed", "unknown",
+            }:
+                raise ValueError("tool returned an invalid status")
+        except Exception:
+            self.operations[operation_id]["status"] = "needs_reconcile"
+            raise
+        if result["status"] == "unknown":
+            self.operations[operation_id].update(
+                status="needs_reconcile", result=dict(result)
+            )
+            return {"status": "needs_reconcile", "operation_id": operation_id}
+        self.operations[operation_id].update(
+            status=result["status"], result=dict(result)
+        )
+        return dict(result)
 ```
 
-`operation_id` 应由主体、工具、规范化参数与业务范围共同生成。timeout 后结果未知时，先对账，不能假设没执行并换一个 ID 重试。
+</div>
+</details>
+
+下面分别模拟执行结果未知与调用抛出异常；两条路径都只能执行一次，后续同 ID 请求必须转入对账。
+
+```python
+uncertain_calls = []
+def uncertain_write(project):
+    uncertain_calls.append(project)
+    return {"status": "unknown"}
+write_schema = {
+    "type": "object",
+    "properties": {"project": {"type": "string"}},
+    "required": ["project"],
+}
+uncertain_runtime = ToolRuntime(
+    {"write": Tool("write", write_schema, 1, uncertain_write)}, max_risk=1
+)
+first = uncertain_runtime.dispatch("write", {"project": "alpha"}, "op-write-1")
+second = uncertain_runtime.dispatch("write", {"project": "alpha"}, "op-write-1")
+assert first["status"] == second["status"] == "needs_reconcile"
+assert uncertain_calls == ["alpha"]
+
+failed_calls = []
+def interrupted_write(project):
+    failed_calls.append(project)
+    raise TimeoutError("response was lost")
+failed_runtime = ToolRuntime(
+    {"write": Tool("write", write_schema, 1, interrupted_write)}, max_risk=1
+)
+try:
+    failed_runtime.dispatch("write", {"project": "alpha"}, "op-write-2")
+except TimeoutError:
+    pass
+else:
+    raise AssertionError("execution exception must propagate")
+retry = failed_runtime.dispatch("write", {"project": "alpha"}, "op-write-2")
+assert retry["status"] == "needs_reconcile" and failed_calls == ["alpha"]
+```
+
+`operation_id` 应由主体、工具、规范化参数与业务范围共同生成。runtime 在调用前先持久化 `in_flight`；timeout、异常或未知结果都会转入 `needs_reconcile`。同一 ID 此后只允许读取终态或进入对账，不能再次触发外部写入。
 
 ## 事件归约
 
@@ -307,9 +369,39 @@ def run_agent(policy, runtime, initial_state, verify, max_steps):
         )
         events.append({"candidate": candidate, "result": result})
         state["last_result"] = result
-        if result.get("status") not in {"succeeded", "failed", "unknown"}:
+        status = result.get("status")
+        if status not in {"succeeded", "failed", "unknown", "needs_reconcile"}:
             raise ValueError("tool returned an invalid status")
+        if status in {"unknown", "needs_reconcile"}:
+            return {
+                "status": "needs_reconcile",
+                "state": state,
+                "events": events,
+            }
     return {"status": "budget_exhausted", "state": state, "events": events}
+```
+
+回归用三步预算施压：第一次结果未知后，loop 必须立即退出；即使随后再次提交同一候选，也不能发生第二次外部执行。
+
+```python
+loop_calls = []
+def uncertain_loop_write(project):
+    loop_calls.append(project)
+    return {"status": "unknown"}
+loop_runtime = ToolRuntime(
+    {"write": Tool("write", write_schema, 1, uncertain_loop_write)}, max_risk=1
+)
+candidate = {
+    "kind": "tool", "name": "write", "arguments": {"project": "alpha"},
+    "operation_id": "op-loop-1",
+}
+outcome = run_agent(lambda state: candidate, loop_runtime, {}, lambda state: False, 3)
+assert outcome["status"] == "needs_reconcile"
+assert len(outcome["events"]) == 1 and loop_calls == ["alpha"]
+assert loop_runtime.dispatch(
+    "write", {"project": "alpha"}, "op-loop-1"
+)["status"] == "needs_reconcile"
+assert loop_calls == ["alpha"]
 ```
 
 真实运行时还要处理 approval、取消、重试分类、并发、敏感日志和崩溃恢复。最大步数只是预算的一维，不应替代时间、费用、写入和风险预算。

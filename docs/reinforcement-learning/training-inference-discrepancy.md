@@ -86,6 +86,33 @@ $$
 
 把任意两个量互换，都会改变 estimator。
 
+三种 ratio 最适合在 log-space 中分别构造，再检查乘法分解。这里的输入都是同一批 action token 的 post-processor log-probability；若 prefix、tokenizer 或 grammar support 不同，函数应在更上游拒绝比较，而不是靠数值裁剪掩盖。
+
+```python
+import torch
+def policy_ratios(current_logp, old_train_logp, behavior_logp, action_mask):
+    if not (current_logp.shape == old_train_logp.shape == behavior_logp.shape == action_mask.shape):
+        raise ValueError("all token tensors must align")
+    mask = action_mask.bool()
+    update = torch.ones_like(current_logp)
+    engine = torch.ones_like(current_logp)
+    direct = torch.ones_like(current_logp)
+    update[mask] = (current_logp[mask] - old_train_logp[mask]).exp()
+    engine[mask] = (old_train_logp[mask] - behavior_logp[mask]).exp()
+    direct[mask] = (current_logp[mask] - behavior_logp[mask]).exp()
+    return update, engine, direct
+cur = torch.tensor([[99., .6, .3]]).log()
+old = torch.tensor([[88., .5, .2]]).log()
+beh = torch.tensor([[77., .25, .4]]).log()
+mask = torch.tensor([[False, True, True]])
+update, engine, direct = policy_ratios(cur, old, beh, mask)
+torch.testing.assert_close(direct[mask], (update * engine)[mask])
+assert update[0, 0] == engine[0, 0] == direct[0, 0] == 1
+assert direct[0, 1] == 2.4
+```
+
+mask 外返回乘法单位元，便于后续乘 loss，但这些位置仍不得进入统计分母。生产轨迹还需绑定 checkpoint、训练/推理引擎、sampling processor 与 action span；ratio 应在构造 gate 前先按长度、任务和版本分层观察。
+
 ## 为什么同权重也会有分布差
 
 train 与 rollout policy 的差别可来自多个层级：
@@ -277,6 +304,8 @@ number of reuse epochs and optimizer steps
 7. 同时报告吞吐、拒绝率、ESS、训练 reward 和 held-out 能力。
 
 若只有“加 correction 后不崩了”，尚不能判断修复的是 engine mismatch、policy lag，还是恰好丢掉了一批困难样本。
+
+TIS、IcePop 与 DIS 的 detached coefficient 和退化断言见[手撕 LLM 策略优化](../practice/llm-policy-optimization.md)；实践页用于横向实验，本页的 policy 身份、ratio 分解与轨迹字段仍是实现入口。
 
 ## Reference {#reference}
 

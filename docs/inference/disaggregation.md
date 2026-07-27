@@ -27,6 +27,33 @@ gateway
 
 prefill 不能只传“第一个 token”。decode 必须获得每层 KV、token/position 状态、采样配置和模型身份。
 
+P/D 边界应传递一个可验证 descriptor，而不是让 decode worker 从裸字节猜布局。下面只保留安装 KV 所需的语义核；descriptor 通过后才允许读取 payload。
+
+```python
+def validate_kv_descriptor(descriptor, expected):
+    required = {"request_id", "model_revision", "layout", "tokens", "blocks", "checksum"}
+    if set(descriptor) != required:
+        raise ValueError("descriptor schema mismatch")
+    for field in ("model_revision", "layout"):
+        if descriptor[field] != expected[field]:
+            raise ValueError(f"incompatible {field}")
+    if descriptor["tokens"] <= 0 or descriptor["blocks"] <= 0:
+        raise ValueError("empty KV transfer")
+    if not isinstance(descriptor["checksum"], str) or len(descriptor["checksum"]) < 8:
+        raise ValueError("invalid checksum")
+    return (descriptor["request_id"], descriptor["tokens"], descriptor["blocks"])
+descriptor = {
+    "request_id": "req-7", "model_revision": "m-3", "layout": "tp2-b16-fp8",
+    "tokens": 128, "blocks": 8, "checksum": "8fe31a90",
+}
+installed = validate_kv_descriptor(descriptor, {"model_revision": "m-3", "layout": "tp2-b16-fp8"})
+assert installed == ("req-7", 128, 8)
+assert descriptor["tokens"] == descriptor["blocks"] * 16
+assert descriptor["model_revision"] == "m-3"
+```
+
+真实 descriptor 还需逐 shard 的 layer/head 范围、dtype/scale、position/RoPE、adapter、字节数与 payload location；校验失败必须拒绝安装。`request_id` 只能提供幂等关联，不能代替 checksum、所有权或租户授权。
+
 ## KV 传输量
 
 对 $L$ 层、prompt 长度 $T$、$H_{kv}$ 个 K/V head、head dimension $d_h$ 和元素字节数 $s$：
@@ -139,6 +166,8 @@ $$
 - 与同硬件共置基线的比较。
 
 单引擎状态见[推理运行时](runtime.md)，在线容量策略见[调度与服务](serving.md)。
+
+descriptor、block 安装与容量估算的可执行组合实验见[推理引擎手撕实现](../practice/inference-engine.md)。
 
 ## Reference {#reference}
 

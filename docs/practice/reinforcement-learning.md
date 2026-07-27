@@ -81,7 +81,7 @@ def td0(states, next_states, reward, done, gamma, alpha, episodes):
     value = torch.zeros(2)
     for _ in range(episodes):
         for state, nxt, rew, terminal in zip(states, next_states, reward, done):
-            target = rew + gamma * (~terminal) * value[nxt]
+            target = rew if terminal else rew + gamma * value[nxt]
             value[state] += alpha * (target - value[state])
     return value
 states = torch.tensor([0, 1])
@@ -96,7 +96,7 @@ torch.testing.assert_close(td, mc, atol=1e-5, rtol=0)
 
 真正终止时乘数为零；time-limit truncation 通常仍应从最终 observation bootstrap，但 trace 不应跨到下一条 episode。
 
-## n-step Return 与 Eligibility Trace
+## n-step Return 与 Eligibility Trace {#n-step-return}
 
 $n$-step return 在 Monte Carlo 与一步 TD 之间插值：
 
@@ -122,7 +122,7 @@ def td_lambda_episode(gamma, lam, alpha):
     value, trace = torch.zeros(2), torch.zeros(2)
     transitions = [(0, 0.0, 1, False), (1, 1.0, 0, True)]
     for state, reward, nxt, done in transitions:
-        target = reward + gamma * (not done) * value[nxt]
+        target = reward if done else reward + gamma * value[nxt]
         delta = target - value[state]
         trace.mul_(gamma * lam)
         trace[state] += 1
@@ -193,18 +193,19 @@ target 与 actor advantage 通常停止梯度，避免 policy loss 反向修改 
 import torch
 import torch.nn.functional as F
 def actor_critic_loss(logits, value, state, action, reward, nxt, done, gamma):
-    target = reward + gamma * (~done) * value[nxt].detach()
+    bootstrap = torch.where(done, torch.zeros_like(reward), value[nxt].detach())
+    target = reward + gamma * bootstrap
     advantage = target - value[state]
     logp = F.log_softmax(logits[state], -1).gather(1, action[:, None]).squeeze(1)
     actor = -(logp * advantage.detach()).mean()
     critic = 0.5 * advantage.square().mean()
     return actor + critic, target
 logits = torch.zeros(2, 2, requires_grad=True)
-value = torch.zeros(2, requires_grad=True)
+value = torch.tensor([0., 0., float("nan")], requires_grad=True)
 state = torch.tensor([0, 1])
 action = torch.tensor([0, 1])
 reward = torch.tensor([0.0, 1.0])
-nxt = torch.tensor([1, 0])
+nxt = torch.tensor([1, 2])
 done = torch.tensor([False, True])
 loss, target = actor_critic_loss(
     logits, value, state, action, reward, nxt, done, gamma=0.9
@@ -214,6 +215,7 @@ loss.backward()
 torch.testing.assert_close(logits.grad[0], torch.zeros(2))
 assert logits.grad[1, 1] < 0
 assert value.grad[1] < 0
+assert value.grad[2] == 0 and torch.isfinite(target).all()
 ```
 
 共享 actor/critic backbone 时，“detach target”并不会自动隔离共享参数上的两种 loss；需要用 loss 权重、更新频率和梯度统计判断相互干扰。
@@ -305,7 +307,7 @@ else:
 
 长序列的 trajectory weight 是 token ratio 的乘积，方差会随 horizon 急剧放大。[V-trace](https://arxiv.org/abs/1802.01561)、截断 IS 与 token rejection 是不同的偏差—方差选择。
 
-## LLM Action Mask
+## LLM Action Mask {#llm-action-mask}
 
 Decoder 在位置 $t$ 的 logits 预测 token $t+1$。prompt、padding 与工具 observation 可以进入状态，却不应自动进入 policy loss：
 
@@ -318,16 +320,22 @@ def masked_action_logprob(logits, tokens, action_mask):
         raise ValueError("logits must predict tokens[:,1:]")
     if tokens.shape != action_mask.shape:
         raise ValueError("tokens and action_mask must align")
-    logp = F.log_softmax(logits, -1)
-    chosen = logp.gather(-1, tokens[:, 1:, None]).squeeze(-1)
-    mask = action_mask[:, 1:].to(chosen.dtype)
+    target, mask = tokens[:, 1:], action_mask[:, 1:].bool()
     count = mask.sum(-1)
     if torch.any(count == 0):
         raise ValueError("each sequence needs at least one action token")
-    return (chosen * mask).sum(-1), count
-tokens = torch.tensor([[0, 1, 2, 1]])
+    selected_logits, selected_tokens = logits[mask], target[mask]
+    if not torch.isfinite(selected_logits).all():
+        raise ValueError("selected action logits must be finite")
+    if torch.any((selected_tokens < 0) | (selected_tokens >= logits.size(-1))):
+        raise ValueError("selected action token is outside the vocabulary")
+    chosen = F.log_softmax(selected_logits, -1).gather(1, selected_tokens[:, None]).squeeze(1)
+    row = torch.arange(logits.size(0), device=logits.device)[:, None].expand_as(mask)[mask]
+    return logits.new_zeros(logits.size(0)).scatter_add(0, row, chosen), count
+tokens = torch.tensor([[0, -100, 2, 1]])
 mask = torch.tensor([[False, False, True, True]])
 logits = torch.zeros(1, 3, 3)
+logits[:, 0] = float("nan")
 base, count = masked_action_logprob(logits, tokens, mask)
 prompt_changed = logits.clone()
 prompt_changed[:, 0] = torch.tensor([9.0, -9.0, -9.0])
@@ -342,7 +350,7 @@ assert count.item() == 2
 
 mask 与 exact token IDs 必须来自 rollout，而不是训练时重新套模板或重新 tokenize。全局 token mean 应先汇总所有 rank 的 loss numerator 和有效 token denominator，再相除。
 
-## Reference-policy KL
+## Reference-policy KL {#reference-policy-kl}
 
 LLM post-training 常用固定 reference policy 约束漂移：
 
@@ -354,37 +362,58 @@ $$
 
 exact KL 非负，但单个采样动作的 log-ratio 可以为负。后者只有在动作确实来自 $\pi_\theta$ 时，样本均值才估计 forward KL。
 
+<details class="code-disclosure">
+<summary id="reference-policy-kl-code">Exact KL 与 sampled log-ratio <span class="code-disclosure__meta">Python · 43 行</span></summary>
+<div class="code-disclosure__body" markdown="1">
+
 ```python
 import torch
 import torch.nn.functional as F
-def masked_exact_kl(policy_logits, ref_logits, action_mask):
-    logp = F.log_softmax(policy_logits, -1)
-    logq = F.log_softmax(ref_logits.detach(), -1)
-    per_token = (logp.exp() * (logp - logq)).sum(-1)
-    weight = action_mask.to(per_token.dtype)
-    if weight.sum() == 0:
-        raise ValueError("KL mask is empty")
-    return (per_token * weight).sum() / weight.sum()
-def sampled_log_ratio(policy_logits, ref_logits, action, action_mask):
-    logp = F.log_softmax(policy_logits, -1)
-    logq = F.log_softmax(ref_logits.detach(), -1)
-    chosen = (logp - logq).gather(-1, action[..., None]).squeeze(-1)
-    weight = action_mask.to(chosen.dtype)
-    if weight.sum() == 0:
-        raise ValueError("KL mask is empty")
-    return (chosen * weight).sum() / weight.sum()
-policy = torch.tensor([[[2.0, 0.0], [0.0, 2.0]]], requires_grad=True)
-reference = torch.zeros_like(policy)
-mask = torch.tensor([[True, False]])
+def select_distributions(policy, reference, action_mask):
+    if policy.shape != reference.shape or policy.shape[:-1] != action_mask.shape:
+        raise ValueError("policy, reference and mask shapes must align")
+    valid = action_mask.bool()
+    if torch.any(valid.sum(-1) == 0):
+        raise ValueError("every sequence needs a KL action")
+    policy, reference = policy[valid], reference.detach()[valid]
+    invalid = lambda x: torch.isnan(x) | torch.isposinf(x)
+    if invalid(policy).any() or invalid(reference).any():
+        raise ValueError("selected logits cannot contain NaN or positive infinity")
+    policy_support, reference_support = ~torch.isneginf(policy), ~torch.isneginf(reference)
+    if torch.any(~policy_support.any(-1)) or torch.any(policy_support & ~reference_support):
+        raise ValueError("policy support must be non-empty and covered by reference")
+    return policy, reference, policy_support, valid
+def masked_exact_kl(policy, reference, action_mask):
+    policy, reference, support, _ = select_distributions(policy, reference, action_mask)
+    logp, logq = F.log_softmax(policy, -1), F.log_softmax(reference, -1)
+    log_ratio = torch.where(support, logp, 0.) - torch.where(support, logq, 0.)
+    return (torch.where(support, logp, -torch.inf).exp() * log_ratio).sum(-1).mean()
+def sampled_log_ratio(policy, reference, action, action_mask):
+    if action.shape != action_mask.shape:
+        raise ValueError("one sampled action is required per prefix")
+    policy, reference, support, valid = select_distributions(policy, reference, action_mask)
+    action = action[valid]
+    if torch.any((action < 0) | (action >= policy.size(-1))):
+        raise ValueError("sampled action is outside the vocabulary")
+    if not support.gather(1, action[:, None]).all():
+        raise ValueError("sampled action must lie in policy support")
+    logp, logq = F.log_softmax(policy, -1), F.log_softmax(reference, -1)
+    return (logp - logq).gather(1, action[:, None]).mean()
+policy = torch.tensor([[[2., 0., -torch.inf], [float("nan")] * 3]], requires_grad=True)
+reference = torch.tensor([[[0., 0., -torch.inf], [float("nan")] * 3]])
+mask, action = torch.tensor([[True, False]]), torch.tensor([[1, -100]])
 exact = masked_exact_kl(policy, reference, mask)
-sampled = sampled_log_ratio(
-    policy, reference, torch.tensor([[1, 0]]), mask
-)
-assert exact > 0
-assert sampled < 0
+sampled = sampled_log_ratio(policy, reference, action, mask)
+assert exact > 0 and sampled < 0
+subset = masked_exact_kl(torch.tensor([[[0., -torch.inf]]]),
+                         torch.tensor([[[0., 0.]]]), torch.tensor([[True]]))
+torch.testing.assert_close(subset, torch.log(torch.tensor(2.)))
 exact.backward()
-torch.testing.assert_close(policy.grad[:, 1], torch.zeros(1, 2))
+torch.testing.assert_close(policy.grad[:, 1], torch.zeros(1, 3))
 ```
+
+</div>
+</details>
 
 reference policy、产生样本的 behavior policy 与 PPO old policy 是三个不同角色，即使某个同步实现偶尔让它们指向同一 checkpoint。相关目标与 mask 细节见[手撕训练目标](training-objectives.md)和[在线强化学习](../training/online-rl.md)。
 

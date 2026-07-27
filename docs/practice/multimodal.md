@@ -37,7 +37,7 @@ assert tokens.shape == (2, 6, 48)
 
 动态分辨率还需保存 tile 顺序、原图尺寸、resize/crop 变换和二维位置；只拼 patch token 会丢失几何来源。
 
-## CLIP 与 SigLIP
+## CLIP 与 SigLIP {#clip-siglip}
 
 CLIP 对 batch 内图文做对称分类：
 
@@ -84,7 +84,7 @@ torch.testing.assert_close(siglip_loss(image, text, scale), expected)
 
 分母是 image batch size $B$，不是 pair 数 $B^2$；因此每个样本增加更多 negatives 时，loss 规模也会增长。分布式实现必须明确是 local pairs 还是 all-gather 后的 global pairs，并保持同一归一口径。SigLIP 改变了对比目标，不自动解决细粒度 grounding。
 
-## Fixed-query resampler
+## Fixed-query resampler {#fixed-query-resampler}
 
 固定 $M$ 个可学习 query 把可变视觉 token $Z\in\mathbb R^{B\times N\times D}$ 压为 $M$ 个：
 
@@ -97,6 +97,11 @@ class QueryResampler(nn.Module):
         self.norm_q, self.norm_kv = nn.LayerNorm(width), nn.LayerNorm(width)
     def forward(self, visual, padding_mask=None):
         """visual:[B,N,D] -> [B,M,D]."""
+        if padding_mask is not None:
+            if padding_mask.shape != visual.shape[:2] or padding_mask.dtype != torch.bool:
+                raise ValueError("padding_mask must be bool [batch, visual_tokens]")
+            if padding_mask.all(dim=-1).any():
+                raise ValueError("every row needs at least one visible visual token")
         query = self.query[None].expand(visual.size(0), -1, -1)
         output, _ = self.attn(
             self.norm_q(query), self.norm_kv(visual), self.norm_kv(visual),
@@ -105,9 +110,27 @@ class QueryResampler(nn.Module):
         return query + output
 ```
 
+```python
+torch.manual_seed(0)
+resampler = QueryResampler(width=8, queries=3, heads=2)
+visual = torch.randn(2, 5, 8)
+padding = torch.tensor([[False] * 4 + [True]] * 2)
+output = resampler(visual, padding)
+changed = visual.clone()
+changed[:, -1] = 1_000
+torch.testing.assert_close(resampler(changed, padding), output)
+assert output.shape == (2, 3, 8) and torch.isfinite(output).all()
+for bad in (torch.ones(2, 5), torch.ones(2, 5, dtype=torch.bool)):
+    try:
+        resampler(visual, bad)
+    except ValueError:
+        continue
+    raise AssertionError("mask must be boolean and leave one visible token per row")
+```
+
 固定 $M$ 带来稳定语言侧 token 成本，也可能丢失密集小字和大量目标。应扫描分辨率、query 数与任务性能。
 
-## 坐标离散与几何变换
+## 坐标离散与几何变换 {#coordinate-geometry}
 
 ```python
 def quantize_box(box, width, height, bins):

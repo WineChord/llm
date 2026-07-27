@@ -21,13 +21,12 @@ def token_ce_parts(logits, labels, mask):
     """logits:[...,V], labels/mask:[...] -> scalar numerator, denominator."""
     if logits.shape[:-1] != labels.shape or labels.shape != mask.shape:
         raise ValueError("incompatible token shapes")
-    loss = F.cross_entropy(
-        logits.reshape(-1, logits.size(-1)),
-        labels.reshape(-1),
-        reduction="none",
-    ).view_as(labels)
-    weight = mask.to(loss.dtype)
-    return (loss * weight).sum(), weight.sum()
+    valid = mask.bool()
+    count = valid.sum()
+    if not valid.any():
+        return logits[valid].sum(), count
+    loss = F.cross_entropy(logits[valid], labels[valid], reduction="sum")
+    return loss, count
 def token_ce(logits, labels, mask):
     numerator, denominator = token_ce_parts(logits, labels, mask)
     if denominator == 0:
@@ -146,18 +145,21 @@ $$
 ```python
 def kd_loss(student, teacher, labels, mask, temperature=2.0, alpha=0.5):
     """student/teacher:[B,T,V], labels/mask:[B,T] -> scalar loss."""
-    if student.shape != teacher.shape or student.shape[:-1] != labels.shape:
+    if (student.shape != teacher.shape or student.shape[:-1] != labels.shape
+            or labels.shape != mask.shape):
         raise ValueError("teacher and student token spaces must align")
-    weight = mask.to(student.dtype)
-    if weight.sum() == 0:
+    if temperature <= 0 or not 0 <= alpha <= 1:
+        raise ValueError("temperature must be positive and alpha must lie in [0, 1]")
+    valid = mask.bool()
+    if not valid.any():
         raise ValueError("distillation batch has no valid token")
-    logp = F.log_softmax(student / temperature, dim=-1)
-    q = F.softmax(teacher.detach() / temperature, dim=-1)
-    soft = (q * (q.clamp_min(1e-12).log() - logp)).sum(-1)
-    hard = F.cross_entropy(
-        student.flatten(0, -2), labels.flatten(), reduction="none"
-    ).view_as(labels)
-    return (((1 - alpha) * hard + alpha * temperature ** 2 * soft) * weight).sum() / weight.sum()
+    selected_student = student[valid]
+    selected_teacher = teacher.detach()[valid]
+    logp = F.log_softmax(selected_student / temperature, dim=-1)
+    q = F.softmax(selected_teacher / temperature, dim=-1)
+    soft = F.kl_div(logp, q, reduction="none").sum(-1)
+    hard = F.cross_entropy(selected_student, labels[valid], reduction="none")
+    return ((1 - alpha) * hard + alpha * temperature ** 2 * soft).mean()
 ```
 
 相同 logits 时 soft KL 接近零；mask token 的 teacher 内容不应影响梯度。tokenizer 或词表不同，应改做 sequence-level distillation，不要假装逐 token 对齐。
@@ -172,8 +174,16 @@ $$
 ```python
 def bradley_terry_loss(reward_a, reward_b, target=None):
     """rewards:[B]; target=1 means a wins, 0 loses, 0.5 ties."""
+    if reward_a.shape != reward_b.shape:
+        raise ValueError("reward pairs must align")
+    if not torch.isfinite(reward_a).all() or not torch.isfinite(reward_b).all():
+        raise ValueError("rewards must be finite")
     delta = reward_a - reward_b
     target = torch.ones_like(delta) if target is None else target.to(delta.dtype)
+    if target.shape != delta.shape:
+        raise ValueError("one preference probability is required per pair")
+    if not torch.isfinite(target).all() or torch.any((target < 0) | (target > 1)):
+        raise ValueError("preference probabilities must lie in [0, 1]")
     return F.binary_cross_entropy_with_logits(delta, target)
 ```
 
@@ -186,7 +196,7 @@ torch.testing.assert_close(base, bradley_terry_loss(ra + 17, rb + 17))
 
 共同平移不改变损失，说明奖励零点不可辨识；奖励尺度也会改变后续 RL 强度。ties、位置和长度 shortcut 必须在数据与评测中单独处理。
 
-## DPO、IPO 与 SimPO
+## DPO、IPO 与 SimPO {#dpo-ipo-simpo}
 
 令
 
@@ -200,6 +210,8 @@ $$
 def preference_loss(chosen, rejected, ref_chosen=None, ref_rejected=None,
                     beta=0.1, kind="dpo", gamma=0.0):
     """Inputs:[B] sequence log-probabilities under one explicit reduction."""
+    if beta <= 0:
+        raise ValueError("beta must be positive")
     margin = chosen - rejected
     if kind == "simpo":
         return -F.logsigmoid(beta * margin - gamma).mean()
@@ -215,6 +227,58 @@ def preference_loss(chosen, rejected, ref_chosen=None, ref_rejected=None,
 
 sequence log-probability使用 token sum 还是 mean 会改变长度先验，必须在调用前明确；`beta` 与 SimPO 的 margin convention 也应随实验记录。[DPO](https://arxiv.org/abs/2305.18290)、[IPO](https://arxiv.org/abs/2310.12036)与 [SimPO](https://arxiv.org/abs/2405.14734)不是可以只换字符串而保持其他配方不变的同义目标。
 
+<details class="code-disclosure">
+<summary id="training-objective-degenerate-tests">Mask 与退化输入回归 <span class="code-disclosure__meta">Python · 42 行</span></summary>
+<div class="code-disclosure__body" markdown="1">
+
+```python
+z = torch.tensor([[[0., 2.], [float("nan")] * 2]], requires_grad=True)
+labels = torch.tensor([[1, -100]])
+mask = torch.tensor([[True, False]])
+numerator, count = token_ce_parts(z, labels, mask)
+assert count == 1 and torch.isfinite(numerator)
+(numerator / count).backward()
+assert torch.isfinite(z.grad).all() and z.grad[0, 1].abs().sum() == 0
+empty_num, empty_count = token_ce_parts(z, labels, torch.zeros_like(mask))
+assert empty_num == 0 and empty_count == 0
+try:
+    token_ce(z, labels, torch.zeros_like(mask))
+except ValueError:
+    pass
+else:
+    raise AssertionError("empty token loss must be rejected")
+student = z.detach().clone().requires_grad_()
+teacher = student.detach().clone()
+loss = kd_loss(student, teacher, labels, mask, alpha=1.)
+assert torch.isfinite(loss) and loss.abs() < 1e-7
+loss.backward()
+assert torch.isfinite(student.grad).all() and student.grad[0, 1].abs().sum() == 0
+try:
+    kd_loss(student, teacher, labels, torch.zeros_like(mask))
+except ValueError:
+    pass
+else:
+    raise AssertionError("empty distillation loss must be rejected")
+for bad_a, bad_target in [
+    (torch.tensor([float("nan"), 0.]), None),
+    (torch.zeros(2), torch.tensor([2., 0.])),
+]:
+    try:
+        bradley_terry_loss(bad_a, torch.zeros(2), bad_target)
+    except ValueError:
+        continue
+    raise AssertionError("invalid Bradley-Terry inputs must be rejected")
+try:
+    preference_loss(torch.zeros(1), torch.zeros(1), kind="simpo", beta=0.)
+except ValueError:
+    pass
+else:
+    raise AssertionError("non-positive beta must be rejected")
+```
+
+</div>
+</details>
+
 ## 在线策略优化入口
 
 GAE、PPO、RLOO 与 GRPO 不再在本页维护第二套实现。它们共同依赖 prompt group、action mask、terminal/truncation、old/behavior/reference policy 和 loss reduction；拆开复制会让这些接口在不同页面逐渐漂移。
@@ -226,21 +290,36 @@ GAE、PPO、RLOO 与 GRPO 不再在本页维护第二套实现。它们共同依
 [IMPALA](https://arxiv.org/abs/1802.01561)提出的 V-trace 用于行为策略 $\mu$ 与当前策略 $\pi$ 不同的异步 rollout。令 $\rho_t=\pi(a_t)/\mu(a_t)$，V-trace 对 value 与 trace 权重截断：
 
 ```python
+@torch.no_grad()
 def vtrace(log_rho, reward, value, terminated, gamma=0.99,
            rho_bar=1.0, c_bar=1.0):
     """Token tensors:[T], value:[T+1] -> value targets, policy advantages."""
+    if not (log_rho.shape == reward.shape == terminated.shape) or reward.ndim != 1:
+        raise ValueError("transition tensors must be aligned vectors")
+    if value.shape != (reward.numel() + 1,) or terminated.dtype != torch.bool:
+        raise ValueError("value must include bootstrap state and termination must be boolean")
     rho = log_rho.exp()
     clipped_rho, clipped_c = rho.clamp(max=rho_bar), rho.clamp(max=c_bar)
-    alive = 1.0 - terminated.to(reward.dtype)
-    delta = clipped_rho * (reward + gamma * alive * value[1:] - value[:-1])
+    bootstrap = ~terminated
+    next_value = torch.where(bootstrap, value[1:], 0.)
+    delta = clipped_rho * (reward + gamma * next_value - value[:-1])
     correction = torch.zeros((), dtype=reward.dtype, device=reward.device)
     target = torch.empty_like(reward)
     for t in range(reward.numel() - 1, -1, -1):
-        correction = delta[t] + gamma * alive[t] * clipped_c[t] * correction
+        trace = torch.where(bootstrap[t], clipped_c[t] * correction, 0.)
+        correction = delta[t] + gamma * trace
         target[t] = value[t] + correction
     next_target = torch.cat((target[1:], value[-1:]))
-    pg_adv = clipped_rho * (reward + gamma * alive * next_target - value[:-1])
+    next_target = torch.where(bootstrap, next_target, 0.)
+    pg_adv = clipped_rho * (reward + gamma * next_target - value[:-1])
     return target, pg_adv
+log_rho = torch.zeros(2, requires_grad=True)
+reward = torch.tensor([1., 2.])
+value = torch.tensor([0., 0., float("nan")], requires_grad=True)
+target, pg_adv = vtrace(log_rho, reward, value, torch.tensor([False, True]), gamma=1.)
+torch.testing.assert_close(target, torch.tensor([3., 2.]))
+torch.testing.assert_close(pg_adv, target)
+assert torch.isfinite(target).all() and not target.requires_grad and not pg_adv.requires_grad
 ```
 
 当 $\rho=c=1$ 时，它退化为相应的 on-policy multi-step target。每个 action 必须保存行为策略版本和 old logp；“落后了几个 step”不能代替 importance ratio。

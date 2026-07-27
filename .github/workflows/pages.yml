@@ -36,12 +36,16 @@ jobs:
         run: python scripts/check_python.py
       - name: Check hand-written references
         run: python scripts/check_snippets.py
+      - name: Check canonical code integration
+        run: python scripts/check_code_integration.py
       - name: Check Markdown and mathematics
         run: python scripts/check_rendering.py
       - name: Build site
         run: mkdocs build --strict
       - name: Check rendered links and fragments
         run: python scripts/check_links.py --site-dir site
+      - name: Check rendered code integration
+        run: python scripts/check_code_integration.py --site-dir site
       - name: Check generated and browser rendering
         run: python scripts/check_rendering.py --site-dir site --browser
       - name: Configure Pages

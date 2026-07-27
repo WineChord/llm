@@ -46,6 +46,33 @@ $$
 
 Tensor Core 还要求矩阵维度、layout 与 dtype 满足特定指令 tile。边界 shape 通常通过 padding、predicate 或专门 kernel 处理；padding 的 FLOPs 应与模型有效 FLOPs 分开报告。
 
+### Tile 小账本 {#gemm-tile-ledger-reference}
+
+下面对一次 $K_t$ 迭代建立可核对账本。输入是输出 tile、reduction tile、元素字节数、流水 stage 数和 shared-memory 上限；输出包括 A/B 双缓冲容量、有效 FLOPs、从 HBM 读取一次 A/B 的字节数和理想算术强度。
+
+```python
+def gemm_tile_ledger(m_tile, n_tile, k_tile, element_bytes, stages, smem_limit):
+    assert min(m_tile, n_tile, k_tile, element_bytes, stages) > 0
+    operand_elements = m_tile * k_tile + k_tile * n_tile
+    hbm_bytes = element_bytes * operand_elements
+    smem_bytes = stages * hbm_bytes
+    flops = 2 * m_tile * n_tile * k_tile
+    return {
+        "smem_bytes": smem_bytes,
+        "flops": flops,
+        "hbm_bytes": hbm_bytes,
+        "arithmetic_intensity": flops / hbm_bytes,
+        "fits_smem": smem_bytes <= smem_limit,
+    }
+
+ledger = gemm_tile_ledger(64, 64, 32, element_bytes=2, stages=2, smem_limit=48 << 10)
+assert ledger["smem_bytes"] == 16_384
+assert ledger["flops"] == 262_144
+assert ledger["arithmetic_intensity"] == 32 and ledger["fits_smem"]
+```
+
+账本的不变量是流水 stage 只扩大驻留容量，不会把同一 tile 的逻辑 HBM 读取重复计入；乘加按 $2$ FLOPs 统计。它尚未计入 accumulator register、C 的读写、padding、cache miss 和重读，因此是乐观上界而非 kernel 性能预测；把 tile 放回完整显存与通信账本的组合实验见[手撕：分布式与容错](../practice/distributed-systems.md)。
+
 ## Coalescing、对齐与 bank conflict
 
 连续线程访问连续地址，才能把多个内存请求合并。常见退化包括：
