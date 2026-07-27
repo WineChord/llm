@@ -177,8 +177,18 @@ $$
 ## 从模型 backup 到样本 backup
 
 动态规划计算完整期望
-$\sum_{s'}P(s'\mid s,a)[r+\gamma V(s')]$。未知模型时，可以用一次实际转移
-$r_t+\gamma(1-d_t)V(s_{t+1})$ 作为随机估计。这一步把 Bellman equation
+
+$$
+\sum_{s'}P(s'\mid s,a)\left[r+\gamma V(s')\right].
+$$
+
+未知模型时，可以用一次实际转移
+
+$$
+r_t+\gamma(1-d_t)V(s_{t+1})
+$$
+
+作为随机估计。这一步把 Bellman equation
 变成 TD update；若等待完整 episode，则可用 Monte Carlo return 作为 value
 target。[Monte Carlo、TD 与控制](prediction-control.md)比较二者的偏差、方差与在线性。
 
