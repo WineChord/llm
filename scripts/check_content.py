@@ -60,6 +60,13 @@ REQUIRED_PAGES = (
     "landscape/kimi-timeline.md",
     "landscape/kimi-k3-reference-map.md",
     "landscape/deepseek-v4-reference-map.md",
+    "landscape/glm-timeline.md",
+    "landscape/glm-5-reference-map.md",
+    "landscape/works/glm-5.md",
+    "landscape/works/glm-5-architecture.md",
+    "landscape/works/indexcache.md",
+    "landscape/works/slime-async-agentic-rl.md",
+    "landscape/works/glm-agentic-engineering.md",
     "landscape/works/deepseek-v4.md",
     "landscape/works/deepseek-compressed-attention.md",
     "landscape/works/manifold-hyper-connections.md",
@@ -161,6 +168,8 @@ LINEAGE_PAGES = (
     "landscape/lineages/retrieval-agents.md",
     "landscape/lineages/evaluation.md",
     "landscape/deepseek-v4-reference-map.md",
+    "landscape/glm-timeline.md",
+    "landscape/glm-5-reference-map.md",
 )
 WORK_PAGES = (
     "landscape/works/lstm.md",
@@ -188,6 +197,11 @@ WORK_PAGES = (
     "landscape/works/manifold-hyper-connections.md",
     "landscape/works/on-policy-distillation.md",
     "landscape/works/tilelang-mega-moe.md",
+    "landscape/works/glm-5.md",
+    "landscape/works/glm-5-architecture.md",
+    "landscape/works/indexcache.md",
+    "landscape/works/slime-async-agentic-rl.md",
+    "landscape/works/glm-agentic-engineering.md",
     "landscape/works/megatron-zero.md",
     "landscape/works/flashattention.md",
     "landscape/works/vllm-pagedattention.md",
@@ -398,6 +412,68 @@ if v4_work.is_file():
         if actual != expected:
             errors.append(
                 "docs/landscape/works/deepseek-v4.md: "
+                f"{label} 索引必须按顺序完整覆盖 "
+                f"{expected[0]}–{expected[-1]}；当前 {actual}"
+            )
+
+glm_map = ROOT / "docs/landscape/glm-5-reference-map.md"
+if glm_map.is_file():
+    glm_ids = [
+        int(value)
+        for value in NUMBERED_REFERENCE.findall(
+            glm_map.read_text(encoding="utf-8")
+        )
+    ]
+    expected_glm_ids = set(range(1, 64))
+    missing_glm_ids = sorted(expected_glm_ids - set(glm_ids))
+    duplicate_glm_ids = sorted({
+        value for value in glm_ids if glm_ids.count(value) > 1
+    })
+    unexpected_glm_ids = sorted(set(glm_ids) - expected_glm_ids)
+    if (
+        len(glm_ids) != 63
+        or missing_glm_ids
+        or duplicate_glm_ids
+        or unexpected_glm_ids
+    ):
+        errors.append(
+            "docs/landscape/glm-5-reference-map.md: "
+            "GLM-5 bibliography 必须覆盖 1–63 且各出现一次；"
+            f"当前 {len(glm_ids)} 项，缺失 {missing_glm_ids}，"
+            f"重复 {duplicate_glm_ids}，越界 {unexpected_glm_ids}"
+        )
+
+glm_work = ROOT / "docs/landscape/works/glm-5.md"
+if glm_work.is_file():
+    glm_text = glm_work.read_text(encoding="utf-8")
+    for marker in (
+        "40 页",
+        "Figure 1–13",
+        "Table 1–13",
+        "Equation (1)–(5)",
+        "4 个 listing",
+        "Appendix A–B",
+    ):
+        if marker not in glm_text:
+            errors.append(
+                "docs/landscape/works/glm-5.md: "
+                f"缺少报告完整性索引：{marker}"
+            )
+    glm_inventory = (
+        ("Figure", re.compile(r"(?m)^\|\s*Figure (\d+)\s*\|"), list(range(1, 14))),
+        ("Table", re.compile(r"(?m)^\|\s*Table (\d+)\s*\|"), list(range(1, 14))),
+        ("Equation", re.compile(r"(?m)^- Equation \((\d+)\)"), list(range(1, 6))),
+        ("Listing", re.compile(r"(?m)^- Listing (\d+)："), list(range(1, 5))),
+    )
+    inventory_section = glm_text.split(
+        "## 逐图、逐表与公式清单 {#report-inventory}", 1
+    )
+    inventory_text = inventory_section[1] if len(inventory_section) == 2 else ""
+    for label, row_pattern, expected in glm_inventory:
+        actual = [int(value) for value in row_pattern.findall(inventory_text)]
+        if actual != expected:
+            errors.append(
+                "docs/landscape/works/glm-5.md: "
                 f"{label} 索引必须按顺序完整覆盖 "
                 f"{expected[0]}–{expected[-1]}；当前 {actual}"
             )

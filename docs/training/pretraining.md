@@ -233,6 +233,12 @@ $$
 
 训练规模的实验设计见[规模律与实验设计](scaling-experiment-design.md)，系统并行见[并行训练](../systems/parallelism.md)。
 
+## GLM-5：28.5T 不是一个单阶段数字 {#glm-5-stages}
+
+GLM-5 报告给出的 28.5T 是 base-model 各训练阶段的总量。图中的早期 27T 与后续约 1T、500B、50B 阶段顺序组成同一总账，但这些显示值都是量级化近似：不能把机械求和得到的 28.55T 当成比报告总量更精确的数字，更不能把阶段量再次加到 28.5T 上。数据变化与长度变化交叠时，最可靠的账本应记录每一阶段的新增 token、近似精度和总量口径，而不是把总量、阶段量和重复暴露混在一列。
+
+它还展示了“预训练”与“部署架构”共同演化：末段先 warm up DSA indexer，再用 20B tokens 做 sparse adaptation；Shared MTP 在同一参数集上承担三个未来 token 位置；SFT 阶段再引入 INT4 quantization-aware training，使训练图与最终量化 kernel 尽量一致。架构切换、数据切换与数值格式切换都应有独立 checkpoint 和消融，否则下游收益无法归因。逐段清单见 [GLM-5](../landscape/works/glm-5.md#data)。
+
 ## Reference {#reference}
 
 - [DataComp-LM](https://arxiv.org/abs/2406.11794)
@@ -240,3 +246,4 @@ $$
 - [Tensor Programs V: Tuning Large Neural Networks via Zero-Shot Hyperparameter Transfer](https://arxiv.org/abs/2203.03466)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
 - [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)

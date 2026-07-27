@@ -267,6 +267,18 @@ discard/downweight reason for every rejected sample
 
 Importance sampling 为不同策略间的期望转换提供了数学起点，但长轨迹暴露了它的方差极限。Retrace、ACER 和 V-trace 逐步把截断校正、bootstrap 与分布式 actor–learner 结合起来。LLM 与 Agentic RL 把同一问题推到更长序列、更昂贵环境和更复杂采样器上：系统吞吐与统计新鲜度必须一起优化。
 
+## GLM-5：ratio gate、版本 gate 与故障 gate {#glm-gates}
+
+GLM-5 的异步管线没有尝试用一个 importance ratio 解决所有偏差，而是分三层处理：
+
+| 层 | 判据 | 动作 | 未解决的问题 |
+| --- | --- | --- | --- |
+| token | direct ratio 超出双侧区间 | mask token 梯度 | 状态分布偏差 |
+| trajectory | 当前版本与最旧 behavior revision 差超过 $\tau$ | 丢弃样本 | 版本差不等于分布差 |
+| environment | sandbox collapse 等基础设施故障 | 排除样本 | 故障识别可能误判 |
+
+组内过滤后，有效样本超过一半就用有效轨迹重复补齐，否则删除整组。这个策略维持 batch shape，却会提高幸存轨迹的权重；必须把 duplication rate 与 reward 一起报告。实现语义见 [slime 与异步 Agentic RL](../landscape/works/slime-async-agentic-rl.md#direct-is)。
+
 ## Reference {#reference}
 
 - [Degris, White, and Sutton, Off-Policy Actor-Critic](https://arxiv.org/abs/1205.4839)
@@ -274,3 +286,4 @@ Importance sampling 为不同策略间的期望转换提供了数学起点，但
 - [Wang et al., Sample Efficient Actor-Critic with Experience Replay / ACER](https://arxiv.org/abs/1611.01224)
 - [Espeholt et al., IMPALA: Scalable Distributed Deep-RL with Importance Weighted Actor-Learner Architectures](https://arxiv.org/abs/1802.01561)
 - [Fu et al., AReaL: A Large-Scale Asynchronous Reinforcement Learning System](https://arxiv.org/abs/2505.24298)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)

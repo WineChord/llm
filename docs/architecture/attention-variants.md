@@ -222,6 +222,14 @@ attention 实现至少同时处理：
 
 位置机制见[长上下文](long-context.md)，缓存管理见[KV Cache](../inference/kv-cache.md)，IO 优化见[Kernel 与性能](../systems/kernels-performance.md)。
 
+## MLA、DSA 与共享索引器 {#glm-dsa}
+
+GLM-5 延续 [DeepSeek-V2](https://arxiv.org/abs/2405.04434) 的 Multi-head Latent Attention（MLA），但把单头维度扩大到 $256$ 并减少 head 数，以保持参数与训练计算大致不变，同时降低 decode 阶段的 head 相关开销。报告中的精确配置是 64 个 attention heads，query 的非 RoPE / RoPE 维度为 $192/64$，value 维度为 $256$，KV LoRA rank 为 $512$。
+
+长上下文部分使用 [DeepSeek Sparse Attention](https://arxiv.org/abs/2512.02556)：轻量 indexer 先为历史位置打分，保留 top-$2048$，再只对选中 KV 做 attention。GLM-5 在 mid-training 末段先用 1000 steps 训练 indexer，再用 20B tokens 做 sparse adaptation。论文称其“lossless by construction”应理解为作者对训练设计与实验范围的表述，不是 sparse output 与 dense attention 对所有输入严格相等。
+
+GLM-5.2 把成本继续沿层轴压缩：[官方配置](https://huggingface.co/zai-org/GLM-5.2/blob/main/config.json)显示每四层共享一组 indexer，称为 IndexShare；这与 GLM-5 每层独立 indexer 不是同一结构。缓存、共享与逐层误差传播见 [IndexCache 与 IndexShare](../landscape/works/indexcache.md)，完整参数口径见 [GLM-5 架构](../landscape/works/glm-5-architecture.md)。
+
 ## Reference {#reference}
 
 - [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
@@ -232,3 +240,5 @@ attention 实现至少同时处理：
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
 - [DeepSeek-V3.2: Pushing the Frontier of Open Large Language Models](https://arxiv.org/abs/2512.02556)
 - [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)
+- [GLM-5.2 官方配置](https://huggingface.co/zai-org/GLM-5.2/blob/main/config.json)

@@ -291,6 +291,18 @@ $$
 
 候选接受、状态回滚与分页 KV 边界的紧凑 reference 见[手撕：推理引擎](../practice/inference-engine.md)。
 
+## Shared MTP 与 GLM-5.2 的共享链 {#glm-mtp}
+
+GLM-5 训练一个参数共享的 Multi-Token Prediction module，并把同一模块递归用于三个未来位置；报告在内部 prompt 集、四步 speculative setting 下给出平均接受长度 2.76，对照 DeepSeek-V3.2 的 2.55。这个指标依赖 prompt、采样、验证与实现，不能当成通用加速比。
+
+GLM-5.2 把草稿深度扩到七步，并加入两种跨步共享：
+
+- **IndexShare**：MTP draft steps 复用主干 DSA index；
+- **KVShare**：后续 draft step 复用前一步 KV；
+- 用 rejection sampling 与端到端 total-variation loss 缩小整条 proposal chain 的分布偏差。
+
+官方发布说明报告平均接受长度从 4.56 提升到 5.47。这里的核心演进是：MTP 不再只是多加几个预测头，而是把 proposal 的 attention state、KV state 和序列级分布一起训练。逐步机制见 [GLM-5 架构](../landscape/works/glm-5-architecture.md#shared-mtp)与 [IndexCache](../landscape/works/indexcache.md)。
+
 ## Reference {#reference}
 
 - [Fast Inference from Transformers via Speculative Decoding](https://arxiv.org/abs/2211.17192)
@@ -304,3 +316,5 @@ $$
 - [ReplaySSM](https://tridao.me/blog/2026/replayssm/)
 - [TensorRT-LLM 的 speculative decoding 文档](https://nvidia.github.io/TensorRT-LLM/1.2.0/features/speculative-decoding.html)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)
+- [GLM-5.2 发布说明](https://z.ai/blog/glm-5.2)

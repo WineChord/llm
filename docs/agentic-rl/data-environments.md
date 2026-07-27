@@ -183,6 +183,16 @@ $$
 
 token/action mask、旧策略概率和终止字段见[轨迹与策略契约](trajectory-contract.md)，训练算法见[数学与算法](math-algorithms.md)，过程数据生成见[搜索、过程奖励与验证](search-verification.md)，安全与评测见[评测与安全](evaluation-safety.md)。
 
+## GLM-5：三条环境扩展线 {#glm-environments}
+
+GLM-5 把环境扩展拆成三种互补来源：
+
+- 基于真实 issue–PR 与 RepoLaunch 构建超过 10K 个可执行 SWE 环境，覆盖九种语言；
+- 从真实种子或高质量网页合成 Harbor terminal task，经构建、测试与 refine agent 自验证；
+- 从超过两百万网页构造 Web Knowledge Graph，生成多跳搜索问题，再用无工具模型、早期 Agent 与 verification agent 三层过滤。
+
+真实任务提供自然分布，合成任务补覆盖，知识图任务增加关系深度；三者的 provenance、去重和 verifier 信任边界不能合并。尤其“Docker 构建准确率超过 90%”只说明构建管线表现，不证明题意、测试与隐藏捷径全部正确。环境到训练的完整闭环见 [GLM Agentic Engineering](../landscape/works/glm-agentic-engineering.md#environment-loop)。
+
 ## Reference {#reference}
 
 - [RLDS: an Ecosystem to Generate, Share and Use Datasets in Reinforcement Learning](https://arxiv.org/abs/2111.02767)
@@ -196,3 +206,6 @@ token/action mask、旧策略概率和终止字段见[轨迹与策略契约](tra
 - [EROFS: A Compression-friendly Readonly File System](https://www.usenix.org/conference/atc19/presentation/gao)
 - [DADI / OverlayBD](https://www.usenix.org/conference/atc20/presentation/li-huiba)
 - [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)
+- [RepoLaunch](https://arxiv.org/abs/2505.23419)
+- [Harbor](https://github.com/laude-institute/harbor)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)

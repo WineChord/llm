@@ -28,6 +28,8 @@ LLM 横跨统计学习、模型结构、分布式系统和交互环境。先建�
 
 每条谱系都连接关键工作深读和现代机制页。先看矛盾怎样移动，再阅读论文细节，会比孤立记忆模型名称更容易判断新工作究竟改变了什么。
 
+若要练习“完整读一份现代技术报告”，可从 [GLM 演化](../landscape/glm-timeline.md)确定版本边界，再沿 [GLM-5 总深读](../landscape/works/glm-5.md)进入[架构](../landscape/works/glm-5-architecture.md)、[异步 RL 系统](../landscape/works/slime-async-agentic-rl.md)和[可执行环境](../landscape/works/glm-agentic-engineering.md)，最后用[引用图谱](../landscape/glm-5-reference-map.md)反查每个机制从哪里来、报告证据最远能支持什么。
+
 ## 深入路径
 
 ### 模型结构与算法

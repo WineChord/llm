@@ -157,6 +157,22 @@ known failure regions
 
 注意力结构见[注意力家族](attention-variants.md)，长序列并行见[模型并行](../systems/model-parallelism.md)，在线容量见[推理运行时](../inference/runtime.md)。
 
+## GLM 的三段长度课程 {#glm-length-curriculum}
+
+GLM-5 的 base model 总训练量为 28.5T tokens，长上下文不是最后一次位置插值，而是 mid-training 中逐段改变序列长度与数据分布：
+
+| 阶段 | 最大长度 | token 量 | 主要任务 |
+| --- | ---: | ---: | --- |
+| Mid-training I | 32K | 1T | 领域数据、代码与推理适应 |
+| Mid-training II | 128K | 500B | 自然与合成长序列 |
+| Mid-training III | 200K | 50B | 超长上下文 |
+
+报告最终上下文上限为 202,752；GLM-5.2 [官方配置](https://huggingface.co/zai-org/GLM-5.2/blob/main/config.json)才把 `max_position_embeddings` 提高到 1,048,576。两者应按模型 revision 分开记录，不能把“系列最新上限”写成“GLM-5 报告训练长度”。
+
+DSA 不属于表内 50B 阶段的同一 token 账。报告把它放在 mid-training 结束之后：先做 1000-step indexer warm-up，再用 20B tokens 做 sparse adaptation。长度课程与架构适应必须分别登记，不能把 20B 重复计入 50B。
+
+数据侧同时采用自然长文、合成长样本、[NextLong](https://arxiv.org/abs/2501.12766)与 EntropyLong 一类方法，评测侧还需要区分检索、跨段推理和 Agent 工具历史。搜索 Agent 的 keep-recent / discard-all 进一步说明：窗口容量只是物理上限，哪些 observation 留在活动上下文仍是独立算法，见 [GLM Agentic Engineering](../landscape/works/glm-agentic-engineering.md#context-management)。
+
 ## Reference {#reference}
 
 - [RoFormer: Enhanced Transformer with Rotary Position Embedding](https://arxiv.org/abs/2104.09864)
@@ -166,3 +182,6 @@ known failure regions
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
 - [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)
 - [DeepSeek-V4 官方模型卡](https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)
+- [NextLong: A Training-Free Long-Context Extension Method](https://arxiv.org/abs/2501.12766)
+- [GLM-5.2 官方配置](https://huggingface.co/zai-org/GLM-5.2/blob/main/config.json)

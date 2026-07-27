@@ -72,6 +72,10 @@ Direct Double-Sided Importance Sampling，SAO 中以 current/rollout direct rati
 
 面向长程 Agent rollout 的可恢复 sandbox：把环境状态、overlay 文件系统和可重放 I/O 一起纳入 checkpoint，而不只保存模型 token。
 
+**[DSA](architecture/attention-variants.md#glm-dsa)**
+
+DeepSeek Sparse Attention，用轻量 indexer 为每个 query 从历史位置选择 top-$k$ 候选，再执行高维核心注意力；索引成本、稀疏 attention 成本和近似误差需要分开。
+
 **[Bellman equation](reinforcement-learning/values-bellman.md)**
 
 把当前价值写成即时 reward 与下一状态价值期望的递推等式，是动态规划、TD 与 critic 的共同接口。
@@ -254,6 +258,10 @@ KDA Context Parallelism，把每段序列表示为可结合的仿射 state trans
 
 不更新权重，仅通过当前上下文中的说明、示例或中间结果改变模型行为。
 
+**[IndexShare / IndexCache](landscape/works/indexcache.md#indexshare)**
+
+让少数层运行稀疏注意力 indexer，后续相邻层复用 top-$k$ 位置索引，以减少沿网络深度重复选择候选的计算；它缓存的不是 KV 向量。
+
 **Instruction following**
 
 在优先级、作用域、格式、条件和排除约束下完成任务的能力。
@@ -310,9 +318,13 @@ Model FLOPs Utilization，用模型理论有效 FLOPs 与硬件峰值比较的�
 
 用集合的最小哈希签名近似 Jaccard 相似度，常与 LSH 配合做大规模近重复检测。
 
-**MLA**
+**[MLA](architecture/attention-variants.md)**
 
 Multi-head Latent Attention，将 K/V 压缩为潜变量以降低缓存和带宽的一类注意力结构。
+
+**[Muon Split](landscape/works/glm-5-architecture.md#muon-split)**
+
+在 Q/K/V up-projection 上先按 attention head 切分更新矩阵，再分别执行 Muon 正交化；它改变的是正交化的矩阵边界，不只是实现分块。
 
 **[MOPD](landscape/works/kimi-k3.md#mopd)**
 
@@ -488,6 +500,10 @@ Service Level Objective，对延迟、可用性、正确性或成本等服务指
 
 由较快模型提出候选 token，再由目标模型并行验证的解码加速方法。
 
+**[Shared MTP](landscape/works/glm-5-architecture.md#shared-mtp)**
+
+用同一组 Multi-Token Prediction 参数递归预测多个未来位置，使额外训练目标和 speculative draft path 共享权重。
+
 **[SiTU-GLU](landscape/works/kimi-k3.md#situ-glu)**
 
 用 scaled tanh 平滑限制 gate 的线性因子与 up branch，在原点附近保持 SwiGLU 的一阶行为并给出有限输出上界。
@@ -507,6 +523,10 @@ $\delta_t=R_{t+1}+\gamma V(S_{t+1})-V(S_t)$，用一步 bootstrap 目标衡量�
 **[TIS](reinforcement-learning/training-inference-discrepancy.md#tis)**
 
 Truncated Importance Sampling，对同一 checkpoint 的训练分布与 rollout 分布之比做上截断，以有限方差校正 engine mismatch。
+
+**[TITO](landscape/works/slime-async-agentic-rl.md#tito)**
+
+Token-in-Token-out，让 learner 直接消费 rollout engine 实际产生的 token IDs、log-probability 与边界元数据，避免文本 round-trip 的二次分词错位。
 
 **[Test-time compute](reasoning/test-time-compute.md)**
 

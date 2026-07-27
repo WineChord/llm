@@ -56,7 +56,7 @@ $$
 | Kimi K3 | 未披露 | 预训练 | `[U]` [官方技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露长度课程，但未给总处理量 |
 | Qwen2.5 | 最多 18T | 预训练 | `[D]` [官方博客](https://qwenlm.github.io/blog/qwen2.5-llm/)；不同尺寸口径需看模型卡 |
 | Qwen3 | 约 36T | 预训练 | `[D]` [官方博客](https://qwenlm.github.io/blog/qwen3/) |
-| GLM-5 | 28.55T | 预训练 | `[D]` [技术报告](https://arxiv.org/abs/2602.15763) |
+| GLM-5 | 28.5T | base model 全阶段总量 | `[D]` [技术报告](https://arxiv.org/abs/2602.15763) |
 
 这里的“公开”不意味着可直接横向排名。不同 tokenizer 对同一文本产生不同 token 数；代码、数学、中文、图像 token 的比例也改变单位 token 的信息结构。
 

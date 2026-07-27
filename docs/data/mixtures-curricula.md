@@ -198,7 +198,15 @@ RNG, shard order and data cursor
 
 从文档到有效 token 的细节见[序列构造与打包](sequence-construction.md)，训练预算与规模外推见[规模律与实验设计](../training/scaling-experiment-design.md)。
 
+## GLM-5：按能力轴改变数据，而非只调来源权重 {#glm-5-mixture}
+
+GLM-5 的数据课程同时沿质量、领域、长度与交互结构变化。网页使用基于句向量的 DCLM 风格分类器和 world-knowledge classifier；代码侧增加模糊去重后的独特 token、修复 Software Heritage 元数据并强化低资源语言；数学与科学部分由模型评分，并明确不混入该部分的合成、AI 生成或模板数据。mid-training 再加入约千万 issue–PR 对、过滤后约 160B unique tokens，以及自然和合成长序列。
+
+这类课程不能只保存一个最终 percentage。至少应为每阶段记录 `source × domain × language × length × provenance × synthetic` 的实际 loss-token 张量，并单列 issue–PR 的原始对数、过滤后 unique tokens 与采样暴露。GLM-5 没有公开完整 mixture 权重与过滤器，因此这些做法提供的是设计坐标，不是可逐项复刻的数据配方。详见 [GLM-5 的数据阶段](../landscape/works/glm-5.md#data)。
+
 ## Reference {#reference}
 
 - [DoReMi: Optimizing Data Mixtures Speeds Up Language Model Pretraining](https://arxiv.org/abs/2305.10429)
 - [RegMix: Data Mixture as Regression for Language Model Pre-training](https://arxiv.org/abs/2407.01492)
+- [DataComp-LM](https://arxiv.org/abs/2406.11794)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)

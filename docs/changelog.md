@@ -2,6 +2,9 @@
 
 ## 2026-07-28
 
+- 新增 [GLM-5 总深读](landscape/works/glm-5.md)：完整清点 40 页报告的 13 幅图、13 张表、5 个编号公式、4 段代码清单与附录 A–B；按原文、官方配置和后续 GLM-5.2 资料分开记录 80/78 层冲突、恒零组目标、引文元数据问题及内部评测边界。
+- 拆分 [GLM-5 架构](landscape/works/glm-5-architecture.md)、[IndexCache 与 IndexShare](landscape/works/indexcache.md)、[slime 与异步 Agentic RL](landscape/works/slime-async-agentic-rl.md)和 [GLM Agentic Engineering](landscape/works/glm-agentic-engineering.md)，把 MLA-256、Muon Split、Shared MTP、DSA、TITO、direct IS、环境扩展、上下文管理和异构部署接回 canonical 主干。
+- 建立 [GLM 演化](landscape/glm-timeline.md)与 [GLM-5 的 63 项正文引用图谱](landscape/glm-5-reference-map.md)，分开 full report 与 GLM-5.1/5.2 的后续增量，并修正 GLM-5 base model 训练总量为 28.5T。
 - 新增 [DeepSeek-V4 总深读](landscape/works/deepseek-v4.md)：从模型账本进入 mHC、CSA / HCA、Muon、预训练稳定性、全词表 On-Policy Distillation、FP4 QAT、百万 token rollout 和分层评测，并为报告的 15 幅图、14 张正式表、29 个编号公式、Algorithm 1 与附录 A–B 建立逐项阅读索引。
 - 拆分 [CSA / HCA](landscape/works/deepseek-compressed-attention.md)、[mHC](landscape/works/manifold-hyper-connections.md)、[On-Policy Distillation](landscape/works/on-policy-distillation.md)和[TileLang、MegaMoE 与 DSec](landscape/works/tilelang-mega-moe.md)四篇机制深读；公式旁保留可执行语义核，较长实现折叠，系统收益与公开证据边界分开记录。
 - 建立 [V4 的 103 项引用图谱](landscape/deepseek-v4-reference-map.md)，并将可复用机制接回注意力、长上下文、MoE、优化器、蒸馏、量化、KV Cache、Agentic RL 和评测主干；导航、术语、稳定深链与完整性门禁同步更新。

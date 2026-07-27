@@ -79,6 +79,19 @@
 - Moonshot AI, [FlashKDA](https://github.com/MoonshotAI/FlashKDA)
 - Moonshot AI, [MoonEP](https://github.com/MoonshotAI/MoonEP)
 
+## GLM 家族与 GLM-5
+
+[GLM 演化](landscape/glm-timeline.md)区分论文、模型、权重、代码、API 与后续版本；[GLM-5 总深读](landscape/works/glm-5.md)覆盖报告的架构、数据、训练、Agentic RL、环境、硬件和评测；[63 项引用图谱](landscape/glm-5-reference-map.md)保留正文实际使用文献的角色。[架构](landscape/works/glm-5-architecture.md)、[IndexCache](landscape/works/indexcache.md)、[slime](landscape/works/slime-async-agentic-rl.md)与 [Agentic Engineering](landscape/works/glm-agentic-engineering.md)分别展开可复用机制。
+
+- Du et al., [GLM: General Language Model Pretraining with Autoregressive Blank Infilling](https://arxiv.org/abs/2103.10360)
+- Zeng et al., [GLM-130B: An Open Bilingual Pre-trained Model](https://arxiv.org/abs/2210.02414)
+- GLM Team, [ChatGLM: A Family of Large Language Models from GLM-130B to GLM-4 All Tools](https://arxiv.org/abs/2406.12793)
+- GLM Team, [GLM-4.5: Agentic, Reasoning, and Coding Foundation Models](https://arxiv.org/abs/2508.06471)
+- GLM Team, [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)
+- Z.ai, [GLM-5 官方仓库](https://github.com/zai-org/GLM-5)
+- Z.ai, [GLM-5.2 官方模型卡](https://huggingface.co/zai-org/GLM-5.2)
+- THUDM, [slime](https://github.com/THUDM/slime)
+
 ## 多模态与生成
 
 对应[多模态](multimodal/index.md)、[统一理解与生成](multimodal/unified-understanding-generation.md)、[文档与 GUI](multimodal/document-gui-grounding.md)、[音频语言模型](multimodal/audio-language-models.md)和[视频与世界模型](multimodal/video-world-models.md)。

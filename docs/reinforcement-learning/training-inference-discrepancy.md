@@ -307,6 +307,19 @@ number of reuse epochs and optimizer steps
 
 TIS、IcePop 与 DIS 的 detached coefficient 和退化断言见[手撕 LLM 策略优化](../practice/llm-policy-optimization.md)；实践页用于横向实验，本页的 policy 身份、ratio 分解与轨迹字段仍是实现入口。
 
+## GLM-5 的直接两策略校正 {#glm-direct-is}
+
+GLM-5 的异步 Agentic RL 省去单独的 $\pi_{\mathrm{old}}$，直接保存 rollout engine 当时产生每个 token 的 log-prob，并计算
+
+$$
+r_t^{\mathrm{direct}}
+=\exp(\log\pi_\theta(a_t\mid s_t)-\log\pi_{\mathrm{rollout}}(a_t\mid s_t)).
+$$
+
+只在 $1-\epsilon_\ell<r_t^{\mathrm{direct}}<1+\epsilon_h$ 时保留该 token 的梯度，区间外设为零。它是 hard masking，不是把 ratio 截到 PPO 边界。系统同时用最旧 rollout revision 与当前 revision 的距离删除过期轨迹，因此 token mismatch 和 trajectory staleness 是两层不同过滤。
+
+这套方法接受一个明确近似：action ratio 修正已经访问的 $s_t$，却无法恢复当前策略本会访问而旧策略没有访问的状态。报告还在推理权重刷新后重置 optimizer，但没有给出该选择的单独消融。公式、stop-gradient 歧义与数据接受率审计见 [slime 与异步 Agentic RL](../landscape/works/slime-async-agentic-rl.md#direct-is)。
+
 ## Reference {#reference}
 
 - Schulman et al., [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
@@ -315,3 +328,4 @@ TIS、IcePop 与 DIS 的 detached coefficient 和退化断言见[手撕 LLM 策�
 - Ling Team, [Every Step Evolves: Scaling Reinforcement Learning for Trillion-Scale Thinking Model](https://arxiv.org/abs/2510.18855)
 - Ma et al., [Stabilizing MoE Reinforcement Learning by Aligning Training and Inference Routers](https://arxiv.org/abs/2510.11370)
 - Hou et al., [Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning](https://arxiv.org/abs/2607.07508)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)

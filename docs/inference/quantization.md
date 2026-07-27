@@ -280,6 +280,14 @@ expected kernel and supported hardware
 
 数值表示的基础边界见[精度与数值](../systems/precision-numerics.md)，把压缩收益放回请求分布与硬件关键路径的方法见[推理基准与可靠性](benchmarking-reliability.md)。
 
+## GLM-5 的异构 W4A8/W8A8 部署 {#glm-ascend}
+
+GLM-5 在 Ascend Atlas 案例中按模块分配精度：常规 attention 与 MLP 使用 W8A8，体量最大的 MoE experts 使用 W4A8；QuaRot 用正交旋转削弱 outlier，`Flex_AWQ_SSZ` 用于 scale calibration。芯片章节的工程目标是让约 750B 参数、每 token 约 40B 激活参数的模型装入单台 Atlas 800T A3。架构表的 744B 排除了 embedding 与 output layer，公开权重索引约 753.864B；三者的计数边界见 [GLM-5 模型账本](../landscape/works/glm-5.md#model-ledger)。
+
+这种“标准块保精度、专家块压权重”的策略利用了 MoE 权重容量远大于单 token 激活路径，但它不自动保证 expert routing、稀有领域和长尾 token 不受损。复现报告至少要补齐 calibration corpus、group/scale 粒度、router 与 expert 分层误差、长上下文回归和每个 fallback kernel 的比例。
+
+报告的 $50\%$ 长序列部署成本降幅缺少完整硬件对照、并发、输入输出长度和服务目标，只能作为团队测量。量化与 Lightning Indexer、Sparse Flash Attention、MLAPO 及运行时调度的组合见 [GLM Agentic Engineering](../landscape/works/glm-agentic-engineering.md#deployment)。
+
 ## Reference {#reference}
 
 - [GPTQ](https://arxiv.org/abs/2210.17323)
@@ -294,3 +302,5 @@ expected kernel and supported hardware
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
 - [OCP Microscaling Formats](https://arxiv.org/abs/2310.10537)
 - [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)
+- [QuaRot: Outlier-Free 4-Bit Inference in Rotated LLMs](https://arxiv.org/abs/2404.00456)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)

@@ -166,6 +166,8 @@ REQUIRED_CLUSTERS = {
         "landscape/kimi-timeline.md",
         "landscape/kimi-k3-reference-map.md",
         "landscape/deepseek-v4-reference-map.md",
+        "landscape/glm-timeline.md",
+        "landscape/glm-5-reference-map.md",
     },
     "deep-reads": {
         "landscape/works/lstm.md",
@@ -193,6 +195,11 @@ REQUIRED_CLUSTERS = {
         "landscape/works/manifold-hyper-connections.md",
         "landscape/works/on-policy-distillation.md",
         "landscape/works/tilelang-mega-moe.md",
+        "landscape/works/glm-5.md",
+        "landscape/works/glm-5-architecture.md",
+        "landscape/works/indexcache.md",
+        "landscape/works/slime-async-agentic-rl.md",
+        "landscape/works/glm-agentic-engineering.md",
         "landscape/works/megatron-zero.md",
         "landscape/works/flashattention.md",
         "landscape/works/vllm-pagedattention.md",
@@ -315,6 +322,46 @@ REQUIRED_EDGES = {
     "landscape/deepseek-timeline.md": {
         "landscape/works/deepseek-v4.md",
         "landscape/deepseek-v4-reference-map.md",
+    },
+    "landscape/works/glm-5.md": {
+        "architecture/attention-variants.md",
+        "architecture/long-context.md",
+        "training/pretraining.md",
+        "training/distillation.md",
+        "agentic-rl/training-systems.md",
+        "agentic-rl/data-environments.md",
+        "inference/quantization.md",
+        "evaluation/agent-tool-evaluation.md",
+        "landscape/works/glm-5-architecture.md",
+        "landscape/works/indexcache.md",
+        "landscape/works/slime-async-agentic-rl.md",
+        "landscape/works/glm-agentic-engineering.md",
+        "landscape/glm-5-reference-map.md",
+    },
+    "landscape/works/glm-5-architecture.md": {
+        "landscape/works/glm-5.md",
+        "architecture/attention-variants.md",
+        "training/optimizer-families.md",
+        "inference/speculative-decoding.md",
+    },
+    "landscape/works/indexcache.md": {
+        "landscape/works/glm-5.md",
+        "landscape/works/glm-5-architecture.md",
+        "architecture/attention-variants.md",
+    },
+    "landscape/works/slime-async-agentic-rl.md": {
+        "landscape/works/glm-5.md",
+        "agentic-rl/training-systems.md",
+        "reinforcement-learning/training-inference-discrepancy.md",
+    },
+    "landscape/works/glm-agentic-engineering.md": {
+        "landscape/works/glm-5.md",
+        "agentic-rl/data-environments.md",
+        "evaluation/agent-tool-evaluation.md",
+    },
+    "landscape/glm-timeline.md": {
+        "landscape/works/glm-5.md",
+        "landscape/glm-5-reference-map.md",
     },
 }
 

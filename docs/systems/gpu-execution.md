@@ -241,6 +241,14 @@ $$
 
 从算术强度判断优化上限见[性能模型](performance-model.md)，attention 的具体数据流与 online softmax 见 [Attention Kernel](attention-kernels.md)。
 
+## 异构加速器上的融合不能只换 API {#glm-heterogeneous}
+
+GLM-5 报告的 Ascend 案例同时改变量化格式、稀疏 attention kernel、MLA preprocessing、D2H sampling overlap、parallel layout 与 communication。这样的 full-stack adaptation 说明性能可移植性的单位不是单个算子名字，而是完整 execution graph。
+
+例如 MLAPO 把 13 个小算子融合后，收益可能来自 launch 减少、中间张量不落 HBM，以及 Vector/Cube 单元并行；换到另一硬件若执行单元、片上存储或调度方式不同，保持“13-op fusion”这个数字没有意义。可迁移的是依赖图和成本分解，平台特定的是 tile、buffer、pipeline 与通信 overlap。
+
+因此跨硬件“性能相当”至少要对齐模型 revision、量化误差、输入输出长度、batch、并发、SLO、功耗和总节点成本。GLM-5 报告没有公开足够数据重建其单节点对双集群比较，相关数字只能保留作者口径。
+
 ## Reference {#reference}
 
 - [CUDA Programming Guide](https://docs.nvidia.com/cuda/cuda-programming-guide/index.html)
@@ -248,3 +256,4 @@ $$
 - [Triton tutorials](https://triton-lang.org/main/getting-started/tutorials/)
 - [CUTLASS](https://github.com/NVIDIA/cutlass)
 - [PyTorch: Using User-Defined Triton Kernels with torch.compile](https://docs.pytorch.org/tutorials/recipes/torch_compile_user_defined_triton_kernel_tutorial.html)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)

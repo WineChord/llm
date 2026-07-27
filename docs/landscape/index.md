@@ -27,6 +27,17 @@
 
 [从可下载权重到可研究系统](lineages/open-model-ecosystem.md)则补上另一条历史：公开 API、权重、代码、数据、中间 checkpoint 与许可证逐层扩大了研究者真正能够检验的对象。
 
+### GLM：从统一目标到 Agentic Engineering
+
+[GLM 演化](glm-timeline.md)从 2021 年的 General Language Model 出发，经过 GLM-130B、ChatGLM、GLM-4 的 All Tools 与 GLM-4.5 的 Agentic MoE，走到 GLM-5 / 5.2。它不是简单的模型尺寸年表，而是四条逐渐汇合的支线：双向与自回归的统一预训练、开放双语模型、工具与推理后训练、面向长程 Agent 的训练—推理系统。
+
+- [GLM-5 总深读](works/glm-5.md)逐项覆盖 40 页报告的 13 幅图、13 张表、5 个编号公式、4 段 listing 与附录，并保留正文和配置之间的冲突；
+- [GLM-5 架构](works/glm-5-architecture.md)连接 MoE、MLA-256、Muon Split、Shared MTP 与 DSA；
+- [IndexCache 与 IndexShare](works/indexcache.md)解释为什么稀疏索引可以跨层共享，以及它和 KV / prefix cache 的边界；
+- [slime 与异步 Agentic RL](works/slime-async-agentic-rl.md)拆开 TITO、policy lag、直接重要性比、版本过滤和 KV-locality routing；
+- [GLM Agentic Engineering](works/glm-agentic-engineering.md)从 issue–PR 环境、terminal/search 数据走到上下文管理、slide reward 与运行式评测；
+- [GLM-5 引用图谱](glm-5-reference-map.md)按报告实际使用的 63 项引用追踪方法来源、系统实现、数据与 benchmark。
+
 ### 当一条模型家族汇合多条技术路线
 
 [Kimi 技术谱系](kimi-timeline.md)没有把同名模型排成发布列表，而是沿长推理、稀疏宽度、线性状态、深度寻址、原生视觉和 agent system 六条支线解释 K1.5、Kimi-VL、K2、Kimi Linear、K2.5、Attention Residuals 与 K3 怎样前后衔接。页面同时区分 paper、weights、code、API、license 与 release date，避免把“公开报告”“开放权重”和“完整系统可复现”写成同一件事。

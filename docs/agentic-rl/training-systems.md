@@ -146,6 +146,19 @@ V4 还把超长 trajectory 分成轻 metadata 与重 token fields：全局 shuff
 
 behavior version、old log-prob 与异步 batch 字段见[轨迹与策略契约](trajectory-contract.md)，分布式基础见[集合通信与状态分片](../systems/collectives-sharding.md)、[模型并行](../systems/model-parallelism.md)和[检查点与容错](../systems/checkpointing.md)。
 
+## GLM-5 / slime 的连续流水线 {#glm-slime}
+
+GLM-5 把训练与推理引擎放在不同 GPU 设备上，由推理端持续产生轨迹，达到阈值后送入 learner，每 $K$ 个梯度更新再同步权重。报告没有进一步限定二者是否属于独立集群。中央 Multi-Task Rollout Orchestrator 把不同工具与 reward 服务标准化为 message list，并报告支持超过千条并发 rollout。
+
+稳定性依赖四个互相配合的机制：
+
+- TITO Gateway 保存真实 token IDs、behavior log-prob 与边界；
+- direct double-sided IS 对 ratio 越界 token 做 hard mask；
+- weight revision 过滤陈旧轨迹；
+- consistent hashing 让同一 rollout 固定到同一 DP rank，保持 KV locality。
+
+这种系统的吞吐分母应包含被 gate 掉的 token 与环境失败；只报 actor 生成速度会高估有效训练率。完整数据流、公式与最小实现见 [slime 与异步 Agentic RL](../landscape/works/slime-async-agentic-rl.md)。
+
 ## Reference {#reference}
 
 - [veRL](https://github.com/volcengine/verl)
@@ -155,3 +168,4 @@ behavior version、old log-prob 与异步 batch 字段见[轨迹与策略契约]
 - [Firecracker: Lightweight Virtualization for Serverless Applications](https://www.usenix.org/conference/nsdi20/presentation/agache)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
 - [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)

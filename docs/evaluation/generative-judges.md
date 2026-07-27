@@ -211,7 +211,15 @@ tokens, latency, cost and known limits
 
 事实 claim 的 judge 口径见[幻觉与事实性](hallucination.md)，统计聚合见[统计推断](statistical-inference.md)，最小 swap/BT 工具见[评测工具](../practice/evaluation-tooling.md)。
 
+## GLM-5：judge 也必须固定为评测依赖 {#glm-judge}
+
+GLM-5 的搜索评测发现 BrowseComp 对 judge prompt 与 judge model 敏感，最终统一采用 OpenAI 官方 prompt 与 o3-mini。这个选择提高同一实验内部的一致性，却不能让分数跨 judge 自动可比；judge 是 harness 的一部分，必须与模型、采样预算和页面快照一起冻结。
+
+CC-Bench-V2 又展示了另一种 judge：模型主动运行网页、检查 DOM 与视觉结果。它比只读截图拥有更多证据，也多了浏览器版本、工具权限、交互顺序与错误恢复等变量。报告的内部一致率和排序相关性应作为校准证据保存，不能替代公开任务、样本级 verdict 和人工复核。
+
 ## Reference {#reference}
 
 - [Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena](https://arxiv.org/abs/2306.05685)
 - [Judging the Judges](https://arxiv.org/abs/2406.07791)
+- [BrowseComp](https://arxiv.org/abs/2504.12516)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)

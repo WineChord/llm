@@ -185,6 +185,11 @@ nav:
               - FlashAttention: landscape/works/flashattention.md
               - vLLM 与 PagedAttention: landscape/works/vllm-pagedattention.md
           - 模型、训练与系统共设计:
+              - GLM-5: landscape/works/glm-5.md
+              - GLM-5 架构: landscape/works/glm-5-architecture.md
+              - IndexCache 与 IndexShare: landscape/works/indexcache.md
+              - slime 与异步 Agentic RL: landscape/works/slime-async-agentic-rl.md
+              - GLM Agentic Engineering: landscape/works/glm-agentic-engineering.md
               - DeepSeek-V4: landscape/works/deepseek-v4.md
               - CSA 与 HCA: landscape/works/deepseek-compressed-attention.md
               - Manifold-Constrained Hyper-Connections: landscape/works/manifold-hyper-connections.md
@@ -209,6 +214,8 @@ nav:
           - V4 引用图谱: landscape/deepseek-v4-reference-map.md
           - Kimi 演化案例: landscape/kimi-timeline.md
           - K3 引用图谱: landscape/kimi-k3-reference-map.md
+          - GLM 演化案例: landscape/glm-timeline.md
+          - GLM-5 引用图谱: landscape/glm-5-reference-map.md
   - 多模态:
       - 总览: multimodal/index.md
       - 理解与对齐:

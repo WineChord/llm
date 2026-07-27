@@ -104,6 +104,12 @@ discover -> design -> edit -> local_verify -> publish -> remote_verify
 
 这些项目变化很快，具体命令与能力应以各自版本化文档为准。通用工具调用见[工具与智能体](agents.md)，强化学习视角见[Agentic RL](../agentic-rl/index.md)。
 
+## 从 coding benchmark 到环境生产线 {#glm-agentic-engineering}
+
+GLM-5 的 Agentic Engineering 路线把 coding task 视为环境生产问题：从 issue–PR 对恢复仓库与依赖，用 F2P 测新增行为、P2P 防止回归，再记录工具、token、policy revision 与终止原因。报告称构建超过 10K 个九语言环境；另以 Harbor 合成 terminal tasks。
+
+它提示 Coding Agent 评测至少有三个分母：原始任务、可成功构建的环境、实际得到有效 verdict 的运行。只对第三个分母报 pass rate 会把环境腐烂和超时静默删除。详见 [GLM Agentic Engineering](../landscape/works/glm-agentic-engineering.md)与[数据与环境](../agentic-rl/data-environments.md#glm-environments)。
+
 ## Reference {#reference}
 
 - [METR 的 time-horizon 方法](https://metr.org/time-horizons/)
@@ -112,3 +118,5 @@ discover -> design -> edit -> local_verify -> publish -> remote_verify
 - [Claude Code 文档](https://docs.anthropic.com/en/docs/claude-code/overview)
 - [OpenCode](https://github.com/anomalyco/opencode)
 - [badlogic/pi-mono agent framework](https://github.com/badlogic/pi-mono)
+- [RepoLaunch](https://arxiv.org/abs/2505.23419)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)

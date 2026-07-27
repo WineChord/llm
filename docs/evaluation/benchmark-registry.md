@@ -160,6 +160,12 @@ whether the reported result is fixed-harness, best-of-harness or leaderboard
 
 统计聚合见[指标与评测设计](metrics.md)，污染审计见[评测污染](contamination.md)，逐样本记录实现见[评测工具](../practice/evaluation-tooling.md)。
 
+## 技术报告的横表也要逐行注册 {#glm-arc}
+
+GLM-5 的 Artificial Analysis、coding、Agent、search 与 general benchmark 采用了不同 harness、prompt、judge、超时与访问日期；同一张总表中的数值不是一个统一实验。报告还包含内部 CC-Bench-V2、团队自报硬件结果和公开 benchmark，证据等级不同。
+
+因此不能只注册“GLM-5 evaluation table”。Table 7 的 21 个 benchmark rows（其中两行 Terminal benchmark 各自另报 verified 值）及其他评测都应分别绑定 task revision、model mode、budget、judge、timeout、工具权限和来源；破折号、API failure 与未运行不能转成零分。完整逐项盘点与跨模型限制见 [GLM-5](../landscape/works/glm-5.md#evaluation)。
+
 ## Reference {#reference}
 
 - [MMLU](https://arxiv.org/abs/2009.03300)
@@ -171,3 +177,4 @@ whether the reported result is fixed-harness, best-of-harness or leaderboard
 - [MMMU](https://arxiv.org/abs/2311.16502)
 - [LiveCodeBench](https://arxiv.org/abs/2403.07974)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)

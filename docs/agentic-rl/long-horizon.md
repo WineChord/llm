@@ -111,9 +111,17 @@ system prompt、工具命名、context compactor、skills、memory 与 subagent 
 
 Coding 场景见[Coding Agent](../applications/coding-agents.md)，训练侧状态见[训练系统](training-systems.md)。
 
+## Keep-recent 与层级重启 {#glm-context-management}
+
+GLM-5 的搜索 Agent 没有把最大窗口等同于有效记忆。它保留最近 $k=5$ 轮，较早 observation 用占位符折叠；总上下文超过 $T=32\text{K}$ 时再丢弃完整工具历史并重新开始。报告在其 BrowseComp harness 下给出从 55.3 到 62.0，再到 75.9 的阶段性结果。
+
+该设计降低 observation 噪声，却没有保留早期事实摘要或 provenance pointer。长程系统更稳妥的扩展是把 task state、已验证事实、近期交互和可重取 observation 分层：折叠只改变活动上下文，不删除外部可恢复状态。报告策略的代码与评测口径见 [GLM Agentic Engineering](../landscape/works/glm-agentic-engineering.md#context-management)。
+
 ## Reference {#reference}
 
 - [METR 的 time-horizon 方法](https://metr.org/time-horizons/)
 - [Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
 - [AgentENV](https://github.com/kvcache-ai/AgentENV)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)
+- [BrowseComp](https://arxiv.org/abs/2504.12516)

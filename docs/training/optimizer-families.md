@@ -225,6 +225,18 @@ resume conversion rules
 
 混合精度与故障诊断见[优化与稳定性](optimization.md)，状态分片见[集合通信与分片](../systems/collectives-sharding.md)。
 
+## Muon Split：正交化的矩阵边界会改变更新 {#muon-split}
+
+Muon 不是逐元素缩放，而是对二维更新矩阵做近似正交化；怎样 reshape 参数因此属于算法定义。GLM-5 的 **Muon Split** 在 MLA 的 Q/K/V up-projection 上先按 attention head 切分，再分别正交化。若把所有 heads 拼成一个大矩阵，Newton–Schulz 迭代会耦合不同 head 的奇异谱；分头处理则允许各 head 获得不同更新尺度。
+
+设第 $h$ 个 head 的动量矩阵为 $M_h$，Muon Split 计算
+
+$$
+\Delta W=\operatorname{concat}_h\!\left[\operatorname{NS}(M_h)\right],
+$$
+
+而不是 $\operatorname{NS}(\operatorname{concat}_hM_h)$。两者一般不相等。复现时必须固定 head layout、transpose、normalization、迭代次数以及 Q/K/V 是否分别处理。GLM-5 报告没有公开所有优化器超参数与消融，因此只能复现运算边界，不能据此还原完整训练配方。架构动机见 [GLM-5 架构](../landscape/works/glm-5-architecture.md#muon-split)。
+
 ## Reference {#reference}
 
 - [On the Importance of Initialization and Momentum in Deep Learning](https://proceedings.mlr.press/v28/sutskever13.html)
@@ -233,3 +245,4 @@ resume conversion rules
 - [Muon is Scalable for LLM Training](https://arxiv.org/abs/2502.16982)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
 - [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)

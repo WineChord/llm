@@ -239,6 +239,12 @@ effect/cluster CI and known environment limits
 
 安全攻击矩阵见[安全评测](safety-evaluation.md)，统计重采样见[统计推断](statistical-inference.md)，最小状态与 pass 指标实现见[评测工具](../practice/evaluation-tooling.md)。
 
+## GLM-5 的运行式 coding 评测 {#glm-cc-bench}
+
+GLM-5 报告的内部 CC-Bench-V2 不只读最终文本，而是让 Agent-as-a-Judge 操作产物：frontend 有 220 个任务、949 个 check-items，backend 有 85 个跨六语言任务、每题 5–10 个测试，long-horizon 任务串联 3–15 个 commit 并运行累积测试。报告另从 frontend 抽取 130 个 check-items 做 judge–human point-wise consistency 校准，不能把这个子样本误当成完整评测规模。
+
+报告给出 frontend 检查点一致率 $94\%$、模型排序 Spearman $85.7\%$。这些数字说明团队做过 judge–human 校准，却不足以独立复现：任务、完整 rubric、judge prompt、运行环境和样本级 verdict 未充分公开。此类结果应登记为 `[I] internal`，并把确定性测试、模型语义判断和人工偏好三种证据分开。逐项边界见 [GLM Agentic Engineering](../landscape/works/glm-agentic-engineering.md#agent-judge)与 [GLM-5](../landscape/works/glm-5.md#evaluation)。
+
 ## Reference {#reference}
 
 - [tau-bench](https://arxiv.org/abs/2406.12045)
@@ -250,3 +256,4 @@ effect/cluster CI and known environment limits
 - [BFCL](https://gorilla.cs.berkeley.edu/leaderboard)
 - [AgentDojo](https://arxiv.org/abs/2406.13352)
 - [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)

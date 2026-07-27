@@ -294,6 +294,18 @@ attention kernel 至少固定：
 
 kernel 层结论应回到[性能成本模型](performance-model.md)核对 Amdahl 上限，并与[GPU 执行模型](gpu-execution.md)中的 tile、流水和资源约束一起解释。
 
+## 稀疏注意力的三段融合 {#glm-sparse-kernels}
+
+GLM-5 的 Ascend 适配把 DSA 数据流拆成三条 kernel：
+
+1. **Lightning Indexer** 融合 score、ReLU 与 top-$k$；
+2. **Sparse Flash Attention** 让 KV 选择与稀疏 attention 并行；
+3. **MLAPO** 把 13 个 MLA preprocessing operator 融成一个 super-operator。
+
+优化边界恰好对应 `index -> gather -> attention`。只测第三段的 FLOPs/s 会漏掉 top-$k$、不规则地址和 gather；只测 indexer 又无法证明 end-to-end decode 加速。应在真实 KV 长度和 prefix-hit 分布下分别记录 index、gather、attention、launch、D2H 与 fallback 时间，并验证选中索引、mask 和 dense reference 的数值语义。
+
+报告没有公开 kernel 源码和可重建 benchmark，性能与 $50\%$ 成本声明属于特定系统结果。架构选择见 [GLM-5 架构](../landscape/works/glm-5-architecture.md#dsa)，部署组合见 [GLM Agentic Engineering](../landscape/works/glm-agentic-engineering.md#deployment)。
+
 ## Reference {#reference}
 
 - [FlashAttention](https://arxiv.org/abs/2205.14135)
@@ -309,3 +321,5 @@ kernel 层结论应回到[性能成本模型](performance-model.md)核对 Amdahl
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
 - [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)
 - [DeepGEMM](https://github.com/deepseek-ai/DeepGEMM)
+- [DeepSeek-V3.2 / DeepSeek Sparse Attention](https://arxiv.org/abs/2512.02556)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)

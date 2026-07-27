@@ -219,6 +219,12 @@ teacher 在目标域不可靠、teacher 查询成本超过直接标注、两者�
 
 目标函数的最小实现与不变量见[训练目标实现](../practice/training-objectives.md)，合成样本的谱系与筛选见[合成数据](../data/synthetic-data.md)。
 
+## GLM-5 的跨阶段 OPD {#glm-opd}
+
+GLM-5 把 On-Policy Distillation 放在多阶段后训练的最后：学生从当前策略产生前缀，SFT、Reasoning RL 与 General RL 的 final checkpoints 作为教师，在对应训练 prompt 上提供 token 级信号。报告没有把 Agentic RL checkpoint 明确列入这份 teacher 清单。它用 stop-gradient 的 teacher/student log-ratio 替换 advantage，并采用 group size 1、batch size 1024；教师 logits 由推理引擎提供。
+
+它与 outcome RL 的区别不是“有没有 rollout”，而是同一条学生轨迹上得到逐 token 的 teacher signal，而不是只有稀疏终局奖励。报告的式 (2) 显式使用 sampled token 上的 teacher / student log-ratio；它不能直接等同于每个位置都枚举全词表的 KL。GLM-5.2 又把这一接口扩展到十余个教师并行服务。损失方向、单样本估计与全词表 KL 不应混称，完整推导见 [On-Policy Distillation](../landscape/works/on-policy-distillation.md#reverse-kl)，系统调度见 [slime 与异步 Agentic RL](../landscape/works/slime-async-agentic-rl.md#glm-52)。
+
 ## Reference {#reference}
 
 - [Distilling the Knowledge in a Neural Network](https://arxiv.org/abs/1503.02531)
@@ -227,3 +233,5 @@ teacher 在目标域不可靠、teacher 查询成本超过直接标注、两者�
 - [On-Policy Distillation](https://thinkingmachines.ai/blog/on-policy-distillation/)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
 - [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)
+- [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)
+- [GLM-5.2 发布说明](https://z.ai/blog/glm-5.2)
