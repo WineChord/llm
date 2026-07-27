@@ -1,92 +1,28 @@
-# Trust Region 与 PPO：让策略更新保持可控
+# PPO：从 Clipped Surrogate 到训练契约
 
-Policy gradient 给出上升方向，却没有保证一步走多远。神经策略的一次大更新可能让新策略几乎不再访问旧数据中的状态，使原先估计的 advantage 立刻失效。Trust Region Policy Optimization（TRPO）把“不要离旧策略太远”写成 KL 约束；Proximal Policy Optimization（PPO）用更容易实现的 surrogate 近似这一目标。
+Policy gradient 给出上升方向，却没有保证一步走多远。神经策略的一次大更新可能让新策略几乎不再访问旧数据中的状态，使原先估计的 advantage 立刻失效。PPO 用 clipped surrogate 让 sampled action 在“有利方向”越界后不再获得额外收益，并换取一阶优化器、minibatch 与多 epoch 训练的便利。
 
-本页关注二者共同的统计结构，而不是把 `clip` 当成一个孤立公式。梯度起点见 [Policy Gradient](policy-gradient.md)，advantage 的构造见 [Actor–Critic](actor-critic.md)，语言模型中 reference policy 的另一种 KL 角色见 [KL 正则化控制](kl-regularized-control.md)。
+PPO 继承 trust-region 路线的动机，却不等价于硬 KL 约束。[Trust Region 与 TRPO](trust-region.md)独立推导 performance-difference、Fisher、conjugate gradient 与 line search；本页集中解释 PPO 的精确分段、policy 身份、LLM reduction、batch lifecycle 与诊断。梯度起点见 [Policy Gradient](policy-gradient.md)，advantage 的构造见 [Advantage 与 GAE](advantage-estimation-gae.md)。
 
-## 为什么旧策略数据会很快失效
+## 从 trust region 到 clipped surrogate {#trpo}
 
-策略性能差可以用 performance-difference identity 表示：
+旧轨迹只在策略仍靠近采样分布时提供可信的局部改进信号。[Trust Region 与 TRPO](trust-region.md)从 performance-difference identity 出发，把“靠近”写成显式 KL 约束，再用 Fisher、conjugate gradient 与 line search 求解。PPO 保留同一个局部更新动机，却不再求解二阶约束问题。
 
-$$
-J(\pi)-J(\pi_{\text{old}})
-=\frac{1}{1-\gamma}
-\mathbb E_{
-s\sim d^\pi,\,
-a\sim\pi
-}
-\left[
-A^{\pi_{\text{old}}}(s,a)
-\right].
-$$
-
-困难在于右侧状态分布是新策略的 $d^\pi$，而手中轨迹来自 $d^{\pi_{\text{old}}}$。若更新很小，可先固定旧状态分布，构造局部 surrogate：
-
-$$
-L_{\pi_{\text{old}}}(\pi)
-=
-\mathbb E_{
-s\sim d^{\pi_{\text{old}}},
-a\sim\pi_{\text{old}}
-}
-\left[
-\frac{\pi(a\mid s)}
-{\pi_{\text{old}}(a\mid s)}
-A^{\pi_{\text{old}}}(s,a)
-\right].
-$$
-
-概率比
+对当前训练批次，先在训练引擎上冻结旧策略 $\pi_{\mathrm{old}}^{\mathrm{train}}$，定义 token ratio
 
 $$
 r_t(\theta)
 =
 \frac{\pi_\theta(a_t\mid h_t)}
-{\pi_{\text{old}}(a_t\mid h_t)}
+{\pi_{\mathrm{old}}^{\mathrm{train}}(a_t\mid h_t)}
 =
 \exp\left(
 \log\pi_\theta(a_t\mid h_t)
--\log\pi_{\text{old}}(a_t\mid h_t)
-\right)
+-\log\pi_{\mathrm{old}}^{\mathrm{train}}(a_t\mid h_t)
+\right).
 $$
 
-把旧策略采样的动作重新加权到新策略。更新越大，固定旧状态分布的近似越不可信，importance ratio 的方差也越高。
-
-## TRPO：把邻域写成约束
-
-TRPO 求解近似约束问题
-
-$$
-\begin{aligned}
-\max_\theta\quad
-&\widehat{\mathbb E}_t
-\left[
-r_t(\theta)\widehat A_t
-\right],\\
-\text{s.t.}\quad
-&\widehat{\mathbb E}_t
-\left[
-D_{\mathrm{KL}}
-\left(
-\pi_{\text{old}}(\cdot\mid h_t)
-\;\|\;
-\pi_\theta(\cdot\mid h_t)
-\right)
-\right]
-\le\delta.
-\end{aligned}
-$$
-
-在旧参数附近，KL 的二阶展开给出 Fisher 信息矩阵；natural-gradient 方向近似为
-
-$$
-\Delta\theta
-\propto F^{-1}g,
-$$
-
-再用 conjugate gradient 求近似方向，并通过 line search 检查实际 surrogate 与 KL。它比普通一阶更新更接近“在策略分布空间走固定距离”，但实现和分布式训练成本较高。
-
-TRPO 的理论单调改进依赖精确或受控近似、足够准确的 advantage 和真实 KL 约束。神经网络、有限 batch、函数逼近与近似求解都使它成为条件性保证，而不是部署承诺。
+在标准同步 on-policy 实现里，真实 behavior $\mu^{\mathrm{rollout}}$ 与这个冻结旧策略一致；异步队列、推理引擎数值差异或 sampling processor 会破坏该等式。PPO ratio 描述 current–old update，不能自动完成 current–behavior 的 off-policy correction。四种 policy 身份与三种 ratio 见[策略身份、训推分布与策略滞后](training-inference-discrepancy.md)。
 
 ## PPO-Clip：用悲观 surrogate 限制收益
 
@@ -118,6 +54,24 @@ torch.clamp(ratio, 1 - eps, 1 + eps) * advantage
 
 它只保留 clipped 分支，丢失未裁剪目标，和 PPO surrogate 不等价。
 
+精确分段更直接：
+
+$$
+\widehat A_t\ge0:
+\quad
+\min(r_t\widehat A_t,\operatorname{clip}(r_t)\widehat A_t)
+=\widehat A_t\min(r_t,1+\epsilon),
+$$
+
+$$
+\widehat A_t<0:
+\quad
+\min(r_t\widehat A_t,\operatorname{clip}(r_t)\widehat A_t)
+=\widehat A_t\max(r_t,1-\epsilon).
+$$
+
+因此正 advantage 只在 $r_t>1+\epsilon$ 后饱和，负 advantage 只在 $r_t<1-\epsilon$ 后饱和。正 advantage 且 $r_t<1-\epsilon$ 仍要提高概率；负 advantage 且 $r_t>1+\epsilon$ 仍要降低概率。PPO、Clip-Higher、CISPO、GSPO 与 SAPO 的真实梯度差异见[Ratio、Clipping 与 Gate](ratio-clipping-gating.md)。
+
 PPO 也不保证实际 KL 小于某个硬阈值：未被当前样本覆盖的动作仍可变化，多个 minibatch epoch 还会持续推动策略。因此实践中常同时监控：
 
 - approximate KL；
@@ -129,14 +83,15 @@ PPO 也不保证实际 KL 小于某个硬阈值：未被当前样本覆盖的动
 
 必要时用 KL early stopping 或降低学习率，而不是把 $\epsilon$ 当作完整 trust region。
 
-## Old policy 与 reference policy 不是一个对象
+## Current、old、behavior 与 reference 不是一个对象
 
-LLM 后训练常同时出现三种策略：
+LLM 后训练至少要区分四种策略：
 
 | 策略 | 作用 | 更新节奏 |
 | --- | --- | --- |
 | $\pi_\theta$ | 当前待优化 actor | 每个 minibatch 改变 |
-| $\pi_{\text{old}}$ | 产生 rollout 的 behavior policy | 对该批数据冻结 |
+| $\pi_{\text{old}}^{\mathrm{train}}$ | PPO surrogate 的冻结更新基准 | 对该批数据冻结 |
+| $\mu^{\mathrm{rollout}}$ | 真正生成 sampled token 的 behavior distribution | 由 checkpoint、引擎与采样器共同定义 |
 | $\pi_{\text{ref}}$ | 定义行为先验或 KL 成本 | 通常跨多批冻结 |
 
 PPO ratio 使用 $\pi_{\text{old}}$：
@@ -147,7 +102,13 @@ r_t
 {\pi_{\text{old}}(a_t\mid h_t)}.
 $$
 
-对齐目标中的 KL 则相对 $\pi_{\text{ref}}$。即使 old 与 ref 在某个时刻权重相同，它们的语义也不同：前者回答“这条样本由谁产生”，后者回答“行为允许偏离哪个锚点”。详细策略角色与保存字段见[语言模型作为策略](language-model-policy.md)和[轨迹与策略契约](../agentic-rl/trajectory-contract.md)。
+对齐目标中的 KL 则相对 $\pi_{\text{ref}}$。同步、同精度、无解码变换时，old training policy 可以近似真实 behavior；使用不同推理引擎、量化、top-$p$、grammar 或异步队列后，$\mu^{\mathrm{rollout}}\ne\pi_{\text{old}}^{\mathrm{train}}$。此时还要处理
+
+$$
+\frac{\pi_{\text{old}}^{\mathrm{train}}}{\mu^{\mathrm{rollout}}},
+$$
+
+而不能把 reference log-prob 填进分母。完整四策略与三种 ratio 见[策略身份、训推分布与策略滞后](training-inference-discrepancy.md)。
 
 ## LLM 中的 token 与序列归约
 
@@ -230,8 +191,9 @@ rollout under pi_old
 ## 实现契约
 
 ```text
-current, behavior and reference policy revisions
-exact sampled token IDs and behavior log-probabilities
+current, old-training, behavior and reference policy revisions
+exact sampled token IDs and rollout behavior log-probabilities
+recomputed old-training log-probabilities for the PPO ratio
 action, valid-token and terminal/bootstrap masks
 advantage/value revision and normalization scope
 clip epsilon, KL estimator and early-stop threshold
@@ -254,7 +216,7 @@ sampling processors and log-probability convention
 - **clip 等同于 KL 约束**：PPO 没有自动满足 TRPO 的硬约束。
 - **old/ref 混用**：importance ratio 和行为正则失去语义。
 - **只计算 clipped 分支**：实现不再是 PPO surrogate。
-- **重算 old log-prob**：tokenizer、模板、量化或 sampler 变化会伪造 behavior probability。
+- **把重算 old log-prob 当作 behavior**：tokenizer、模板、量化或 sampler 变化后，training-side 重算值不能冒充真实 rollout probability。
 - **ratio 先平均再 exponentiate**：sequence ratio 与 token ratio 是不同目标。
 - **sequence reward 复制到 token 后求和**：长度成为隐式权重。
 - **无限复用 rollout**：clip 不能把任意旧数据变回 on-policy。

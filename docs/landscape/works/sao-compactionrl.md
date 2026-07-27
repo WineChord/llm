@@ -56,11 +56,11 @@ $$
 
 个训练段。把 segment 当组成员，会让压缩次数多的 rollout 在统计中重复出现；只在完整 rollout 上归一化，又不能直接给独立执行的每个段提供 token-level credit。CompactionRL 因而改用 value function。
 
-这不是对 GRPO 的普遍否定。若环境便宜、同 prompt 多样采样有价值、组内 reward 有足够方差且同步等待可控，group-relative baseline 仍可能更省显存和实现成本。方法选择的完整坐标见[在线强化学习](../../training/online-rl.md)与[从续写到偏好与在线学习](../lineages/training-alignment.md)。
+这不是对 GRPO 的普遍否定。若环境便宜、同 prompt 多样采样有价值、组内 reward 有足够方差且同步等待可控，group-relative baseline 仍可能更省显存和实现成本。方法选择的完整坐标见[推理 RL 配方地图](../../reinforcement-learning/reasoning-rl-recipes.md)与[推理策略优化谱系](../lineages/reasoning-policy-optimization.md)。
 
 ## 共同底座：critic 回到闭环
 
-两项工作的公开实验都使用 group size $1$、token-level advantage、value pretraining、每批两次 critic update 与一次 policy update，以及 [VAPO](https://arxiv.org/abs/2504.05118)中的 length-adaptive GAE：
+两项工作的公开实验都使用 group size $1$、token-level advantage、value pretraining、每批两次 critic update 与一次 policy update，以及 [VAPO](vapo.md)中的 length-adaptive GAE：
 
 $$
 \lambda_{\mathrm{policy}}
@@ -121,6 +121,8 @@ $$
 
 论文把这一记录值作为每个可训练 token 的 behavior log-probability proxy，而不是只给整条 episode 附一个版本号。proxy 只有在记录过程覆盖真实采样语义时才等价于 behavior distribution：temperature、top-$p$、top-$k$、grammar mask 或 routing 若改变了实际分布，却仍保存变换前的 model log-probability，ratio 就不再是严格的重要性比率。
 
+current、old、rollout behavior 与 reference 的统一记号，以及 policy lag 和 engine mismatch 的分解见[策略身份、训推分布与策略滞后](../../reinforcement-learning/training-inference-discrepancy.md)。
+
 ### DIS 不是普通 PPO clip
 
 SAO 的 Direct Double-Sided Importance Sampling 定义
@@ -155,6 +157,8 @@ $$
 | $r_t>1+\epsilon_h$ | 进入常数裁剪区 | 保留未裁剪项的梯度 | 丢弃 |
 
 因此 DIS 更像 **hard trust gate**。它以偏差换稳定性：极端 off-policy token 不再主导更新，但被系统性丢弃的数据可能带来 selection bias。下面实现只冻结“ratio 作为样本权重和门控”的语义；论文公式没有披露 method-specific autograd 实现，复现时必须显式决定 ratio 是否 stop-gradient。
+
+PPO、TIS、IcePop 与 DIS 所使用 ratio、粒度和越界梯度的逐项对照见[Ratio、Clipping 与 Gate](../../reinforcement-learning/ratio-clipping-gating.md#dis)。
 
 ```python
 import math
@@ -197,6 +201,8 @@ $$
 \widehat A(a_{i,N})
 =\delta_t+\gamma\lambda\widehat A(a_{i+1,0}).
 $$
+
+这相当于先选定 action-token 时间轴，再在该子序列上做 GAE；terminal、truncation 与跨 turn bootstrap 的通用语义见[Advantage 估计与 GAE](../../reinforcement-learning/advantage-estimation-gae.md)。
 
 一个最小实现可以先抽出 action token 索引，再在这条子序列上反向递推：
 

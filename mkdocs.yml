@@ -152,6 +152,7 @@ nav:
           - 训练与推理能力:
               - 从续写到偏好与在线学习: landscape/lineages/training-alignment.md
               - 从外显推理到可验证搜索: landscape/lineages/reasoning-verification.md
+              - 推理策略优化: landscape/lineages/reasoning-policy-optimization.md
           - 系统与服务:
               - 分布式训练系统: landscape/lineages/distributed-training-systems.md
               - 推理运行时与服务: landscape/lineages/inference-serving.md
@@ -175,6 +176,8 @@ nav:
               - InstructGPT: landscape/works/instructgpt.md
               - DPO: landscape/works/dpo.md
               - DeepSeek-R1: landscape/works/deepseek-r1.md
+              - DAPO: landscape/works/dapo.md
+              - VAPO: landscape/works/vapo.md
               - SAO 与 CompactionRL: landscape/works/sao-compactionrl.md
           - 训练与推理系统:
               - Megatron-LM 与 ZeRO: landscape/works/megatron-zero.md
@@ -281,22 +284,28 @@ nav:
       - 策略优化:
           - Policy Gradient: reinforcement-learning/policy-gradient.md
           - Actor–Critic: reinforcement-learning/actor-critic.md
-          - Trust Region、TRPO 与 PPO: reinforcement-learning/trust-region-ppo.md
+          - Advantage 估计与 GAE: reinforcement-learning/advantage-estimation-gae.md
+          - Trust Region 与 TRPO: reinforcement-learning/trust-region.md
+          - PPO: reinforcement-learning/trust-region-ppo.md
           - Off-policy 校正: reinforcement-learning/off-policy-correction.md
       - 强化学习与语言模型:
           - 语言模型作为策略: reinforcement-learning/language-model-policy.md
-          - KL 正则化控制: reinforcement-learning/kl-regularized-control.md
           - 反馈制度: reinforcement-learning/feedback-regimes.md
+          - KL 正则化控制: reinforcement-learning/kl-regularized-control.md
           - RLHF 数据闭环: reinforcement-learning/rlhf-pipeline.md
           - 奖励、偏好与策略学习: training/reward-preference.md
           - 奖励建模: training/reward-modeling.md
           - 离线偏好优化: training/offline-preference.md
           - 无 critic 的 Baseline: reinforcement-learning/critic-free-baselines.md
+          - GRPO: reinforcement-learning/grpo.md
+          - 训推分布与策略滞后: reinforcement-learning/training-inference-discrepancy.md
+          - Ratio、Clipping 与 Gate: reinforcement-learning/ratio-clipping-gating.md
           - 在线 RL: training/online-rl.md
           - RLVR: reinforcement-learning/rlvr.md
           - Verifier 与奖励塑形: reinforcement-learning/verifiers-reward-shaping.md
           - 推理后训练: training/reasoning-posttraining.md
           - 语言模型信用分配: reinforcement-learning/credit-assignment.md
+          - 推理 RL 配方地图: reinforcement-learning/reasoning-rl-recipes.md
           - 实验诊断: reinforcement-learning/evaluation-debugging.md
       - Agentic RL:
           - 总览: agentic-rl/index.md
@@ -310,6 +319,7 @@ nav:
           - 评测与安全: agentic-rl/evaluation-safety.md
       - 实现与索引:
           - 手撕强化学习: practice/reinforcement-learning.md
+          - 手撕 LLM 策略优化: practice/llm-policy-optimization.md
           - 阅读清单: agentic-rl/reading-list.md
   - 评测与可靠性:
       - 总览: evaluation/index.md

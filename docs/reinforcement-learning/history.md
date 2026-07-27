@@ -63,6 +63,14 @@ $$
   -> importance ratio 方差和偏差上升
 ```
 
+## 2016–2021：自博弈、最大熵、规划与离线数据
+
+策略优化并没有独占深度 RL 的发展。[AlphaGo Zero](https://www.nature.com/articles/nature24270)把神经网络、自博弈与 Monte Carlo Tree Search 组成闭环：policy/value network 为搜索提供先验，搜索结果再成为训练目标。随后 [MuZero](https://arxiv.org/abs/1911.08265)进一步只学习规划所需的 latent dynamics，而不要求重建完整 observation。它们沿着[模型、规划与层级决策](models-planning-hierarchy.md)回答“何时应该在参数更新之外显式搜索未来”。
+
+连续控制中的 [Soft Actor-Critic](https://arxiv.org/abs/1801.01290)把 entropy 写进目标，在探索与回报之间建立可优化的温度；对应的最大熵视角见[探索与最大熵](exploration-entropy.md)。与此同时，现实数据常无法持续在线采集，[Conservative Q-Learning](https://arxiv.org/abs/2006.04779)等 offline RL 工作开始直接处理 dataset support 外的过估计，连接到[模仿学习与 Offline RL](offline-imitation.md)。
+
+这几条支流后来都回到大模型系统：搜索与 verifier 组成测试时计算，entropy 影响 reasoning diversity，offline preference 则在不运行在线环境时改进策略。它们说明 RL 历史不是 PPO 单线延伸。
+
 ## 2017–2022：reward 从环境函数变成可学习对象
 
 [Deep RL from Human Preferences](https://proceedings.neurips.cc/paper/2017/hash/d5e2c0adad503c91f91df240d0cd4e49-Abstract.html)把轨迹片段比较训练成 reward model，再由 RL 优化策略。它将两个问题分开：
@@ -88,6 +96,16 @@ $$
 ## 2025–2026：推理、长轨迹与异步系统重新汇合
 
 [DeepSeek-R1](https://arxiv.org/abs/2501.12948)把可验证 reward、group-relative optimization、冷启动数据和蒸馏组织成推理后训练路线。随后大量工作围绕 clipping、长度归一化、无信号组、process reward 和异步 rollout 调整具体 estimator。读这些方法时，应把“目标函数变化”和“采样预算、过滤、系统吞吐变化”分开。
+
+### Baseline 与分母
+
+[Dr. GRPO](https://arxiv.org/abs/2503.20783)把 group std 与 response-length denominator 带来的权重显式化；[DAPO](../landscape/works/dapo.md)把 Clip-Higher、mixed-group sampling、global token loss 与 overlong handling 组合成开放配方；[VAPO](../landscape/works/vapo.md)则重新引入并预热 critic，用 decoupled、length-adaptive GAE 处理长短混合。它们不是一条“新算法依次取代旧算法”的榜单，而是沿 baseline、长度、探索与采样成本分叉。
+
+### Update geometry 与 engine mismatch
+
+随后 [CISPO](ratio-clipping-gating.md#cispo)、[GSPO](ratio-clipping-gating.md#gspo)与 [SAPO](ratio-clipping-gating.md#sapo)从 detached weight、sequence ratio 与 smooth gate 三个方向修改更新几何；[TIS](training-inference-discrepancy.md#tis)、[IcePop](training-inference-discrepancy.md#icepop)与 [R3](training-inference-discrepancy.md#r3)又把训练引擎与 rollout 引擎的分布差搬到算法层处理。完整因果链见[推理策略优化谱系](../landscape/lineages/reasoning-policy-optimization.md)。
+
+### Long-horizon 与异步系统
 
 多轮 agent 又让经典问题以更极端的形式返回：
 
@@ -126,6 +144,10 @@ $$
 - Schulman et al., [High-Dimensional Continuous Control Using Generalized Advantage Estimation](https://arxiv.org/abs/1506.02438)
 - Schulman et al., [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
 - Espeholt et al., [IMPALA: Scalable Distributed Deep-RL with Importance Weighted Actor-Learner Architectures](https://arxiv.org/abs/1802.01561)
+- Silver et al., [Mastering the Game of Go without Human Knowledge](https://www.nature.com/articles/nature24270)
+- Haarnoja et al., [Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor](https://arxiv.org/abs/1801.01290)
+- Schrittwieser et al., [Mastering Atari, Go, Chess and Shogi by Planning with a Learned Model](https://arxiv.org/abs/1911.08265)
+- Kumar et al., [Conservative Q-Learning for Offline Reinforcement Learning](https://arxiv.org/abs/2006.04779)
 - Christiano et al., [Deep Reinforcement Learning from Human Preferences](https://proceedings.neurips.cc/paper/2017/hash/d5e2c0adad503c91f91df240d0cd4e49-Abstract.html)
 - Ziegler et al., [Fine-Tuning Language Models from Human Preferences](https://arxiv.org/abs/1909.08593)
 - Stiennon et al., [Learning to Summarize with Human Feedback](https://proceedings.neurips.cc/paper/2020/hash/1f89885d556929e98d3ef9b86448f951-Abstract.html)
@@ -134,5 +156,14 @@ $$
 - Shao et al., [DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models](https://arxiv.org/abs/2402.03300)
 - Ahmadian et al., [Back to Basics: Revisiting REINFORCE Style Optimization for Learning from Human Feedback in LLMs](https://arxiv.org/abs/2402.14740)
 - Guo et al., [DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning](https://arxiv.org/abs/2501.12948)
+- Liu et al., [Understanding R1-Zero-Like Training: A Critical Perspective](https://arxiv.org/abs/2503.20783)
+- Yu et al., [DAPO: An Open-Source LLM Reinforcement Learning System at Scale](https://arxiv.org/abs/2503.14476)
+- Yue et al., [VAPO: Efficient and Reliable Reinforcement Learning for Advanced Reasoning Tasks](https://arxiv.org/abs/2504.05118)
+- MiniMax et al., [MiniMax-M1: Scaling Test-Time Compute Efficiently with Lightning Attention](https://arxiv.org/abs/2506.13585)
+- Zheng et al., [Group Sequence Policy Optimization](https://arxiv.org/abs/2507.18071)
+- Gao et al., [Soft Adaptive Policy Optimization](https://arxiv.org/abs/2511.20347)
+- [On the Rollout-Training Mismatch in Large-Scale Reinforcement Learning](https://www.opt-ml.org/papers/2025/paper116.pdf)
+- Ling Team et al., [Every Step Evolves: Scaling Reinforcement Learning for Trillion-Scale Thinking Model](https://arxiv.org/abs/2510.18855)
+- Ma et al., [Stabilizing MoE Reinforcement Learning by Aligning Training and Inference Routers](https://arxiv.org/abs/2510.11370)
 - Hou et al., [Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning](https://arxiv.org/abs/2607.07508)
 - Li et al., [CompactionRL: Reinforcement Learning with Context Compaction for Long-Horizon Agents](https://arxiv.org/abs/2607.05378)

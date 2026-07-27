@@ -64,7 +64,7 @@ V_\phi(h_t)-\widehat V_t
 \right]^2.
 $$
 
-两个目标可以共享网络 trunk，但 target 的梯度边界必须清楚：bootstrap target 通常停止梯度，否则 critic 会通过目标分支追逐自身。
+两个目标可以共享网络 trunk，但 target 的梯度边界必须清楚：bootstrap target 通常停止梯度，否则 critic 会通过目标分支追逐自身。完整双边界推导见[Advantage 估计与 GAE](advantage-estimation-gae.md#boundaries)。
 
 ## $n$-step return 与 GAE
 
@@ -89,8 +89,10 @@ $$
 $$
 \widehat A_t
 =\delta_t
-+\gamma\lambda(1-d_t)\widehat A_{t+1}.
++\gamma\lambda(1-b_t)\widehat A_{t+1},
 $$
+
+其中 $d_t$ 只控制当前 transition 是否 bootstrap，$b_t$ 则表示 trace 是否必须在这里停止。普通 transition 有 $d_t=b_t=0$，真正 terminal 有 $d_t=b_t=1$；具备真实 final observation 的 truncation 则是 $d_t=0,b_t=1$。因此一个 `done` 不能同时承担两个角色。
 
 - $\lambda=0$ 接近一步 TD，方差低、critic 偏差影响大；
 - $\lambda=1$ 在有限轨迹中接近 reward-to-go 减 value baseline；
@@ -144,29 +146,35 @@ bootstrap mask: 终态边界是否保留下一状态价值
 ```python
 import torch
 
-def generalized_advantage(reward, value, terminated, gamma=0.99, lam=0.95):
-    """reward, terminated: [B,T]; value: [B,T+1]."""
+def generalized_advantage(
+    reward, value, bootstrap_mask, trace_mask, gamma=0.99, lam=0.95
+):
+    """reward/masks: [B,T]; value: [B,T+1] with real final observations."""
     if value.shape != (*reward.shape[:-1], reward.shape[-1] + 1):
         raise ValueError("value must include the bootstrap state")
     adv = torch.zeros_like(reward)
     carry = torch.zeros_like(reward[:, 0])
     for t in range(reward.shape[1] - 1, -1, -1):
-        cont = 1.0 - terminated[:, t].to(reward.dtype)
-        delta = reward[:, t] + gamma * cont * value[:, t + 1] - value[:, t]
-        carry = delta + gamma * lam * cont * carry
+        boot = bootstrap_mask[:, t].to(reward.dtype)
+        trace = trace_mask[:, t].to(reward.dtype)
+        delta = reward[:, t] + gamma * boot * value[:, t + 1] - value[:, t]
+        carry = delta + gamma * lam * trace * carry
         adv[:, t] = carry
     target = adv + value[:, :-1]
     return adv, target
 
 r = torch.tensor([[1.0, 2.0]])
 v = torch.tensor([[0.3, 0.5, 4.0]])
-terminal = torch.tensor([[False, True]])
-a, target = generalized_advantage(r, v, terminal, gamma=1.0, lam=1.0)
+bootstrap = torch.tensor([[True, False]])
+trace = torch.tensor([[True, False]])
+a, target = generalized_advantage(
+    r, v, bootstrap, trace, gamma=1.0, lam=1.0
+)
 assert torch.allclose(a, torch.tensor([[2.7, 1.5]]))
 assert torch.allclose(target, torch.tensor([[3.0, 2.0]]))
 ```
 
-这个实现假设 batch 中每条轨迹已经按时间对齐。padding 位置必须在外层用有效步 mask 排除，不能仅靠把 reward 置零；否则 padding 上的 value、loss 分母和递推仍可能污染结果。
+正常 transition 的两个 mask 都为真，真实 terminal 都为假；有真实 final observation 的 truncation 则 `bootstrap=True, trace=False`。这个实现假设 batch 中每条轨迹已经按时间对齐。padding 位置必须在外层用有效步 mask 排除，不能仅靠把 reward 置零；否则 padding 上的 value、loss 分母和递推仍可能污染结果。完整推导与边界测试见[Advantage 估计与 GAE](advantage-estimation-gae.md)。
 
 ## Critic 的训练节奏
 

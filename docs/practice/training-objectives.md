@@ -215,138 +215,11 @@ def preference_loss(chosen, rejected, ref_chosen=None, ref_rejected=None,
 
 sequence log-probability使用 token sum 还是 mean 会改变长度先验，必须在调用前明确；`beta` 与 SimPO 的 margin convention 也应随实验记录。[DPO](https://arxiv.org/abs/2305.18290)、[IPO](https://arxiv.org/abs/2310.12036)与 [SimPO](https://arxiv.org/abs/2405.14734)不是可以只换字符串而保持其他配方不变的同义目标。
 
-## GAE
+## 在线策略优化入口
 
-[Generalized Advantage Estimation](https://arxiv.org/abs/1506.02438)区分真正 terminal 与 time-limit truncation。前者不 bootstrap；后者从该 transition 的最终 observation 对应的 `next_value[t]` bootstrap，但 trace 不能跨 episode 继续。Packed trajectory 不能用物理相邻的 `value[t + 1]` 代替真实后继状态：
+GAE、PPO、RLOO 与 GRPO 不再在本页维护第二套实现。它们共同依赖 prompt group、action mask、terminal/truncation、old/behavior/reference policy 和 loss reduction；拆开复制会让这些接口在不同页面逐渐漂移。
 
-```python
-def gae(reward, value, next_value, terminated, truncated, gamma=0.99, lam=0.95):
-    """All tensors:[T]; next_value[t] is V of transition t's true successor."""
-    tensors = (value, next_value, terminated, truncated)
-    if any(tensor.shape != reward.shape for tensor in tensors):
-        raise ValueError("GAE transition tensors must have identical [T] shape")
-    adv = torch.zeros_like(reward)
-    carry = torch.zeros((), dtype=reward.dtype, device=reward.device)
-    for t in range(reward.numel() - 1, -1, -1):
-        bootstrap = 1.0 - terminated[t].to(reward.dtype)
-        boundary = (terminated[t] | truncated[t]).to(reward.dtype)
-        delta = reward[t] + gamma * bootstrap * next_value[t] - value[t]
-        carry = delta + gamma * lam * (1.0 - boundary) * carry
-        adv[t] = carry
-    return adv, adv + value
-```
-
-```python
-reward = torch.tensor([1.0, 10.0])
-value = torch.tensor([2.0, 3.0])
-next_value = torch.tensor([4.0, 99.0])
-terminated = torch.tensor([False, True])
-truncated = torch.tensor([True, False])
-adv, returns = gae(reward, value, next_value, terminated, truncated, gamma=0.5, lam=1.0)
-torch.testing.assert_close(adv, torch.tensor([1.0, 7.0]))
-torch.testing.assert_close(returns, torch.tensor([3.0, 10.0]))
-```
-
-工具 observation token 不是策略 action；只有模型实际采样的 action token 进入 policy loss。
-
-## PPO
-
-[PPO](https://arxiv.org/abs/1707.06347)中 $\pi_{\mathrm{old}}$ 是采样行为策略，$\pi_{\mathrm{ref}}$ 是 KL anchor，两者作用不同：
-
-```python
-def ppo_policy_loss(new_logp, old_logp, advantage, action_mask,
-                    clip=0.2, ref_logp=None):
-    """All token tensors:[B,T] -> loss and detached diagnostics."""
-    weight = action_mask.to(new_logp.dtype)
-    if weight.sum() == 0:
-        raise ValueError("trajectory has no action token")
-    ratio = (new_logp - old_logp).exp()
-    raw = ratio * advantage
-    clipped = ratio.clamp(1 - clip, 1 + clip) * advantage
-    loss = -(torch.minimum(raw, clipped) * weight).sum() / weight.sum()
-    info = {
-        "ratio_mean": (ratio * weight).sum().detach() / weight.sum(),
-        "clip_fraction": (((ratio - 1).abs() > clip) * weight).sum().detach() / weight.sum(),
-    }
-    if ref_logp is not None:
-        info["sample_log_ratio"] = ((new_logp - ref_logp) * weight).sum().detach() / weight.sum()
-    return loss, info
-```
-
-```python
-logp = torch.randn(2, 4)
-mask = torch.tensor([[0, 1, 1, 0], [0, 1, 0, 0]], dtype=torch.bool)
-_, info = ppo_policy_loss(logp, logp, torch.ones_like(logp), mask, ref_logp=logp)
-torch.testing.assert_close(info["ratio_mean"], torch.tensor(1.0))
-torch.testing.assert_close(info["sample_log_ratio"], torch.tensor(0.0))
-assert "sample_kl" not in info
-```
-
-ratio 必须由 rollout 保存的 exact old log-probability 计算。tokenizer、模板或 action boundary 改变后，旧 logp 不再兼容。
-
-`sample_log_ratio` 估计的是行为分布 $\mu$ 所采 action token 上的
-
-$$
-\widehat{\ell}_{\mu}
-=
-\frac{\sum_t m_t\left[
-\log\pi_{\mathrm{new}}(a_t\mid s_t)
--\log\pi_{\mathrm{ref}}(a_t\mid s_t)
-\right]}
-{\sum_t m_t},
-\qquad a_t\sim\mu.
-$$
-
-在普通 PPO rollout 中 $\mu=\pi_{\mathrm{old}}$。它可以为负，也不是一般意义上的 KL；只有采样确实来自 $\pi_{\mathrm{new}}$ 且对其动作分布取期望时，才对应
-$\operatorname{KL}(\pi_{\mathrm{new}}\Vert\pi_{\mathrm{ref}})$ 的 Monte Carlo 估计。
-
-## RLOO 与 GRPO advantage {#rloo-grpo-advantage}
-
-[RLOO](https://arxiv.org/abs/2402.14740)用同一 prompt 的其他样本作为 leave-one-out baseline：
-
-$$
-A_i=R_i-\frac{1}{K-1}\sum_{j\ne i}R_j.
-$$
-
-[DeepSeekMath](https://arxiv.org/abs/2402.03300)提出的 GRPO 常见标准化形式为：
-
-$$
-A_i=\frac{R_i-\bar R}{\operatorname{std}(R)+\epsilon}.
-$$
-
-```python
-def group_advantage(reward, group, valid=None, kind="grpo", eps=1e-6):
-    """reward/group:[N], valid:[N] -> advantage:[N], invalid stays zero."""
-    valid = torch.ones_like(reward, dtype=torch.bool) if valid is None else valid
-    out = torch.zeros_like(reward)
-    for g in group[valid].unique():
-        idx = (group == g) & valid
-        r, n = reward[idx], int(idx.sum())
-        if kind == "rloo":
-            if n < 2:
-                raise ValueError("RLOO needs at least two valid samples per group")
-            out[idx] = r - (r.sum() - r) / (n - 1)
-        elif kind == "grpo":
-            if eps <= 0:
-                raise ValueError("eps must be positive")
-            std = r.std(unbiased=False)
-            out[idx] = (r - r.mean()) / (std + eps)
-        else:
-            raise ValueError(f"unknown estimator: {kind}")
-    return out
-```
-
-```python
-reward = torch.tensor([1.0, 2.0, 3.0, 7.0, 7.0])
-group = torch.tensor([0, 0, 0, 1, 1])
-got = group_advantage(reward, group, kind="grpo", eps=1e-3)
-r0 = reward[:3]
-expected = (r0 - r0.mean()) / (r0.std(unbiased=False) + 1e-3)
-torch.testing.assert_close(got[:3], expected)
-torch.testing.assert_close(got[3:], torch.zeros(2))
-```
-
-Infra error 不应自动记为零奖励；先用 `valid` 排除并单列失败率。全同 reward 时分子为零，因此输出精确为零；`eps` 始终进入分母，公式与实现保持一致。
+统一的张量实现、退化断言与方法变体见[手撕 LLM 策略优化](llm-policy-optimization.md)。概念推导分别见 [Advantage 估计与 GAE](../reinforcement-learning/advantage-estimation-gae.md)、[PPO](../reinforcement-learning/trust-region-ppo.md)与 [GRPO](../reinforcement-learning/grpo.md)。本页继续保留 V-trace，因为它展示的是异步 value target 与 off-policy trace correction，而不是另一种 LLM policy-loss 配方。
 
 ## V-trace
 
@@ -376,11 +249,11 @@ def vtrace(log_rho, reward, value, terminated, gamma=0.99,
 
 | 类别 | 断言 |
 | --- | --- |
-| identity | LoRA 初始等于 base；KD 相同 logits 的 KL 为零；PPO 新旧相同时 ratio 为 1 |
-| mask | padding 与 observation token 不改变 loss 或梯度 |
-| degenerate | 空 mask 抛错；RLOO 的 $K<2$ 抛错；GRPO 零方差返回零 |
+| identity | LoRA 初始等于 base；KD 相同 logits 的 KL 为零；V-trace 在单位 ratio 下退化为 on-policy target |
+| mask | padding 不改变 token loss、偏好目标或梯度 |
+| degenerate | 空 loss mask 抛错；缺失 reference 的 DPO/IPO 拒绝执行 |
 | invariance | BT 共同平移不变；LoRA merge/unmerge 幂等 |
-| policy state | old policy、reference policy 和 current policy 分开传入 |
+| policy state | preference reference 与 V-trace behavior/current log-ratio 分开传入 |
 | missingness | timeout、invalid 与 infra error 不静默变成普通零奖励 |
 
 目标推导见[偏好优化](../training/offline-preference.md)与[在线 RL](../training/online-rl.md)，跨 rank 的 loss 与 global norm 见[手撕：分布式与容错](distributed-systems.md)。
@@ -392,6 +265,4 @@ def vtrace(log_rho, reward, value, terminated, gamma=0.99,
 - [Direct Preference Optimization](https://arxiv.org/abs/2305.18290)
 - [A General Theoretical Paradigm to Understand Learning from Human Preferences / IPO](https://arxiv.org/abs/2310.12036)
 - [SimPO: Simple Preference Optimization with a Reference-Free Reward](https://arxiv.org/abs/2405.14734)
-- [Generalized Advantage Estimation](https://arxiv.org/abs/1506.02438)
-- [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
-- [Back to Basics: Revisiting REINFORCE Style Optimization for Learning from Human Feedback](https://arxiv.org/abs/2402.14740)
+- [IMPALA: Scalable Distributed Deep-RL with Importance Weighted Actor-Learner Architectures](https://arxiv.org/abs/1802.01561)

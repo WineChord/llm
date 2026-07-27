@@ -67,7 +67,7 @@ $$
 - greedy reward 很差时 baseline 降方差效果有限；
 - 多轮环境的 greedy 分支可能访问完全不同状态。
 
-## RLOO：leave-one-out baseline
+## RLOO：leave-one-out baseline {#rloo}
 
 同一 prompt 采样 $K\ge2$ 个 response，reward 为 $R_1,\ldots,R_K$。对第 $i$ 个样本：
 
@@ -99,6 +99,8 @@ $$
 $$
 
 分子中的 $\bar R$ 包含当前 reward，但它与 RLOO 有上面的固定缩放关系；分母却是依赖整组 reward 的随机量，也依赖当前 action。于是 GRPO 标准化不能仅凭 baseline theorem 宣称对原始 expected-reward policy gradient 无偏：它会按组内 reward dispersion 重新加权 prompt，且这种权重随采样组变化。更准确的说法是 **group-relative normalized estimator**，而不是 action-independent baseline。
+
+本页保留 GRPO 与其他 baseline 的家族关系；原始 token objective、population/sample std、process supervision、response-length weighting、Dr. GRPO 与 dynamic sampling 的完整推导见[GRPO：组相对优势、PPO 更新与长度权重](grpo.md)。
 
 组标准差使不同 prompt 的 advantage 尺度更接近，也产生新的退化：
 
@@ -153,10 +155,10 @@ $$
 
 | 工作 | 主要修正 | 不应误写成 |
 | --- | --- | --- |
-| Dr. GRPO | 移除 group std 与按 response length 的归一化 | 一套完整通用 trainer |
-| DAPO | asymmetric clip、动态采样、token loss、长度处理等 recipe | 只等于 dynamic sampling |
-| GSPO | length-normalized sequence ratio 与 sequence-level clipping | 任意多轮 episode 都自然是一个 sequence |
-| SAPO | sequence-coherent、token-adaptive 的平滑 ratio gate | 自动消除 off-policy 偏差 |
+| [Dr. GRPO](grpo.md#group-std) | 移除 group std 与按 response length 的归一化 | 一套完整通用 trainer |
+| [DAPO](../landscape/works/dapo.md) | asymmetric clip、动态采样、token loss、长度处理等 recipe | 只等于 dynamic sampling |
+| [GSPO](ratio-clipping-gating.md#gspo) | length-normalized sequence ratio 与 sequence-level clipping | 任意多轮 episode 都自然是一个 sequence |
+| [SAPO](ratio-clipping-gating.md#sapo) | sequence-coherent、token-adaptive 的平滑 ratio gate | 自动消除 off-policy 偏差 |
 
 这些工作常同时改变 sampling、filter、clipping 和 denominator。比较时必须逐项消融，并固定生成预算。
 
@@ -191,7 +193,7 @@ $$
 7. 环境/基础设施错误先排除，不把它们当普通零 reward。
 8. 与 SFT、rejection sampling 和 PPO 在相同预算下比较。
 
-可执行实现见[训练目标中的 group advantage](../practice/training-objectives.md#rloo-grpo-advantage)，与 learned critic 的比较见[Actor–Critic](actor-critic.md)。
+可执行实现见[RLOO 与 GRPO 的组内信号](../practice/llm-policy-optimization.md#rloo-grpo)，与 learned critic 的比较见[Actor–Critic](actor-critic.md)。
 
 ## Reference {#reference}
 

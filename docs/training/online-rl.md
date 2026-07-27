@@ -4,24 +4,28 @@
 
 [InstructGPT](../landscape/works/instructgpt.md)适合核对经典 RLHF 中 SFT、reward model 与 PPO 的角色；[DeepSeek-R1](../landscape/works/deepseek-r1.md)则展示可验证奖励、group-relative 更新与蒸馏之间必须分开的证据边界。两者之间的演进见[后训练与对齐](../landscape/lineages/training-alignment.md)。
 
+本页只保留 online rollout 的数据闭环。算法选择先看[推理 RL 配方地图](../reinforcement-learning/reasoning-rl-recipes.md)；PPO、GAE、GRPO 与分布校正的 canonical 推导分别见[PPO](../reinforcement-learning/trust-region-ppo.md)、[Advantage 与 GAE](../reinforcement-learning/advantage-estimation-gae.md)、[GRPO](../reinforcement-learning/grpo.md)和[训推分布与策略滞后](../reinforcement-learning/training-inference-discrepancy.md)。
+
 ## 策略与轨迹契约
 
-一次训练更新可能涉及三个不同策略：
+一次训练更新至少涉及四个不同策略身份：
 
 | 符号 | 角色 | 是否变化 |
 | --- | --- | --- |
 | $\pi_\theta$ | 正在计算梯度的新 policy | 当前 update 内变化 |
-| $\pi_{\text{old}}$ | 产生 rollout 的 behavior policy | 对该批轨迹冻结 |
+| $\pi_{\text{old}}^{\mathrm{train}}$ | PPO surrogate 的冻结更新基准 | 对该批轨迹冻结 |
+| $\mu^{\mathrm{rollout}}$ | 真正产生 token 的 behavior distribution | 由 checkpoint、引擎与采样器共同定义 |
 | $\pi_{\text{ref}}$ | KL 或行为先验的 reference | 通常长期冻结 |
 
-$\pi_{\text{old}}$ 决定 importance ratio，$\pi_{\text{ref}}$ 定义策略偏离。二者权重偶尔相同，也不能把 old log-prob 与 reference log-prob 混用。
+$\pi_{\text{old}}$ 决定 PPO update ratio，$\mu$ 决定真实 off-policy correction，$\pi_{\text{ref}}$ 定义策略偏离。同步且无训推差异时 old 可近似 behavior；这不是由 checkpoint ID 自动保证的事实。完整分解见[策略身份、训推分布与策略滞后](../reinforcement-learning/training-inference-discrepancy.md)。
 
 每个 action token 至少记录：
 
 ```text
 prompt / environment and trajectory ID
 token or action ID and action mask
-behavior policy version and old log-prob
+behavior policy version and exact rollout log-prob
+old-training policy version and recomputed frozen log-prob
 reference version and reference log-prob
 reward components and verifier version
 terminal / truncated / invalid / timeout / infra error
@@ -30,132 +34,31 @@ sampling configuration and RNG
 
 工具 observation、system token、prompt 和 padding 不是 policy action，不应进入 policy ratio。
 
-## PPO
+## 算法怎样插入数据闭环
 
-importance ratio 为
+在线系统不应在这里重新定义每个 optimizer，而应固定它们消费和产生的数据：
 
-$$
-\rho_t(\theta)
-=
-\exp\left[
-\log\pi_\theta(a_t\mid s_t)
--\log\pi_{\text{old}}(a_t\mid s_t)
-\right].
-$$
+| 环节 | 闭环中的职责 | 深入入口 |
+| --- | --- | --- |
+| advantage / return | 把 reward 与未来状态变成局部学习信号 | [GAE](../reinforcement-learning/advantage-estimation-gae.md)、[无 critic baseline](../reinforcement-learning/critic-free-baselines.md)、[GRPO](../reinforcement-learning/grpo.md) |
+| policy update | 在冻结 old-training 坐标中更新 current policy | [PPO](../reinforcement-learning/trust-region-ppo.md)、[Ratio、Clipping 与 Gate](../reinforcement-learning/ratio-clipping-gating.md) |
+| distribution correction | 处理真实 behavior、训练重算与 current 之间的差异 | [训推分布与策略滞后](../reinforcement-learning/training-inference-discrepancy.md)、[Off-policy 校正](../reinforcement-learning/off-policy-correction.md) |
+| recipe | 联合采样、归约、长度处理、critic 与系统节奏 | [推理 RL 配方地图](../reinforcement-learning/reasoning-rl-recipes.md) |
 
-[Proximal Policy Optimization](https://arxiv.org/abs/1707.06347) 的 clipped surrogate 为
+一次可审计迭代应按状态转换理解：
 
-$$
-\mathcal L_{\text{policy}}
-=-\mathbb E_t
-\left[
-\min\left(
-\rho_tA_t,
-\operatorname{clip}(\rho_t,1-\epsilon,1+\epsilon)A_t
-\right)
-\right].
-$$
+```text
+prompt/environment snapshot
+  -> rollout under recorded behavior distribution
+  -> validate terminal, truncation and infrastructure status
+  -> score with versioned reward/verifier
+  -> freeze old-training coordinates and build targets
+  -> update actor/critic under explicit reductions
+  -> evaluate held-out capability and failure slices
+  -> promote, retain or reject the new policy revision
+```
 
-clip 约束的是相对 behavior policy 的 update，不是相对 reference 的 KL。后者有两种不同实现：
-
-$$
-\begin{aligned}
-r_t^{\text{rollout}}
-&=r_t^{\text{task}}
--\beta\left(
-\log\pi_{\text{old}}(a_t\mid s_t)
--\log\pi_{\text{ref}}(a_t\mid s_t)
-\right),\\
-\mathcal J_{\text{current}}
-&=\mathcal J_{\text{policy}}
--\beta D_{\mathrm{KL}}
-\left(\pi_\theta\,\|\,\pi_{\text{ref}}\right).
-\end{aligned}
-$$
-
-第一种在采样轨迹上把 behavior/reference log-ratio 计入 reward，第二种在更新时直接约束当前策略；二者的梯度、估计偏差和统计不同，不能在同一实现中无说明地混用。系数、位置与版本都应分别记录。
-
-### GAE
-
-对 value $V$，TD residual 为
-
-$$
-\delta_t
-=r_t+\gamma(1-d_t)V(s_{t+1})-V(s_t),
-$$
-
-$$
-A_t
-=\sum_{l\ge0}(\gamma\lambda)^l\delta_{t+l}.
-$$
-
-$d_t$ 应表示真正 terminal。时间预算导致的 truncated episode 仍可能有 bootstrap value；把 truncated 当 terminal 会系统性低估尾部价值。
-
-[InstructGPT](https://arxiv.org/abs/2203.02155) 给出了语言模型 SFT、reward model 与 PPO 的代表性组合。该流程不是所有任务的默认最优解：critic、reward 和多轮 rollout 都增加系统与统计复杂度。
-
-## 无 critic 的 baseline
-
-### RLOO
-
-同一 prompt 采样 $K\ge2$ 个回答，sequence reward 为 $R_i$。Leave-One-Out baseline 给出
-
-$$
-A_i
-=R_i-\frac{1}{K-1}\sum_{j\ne i}R_j.
-$$
-
-baseline 不包含自身 reward；若使用组均值
-
-$$
-R_i-\frac{1}{K}\sum_jR_j,
-$$
-
-则幅度缩小且 baseline 与自身样本耦合。[Back to Basics](https://arxiv.org/abs/2402.14740) 重新研究了 REINFORCE、RLOO 与 PPO 在 RLHF 中的比较。
-
-### ReMax
-
-[ReMax](https://arxiv.org/abs/2310.10505) 用 greedy response 的 reward 作为 prompt-level baseline，不训练 critic。它减少 value model 成本，但 baseline 质量依赖 greedy 解码和 reward 稳定性；greedy 生成也要计入 rollout 成本。
-
-## Group-relative 方法
-
-[DeepSeekMath](https://arxiv.org/abs/2402.03300) 描述的 GRPO 配方以同 prompt 一组回答的 reward 统计构造优势：
-
-$$
-\hat A_i
-=
-\frac{R_i-\bar R}
-{\operatorname{std}(R)+\varepsilon}.
-$$
-
-这引入几个重要边界：
-
-- 全组 reward 相同，则没有相对学习信号；
-- std 很小时，$\varepsilon$ 与数值精度决定尺度；
-- 每组只含成功或只含失败时，增加采样也未必产生梯度；
-- group size、reward 离散度和采样温度共同决定方差；
-- sequence reward 怎样分配到 token，会改变长回答权重。
-
-如果全组相同，应明确输出零优势或跳过，而不是除以零、把 infra error 混进组，或人为制造排名。
-
-[DAPO](https://arxiv.org/abs/2503.14476) 与 [Dr. GRPO](https://arxiv.org/abs/2503.20783) 分析并修改了 clipping、动态采样、长度与归一化等具体配方。这些是有公开实验的较新 recipe，不应被写成跨任务普适结论；应逐项与清晰的 PPO/RLOO/GRPO baseline 消融。
-
-## Off-policy 与策略滞后
-
-异步 rollout 会使行为策略落后于训练策略。精确 importance weight 依赖：
-
-- 产生该 action 的 exact policy revision；
-- 相同 tokenizer、模板、action boundary 和 sampling processor；
-- 保存的 old log-prob 与实际采样概率一致。
-
-若轨迹过旧，可丢弃、限制 ratio，或使用 off-policy correction。[IMPALA](https://arxiv.org/abs/1802.01561) 的 V-trace 使用 clipped importance weights 构造 value target：
-
-$$
-\delta_t^V
-=\bar\rho_t
-\left(r_t+\gamma V(s_{t+1})-V(s_t)\right),
-$$
-
-再用 $\bar c_t$ 控制多步修正传播。clip 降低方差也引入偏差，不能把极旧数据“修正”为等价 on-policy。
+同步系统可以让 rollout、target 构造与 learner step 严格成批；异步系统则以更高设备利用率换取 policy lag、队列选择偏差和更复杂的版本治理。无论使用哪种算法，都应同时核算生成 token、保留样本、训练 token、wall-clock 与最终能力，而不只比较 learner steps。
 
 ## Reward 与 verifier
 
@@ -194,23 +97,19 @@ reward model 的校准与不可辨识性见[奖励建模](reward-modeling.md)，
 ## 验证
 
 1. 当 $\pi_\theta=\pi_{\text{old}}$ 时，所有有效 action 的 $\rho_t=1$。
-2. response/action mask 改变 prompt 与 padding 时，policy loss 不变。
+2. 保持 action-state 输入不变、只修改被 action mask 排除的 prompt/padding log-prob 张量时，policy loss 不变。
 3. 用两三步轨迹手算 return、GAE、terminal 与 truncated。
 4. RLOO 检查 $K<2$；GRPO 检查全同 reward、极小 std 和缺失结果。
 5. 按 policy lag、ratio、长度、group success rate 和 verifier 状态分层。
 6. 固定生成 token、样本数、训练 token 和调参预算比较 PPO、RLOO、GRPO 与 rejection sampling。
 7. 对 reward 高但人工或隐藏 verifier 失败的轨迹优先审计。
-8. save/resume 后 policy version、old log-prob、data cursor 和 reference 必须连续。
+8. save/resume 后 behavior revision/log-prob、old-training revision/recomputed log-prob、data cursor 和 reference 必须连续。
 
-目标函数的最小实现见[训练目标实现](../practice/training-objectives.md)，多步动作与异步轨迹见[轨迹与策略契约](../agentic-rl/trajectory-contract.md)。
+目标函数的最小实现见[手撕 LLM 策略优化](../practice/llm-policy-optimization.md)，多步动作与异步轨迹见[轨迹与策略契约](../agentic-rl/trajectory-contract.md)。
 
 ## Reference {#reference}
 
 - [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
 - [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)
-- [Back to Basics: Revisiting REINFORCE Style Optimization for Learning from Human Feedback](https://arxiv.org/abs/2402.14740)
-- [ReMax](https://arxiv.org/abs/2310.10505)
 - [DeepSeekMath](https://arxiv.org/abs/2402.03300)
-- [DAPO](https://arxiv.org/abs/2503.14476)
-- [Understanding R1-Zero-Like Training / Dr. GRPO](https://arxiv.org/abs/2503.20783)
 - [IMPALA: Scalable Distributed Deep-RL with Importance Weighted Actor-Learner Architectures](https://arxiv.org/abs/1802.01561)

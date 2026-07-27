@@ -29,7 +29,7 @@
 1. [MDP、POMDP 与回报](decision-processes.md)：状态、历史、转移、终止与时间尺度。
 2. [价值函数与 Bellman 递推](values-bellman.md)：预测、最优性与动态规划。
 3. [Monte Carlo、TD 与控制](prediction-control.md)：采样回报、bootstrap、SARSA 与 Q-learning。
-4. [多步回报、资格迹与 GAE](multistep-traces.md)：偏差—方差如何沿时间传播。
+4. [多步回报、$\lambda$-return 与资格迹](multistep-traces.md)：一步 TD 与完整回报怎样连续插值。
 5. [函数逼近与致命三元组](function-approximation.md)：为什么神经网络、bootstrap 与 off-policy 组合会失稳。
 6. [探索与最大熵](exploration-entropy.md)：信息获取、随机策略与 entropy regularization。
 7. [模型、规划与层级决策](models-planning-hierarchy.md)：Dyna、搜索、Options 与 SMDP。
@@ -40,22 +40,35 @@
 
 1. [Policy Gradient](policy-gradient.md)：log-derivative、reward-to-go 与 baseline。
 2. [Actor–Critic](actor-critic.md)：critic 怎样降低方差，又怎样引入偏差。
-3. [Trust Region、TRPO 与 PPO](trust-region-ppo.md)：从性能差异到可计算 surrogate。
-4. [Off-policy 校正](off-policy-correction.md)：importance sampling、Retrace、V-trace 与 policy lag。
+3. [Advantage 估计与 GAE](advantage-estimation-gae.md)：双边界 mask、actor/critic target 与 token/turn/segment 时间轴。
+4. [Trust Region 与 TRPO](trust-region.md)：performance-difference、natural gradient、Fisher 与 line search。
+5. [PPO](trust-region-ppo.md)：clipped surrogate 的精确分段、policy 身份、batch lifecycle 与诊断。
+6. [Off-policy 校正](off-policy-correction.md)：importance sampling、Retrace、V-trace 与 policy lag。
 
 ### 强化学习与语言模型
 
 1. [语言模型作为策略](language-model-policy.md)：token、response、turn 与 episode 四种动作尺度。
-2. [KL 正则化控制](kl-regularized-control.md)：reference policy、隐式 reward 与 soft policy improvement。
-3. [反馈制度](feedback-regimes.md)：分开 RLHF、RLAIF、RLVR、online/offline 与 on/off-policy。
+2. [反馈制度](feedback-regimes.md)：分开 RLHF、RLAIF、RLVR、online/offline 与 on/off-policy。
+3. [KL 正则化控制](kl-regularized-control.md)：reference policy、隐式 reward 与 soft policy improvement。
 4. [RLHF 数据闭环](rlhf-pipeline.md)：示范、偏好、reward model、在线采样与迭代数据。
 5. [奖励建模](../training/reward-modeling.md)与[离线偏好优化](../training/offline-preference.md)：先定义反馈，再决定是否需要在线 RL。
-6. [无 critic 的 baseline](critic-free-baselines.md)：REINFORCE、ReMax、RLOO、GRPO 及其退化。
-7. [在线 RL 与可验证奖励](../training/online-rl.md)：PPO、group-relative 更新与异步数据。
-8. [RLVR](rlvr.md)与 [Verifier、过程奖励](verifiers-reward-shaping.md)：可验证结果如何成为训练信号。
-9. [推理后训练](../training/reasoning-posttraining.md)：搜索、验证、蒸馏与参数更新的闭环。
-10. [语言模型信用分配](credit-assignment.md)：sequence reward 怎样落到 token、turn 与 segment。
-11. [实验诊断](evaluation-debugging.md)：区分 reward 上升、真实能力、分布漂移和系统故障。
+6. [无 critic 的 baseline](critic-free-baselines.md)：REINFORCE、ReMax、RLOO 与组内 baseline。
+7. [GRPO](grpo.md)：group std、RLOO 关系、长度分母、Dr. GRPO 与 dynamic sampling。
+8. [训推分布与策略滞后](training-inference-discrepancy.md)：current、old、behavior、reference 与三种 ratio。
+9. [Ratio、Clipping 与 Gate](ratio-clipping-gating.md)：PPO、Clip-Higher、CISPO、GSPO、SAPO、TIS、IcePop 与 DIS。
+10. [在线 RL 与可验证奖励](../training/online-rl.md)：rollout、策略更新与异步数据闭环。
+11. [RLVR](rlvr.md)与 [Verifier、过程奖励](verifiers-reward-shaping.md)：可验证结果如何成为训练信号。
+12. [推理后训练](../training/reasoning-posttraining.md)：搜索、验证、蒸馏与参数更新的闭环。
+13. [语言模型信用分配](credit-assignment.md)：sequence reward 怎样落到 token、turn 与 segment。
+14. [推理 RL 配方地图](reasoning-rl-recipes.md)：按反馈、采样、信用、分布、归约和系统六轴定位问题。
+15. [实验诊断](evaluation-debugging.md)：区分 reward 上升、真实能力、分布漂移和系统故障。
+
+四条方法深读把这条路径放回具体工作：
+
+- [DeepSeek-R1](../landscape/works/deepseek-r1.md)：可验证 reward、cold start、在线 RL 与蒸馏闭环；
+- [DAPO](../landscape/works/dapo.md)：Clip-Higher、dynamic sampling、token loss 与 overlong handling；
+- [VAPO](../landscape/works/vapo.md)：value warmup、decoupled/adaptive GAE 与稀疏正样本；
+- [SAO 与 CompactionRL](../landscape/works/sao-compactionrl.md)：single-rollout 异步更新与跨 segment 信用。
 
 ### Agentic RL
 
@@ -77,6 +90,21 @@
 | 推理 RL | 问题、草稿、验证状态 | 推理步骤 / 答案 | outcome / process reward | 搜索收益混入训练收益 |
 | Agentic RL | 历史、工具与外部状态 | turn / tool call | 过程与终态 | observation 被当作 action |
 | 异步 RL | 上述状态 + policy version | 由旧 policy 采样的动作 | 延迟 reward | behavior 与 learner 分布错配 |
+
+## 一张方法坐标
+
+| 方法 | 主要改变 | 没有自动解决 |
+| --- | --- | --- |
+| [GAE](advantage-estimation-gae.md) | advantage 的时间传播 | reward 定义、policy update |
+| [PPO](trust-region-ppo.md) | current–old 的 sampled surrogate | engine mismatch、硬 KL 保证 |
+| [RLOO](critic-free-baselines.md#rloo) | leave-one-out baseline | group barrier、长期 bootstrap |
+| [GRPO](grpo.md) | group-normalized advantage | verifier、长度权重、全同组 |
+| [DAPO](../landscape/works/dapo.md) | gate、采样、归约与长度 recipe | 通用最优性、免费采样 |
+| [VAPO](../landscape/works/vapo.md) | critic、GAE 与稀疏正样本 recipe | 多轮状态定义、异步偏移 |
+| [TIS](training-inference-discrepancy.md#tis) / [IcePop](training-inference-discrepancy.md#icepop) | train–rollout engine correction | current–old update 过大 |
+| [DIS](ratio-clipping-gating.md#dis) | current–behavior direct gate | 队列选择偏差、完整 SAO 系统 |
+
+方法的历史因果与相互继承见[推理策略优化谱系](../landscape/lineages/reasoning-policy-optimization.md)，紧凑实现见[手撕 LLM 策略优化](../practice/llm-policy-optimization.md)。
 
 ## 怎样使用公式
 

@@ -12,6 +12,23 @@ from urllib.parse import unquote, urljoin, urlsplit
 
 
 SITE_PREFIX = "/llm/"
+REQUIRED_DEEP_LINKS = {
+    "/reinforcement-learning/trust-region-ppo/": {"trpo"},
+    "/reinforcement-learning/critic-free-baselines/": {"rloo"},
+    "/landscape/works/sao-compactionrl/": {"sao", "compactionrl"},
+    "/reinforcement-learning/grpo/": {"group-std", "dynamic-sampling"},
+    "/landscape/works/dapo/": {
+        "clip-higher",
+        "dynamic-sampling",
+        "token-loss",
+        "overlong",
+    },
+    "/landscape/works/vapo/": {
+        "value-pretraining",
+        "decoupled-gae",
+        "length-adaptive-gae",
+    },
+}
 
 
 class PageParser(HTMLParser):
@@ -85,6 +102,13 @@ def main() -> int:
     if not pages:
         print(f"{site_dir}: 没有生成页面", file=sys.stderr)
         return 1
+    for route, fragments in REQUIRED_DEEP_LINKS.items():
+        if route not in pages:
+            errors.append(f"缺少稳定页面路由：{route}")
+            continue
+        missing = sorted(fragments - pages[route][1].ids)
+        for fragment in missing:
+            errors.append(f"{route}: 缺少稳定 fragment：#{fragment}")
     checked = 0
     for source_route, (source_path, parsed) in pages.items():
         for href in parsed.links:

@@ -34,7 +34,7 @@ SFT 教授任务格式、对话边界、工具 schema 和基本完成策略。�
 
 ### 在线策略优化
 
-在线方法从当前或稍旧策略采样，能探索新行为，也使数据分布随训练变化。必须区分生成 rollout 的 $\pi_{\text{old}}$ 与约束偏离的 $\pi_{\text{ref}}$，并记录 verifier、policy version、old log-prob 和终止语义。PPO、RLOO 与 group-relative 目标见[在线 RL](online-rl.md)。
+在线方法从当前或稍旧策略采样，能探索新行为，也使数据分布随训练变化。必须区分正在更新的 $\pi_\theta^{\mathrm{train}}$、冻结的 update 基准 $\pi_{\mathrm{old}}^{\mathrm{train}}$、真实 rollout behavior $\mu^{\mathrm{rollout}}$ 与约束偏离的 $\pi_{\mathrm{ref}}$，并记录 verifier、policy version、两套 log-prob 和终止语义。PPO、RLOO 与 group-relative 目标见[在线 RL](online-rl.md)，完整策略身份见[训推分布](../reinforcement-learning/training-inference-discrepancy.md)。
 
 ### 推理与验证
 

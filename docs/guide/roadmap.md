@@ -82,15 +82,16 @@ LLM 横跨统计学习、模型结构、分布式系统和交互环境。先建�
 
 ### 强化学习与 LLM 后训练
 
-先把“反馈是什么”“数据从哪里来”和“怎样更新策略”拆开，再沿四层深入：
+先把“反馈是什么”“数据从哪里来”和“怎样更新策略”拆开，再沿六步深入：
 
 1. 从 [MDP、POMDP 与回报](../reinforcement-learning/decision-processes.md)进入[价值与 Bellman](../reinforcement-learning/values-bellman.md)、[Monte Carlo 与 TD](../reinforcement-learning/prediction-control.md)；
-2. 用 [Policy Gradient](../reinforcement-learning/policy-gradient.md)、[Actor–Critic](../reinforcement-learning/actor-critic.md)和 [TRPO / PPO](../reinforcement-learning/trust-region-ppo.md)建立策略优化主线；
+2. 用 [Policy Gradient](../reinforcement-learning/policy-gradient.md)、[Actor–Critic](../reinforcement-learning/actor-critic.md)、[GAE](../reinforcement-learning/advantage-estimation-gae.md)、[TRPO](../reinforcement-learning/trust-region.md)和 [PPO](../reinforcement-learning/trust-region-ppo.md)建立策略优化主线；
 3. 将语言模型重新写成策略，阅读[动作尺度](../reinforcement-learning/language-model-policy.md)、[KL 正则化控制](../reinforcement-learning/kl-regularized-control.md)、[反馈制度](../reinforcement-learning/feedback-regimes.md)与 [RLHF 数据闭环](../reinforcement-learning/rlhf-pipeline.md)；
-4. 比较[奖励建模](../training/reward-modeling.md)、[离线偏好优化](../training/offline-preference.md)、[无 critic baseline](../reinforcement-learning/critic-free-baselines.md)、[在线 RL](../training/online-rl.md)与 [RLVR](../reinforcement-learning/rlvr.md)；
-5. 最后处理[语言模型信用分配](../reinforcement-learning/credit-assignment.md)、[异步 off-policy 校正](../reinforcement-learning/off-policy-correction.md)、[Agentic RL](../agentic-rl/index.md)和[实验诊断](../reinforcement-learning/evaluation-debugging.md)。
+4. 通过[推理 RL 配方地图](../reinforcement-learning/reasoning-rl-recipes.md)比较[无 critic baseline](../reinforcement-learning/critic-free-baselines.md)、[GRPO](../reinforcement-learning/grpo.md)、[DAPO](../landscape/works/dapo.md)与 [VAPO](../landscape/works/vapo.md)；
+5. 再拆开[Ratio、Clipping 与 Gate](../reinforcement-learning/ratio-clipping-gating.md)、[训推分布与策略滞后](../reinforcement-learning/training-inference-discrepancy.md)和[在线 RL](../training/online-rl.md)；
+6. 最后处理[语言模型信用分配](../reinforcement-learning/credit-assignment.md)、[异步 off-policy 校正](../reinforcement-learning/off-policy-correction.md)、[Agentic RL](../agentic-rl/index.md)和[实验诊断](../reinforcement-learning/evaluation-debugging.md)。
 
-配套的[手撕强化学习](../practice/reinforcement-learning.md)用于固定 return、GAE、PPO、DPO、RLOO、GRPO 与 V-trace 的最小语义。算法名称相同而 action mask、归一化分母、behavior policy 或终止规则不同，不能视为同一实验。
+配套的[手撕强化学习](../practice/reinforcement-learning.md)固定经典 return、TD、trace、policy gradient 与 off-policy 语义；[手撕 LLM 策略优化](../practice/llm-policy-optimization.md)固定 packed GAE、PPO、GRPO、DAPO、VAPO、GSPO、SAPO 与 DIS。算法名称相同而 action mask、归一化分母、behavior policy 或终止规则不同，不能视为同一实验。
 
 ### 多模态
 

@@ -67,7 +67,7 @@ $$
 \left(\pi(\cdot\mid x)\,\|\,\pi_{\mathrm{ref}}(\cdot\mid x)\right).
 $$
 
-$r_\phi$ 给出优化方向，$\pi_{\mathrm{ref}}$ 给出偏离坐标，$\beta$ 控制二者权衡。PPO 还需要产生 rollout 的 behavior policy $\pi_{\mathrm{old}}$：
+$r_\phi$ 给出优化方向，$\pi_{\mathrm{ref}}$ 给出偏离坐标，$\beta$ 控制二者权衡。PPO 还需要冻结 training-side update 基准 $\pi_{\mathrm{old}}$：
 
 $$
 \rho_t(\theta)
@@ -77,7 +77,7 @@ $$
 \right].
 $$
 
-$\pi_{\mathrm{old}}$ 用于 importance ratio，$\pi_{\mathrm{ref}}$ 用于 KL 或行为锚定；即使二者某一时刻权重相同，语义也不能合并。完整实现契约见[在线 RL](../../training/online-rl.md)。
+真实产生 rollout 的分布另记为 $\mu^{\mathrm{rollout}}$。只有同步、同精度且 sampling processor 一致时，它才近似 $\pi_{\mathrm{old}}$。old 用于 update ratio，behavior 决定数据分布，reference 用于 KL 或行为锚定；即使三者某一时刻权重相同，语义也不能合并。完整实现契约见[在线 RL](../../training/online-rl.md)和[训推分布](../../reinforcement-learning/training-inference-discrepancy.md)。
 
 ## Constitutional AI 改变反馈生产者
 
@@ -136,6 +136,8 @@ $$
 组内奖励全相等时，GRPO 没有相对学习信号。强行除以极小标准差不会创造信息，只会制造数值噪声。组大小、采样温度、reward 离散度和 response 长度共同决定方差。
 
 当 rollout 扩展为长程环境交互，组内等待和上下文膨胀会成为新的物理瓶颈。[SAO 与 CompactionRL](../works/sao-compactionrl.md)分别把 single-rollout 异步更新和策略生成的上下文摘要接回 critic-based PPO；这不是算法接力，而是数据形态改变后对调度、状态表示与信用分配的重新设计。
+
+如果要继续追踪 GRPO 之后为什么出现 Dr. GRPO、DAPO、VAPO、GSPO、SAPO、TIS 与 DIS，应进入[推理策略优化谱系](reasoning-policy-optimization.md)。那里把 group baseline、长度分母、ratio gate 与训推系统拆成独立坐标，避免把所有工作压进“在线方法”一个段落。
 
 ## RLVR 改变 reward provenance
 

@@ -64,13 +64,14 @@ step、span 或 turn 级标签缩短了信用路径，但标签粒度更细不�
 
 ## Reference、old 与 behavior
 
-在线更新常同时出现三个策略：
+在线更新常同时出现四种策略身份：
 
-- $\pi_\theta$：正在更新的 learner；
-- $\pi_{\mathrm{old}}$：产生当前 rollout 的 behavior policy；
+- $\pi_\theta^{\mathrm{train}}$：正在更新的 learner；
+- $\pi_{\mathrm{old}}^{\mathrm{train}}$：一轮更新开始时冻结的 training-side policy；
+- $\mu^{\mathrm{rollout}}$：由 checkpoint、推理引擎与 sampling processor 共同定义的真实 behavior；
 - $\pi_{\mathrm{ref}}$：定义偏离成本的冻结 reference。
 
-$\pi_{\mathrm{old}}$ 用于 importance ratio，$\pi_{\mathrm{ref}}$ 用于 KL anchor。权重一度相同不代表语义相同。模板、tokenizer、sampling processor 或 action mask 不一致时，旧 log-prob、reference log-prob 与真实采样概率也不再可比较。完整约束见[语言模型作为策略](../reinforcement-learning/language-model-policy.md)、[KL 正则化控制](../reinforcement-learning/kl-regularized-control.md)和[轨迹契约](../agentic-rl/trajectory-contract.md)。
+$\pi_{\mathrm{old}}^{\mathrm{train}}$ 用于 current–old update ratio，$\mu^{\mathrm{rollout}}$ 决定数据分布，$\pi_{\mathrm{ref}}$ 用于 KL anchor。三者权重一度相同不代表语义相同。模板、tokenizer、sampling processor 或 action mask 不一致时，旧 log-prob、reference log-prob 与真实采样概率也不再可比较。完整约束见[语言模型作为策略](../reinforcement-learning/language-model-policy.md)、[KL 正则化控制](../reinforcement-learning/kl-regularized-control.md)、[训推分布](../reinforcement-learning/training-inference-discrepancy.md)和[轨迹契约](../agentic-rl/trajectory-contract.md)。
 
 ## 常见的错误顺序
 

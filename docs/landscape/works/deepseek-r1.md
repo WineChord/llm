@@ -33,7 +33,7 @@ R1-Zero 展示了训练过程中更长回答、反思和策略变化等现象，
 
 ## 最小可执行语义
 
-下面用确定性整数 verifier、独立格式奖励和 group-relative loss 表示 R1-Zero 的不可约接口。`old_logp` 定义 rollout ratio，`ref_logp` 定义 KL；全同 reward 组返回零优势。
+下面用确定性整数 verifier、独立格式奖励和 group-relative loss 表示 R1-Zero 的不可约接口。`old_logp` 定义 current–old update ratio，`ref_logp` 定义 KL；全同 reward 组返回零优势。若 rollout 引擎与训练分布不一致，还要单独保存 behavior log-prob。
 
 ```python
 import re

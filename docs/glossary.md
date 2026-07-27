@@ -44,9 +44,21 @@ $A^\pi(s,a)=Q^\pi(s,a)-V^\pi(s)$，表示动作相对该状态下策略平均水
 
 按先前 token 条件化，将序列联合概率分解为逐 token 条件概率的模型。
 
-**Behavior policy**
+**[Behavior policy](reinforcement-learning/training-inference-discrepancy.md)**
 
-实际产生 rollout 的策略；异步训练中它可能落后于正在更新的 learner policy。
+实际产生 rollout 的分布；它由 checkpoint、推理引擎和 sampling processor 共同定义，未必等于训练侧 old policy。
+
+**[CISPO](reinforcement-learning/ratio-clipping-gating.md#cispo)**
+
+Clipped IS-weight Policy Optimization，把裁剪后的 importance ratio 作为 detached policy-gradient 系数；越界后权重饱和而非梯度归零。
+
+**[DAPO](landscape/works/dapo.md)**
+
+Decoupled Clip and Dynamic sAmpling Policy Optimization，组合 Clip-Higher、动态采样、global token loss 与 overlong handling 的 RLVR 配方。
+
+**[DIS](reinforcement-learning/ratio-clipping-gating.md#dis)**
+
+Direct Double-Sided Importance Sampling，SAO 中以 current/rollout direct ratio 做双侧接受门的分布校正组件。
 
 **[Bellman equation](reinforcement-learning/values-bellman.md)**
 
@@ -170,7 +182,7 @@ Fully Sharded Data Parallel，按 rank 分片参数、梯度与 optimizer state 
 
 ## G–P
 
-**[GAE](reinforcement-learning/multistep-traces.md)**
+**[GAE](reinforcement-learning/advantage-estimation-gae.md)**
 
 Generalized Advantage Estimation，用 $\lambda$ 加权多步 TD residual，在 critic 偏差与采样方差之间折中。
 
@@ -186,9 +198,13 @@ Generalized Advantage Estimation，用 $\lambda$ 加权多步 TD residual，在 
 
 Grouped-Query Attention，多组 query head 分别共享较少的 K/V head。
 
-**GRPO**
+**[GRPO](reinforcement-learning/grpo.md)**
 
 Group Relative Policy Optimization，使用同一输入的成组样本和组内相对信号估计优势的策略优化方法。
+
+**[GSPO](reinforcement-learning/ratio-clipping-gating.md#gspo)**
+
+Group Sequence Policy Optimization，使用长度归一化的 sequence ratio，让同一 response 共用 clipping 决策。
 
 **Gradient accumulation**
 
@@ -198,9 +214,13 @@ Group Relative Policy Optimization，使用同一输入的成组样本和组内�
 
 输出缺乏可靠依据、与事实或给定证据冲突的现象；边界必须按任务定义。
 
-**Importance ratio**
+**[Importance ratio](reinforcement-learning/training-inference-discrepancy.md)**
 
-新旧策略对同一动作概率的比值，常用于离策略校正或限制策略更新幅度。
+两个分布对同一动作概率的比值；必须说明分子、分母、token/sequence 粒度与 sampling processor。
+
+**[IcePop](reinforcement-learning/training-inference-discrepancy.md#icepop)**
+
+对训练引擎与 rollout 引擎的 importance ratio 先做区间内校正、再拒绝双侧尾部的 mismatch 处理方法。
 
 **[In-context learning](foundations/in-context-learning.md)**
 
@@ -302,7 +322,7 @@ Parameter-Efficient Fine-Tuning，只训练少量新增或选定参数的适配�
 
 把不同层放到不同 stage，并以 microbatch 流水执行。
 
-**Policy lag**
+**[Policy lag](reinforcement-learning/training-inference-discrepancy.md)**
 
 生成 rollout 的 behavior policy 与 learner 当前 policy 之间的版本或分布差异。
 
@@ -310,7 +330,7 @@ Parameter-Efficient Fine-Tuning，只训练少量新增或选定参数的适配�
 
 推理中并行处理输入 prompt、构建 KV Cache 并产生首个输出位置的阶段。
 
-**[PPO](training/online-rl.md)**
+**[PPO](reinforcement-learning/trust-region-ppo.md)**
 
 Proximal Policy Optimization，使用裁剪 surrogate objective 限制更新幅度的策略梯度算法。
 
@@ -324,6 +344,10 @@ Proximal Policy Optimization，使用裁剪 surrogate objective 限制更新幅�
 
 ## Q–Z
 
+**[R3](reinforcement-learning/training-inference-discrepancy.md#r3)**
+
+Rollout Routing Replay，为 MoE 强化学习记录并重放 rollout 时的专家路由，使训练侧 log-prob 在相同 route 条件下重算。
+
 **[Quantization](inference/quantization.md)**
 
 用更低精度表示权重、激活或 KV，以降低内存、带宽或计算成本。
@@ -332,7 +356,7 @@ Proximal Policy Optimization，使用裁剪 surrogate objective 限制更新幅�
 
 Retrieval-Augmented Generation，生成前检索外部证据并注入上下文。
 
-**Reference policy**
+**[Reference policy](reinforcement-learning/training-inference-discrepancy.md)**
 
 偏好优化或在线 RL 中用于定义 KL 约束或概率比的基准策略，通常是训练开始时的冻结策略。
 
@@ -364,7 +388,7 @@ Reinforcement Learning from Human Feedback，使用人类反馈训练奖励或�
 
 Reinforcement Learning with Verifiable Rewards，主要依赖程序、形式规则或可查询环境结果提供可重复 reward；它描述反馈接口，不指定优化器。
 
-**RLOO**
+**[RLOO](reinforcement-learning/critic-free-baselines.md#rloo)**
 
 REINFORCE Leave-One-Out，用同一输入的其他样本奖励构造 baseline 的策略梯度估计方法。
 
@@ -379,6 +403,10 @@ Rotary Position Embedding，用位置相关旋转把相对位置信息注入 Q/K
 **Rollout**
 
 策略在任务或环境中从初始状态到终止或截断产生的一次交互序列。
+
+**[SAPO](reinforcement-learning/ratio-clipping-gating.md#sapo)**
+
+Soft Adaptive Policy Optimization，以 sigmoid surrogate 让远离 old policy 的 token 梯度平滑衰减。
 
 **Semantic uncertainty**
 
@@ -416,6 +444,10 @@ State Space Model，以状态递推表示序列历史的一类模型。
 
 $\delta_t=R_{t+1}+\gamma V(S_{t+1})-V(S_t)$，用一步 bootstrap 目标衡量当前价值预测误差。
 
+**[TIS](reinforcement-learning/training-inference-discrepancy.md#tis)**
+
+Truncated Importance Sampling，对同一 checkpoint 的训练分布与 rollout 分布之比做上截断，以有限方差校正 engine mismatch。
+
 **[Test-time compute](reasoning/test-time-compute.md)**
 
 在权重固定后，通过更长生成、并行采样、搜索、验证或工具交互增加单题计算。
@@ -424,9 +456,13 @@ $\delta_t=R_{t+1}+\gamma V(S_{t+1})-V(S_t)$，用一步 bootstrap 目标衡量�
 
 某数据源在实际训练 token 流中的占比；它不等于原始文档数或存储字节占比。
 
-**[Trust region](reinforcement-learning/trust-region-ppo.md)**
+**[Trust region](reinforcement-learning/trust-region.md)**
 
 限制新旧策略分布变化的更新思想；PPO clipping 是可计算的局部 surrogate，并不等价于严格满足 KL 约束。
+
+**[TRPO](reinforcement-learning/trust-region.md#trpo)**
+
+Trust Region Policy Optimization，用 Fisher 近似、共轭梯度与 line search 近似求解带平均 KL 约束的策略更新。
 
 **Tokenizer**
 
@@ -448,10 +484,6 @@ Time to first token，从请求到首个输出 token 的时间。
 
 系统在没有相应权限或意图确认时产生的外部状态变化，即使最终答案看似正确也属于失败。
 
-**V-trace**
-
-用截断 importance weight 修正 behavior policy 与 target policy 差异的离策略回报估计方法。
-
 **Verifier**
 
 判断候选答案、步骤或轨迹是否满足可检查条件的程序或模型。
@@ -463,6 +495,10 @@ Vision-Language Model，联合处理视觉与语言输入或输出的模型。
 **[V-trace](reinforcement-learning/off-policy-correction.md)**
 
 使用截断 importance weight 构造多步 value target 的 off-policy 校正方法；截断降低方差，也引入偏差。
+
+**[VAPO](landscape/works/vapo.md)**
+
+Value-model-based PPO 长推理配方，组合 value warmup、decoupled/adaptive GAE、Clip-Higher、token loss、正样本 NLL 与 group sampling。
 
 **[Value function](reinforcement-learning/values-bellman.md)**
 

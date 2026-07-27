@@ -175,7 +175,7 @@ $$
 7. 按 verifier 置信度和最终正确性构造四象限，审计高分错误轨迹。
 8. 对压缩或分段轨迹检查 reward 是否重复计数。
 
-对应的最小实现见[手撕强化学习](../practice/reinforcement-learning.md)和[训练目标中的 GAE](../practice/training-objectives.md#gae)。
+对应的最小实现见[手撕强化学习](../practice/reinforcement-learning.md)和[Packed trajectory GAE](../practice/llm-policy-optimization.md#gae)。
 
 ## Reference {#reference}
 

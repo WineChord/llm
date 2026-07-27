@@ -2,7 +2,7 @@
 
 一步 TD 每看到一个 transition 就 bootstrap，Monte Carlo 则等待完整回报。多步方法在两者之间连续插值：向前多看几步可减少对当前 value estimate 的依赖，却也会引入更多采样噪声。理解这条轴，才能分清 n-step return、TD($\lambda$)、eligibility trace 与 GAE 各自在做什么。
 
-本文沿用 transition $(s_t,a_t,r_t,s_{t+1})$。先读[价值函数与 Bellman 递推](values-bellman.md)和[Monte Carlo、TD 与控制](prediction-control.md)，会更容易看清 bootstrap target 从何而来。
+本文沿用 transition $(s_t,a_t,r_t,s_{t+1})$，重点保留 n-step、$\lambda$-return 与 eligibility trace 的历史连接。GAE 的完整推导、双 mask、actor/critic target 与语言模型时间轴已独立到[Advantage 估计与 GAE](advantage-estimation-gae.md)。先读[价值函数与 Bellman 递推](values-bellman.md)和[Monte Carlo、TD 与控制](prediction-control.md)，会更容易看清 bootstrap target 从何而来。
 
 ## 从一步到 n 步
 
@@ -102,85 +102,16 @@ $$
 
 episode 开始时 $e=0,V_{\mathrm{old}}=0$；每步先用更新前的参数缓存 $V(s_{t+1})$，完成权重更新后再赋给 $V_{\mathrm{old}}$。这不是在普通 trace 上换一个名字。
 
-## GAE：对 advantage 的 λ-return
+## 与 GAE 的接口
 
-GAE 将同一结构用于 policy gradient 的 advantage estimator：
-
-$$
-\widehat A_t^{\mathrm{GAE}(\gamma,\lambda)}
-=\sum_{\ell\ge0}(\gamma\lambda)^\ell\delta_{t+\ell}.
-$$
-
-有限 batch 中应写成带边界的递推：
+GAE 把同一 $\lambda$-return 结构用于 policy-gradient advantage：
 
 $$
 \widehat A_t
 =\delta_t+\gamma\lambda(1-b_t)\widehat A_{t+1}.
 $$
 
-$\lambda$ 控制对 critic 的依赖，$\gamma$ 则同时参与任务回报定义与 estimator。将 $\lambda$ 称为“另一个 discount”会掩盖二者语义差异。GAE 供 actor 使用时通常要 stop-gradient；critic target 可取 $\widehat A_t+V(s_t)$，但两者的 reduction 和 mask 仍需分别声明，详见[Actor–Critic](actor-critic.md)。
-
-## 手撕：固定 value snapshot 上的两种计算
-
-下面用 NumPy 同时实现 reverse recursion 与显式 forward sum。`next_value[t]` 必须属于 transition $t$ 的真实后继状态，而不是 packed tensor 的 `value[t + 1]`。
-
-```python
-import numpy as np
-
-def gae_reverse(reward, value, next_value, terminated, truncated,
-                gamma=0.99, lam=0.95):
-    arrays = [np.asarray(x) for x in
-              (reward, value, next_value, terminated, truncated)]
-    if any(x.shape != arrays[0].shape for x in arrays[1:]):
-        raise ValueError("all transition arrays must have shape [T]")
-    r, v, nv, term, trunc = arrays
-    boundary = np.logical_or(term, trunc)
-    delta = r + gamma * (~term) * nv - v
-    adv = np.empty_like(r, dtype=np.result_type(r, v, float))
-    carry = 0.0
-    for t in range(r.size - 1, -1, -1):
-        carry = delta[t] + gamma * lam * (not boundary[t]) * carry
-        adv[t] = carry
-    return adv, delta
-
-def gae_forward(delta, boundary, gamma=0.99, lam=0.95):
-    out = np.zeros_like(delta, dtype=np.result_type(delta, float))
-    for t in range(delta.size):
-        weight = 1.0
-        for k in range(t, delta.size):
-            out[t] += weight * delta[k]
-            if boundary[k]:
-                break
-            weight *= gamma * lam
-    return out
-
-r = np.array([1.0, 2.0, 10.0])
-v = np.array([0.5, 1.0, 3.0])
-nv = np.array([1.0, 4.0, 99.0])
-term = np.array([False, False, True])
-trunc = np.array([False, True, False])
-adv, delta = gae_reverse(r, v, nv, term, trunc, gamma=0.5, lam=0.8)
-expected = gae_forward(delta, term | trunc, gamma=0.5, lam=0.8)
-np.testing.assert_allclose(adv, expected)
-assert np.isclose(delta[1], 2.0 + 0.5 * 4.0 - 1.0)  # truncation bootstraps
-assert np.isclose(delta[2], 10.0 - 3.0)              # terminal does not
-adv0, delta0 = gae_reverse(r, v, nv, term, trunc, gamma=0.5, lam=0.0)
-np.testing.assert_allclose(adv0, delta0)
-```
-
-该实现验证的是同一批固定 $V$ 上的 forward/reverse 计算等价，不是传统在线 TD($\lambda$) 与 true-online TD($\lambda$) 的参数轨迹等价。
-
-## 语言模型桥梁
-
-语言模型轨迹可能同时有 token、turn 与 environment-step 三条时间轴。[语言模型作为策略](language-model-policy.md)决定哪些位置是 action；[语言模型信用分配](credit-assignment.md)决定 reward 与 discount 落在哪一条轴上。
-
-- prompt、tool result 和 observation token 不进入 policy loss，也不应仅因 token 很多就延长环境折扣；
-- 若一步定义为一次 tool call 或 assistant turn，trace 应沿这些 action step 递推；
-- token-level GAE 需要 token-level value 语义，不能把 response value 无解释地复制到每个 token；
-- context compaction 后必须保留真实 trajectory、segment 顺序和边界，不能让 trace 穿过无关样本；
-- policy lag 还会引入 off-policy 问题，单靠调小 $\lambda$ 不能替代[Off-policy 校正](off-policy-correction.md)。
-
-完整训练实现中的 action mask、packed trajectory 和 advantage reduction 可与[训练目标中的 GAE](../practice/training-objectives.md#gae)对照。
+本页到这里为止只建立历史与代数接口：$\lambda$-return 如何连接 forward view 与 eligibility trace。GAE 的 advantage 语义、bootstrap/trace 双边界、actor/critic target，以及 token、turn、segment 三条时间轴见[Advantage 估计与 GAE](advantage-estimation-gae.md)；packed tensor 实现与断言见[手撕 LLM 策略优化](../practice/llm-policy-optimization.md)。
 
 ## 常见误区
 

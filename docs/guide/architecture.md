@@ -99,7 +99,7 @@ evaluation and primary evidence
 - 一个概念保留一个主要解释页，其他页面只补充上下文并链接。
 - 旧的宽主题 URL 可保留为稳定总览，例如[参数高效训练与压缩](../training/peft-compression.md)与[后训练总览](../training/post-training.md)。
 - 架构机制与实现优化分开：attention 定义在模型结构，kernel 在系统，KV 生命周期在推理。
-- 离线偏好、在线 RL、推理时搜索和 Agentic RL 在同一强化学习主线中保持独立页面，因为数据分布、状态和目标不同。
+- 离线偏好、在线 RL、推理时搜索和 Agentic RL 在同一强化学习主线中保持独立页面，因为数据分布、状态和目标不同；GAE、PPO、GRPO 作为可复用机制维护 canonical 页面，DAPO、VAPO 则保留在工作深读层，避免把 recipe 与单一公式混成一层。
 - 模型发布与普遍规律分开；时效性事实进入谱系或证据卡。
 
 ## 交叉链接 {#cross-links}

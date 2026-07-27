@@ -65,31 +65,40 @@ $$
 
 这条关系连接了在线 RLHF 与 [DPO](../training/offline-preference.md)：同一 prompt 下比较 chosen/rejected 时，$\log Z(x)$ 抵消。但闭式关系依赖特定 KL 正则化和 reward/preference 假设；DPO 不是对任意 RL 目标的代数替代。
 
-## Old policy 与 reference policy
+## Current、old、behavior 与 reference
 
-PPO 训练中常同时出现三种 policy：
+语言模型 PPO 至少要区分四种 policy 身份：
 
 | policy | 角色 |
 | --- | --- |
-| $\pi_\theta$ | 当前正在更新 |
-| $\pi_{\mathrm{old}}$ | 产生 rollout，用于 importance ratio |
+| $\pi_\theta^{\mathrm{train}}$ | learner 当前正在更新的 policy |
+| $\pi_{\mathrm{old}}^{\mathrm{train}}$ | 一轮更新开始时冻结的 training-side policy，用于 PPO update ratio |
+| $\mu^{\mathrm{rollout}}$ | 实际产生 token 的 behavior distribution，由 checkpoint、推理引擎与 sampling processor 共同决定 |
 | $\pi_{\mathrm{ref}}$ | 长期行为先验，用于 KL regularization |
 
 PPO ratio
 
 $$
 \rho_t
-=\frac{\pi_\theta(a_t\mid h_t)}
-{\pi_{\mathrm{old}}(a_t\mid h_t)}
+=\frac{\pi_\theta^{\mathrm{train}}(a_t\mid h_t)}
+{\pi_{\mathrm{old}}^{\mathrm{train}}(a_t\mid h_t)}
 $$
 
-刻画一次 update 相对 behavior policy 的重加权。真正限制更新的是 PPO clipped surrogate、显式 trust region 或其他约束；ratio 本身只是一项统计量。reference KL
+刻画 learner 在同一批样本上的 current–old update。同步且数值契约完全一致时，$\mu^{\mathrm{rollout}}=\pi_{\mathrm{old}}^{\mathrm{train}}$；异步队列、不同推理 kernel、量化、路由或采样处理器都可能破坏这个等式。此时 current 相对真实 behavior 的 direct ratio 是
+
+$$
+d_t
+=\frac{\pi_\theta^{\mathrm{train}}(a_t\mid h_t)}
+{\mu^{\mathrm{rollout}}(a_t\mid h_t)},
+$$
+
+不能把 $\rho_t$ 直接改名为 behavior ratio。真正限制更新的是 PPO clipped surrogate、显式 trust region 或其他约束；ratio 本身只是一项统计量。reference KL
 
 $$
 D_{\mathrm{KL}}(\pi_\theta\|\pi_{\mathrm{ref}})
 $$
 
-约束累计训练漂移。两者偶尔从相同权重初始化，也不具备相同语义。
+约束累计训练漂移。old、behavior 与 reference 偶尔从相同权重或 checkpoint 出发，也不具备相同语义。完整的三种 ratio 与 engine mismatch 见[策略身份、训推分布与策略滞后](training-inference-discrepancy.md)。
 
 ## Sequence KL 与 token KL
 
@@ -106,7 +115,7 @@ $$
 
 1. **采样 token 的 log-ratio**：对给定 prefix 只读被采样动作，是单动作 Monte Carlo estimator；计算便宜，但有动作采样方差，单样本可为负。在动作确实来自当前 $\pi$ 时，它的条件期望才是该位置的 forward KL；
 2. **完整词表 KL**：对给定 prefix 遍历全 vocabulary，可精确计算该位置的条件 KL，没有动作采样方差，但计算和显存代价更高；整条 rollout 的估计仍会随策略访问到的 prefix 变化；
-3. **behavior-sampled log-ratio**：若样本来自 $\pi_{\mathrm{old}}\ne\pi_\theta$，一般不是当前策略 KL 的无偏估计；
+3. **behavior-sampled log-ratio**：若样本来自 $\mu^{\mathrm{rollout}}\ne\pi_\theta$，一般不是当前策略 KL 的无偏估计；
 4. **token mean**：除以 response length 后不再等于 sequence KL，只是长度归一化诊断。
 
 不要把任何平均 log-ratio 都命名为 `kl`。日志应写清采样分布、方向、词表是否完整以及 reduction。
@@ -120,12 +129,12 @@ $$
 =r_t^{\mathrm{task}}
 -\beta
 \left[
-\log\pi_{\mathrm{old}}(a_t\mid h_t)
+\log\mu^{\mathrm{rollout}}(a_t\mid h_t)
 -\log\pi_{\mathrm{ref}}(a_t\mid h_t)
 \right],
 $$
 
-也可以在 learner loss 中对当前 policy 直接加 penalty。两种实现的估计对象、梯度路径和更新时机不同。
+也可以在 learner loss 中对当前 policy 直接加 penalty。上式描述“按真实 rollout distribution 收费”的版本；若实现改用 training-side old log-prob，它定义的是另一个 proxy，必须同时记录 engine mismatch 和 sampling processor。两种实现的估计对象、梯度路径和更新时机不同。
 
 若 KL 作为 reward 进入 return，它会影响 critic target 与早期 advantage；若只作为当前 loss penalty，它不会以同样方式传播进 value。组合使用并非一定错误，但必须明确是否重复计费。
 
@@ -178,11 +187,11 @@ $$
 1. $\pi=\pi_{\mathrm{ref}}$ 时 sample log-ratio 为零。
 2. 共同修改 prompt token 不改变 response-only KL mask。
 3. 分别测试 sequence sum 与 token mean，避免长度约定暗中变化。
-4. old/ref 权重交换时单元测试必须失败。
+4. old、behavior 与 reference 权重或 log-prob 交换时单元测试必须失败。
 5. reward rescale 后重新检查 $\beta$ 与目标 KL。
 6. 按 prompt 和长度分层，而不只报告全局 mean。
 
-实现见[训练目标](../practice/training-objectives.md)，偏好闭式关系见[离线偏好优化](../training/offline-preference.md)，PPO 中 old/ref 的区别见[在线 RL](../training/online-rl.md)。
+实现见[训练目标](../practice/training-objectives.md)，偏好闭式关系见[离线偏好优化](../training/offline-preference.md)，四种 policy 的训练契约见[在线 RL](../training/online-rl.md)。
 
 ## Reference {#reference}
 

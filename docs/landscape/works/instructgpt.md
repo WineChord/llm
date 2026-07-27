@@ -41,7 +41,7 @@ $$
 \left(\pi_\theta\,\|\,\pi_{\mathrm{ref}}\right).
 $$
 
-PPO ratio 则相对产生 rollout 的 behavior policy：
+PPO ratio 则相对一轮更新中冻结的 training-side old policy：
 
 $$
 \rho_t
@@ -51,11 +51,11 @@ $$
 \right].
 $$
 
-$\pi_{\mathrm{old}}$ 与 $\pi_{\mathrm{ref}}$ 角色不同：前者定义 importance ratio，后者定义偏离锚点。完整工程中还必须让 action mask 排除 prompt、padding 与非 policy token。
+$\pi_{\mathrm{old}}$ 与 $\pi_{\mathrm{ref}}$ 角色不同：前者定义 current–old update ratio，后者定义偏离锚点。真实 rollout behavior 还可能因推理引擎与 sampling processor 不同而偏离 old training policy；完整工程中必须单独记录它，并让 action mask 排除 prompt、padding 与非 policy token。
 
 ## 最小可执行语义
 
-下面只保留 pairwise reward、采样 KL reward shaping、response mask 与 PPO clipped surrogate。`old_logp` 是实际 rollout 概率；`ref_logp` 只参与 KL。代码不是完整 trainer，也没有实现 value model 或 GAE。
+下面只保留 pairwise reward、采样 KL reward shaping、response mask 与 PPO clipped surrogate。`old_logp` 表示冻结的 training-side old log-prob；只有验证训推一致后，它才可视作实际 rollout 概率。`ref_logp` 只参与 KL。代码不是完整 trainer，也没有实现 value model 或 GAE。
 
 ```python
 import torch

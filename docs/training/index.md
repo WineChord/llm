@@ -50,15 +50,16 @@ $$
 
 而不是简单平均各 rank 的局部 mean。实现与断言见[训练目标实现](../practice/training-objectives.md)。
 
-### 三个策略身份
+### 四个策略身份
 
 后训练中经常同时存在：
 
-- $\pi_\theta$：正在更新的 policy；
-- $\pi_{\text{old}}$：产生当前 rollout 的 behavior policy；
+- $\pi_\theta^{\mathrm{train}}$：正在更新的 policy；
+- $\pi_{\text{old}}^{\mathrm{train}}$：冻结的 update 基准；
+- $\mu^{\mathrm{rollout}}$：实际产生 token 的 behavior distribution；
 - $\pi_{\text{ref}}$：定义偏离成本的冻结 reference。
 
-$\pi_{\text{old}}$ 用于 importance ratio 或 trust-region，$\pi_{\text{ref}}$ 用于 KL anchor；二者偶尔权重相同，也不能在算法语义上合并。
+$\pi_{\text{old}}^{\mathrm{train}}$ 用于 current–old ratio 或 trust-region，$\mu^{\mathrm{rollout}}$ 决定是否需要 off-policy correction，$\pi_{\text{ref}}$ 用于 KL anchor；三者偶尔权重相同，也不能在算法语义上合并。详见[策略身份与训推分布](../reinforcement-learning/training-inference-discrepancy.md)。
 
 ## 阅读路径
 

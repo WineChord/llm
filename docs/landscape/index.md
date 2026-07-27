@@ -38,13 +38,15 @@
 
 ### 从续写到偏好、搜索与验证
 
-[从续写到偏好与在线学习](lineages/training-alignment.md)沿监督来源、数据分布和 optimizer 三条坐标连接 instruction tuning、reward model、PPO、DPO、RLOO、GRPO 与 RLVR。[从外显推理到可验证搜索](lineages/reasoning-verification.md)则连接 CoT、自一致采样、verifier、过程监督、搜索和 search-to-training。
+[从续写到偏好与在线学习](lineages/training-alignment.md)沿监督来源、数据分布和 optimizer 三条坐标连接 instruction tuning、reward model、PPO、DPO、RLOO、GRPO 与 RLVR。[从外显推理到可验证搜索](lineages/reasoning-verification.md)连接 CoT、自一致采样、verifier、过程监督、搜索和 search-to-training；[推理策略优化](lineages/reasoning-policy-optimization.md)则沿 baseline、ratio、归约与系统约束追踪 PPO、GRPO、DAPO、VAPO 直到异步 Agentic RL。
 
 关键工作不按算法热度排列，而按它改变的闭环环节阅读：
 
 - [InstructGPT](works/instructgpt.md)连接 demonstration、pairwise reward 与 online PPO；
 - [DPO](works/dpo.md)从 KL-regularized policy 推出离线 pair objective，却不提供在线探索；
 - [DeepSeek-R1](works/deepseek-r1.md)把规则奖励 RL、cold start、rejection sampling、二次对齐与蒸馏放进多阶段流程。
+- [DAPO](works/dapo.md)把 Clip-Higher、mixed-group sampling、global token reduction 与 overlong handling 组织成开放 RLVR 配方；
+- [VAPO](works/vapo.md)重新设计长推理中的 critic、GAE 与稀疏正样本利用；
 - [SAO 与 CompactionRL](works/sao-compactionrl.md)把长程 Agentic RL 的 group barrier 与 context exhaustion 拆成时间轴、空间轴，再连接 token-level correction、critic 与跨段信用。
 
 ### 从单卡计算到分布式状态

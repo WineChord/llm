@@ -23,7 +23,8 @@
 | [张量原语](tensor-primitives.md) | softmax、CE、RMSNorm、SwiGLU、RoPE、GQA、online softmax | 数值稳定、mask、head 映射 |
 | [Decoder-only Transformer](transformer-from-scratch.md) | embedding、block、LM loss、KV decode、采样 | 因果性、位置、训练—增量一致 |
 | [递推与记忆](sequence-models.md) | selective scan、delta rule、segment/kNN memory | chunk 等价、reset、状态容量 |
-| [训练目标](training-objectives.md) | AdamW、LoRA、KD、BT、DPO、GAE、PPO、RLOO/GRPO、V-trace | mask、归一化、old/ref policy |
+| [训练目标](training-objectives.md) | AdamW、LoRA、KD、BT、DPO/IPO/SimPO、V-trace | mask、归一化、reference 与 behavior |
+| [LLM 策略优化](llm-policy-optimization.md) | packed GAE、PPO、RLOO/GRPO、DAPO、VAPO、GSPO、SAPO、DIS | action mask、四策略身份、归约与 gate |
 | [分布式与容错](distributed-systems.md) | token loss、布局、collective、MoE dispatch、checkpoint manifest | 全局语义、顺序、原子提交 |
 | [推理引擎](inference-engine.md) | KV allocator、prefix reuse、调度、量化、推测解码 | COW、幂等、精确分布 |
 | [检索与智能体](retrieval-agents.md) | BM25、RRF、MMR、tool dispatch、事件归约 | 权限前置、去重、终态 |

@@ -117,7 +117,7 @@
 
 ## 语言模型反馈与策略学习
 
-对应[反馈制度](reinforcement-learning/feedback-regimes.md)、[RLHF 数据闭环](reinforcement-learning/rlhf-pipeline.md)、[奖励建模](training/reward-modeling.md)、[离线偏好优化](training/offline-preference.md)、[在线 RL](training/online-rl.md)、[RLVR](reinforcement-learning/rlvr.md)与[语言模型信用分配](reinforcement-learning/credit-assignment.md)。
+对应[反馈制度](reinforcement-learning/feedback-regimes.md)、[推理 RL 配方地图](reinforcement-learning/reasoning-rl-recipes.md)、[GAE](reinforcement-learning/advantage-estimation-gae.md)、[PPO](reinforcement-learning/trust-region-ppo.md)、[GRPO](reinforcement-learning/grpo.md)、[Ratio 与 Gate](reinforcement-learning/ratio-clipping-gating.md)、[在线 RL](training/online-rl.md)与[语言模型信用分配](reinforcement-learning/credit-assignment.md)。
 
 - Ouyang et al., [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)
 - Bai et al., [Constitutional AI](https://arxiv.org/abs/2212.08073)
@@ -141,6 +141,13 @@
 - Cui et al., [Process Reinforcement through Implicit Rewards / PRIME](https://arxiv.org/abs/2502.01456)
 - Fu et al., [AReaL: A Large-Scale Asynchronous Reinforcement Learning System](https://arxiv.org/abs/2505.24298)
 - Yue et al., [VAPO: Efficient and Reliable Reinforcement Learning for Advanced Reasoning Tasks](https://arxiv.org/abs/2504.05118)
+- MiniMax Team, [MiniMax-M1 / CISPO](https://arxiv.org/abs/2506.13585)
+- Zheng et al., [Group Sequence Policy Optimization](https://arxiv.org/abs/2507.18071)
+- Yao et al., [On the Rollout-Training Mismatch in Modern RL Systems](https://www.opt-ml.org/papers/2025/paper116.pdf)
+- Ma et al., [Stabilizing MoE Reinforcement Learning by Aligning Training and Inference Routers / R3](https://arxiv.org/abs/2510.11370)
+- Ling Team, [Every Step Evolves / IcePop](https://arxiv.org/abs/2510.18855)
+- Gao et al., [Soft Adaptive Policy Optimization](https://arxiv.org/abs/2511.20347)
+- Qwen Team, [Stabilizing Reinforcement Learning with LLMs: Formulation and Practices](https://arxiv.org/abs/2512.01374)
 - Hou et al., [Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning](https://arxiv.org/abs/2607.07508)
 - Li et al., [CompactionRL: Reinforcement Learning with Context Compaction for Long-Horizon Agents](https://arxiv.org/abs/2607.05378)
 

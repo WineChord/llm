@@ -60,20 +60,28 @@ REQUIRED_CLUSTERS = {
         "reinforcement-learning/values-bellman.md",
         "reinforcement-learning/prediction-control.md",
         "reinforcement-learning/multistep-traces.md",
+        "reinforcement-learning/advantage-estimation-gae.md",
         "reinforcement-learning/function-approximation.md",
         "reinforcement-learning/policy-gradient.md",
         "reinforcement-learning/actor-critic.md",
+        "reinforcement-learning/trust-region.md",
         "reinforcement-learning/trust-region-ppo.md",
         "reinforcement-learning/off-policy-correction.md",
         "reinforcement-learning/language-model-policy.md",
         "reinforcement-learning/feedback-regimes.md",
         "reinforcement-learning/rlhf-pipeline.md",
+        "reinforcement-learning/critic-free-baselines.md",
+        "reinforcement-learning/grpo.md",
+        "reinforcement-learning/ratio-clipping-gating.md",
+        "reinforcement-learning/training-inference-discrepancy.md",
+        "reinforcement-learning/reasoning-rl-recipes.md",
         "reinforcement-learning/rlvr.md",
         "reinforcement-learning/credit-assignment.md",
         "training/reward-modeling.md",
         "training/offline-preference.md",
         "training/online-rl.md",
         "practice/reinforcement-learning.md",
+        "practice/llm-policy-optimization.md",
     },
     "systems": {
         "systems/performance-model.md",
@@ -133,6 +141,7 @@ REQUIRED_CLUSTERS = {
         "practice/transformer-from-scratch.md",
         "practice/training-objectives.md",
         "practice/reinforcement-learning.md",
+        "practice/llm-policy-optimization.md",
         "practice/distributed-systems.md",
         "practice/inference-engine.md",
         "practice/retrieval-agents.md",
@@ -148,6 +157,7 @@ REQUIRED_CLUSTERS = {
         "landscape/lineages/linear-time-sequence-models.md",
         "landscape/lineages/multimodal-generation.md",
         "landscape/lineages/training-alignment.md",
+        "landscape/lineages/reasoning-policy-optimization.md",
         "landscape/lineages/reasoning-verification.md",
         "landscape/lineages/distributed-training-systems.md",
         "landscape/lineages/inference-serving.md",
@@ -167,6 +177,8 @@ REQUIRED_CLUSTERS = {
         "landscape/works/instructgpt.md",
         "landscape/works/dpo.md",
         "landscape/works/deepseek-r1.md",
+        "landscape/works/dapo.md",
+        "landscape/works/vapo.md",
         "landscape/works/sao-compactionrl.md",
         "landscape/works/megatron-zero.md",
         "landscape/works/flashattention.md",
@@ -177,6 +189,36 @@ REQUIRED_CLUSTERS = {
         "landscape/works/rag.md",
         "landscape/works/react-toolformer.md",
         "landscape/works/helm-arena.md",
+    },
+}
+REQUIRED_EDGES = {
+    "reinforcement-learning/index.md": {
+        "reinforcement-learning/advantage-estimation-gae.md",
+        "reinforcement-learning/trust-region.md",
+        "reinforcement-learning/grpo.md",
+        "reinforcement-learning/ratio-clipping-gating.md",
+        "reinforcement-learning/training-inference-discrepancy.md",
+        "reinforcement-learning/reasoning-rl-recipes.md",
+    },
+    "reinforcement-learning/advantage-estimation-gae.md": {
+        "reinforcement-learning/multistep-traces.md",
+        "practice/llm-policy-optimization.md",
+    },
+    "reinforcement-learning/trust-region-ppo.md": {
+        "reinforcement-learning/trust-region.md",
+        "reinforcement-learning/training-inference-discrepancy.md",
+    },
+    "reinforcement-learning/grpo.md": {
+        "reinforcement-learning/critic-free-baselines.md",
+        "landscape/works/dapo.md",
+    },
+    "landscape/works/dapo.md": {
+        "reinforcement-learning/grpo.md",
+        "practice/llm-policy-optimization.md",
+    },
+    "landscape/works/vapo.md": {
+        "reinforcement-learning/advantage-estimation-gae.md",
+        "practice/llm-policy-optimization.md",
     },
 }
 
@@ -218,7 +260,11 @@ def main() -> int:
     title_to_pages: dict[str, list[str]] = defaultdict(list)
     outgoing: dict[Path, int] = defaultdict(int)
     incoming: dict[Path, int] = defaultdict(int)
+    edges: set[tuple[str, str]] = set()
     known = set(docs_by_relative.values())
+    relative_by_path = {
+        path: relative for relative, path in docs_by_relative.items()
+    }
 
     for relative, path in docs_by_relative.items():
         text = path.read_text(encoding="utf-8")
@@ -257,6 +303,14 @@ def main() -> int:
             outgoing[path] += 1
             if target in known:
                 incoming[target] += 1
+                edges.add((relative, relative_by_path[target]))
+
+    for source, targets in REQUIRED_EDGES.items():
+        for target in targets:
+            if (source, target) not in edges:
+                errors.append(
+                    f"docs/{source}: 缺少架构要求的正文链接：{target}"
+                )
 
     for title, pages in sorted(title_to_pages.items()):
         if len(pages) > 1:
