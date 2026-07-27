@@ -130,6 +130,69 @@ $$
 - position IDs 是否重置；
 - 哪些媒体 token 参与语言 loss。
 
+## 原生联合训练与 MoonViT-V2
+
+“Early fusion”只描述 token 怎样进入主干，不决定视觉塔何时、用什么目标训练。常见 grafting 路线先
+得到成熟的语言模型和对比学习视觉 encoder，再训练 projector 或 alignment stage；它启动快、组件
+可替换，但 joint training 必须同时协调已经形成的两套表示尺度。
+
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)公开了另一种
+实例：MoonViT-V2 从随机初始化开始，与语言主干从预训练起共同优化，交错图文序列的 next-token loss
+直接反传进视觉 encoder，不再增加一次 post-hoc modality alignment。因而“对齐”来自端到端生成目标，
+而不是先冻结视觉塔再只训练 projector。
+
+这并不意味着 contrastive pre-training 普遍无用。报告中的受控 ablation 显示，在其联合训练配方下，
+从头训练的 MoonViT-V2 相比 SigLIP 初始化的 MoonViT-3D 有更低、更少尖峰的视觉塔 gradient norm，
+并在作者给出的视觉评测上达到相近结果；这是一套配方内的经验，迁移到更小数据、冻结主干或纯检索任务
+仍需重新比较。[Kimi-VL](https://arxiv.org/abs/2504.07491)则提供了早期 MoonViT 路线的公开背景。
+
+MoonViT-V2 的公开结构参数是 27 层、401M 参数、patch size 14、12 个 attention heads，使用
+RMSNorm，并移除 linear 与 attention projection 的 bias。图像和视频完全共享 encoder 参数；视频
+attention 拆成 frame 内的 spatial pass 与 frame 间的 temporal pass，再以 temporal pooling 压缩
+时间轴。这个 factorization 避免直接在 $T_{\mathrm{frame}}HW$ 个 patch 上做单个三维全注意力，但
+空间—时间交互必须经过交替层传播。
+
+视觉 token 经 encoder 后先做 $2\times2$ pixel grouping，再由轻量 MLP 投影到语言 hidden width：
+
+$$
+[B,H,W,d_v]
+\longrightarrow
+[B,H/2,W/2,4d_v]
+\longrightarrow
+[B,HW/4,d].
+$$
+
+token 数缩为四分之一，单 token channel 增为四倍；projector 再决定压回 $d$ 时保留哪些信息。K3
+报告的输入上限可到 $3584\times3584$，但“可输入”不自动等于细字、密集目标和跨 tile 关系都能可靠
+利用，仍需按下文分辨率与证据依赖矩阵测量。
+
+### 2×2 visual token grouping {#visual-token-grouping}
+
+下面只实现无损的空间重排，不包含后续 MLP。断言同时固定 token 数缩减四倍、channel 扩大四倍且元素
+没有被丢弃；生产路径还要携带 padding、tile offset 与原始宽高比。
+
+```python
+import torch
+
+def group_visual_tokens_2x2(x):
+    assert x.ndim == 4
+    batch, height, width, channels = x.shape
+    assert height % 2 == 0 and width % 2 == 0
+    x = x.reshape(batch, height // 2, 2, width // 2, 2, channels)
+    x = x.permute(0, 1, 3, 2, 4, 5)
+    return x.reshape(batch, height // 2, width // 2, 4 * channels)
+
+visual = torch.arange(2 * 6 * 8 * 3).reshape(2, 6, 8, 3)
+grouped = group_visual_tokens_2x2(visual)
+assert grouped.shape == (2, 3, 4, 12)
+assert grouped.numel() == visual.numel()
+torch.testing.assert_close(grouped.flatten().sort().values, visual.flatten().sort().values)
+```
+
+从头联合训练还要分别记录 vision/LLM learning rate、初始化、loss mask、分辨率分布与 gradient norm；
+否则无法判断稳定性来自训练范式、视觉塔结构还是优化器。K3 的 native vision 如何与 NoPE、1M
+长度课程和共享主干组合，见[Kimi K3](../landscape/works/kimi-k3.md)。
+
 ## 对齐目标
 
 [CLIP](https://arxiv.org/abs/2103.00020)对归一化图文表示使用批内对比：
@@ -335,3 +398,6 @@ $\lambda$ 控制的是容量分配，不只是数值尺度。应监控每个目�
 - [Learning Transferable Visual Models From Natural Language Supervision](https://arxiv.org/abs/2103.00020)
 - [SigLIP](https://arxiv.org/abs/2303.15343)
 - [Qwen2-VL](https://arxiv.org/abs/2409.12191)
+- [Kimi-VL Technical Report](https://arxiv.org/abs/2504.07491)
+- [Kimi K2.5: Visual Agentic Intelligence](https://arxiv.org/abs/2602.02276)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

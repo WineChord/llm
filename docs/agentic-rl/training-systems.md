@@ -51,6 +51,8 @@ agent 轨迹长度重尾：简单任务几步结束，困难任务可能运行�
 
 不能简单截断所有长轨迹，因为尾部可能包含最终奖励和恢复行为。需要区分预算终止、环境故障和策略主动终止。
 
+部分 rollout 可以在一批轨迹达到预设完成比例后解除 barrier，把其余 episode 连同环境与采样状态暂停并在后续 iteration 恢复。这条路线降低 straggler 等待，却把 length-dependent selection 与跨版本 policy lag 带入训练；状态字段和校正边界见[在线 RL](../training/online-rl.md#partial-rollout)。[Kimi K3](../landscape/works/kimi-k3.md)提供了这一组合的完整实例。
+
 ## Policy lag
 
 设轨迹由版本 $v_b$ 生成，learner 当前版本为 $v_l$，则 lag 可按更新步、KL 或 wall-clock 表示。只记录“最新模型”不足以审计。
@@ -66,6 +68,23 @@ agent 轨迹长度重尾：简单任务几步结束，困难任务可能运行�
 参数热更新必须保证一个 episode 内模型版本是否允许变化；若允许，轨迹概率就不再来自单一 policy。
 
 [SAO](../landscape/works/sao-compactionrl.md#sao)进一步把 prompt 内的多 rollout 等待视为异步 barrier：单条轨迹完成后即可进入训练队列，但 learner 仍须保存真实 behavior log-probability、限制 policy lag，并审计 DIS 丢弃了哪些 token。
+
+## 可暂停的微虚拟机
+
+长时工具轨迹不仅要保存 token，还要保存进程、文件、网络模拟器和外部应用状态。[AgentENV](https://github.com/kvcache-ai/AgentENV)使用 Firecracker microVM、dirty-page 增量 checkpoint 与 pause/resume/fork，为这类环境提供了一个公开实现入口；Firecracker 的隔离和启动机制可从其 [NSDI 论文](https://www.usenix.org/conference/nsdi20/presentation/agache)核对。
+
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)报告 AgentENV 的最低 checkpoint/resume 延迟为 133/49 ms、约 $6.5\times$ memory overcommit，并累计运行 51,219,741 个 sandbox、1,505,678 个 image。这些是特定基础设施上的团队测量，不能替代目标集群基准。迁移时应重点验收：
+
+- snapshot 是否包含磁盘、内存、虚拟时钟、随机源与网络状态；
+- fork 后父子环境的写入是否 copy-on-write 隔离；
+- verifier、隐藏测试和凭据是否始终在 guest 权限之外；
+- 被暂停 episode 的 GPU KV、policy revision 与 microVM snapshot 是否原子绑定。
+
+## 超长上下文的共置资源池
+
+训练、rollout 与环境共置时，百万级上下文会同时挤压 KV、optimizer state、gradient buffer 和 checkpoint I/O。K3 报告披露的处理方式包括：把 rollout KV 写回 CPU，训练状态按需卸载到 NVMe，用自动节流避免 I/O 反压，并复用梯度 buffer；其目标是在数百张 GPU 规模内维持 1M-context RL。
+
+这是一个分层内存控制问题，不是一套可直接复用的固定参数。调度器应分别测 GPU/CPU/NVMe 的 byte-seconds、传输带宽、stall 与恢复开销；只有当预取能覆盖传输且不会拖垮环境 I/O 时，offload 才增加端到端有效吞吐。
 
 ## Reward 与 Verifier 服务
 
@@ -124,3 +143,6 @@ behavior version、old log-prob 与异步 batch 字段见[轨迹与策略契约]
 - [veRL](https://github.com/volcengine/verl)
 - [AReaL: A Large-Scale Asynchronous Reinforcement Learning System](https://arxiv.org/abs/2505.24298)
 - [THUDM/slime](https://github.com/THUDM/slime)
+- [AgentENV](https://github.com/kvcache-ai/AgentENV)
+- [Firecracker: Lightweight Virtualization for Serverless Applications](https://www.usenix.org/conference/nsdi20/presentation/agache)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

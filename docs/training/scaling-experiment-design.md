@@ -126,6 +126,19 @@ hardware utilization and failed runs
 
 [DeepSeek LLM](https://arxiv.org/abs/2401.02954) 给出了公开的 scaling 分析实例；其系数和结论属于对应模型族与数据配方，不应直接替代自己的代理实验。
 
+### 配方条件化的搜索
+
+规模律只在实验协议稳定时描述同一族曲线。若 optimizer、学习率日程、参数化或架构族改变，应先把最优超参数看成条件函数
+
+$$
+\eta^\star,\ B^\star
+=f(N,D,\text{architecture},\text{optimizer},\text{schedule}),
+$$
+
+而不是沿用旧族的单个学习率和 batch。尤其是 cosine decay 与 warmup–stable–decay（WSD）在同一计算预算下有不同的有效高学习率区间；用为其中一方调好的参数比较两者，会把搜索偏差写成算法差异。
+
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)把 cosine 与 WSD 的学习率、batch 搜索分开，并将架构、数据和训练方案的合计收益报告为约 $2.5\times$ 的 scaling efficiency 实例。报告没有公开足够的原始拟合点、逐组件曲线与置信区间，因此这项结果适合支持“配方改变后重做搜索”，不能据此搬用系数或完成独立归因。其整体实验脉络见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
 ### 多目标决策
 
 最低预训练 loss 不一定是最终最优点。候选还需比较：
@@ -170,3 +183,4 @@ hardware utilization and failed runs
 - [Training Compute-Optimal Large Language Models](https://arxiv.org/abs/2203.15556)
 - [Beyond Chinchilla-Optimal](https://arxiv.org/abs/2401.00448)
 - [DeepSeek LLM](https://arxiv.org/abs/2401.02954)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

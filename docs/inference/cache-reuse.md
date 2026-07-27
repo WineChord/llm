@@ -116,6 +116,20 @@ KV 可以驻留于 GPU、CPU、节点间内存或持久存储。层级越远，�
 
 多层查找可采用逐层探测，也可让目录直接返回位置。无论哪种方式，目录命中都不等于数据可用；只有版本校验、传输完成、checksum 通过并安装到目标 block 后，decode 才能开始。
 
+## 混合序列模型的联合缓存
+
+混合 attention/recurrent 模型不只有一种前缀状态。以 KDA 与 MLA 交替的模型为例，同一前缀可能同时需要：
+
+- MLA 层逐 token 的 KV pages；
+- KDA 层在某个 token 边界上的 recurrent state；
+- 两类状态共享的 position、模板、权重与量化 identity。
+
+复用长度必须取二者都完整可用的最长共同边界，不能因为 KV 命中更长就让 KDA 从不一致状态继续。KDA state 通常远大于单个 hash metadata，却不必在每个 token 保存；可以只在 hash endpoint、turn boundary 或其他稀疏边界做 snapshot，再从最近 snapshot replay 剩余 token。
+
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露了一套统一 paged pool：物理 block 可在 1024–6144 token 间选择，细粒度 hash 可取 512 token，并对 KDA state 使用稀疏 snapshot。具体数字是其服务配置；可迁移的是把**查找粒度、物理分配粒度和状态快照粒度解耦**。完整设计见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
+联合查找应分两阶段：先在目录中定位最长兼容 hash chain，再确认每个模型层组的数据实际存在且 checksum/版本一致。发布与失效也必须跨组原子化：共享前缀续写前 copy-on-write，任何 MLA page 或 KDA snapshot 失效时，对应 joint entry 一并失效，避免部分命中进入 decode。
+
 ## 路由、放置与逐出
 
 cache-aware routing 同时面对两个相反目标：
@@ -202,3 +216,5 @@ $$
 - [Mooncake](https://arxiv.org/abs/2407.00079)
 - [LMCache](https://github.com/LMCache/LMCache)
 - [Preble](https://arxiv.org/abs/2407.00023)
+- [Kimi Linear](https://github.com/MoonshotAI/Kimi-Linear)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

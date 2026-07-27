@@ -116,6 +116,48 @@ student 先生成 prefix，再由 teacher 对这些 prefix 给出目标。[Gener
 
 它更接近 student 实际状态，也更昂贵且随训练非平稳。生成样本必须记录 student policy version；teacher 查询失败、截断和拒答不能静默变成普通标签。
 
+#### 多 teacher 的 on-policy token reward {#mopd-token-reward}
+
+若不同领域或推理预算由不同 teacher 擅长，可先按样本条件 $(d,e)$ 选择 teacher，再让 student 在自己的 prefix 上生成。对实际动作 $y_t$，一种稠密奖励是
+
+$$
+r_t^{\mathrm{OPD}}
+=\operatorname{clip}\!\left(
+\operatorname{sg}\!\left[
+\log \pi_{\mathrm{teacher}}^{d,e}(y_t\mid x,y_{<t})
+-\log \pi_{\mathrm{student}}(y_t\mid x,y_{<t})
+\right],
+-R_{\max},R_{\max}
+\right).
+$$
+
+`sg` 表示 reward construction 不反向穿过 teacher 或 student log-prob；真正的梯度由后续 policy objective 产生。下面只实现 action-token reward 与裁剪，不替代完整 RL loss：
+
+```python
+import torch
+
+def mopd_token_reward(student_logp, teacher_logp, action_mask, rmax):
+    if student_logp.shape != teacher_logp.shape or student_logp.shape != action_mask.shape:
+        raise ValueError("student, teacher and action mask must align")
+    if rmax <= 0 or not torch.isfinite(torch.tensor(rmax)):
+        raise ValueError("rmax must be finite and positive")
+    mask = action_mask.bool()
+    if not mask.any():
+        raise ValueError("at least one action token is required")
+    with torch.no_grad():
+        reward = (teacher_logp - student_logp).clamp(-rmax, rmax)
+        return torch.where(mask, reward, torch.zeros_like(reward))
+
+student = torch.tensor([[-2., -1., -4.]], requires_grad=True)
+teacher = torch.tensor([[-1., -3., -2.]], requires_grad=True)
+mask = torch.tensor([[True, False, True]])
+reward = mopd_token_reward(student, teacher, mask, .5)
+torch.testing.assert_close(reward, torch.tensor([[.5, 0., .5]]))
+assert not reward.requires_grad
+```
+
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)把这种 Multi-Teacher On-Policy Distillation（MOPD）用于三类领域与 low/high/max 三档 effort，共九个 teacher，并把 token reward 接入 RL。其 $R_{\max}$、teacher routing 细节和完整优化目标未公开，不能从报告补造；报告还指出 top-$k$ logit 蒸馏在该设置中没有显示清晰增益，这不是对其他模型和预算的普遍否定。机制在整条后训练流水线中的位置见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
 ### 推理与过程蒸馏
 
 可将 teacher 或搜索产生的答案、步骤、验证结果转成：
@@ -164,3 +206,5 @@ teacher 在目标域不可靠、teacher 查询成本超过直接标注、两者�
 - [Distilling the Knowledge in a Neural Network](https://arxiv.org/abs/1503.02531)
 - [Generalized Knowledge Distillation for Auto-Regressive Sequence Models](https://arxiv.org/abs/2306.13649)
 - [Minitron](https://arxiv.org/abs/2407.14679)
+- [On-Policy Distillation](https://thinkingmachines.ai/blog/on-policy-distillation/)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

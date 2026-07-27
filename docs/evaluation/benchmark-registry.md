@@ -117,6 +117,24 @@ execution date and dynamic snapshot
 
 当官方协议与常用 harness 不同时，选择一种作为主协议，并用 bridge run 同时运行二者。不能把两个协议结果拼进同一历史曲线。
 
+### Harness selection 也是实验因素
+
+Agent 模型常在不同 scaffold 下运行同一 benchmark。除了 harness commit，还应注册：
+
+```text
+harness candidate set and selection rule
+system prompt, tools, skills and compactor revisions
+effort condition and maximum context
+temperature, top-p and retry/sample counts
+network, package and submission permissions
+hardware and environment image
+whether the reported result is fixed-harness, best-of-harness or leaderboard
+```
+
+若先看测试结果再挑得分最高的 harness，这相当于对 benchmark 调参；应报告所有候选或在独立 development split 选择后冻结。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)是一项适合审计的实例：报告通常采用 max effort，单步任务使用 temperature $1$/top-$p=0.95$，agentic 任务使用 temperature $1$/top-$p=1.0$；不同表格混有 Kimi Code、Claude Code、Codex、leaderboard、best-of-harness 和内部结果。完整逐表边界见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
+硬件与 runtime 也可能进入 benchmark definition。报告中的 SWE Marathon 使用为 H20 校准的 pre-final v1.1 branch，并同时列出 PostTrain-H20 与官方 H100 结果；这些数字不应拼成纯 checkpoint 排名。BrowseComp 的 $91.2$（300K compaction）与 $90.4$（完整 1M、无 context management）则说明 compactor 是系统变量：差值不是上下文窗口或模型权重的单因素估计。无法公开重建的数据集应标记 `internal / non-reproducible`，而不是与公开 benchmark 共用证据等级。
+
 ## 正确性与失效
 
 - **用论文年份代替数据 revision**：动态集无法重放。
@@ -152,3 +170,4 @@ execution date and dynamic snapshot
 - [PALOMA: A Benchmark for Evaluating Language Model Fit](https://arxiv.org/abs/2312.10523)
 - [MMMU](https://arxiv.org/abs/2311.16502)
 - [LiveCodeBench](https://arxiv.org/abs/2403.07974)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

@@ -184,6 +184,12 @@ nav:
               - Megatron-LM 与 ZeRO: landscape/works/megatron-zero.md
               - FlashAttention: landscape/works/flashattention.md
               - vLLM 与 PagedAttention: landscape/works/vllm-pagedattention.md
+          - 模型、训练与系统共设计:
+              - Kimi Linear 与 FlashKDA: landscape/works/kimi-linear-flashkda.md
+              - Attention Residuals: landscape/works/attention-residuals.md
+              - Stable LatentMoE 与 Quantile Balancing: landscape/works/latentmoe-quantile-balancing.md
+              - Kimi K3: landscape/works/kimi-k3.md
+              - MoonEP: landscape/works/moonep.md
           - 多模态与生成:
               - CLIP: landscape/works/clip.md
               - Flamingo、BLIP-2 与 LLaVA: landscape/works/visual-language-bridges.md
@@ -195,6 +201,8 @@ nav:
       - 口径与家族:
           - 训练 token 口径: landscape/training-tokens.md
           - DeepSeek 演化案例: landscape/deepseek-timeline.md
+          - Kimi 演化案例: landscape/kimi-timeline.md
+          - K3 引用图谱: landscape/kimi-k3-reference-map.md
   - 多模态:
       - 总览: multimodal/index.md
       - 理解与对齐:

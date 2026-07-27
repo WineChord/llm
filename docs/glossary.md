@@ -20,6 +20,10 @@
 
 $A^\pi(s,a)=Q^\pi(s,a)-V^\pi(s)$，表示动作相对该状态下策略平均水平好多少；它不等于原始 reward。
 
+**[Attention Residuals, AttnRes](landscape/works/kimi-k3.md#attention-residuals)**
+
+把固定 residual accumulation 改成对 embedding、历史 layer 或 block representation 的 depth-wise softmax 选择。
+
 **Agent**
 
 在目标、状态和约束下循环观察、决策并作用于环境的系统；模型只是其中的策略或推理组件之一。
@@ -218,6 +222,14 @@ Group Sequence Policy Optimization，使用长度归一化的 sequence ratio，�
 
 两个分布对同一动作概率的比值；必须说明分子、分母、token/sequence 粒度与 sampling processor。
 
+**[KDA](landscape/works/kimi-k3.md#kda-recurrence)**
+
+Kimi Delta Attention，先以逐 key-channel retention 衰减 fast-weight state，再按 delta rule 擦写当前 key 关联。
+
+**[KCP](landscape/works/kimi-k3.md#flashkda-kcp)**
+
+KDA Context Parallelism，把每段序列表示为可结合的仿射 state transition，并用跨设备 prefix scan 恢复各段初态。
+
 **[IcePop](reinforcement-learning/training-inference-discrepancy.md#icepop)**
 
 对训练引擎与 rollout 引擎的 importance ratio 先做区间内校正、再拒绝双侧尾部的 mismatch 处理方法。
@@ -258,6 +270,10 @@ Low-Rank Adaptation，用低秩增量更新冻结权重的参数高效微调方�
 
 给定当前状态后，未来转移不再依赖更早历史。语言 Agent 的 context 通常只是对隐藏环境状态的部分观察。
 
+**[LatentMoE](landscape/works/kimi-k3.md#latent-path)**
+
+shared path 保持完整模型宽度，而 routed experts 在较窄 latent space 中计算的 MoE 结构。
+
 **LSH**
 
 Locality-Sensitive Hashing，让相似对象更可能落入同一桶，常用于近似去重和近邻检索。
@@ -273,6 +289,14 @@ Model FLOPs Utilization，用模型理论有效 FLOPs 与硬件峰值比较的�
 **MLA**
 
 Multi-head Latent Attention，将 K/V 压缩为潜变量以降低缓存和带宽的一类注意力结构。
+
+**[MOPD](landscape/works/kimi-k3.md#mopd)**
+
+Multi-Teacher On-Policy Distillation，让 student 从自身策略采样，再由与 domain/effort 对应的 teacher 提供逐 token signal。
+
+**[MoonEP](systems/moe-systems.md)**
+
+以动态 redundant expert placement、固定 dispatch buffer 与通信—计算重叠追求精确 rank 负载的 expert-parallel 系统。
 
 **MLLM**
 
@@ -333,6 +357,10 @@ Parameter-Efficient Fine-Tuning，只训练少量新增或选定参数的适配�
 **[PPO](reinforcement-learning/trust-region-ppo.md)**
 
 Proximal Policy Optimization，使用裁剪 surrogate objective 限制更新幅度的策略梯度算法。
+
+**[Quantile Balancing, QB](landscape/works/kimi-k3.md#quantile-balancing)**
+
+把 balanced expert assignment 的对偶坐标更新写成 margin quantile，以只参与 top-$k$ 选择的 bias 调节下一步负载。
 
 **Process reward model, PRM**
 
@@ -432,6 +460,10 @@ Service Level Objective，对延迟、可用性、正确性或成本等服务指
 
 由较快模型提出候选 token，再由目标模型并行验证的解码加速方法。
 
+**[SiTU-GLU](landscape/works/kimi-k3.md#situ-glu)**
+
+用 scaled tanh 平滑限制 gate 的线性因子与 up branch，在原点附近保持 SwiGLU 的一阶行为并给出有限输出上界。
+
 **SSM**
 
 State Space Model，以状态递推表示序列历史的一类模型。
@@ -499,6 +531,10 @@ Vision-Language Model，联合处理视觉与语言输入或输出的模型。
 **[VAPO](landscape/works/vapo.md)**
 
 Value-model-based PPO 长推理配方，组合 value warmup、decoupled/adaptive GAE、Clip-Higher、token loss、正样本 NLL 与 group sampling。
+
+**XTML**
+
+eXtensible Token Markup Language，用 special token 统一表示 role、thinking、response、typed tool call 与 option 生命周期的 chat template；完整结构见[Kimi K3 附录](landscape/works/kimi-k3.md#appendices)。
 
 **[Value function](reinforcement-learning/values-bellman.md)**
 

@@ -88,6 +88,67 @@ $$
 
 Muon 通常只应用于隐藏层的二维矩阵；embedding、norm、bias 和标量参数仍使用 AdamW 或其他优化器。因此“使用 Muon”实际上是混合优化器与参数路由规则。
 
+### Per-Head Muon {#per-head-muon}
+
+Q/K/V projection 通常把多个 head 沿输出维堆在同一个矩阵中。若对整张 momentum matrix 一次
+Newton–Schulz orthogonalization，所有 head 共享归一化尺度与迭代；高范数 head 会主导这张堆叠矩阵
+的谱，小范数 head 得到的校正相对不足。
+
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)把 Q、K、V
+的 momentum 沿 head 轴切为
+
+$$
+M
+\in
+\mathbb R^{(H d_h)\times d_{\mathrm{in}}}
+\longrightarrow
+\left\{M_h\in\mathbb R^{d_h\times d_{\mathrm{in}}}\right\}_{h=1}^{H},
+$$
+
+然后分别近似每个 $M_h$ 的 polar factor：
+
+$$
+M_h=U_h\Sigma_hV_h^\top,
+\qquad
+\Delta_h\approx U_hV_h^\top.
+$$
+
+每个 head 因而先在自己的谱尺度下被标准化，再拼回 projection shape。作者报告这使大规模训练中的
+head 更新更均衡、稳定性更好；tall per-head block 的 Newton–Schulz 也略便宜。它不是把所有矩阵都
+改成 per-head：只有参数布局中确实存在 head 轴的 Q/K/V projection 适用，输出投影、MLP、embedding
+等仍走各自既定的 Muon 或 AdamW 分组。
+
+下面用精确 SVD 充当小矩阵语义真值；生产优化器应换成经过 scale 与精度校准的 Newton–Schulz kernel。
+把任一 head 的 momentum 乘正标量，不应改变该 head 的 exact polar update。
+
+```python
+import torch
+
+def polar_factor(matrix):
+    u, _, vh = torch.linalg.svd(matrix.float(), full_matrices=False)
+    return u @ vh
+
+def per_head_polar(momentum, heads):
+    assert momentum.ndim == 2 and momentum.size(0) % heads == 0
+    blocks = momentum.reshape(heads, momentum.size(0) // heads, momentum.size(1))
+    return torch.stack([polar_factor(block) for block in blocks]).reshape_as(momentum)
+
+torch.manual_seed(0)
+momentum = torch.randn(6, 8)
+update = per_head_polar(momentum, heads=3)
+blocks = update.reshape(3, 2, 8)
+gram = blocks @ blocks.transpose(-1, -2)
+torch.testing.assert_close(gram, torch.eye(2).expand(3, 2, 2), atol=1e-5, rtol=1e-5)
+scaled = momentum.reshape(3, 2, 8).clone()
+scaled[0] *= 100
+torch.testing.assert_close(per_head_polar(scaled.reshape(6, 8), 3), update, atol=2e-5, rtol=2e-5)
+```
+
+真正实现还必须固定 Q/K/V 的 fused 或 separate layout、GQA 下各自 head 数、tensor-parallel shard
+边界、momentum dtype、Newton–Schulz steps 与更新 scale。若一个 head 横跨 rank，局部 reshape
+后独立正交化会改变算法。K3 的优化器与混合主干关系见
+[Kimi K3](../landscape/works/kimi-k3.md)。
+
 ## 更新尺度
 
 观察相对更新量比只看梯度范数更直接：
@@ -152,4 +213,6 @@ resume conversion rules
 
 - [On the Importance of Initialization and Momentum in Deep Learning](https://proceedings.mlr.press/v28/sutskever13.html)
 - [Decoupled Weight Decay Regularization](https://arxiv.org/abs/1711.05101)
+- [Muon: An Optimizer for Hidden Layers in Neural Networks](https://kellerjordan.github.io/posts/muon/)
 - [Muon is Scalable for LLM Training](https://arxiv.org/abs/2502.16982)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

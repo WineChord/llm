@@ -152,6 +152,21 @@ effective loss tokens per source
 
 只对位置编码插值，或只在少量长样本上继续训练，不能证明模型会使用远距离证据。应在长度、证据位置、干扰项、检索跨度和生成长度上分层评测，并与相同总 token 的短上下文基线比较。
 
+### 渐进式长度课程
+
+比“一步切到目标窗口”更可控的做法，是把长度扩展写成显式阶段：
+
+```text
+base context
+  -> medium context with natural long documents
+  -> long context with stronger coherence filters
+  -> extreme context during cooldown
+```
+
+每一阶段都要冻结最大长度、长度直方图、长样本来源、总训练 token、global batch、位置机制与评测协议。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露了一条 $8\text{K}\rightarrow64\text{K}\rightarrow256\text{K}\rightarrow1\text{M}$ 的实例：前两段在主预训练中完成，后两段放到 cooldown。这个具体阶梯属于其模型、NoPE/KDA 架构和数据配方；可迁移的是逐段延长、逐段验收，而不是四个数字本身。完整实例与证据边界见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
+极长样本的瓶颈常先出现在数据而不是窗口配置。长文档需要 exact/fuzzy dedup、结构完整性与跨段连贯性过滤；视频还要在帧级或片段级做感知去重。自然长样本不足时，可以合成“证据分散在多个远距离位置、答案必须联合这些证据”的任务，但应单列其 token share，并用自然长文档 holdout 验证，防止模型只学会合成模板。每次升级还要做短上下文回归，区分“会处理更长输入”和“只是把短能力迁移到更贵的序列”。
+
 ## Checkpoint 与恢复
 
 严格 resume 至少保存：
@@ -208,3 +223,4 @@ $$
 - [DataComp-LM](https://arxiv.org/abs/2406.11794)
 - [OLMo: Accelerating the Science of Language Models](https://arxiv.org/abs/2402.00838)
 - [Tensor Programs V: Tuning Large Neural Networks via Zero-Shot Hyperparameter Transfer](https://arxiv.org/abs/2203.03466)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

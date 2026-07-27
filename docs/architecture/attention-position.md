@@ -56,11 +56,83 @@ $$
 
 这个顺序能避免把实现错误误判为架构能力不足。
 
-## 前沿术语边界：跨深度 Attention
+## Attention Residuals：沿深度寻址
 
-[Attention Residuals](https://arxiv.org/abs/2603.15031)及其[官方实现](https://github.com/MoonshotAI/Attention-Residuals)把 attention 用在网络深度方向，对先前层表示进行内容相关加权。它改变的是 residual aggregation，不是 token 序列上的 MHA/GQA，也不属于位置编码。
+标准 residual stream 递推地把所有历史层压进一个 $h_l$。它保留了恒等梯度路径，却要求后续层从这份
+累积混合物中恢复早期表示。[Attention Residuals](https://arxiv.org/abs/2603.15031)把相同的
+“按内容读取”思想转到网络深度轴：第 $l$ 层不再均匀接收单个 residual state，而是用该层独有的
+learnable pseudo-query $q_l$ 在 embedding 与所有先前模块输出间选择。
 
-截至公开论文所披露的证据，该方法在作者给定规模、数据和实现中得到验证，并给出 block-level 近似以降低跨层状态与通信成本。其跨模型家族、训练栈和更大规模的通用收益仍需独立证据，因此只作为前沿观察，不纳入稳定注意力分类。
+令 $v_0=k_0=h_{\mathrm{emb}}$，$v_i=k_i=f_i(h_i)$ 表示第 $i$ 个模块的输出。对每个 token 独立计算
+
+$$
+\phi(q_l,k_i)
+=
+\exp\left(q_l^\top\operatorname{RMSNorm}(k_i)\right),
+$$
+
+$$
+\alpha_{i\to l}
+=
+\frac{\phi(q_l,k_i)}
+{\sum_{j=0}^{l-1}\phi(q_l,k_j)},
+\qquad
+h_l
+=
+\sum_{i=0}^{l-1}\alpha_{i\to l}v_i.
+$$
+
+RMSNorm 防止某一层仅凭表示范数变大而垄断权重；softmax 使新 residual input 是历史表示的凸组合。
+pseudo-query 依层而不依 token，但 key 由 token 的层表示产生，所以同一层仍可对不同 token 选择不同
+深度来源。这里的 attention 轴是 **layer depth**，不是 sequence position：它不会替代 token 间的
+MHA、GQA、KDA，也不负责位置编码。
+
+### 从 Full 到 Block AttnRes
+
+若完整保留 $L$ 层输出，算术为 $O(L^2d)$，持有历史表示和 pipeline stage 间传输为 $O(Ld)$。当
+$L<100$ 时，算术未必是主矛盾；activation residency 与跨 stage 通信往往更先成为瓶颈。
+
+Block AttnRes 把连续层分成 $N$ 个 block，并把每个已完成 block 的模块输出求和为一个
+representation。当前 block 内只保留一个逐层增长的 partial sum；跨 block 则在 embedding、已完成
+block 和当前 partial sum 上做同样的 depth attention。于是持有与通信从 $O(Ld)$ 降到 $O(Nd)$，
+推理时可用 online softmax 合并 inter-block 与 intra-block 两部分。
+
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)公开的实例把
+主干分成 8 个、每个 12 层的 block，末块允许不满；再计入 embedding，共有 9 个跨 block 来源。
+这是一个具体规模选择，不是方法要求的常数。K3 如何把它与 KDA、Gated MLA 和 Stable LatentMoE
+组合，见[Kimi K3](../landscape/works/kimi-k3.md)。
+PreNorm 的深度稀释、Full/Block 推导、精确 online merge 与 pipeline cache 的完整脉络，见
+[Attention Residuals：让 residual stream 沿深度寻址](../landscape/works/attention-residuals.md)。
+
+### 跨深度 attention reference {#attention-residual}
+
+`attention_residual` 把 source 轴放在第 0 维，后续可以是 token 或 batch 轴。零 pseudo-query 时，
+所有历史层权重相同，输出退化为均值；这同时锁定归一化轴与凸组合语义。
+
+```python
+import torch
+
+def attention_residual(query, sources, eps=1e-6):
+    assert sources.ndim >= 2 and query.shape == (sources.size(-1),)
+    normalized = sources.float()
+    normalized = normalized * normalized.square().mean(-1, keepdim=True).add(eps).rsqrt()
+    logits = torch.einsum("d,l...d->l...", query.float(), normalized)
+    weight = torch.softmax(logits, dim=0)
+    output = (weight[..., None] * sources.float()).sum(0).to(sources.dtype)
+    return output, weight
+
+torch.manual_seed(0)
+sources = torch.randn(5, 2, 3, 7)
+output, weight = attention_residual(torch.zeros(7), sources)
+torch.testing.assert_close(weight.sum(0), torch.ones(2, 3))
+torch.testing.assert_close(output, sources.mean(0))
+assert output.shape == sources.shape[1:] and torch.isfinite(output).all()
+```
+
+这是真值级 full form，不包含 block partial sum、checkpointing、pipeline 通信或 online-softmax kernel。
+工程实现必须额外固定 embedding 是否单列、block 边界、训练重算与 decode state；论文与
+[官方实现](https://github.com/MoonshotAI/Attention-Residuals)提供了完整定义。当前公开效果主要来自
+作者给定模型与训练栈，跨家族收益仍需独立复现，因此它应作为有清晰语义但证据仍在积累的架构分支。
 
 ## Reference {#reference}
 
@@ -69,3 +141,4 @@ $$
 - [RoFormer: Enhanced Transformer with Rotary Position Embedding](https://arxiv.org/abs/2104.09864)
 - [Attention Residuals](https://arxiv.org/abs/2603.15031)
 - [MoonshotAI/Attention-Residuals](https://github.com/MoonshotAI/Attention-Residuals)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

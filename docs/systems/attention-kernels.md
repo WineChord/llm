@@ -148,6 +148,25 @@ else:
 
 官方实现与支持矩阵应以 [FlashAttention repository](https://github.com/Dao-AILab/flash-attention) 的具体版本为准。
 
+## 线性 Attention 的 recurrent kernel
+
+线性 attention 不物化 $QK^\mathsf T$，但会引入沿序列推进的 recurrent state。以 gated state update 为例：
+
+$$
+S_t=G_t\odot S_{t-1}+U_t,
+\qquad
+o_t=f(q_t,S_t).
+$$
+
+并行训练需要 chunk 内矩阵乘效率，长序列又需要跨 chunk 传递 $S$；高性能 kernel 因此通常同时提供：
+
+- recurrent 路径，适合短 query 或增量 decode；
+- chunkwise 路径，把块内更新改写为大矩阵运算；
+- backward 的状态重算或保存策略；
+- gate 下界、累加 dtype 与边界 state 的固定语义。
+
+[Kimi Linear](https://github.com/MoonshotAI/Kimi-Linear)公开了 Kimi Delta Attention（KDA）及其算法实现；[FlashKDA](https://github.com/MoonshotAI/FlashKDA)则是面向 CUTLASS 的官方 kernel 入口。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露 K3 在 69 个 KDA 层中使用 gate 下界 $g_{\min}=-5$，并保留 24 个 Gated MLA 层。这个下界和层数是模型语义，不能在 kernel 调优时更改；通用实现应把 recurrent/chunkwise 输出、梯度和极长序列数值漂移分别对齐。架构与系统如何配合见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
 ## Prefill 与 decode 是两种 kernel
 
 prefill 通常有较大的 $S_q$，可形成较饱满的 GEMM tile；decode 常有 $S_q=1$，需要读取长 KV：
@@ -267,3 +286,6 @@ kernel 层结论应回到[性能成本模型](performance-model.md)核对 Amdahl
 - [FlashInfer](https://arxiv.org/abs/2501.01005)
 - [flashinfer-ai/flashinfer](https://github.com/flashinfer-ai/flashinfer)
 - [vAttention](https://arxiv.org/abs/2405.04437)
+- [Kimi Linear](https://github.com/MoonshotAI/Kimi-Linear)
+- [FlashKDA](https://github.com/MoonshotAI/FlashKDA)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

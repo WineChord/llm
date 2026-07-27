@@ -24,6 +24,8 @@ $$
 
 自然语言摘要适合压缩背景，不应成为环境事实的唯一来源。恢复任务时要重新读取关键文件、git 状态、进程或远端对象。
 
+环境 checkpoint 与语义记忆承担不同职责：checkpoint 恢复“机器当时是什么状态”，ledger/摘要恢复“任务为何走到这里”。长时 agent 应把两者用不可变 ID 绑定，但不能用摘要替代进程、文件或应用数据库。[AgentENV](https://github.com/kvcache-ai/AgentENV)提供了 microVM pause/resume/fork 的公开实现入口；K3 报告则展示了把这种可恢复环境用于跨模拟天、数千工具调用的训练实例。
+
 ## 层级规划
 
 把长任务分成里程碑 $z_1,\ldots,z_K$，每个里程碑有：
@@ -97,9 +99,21 @@ next action
 
 [Anthropic 的长时 agent harness 文章](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)强调初始化、进度文件、增量提交和重新进入任务。通用原则是：每个新工作周期都能从外部状态重建事实，并留下下一周期可验证的入口。
 
+### Harness 也是实验变量
+
+system prompt、工具命名、context compactor、skills、memory 与 subagent policy 会共同改变长时成功率。white-box harness 应把这些组件拆成带 revision 的可组合模块，并设置三类实验：
+
+1. 固定模型，替换单个 harness 组件；
+2. 固定 harness，比较 checkpoint；
+3. 在训练未见的组件组合上测 scaffold robustness。
+
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)描述了一套可实例化多种 coding/agent scaffold 的训练 harness。它提示我们不要把某个终端界面的得分直接归因于模型；具体组件和内部实现并未完整公开。长上下文、partial rollout、persistent environment 如何接成一个系统，见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
 Coding 场景见[Coding Agent](../applications/coding-agents.md)，训练侧状态见[训练系统](training-systems.md)。
 
 ## Reference {#reference}
 
 - [METR 的 time-horizon 方法](https://metr.org/time-horizons/)
 - [Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
+- [AgentENV](https://github.com/kvcache-ai/AgentENV)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

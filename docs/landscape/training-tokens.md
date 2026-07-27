@@ -53,6 +53,7 @@ $$
 | DeepSeek-V2 | 8.1T | 预训练 | `[D]` [技术报告](https://arxiv.org/abs/2405.04434) |
 | DeepSeek-V3 | 14.8T | 预训练 | `[D]` [技术报告](https://arxiv.org/abs/2412.19437) |
 | Kimi K2 | 15.5T | 预训练 | `[D]` [技术报告仓库](https://github.com/MoonshotAI/Kimi-K2) |
+| Kimi K3 | 未披露 | 预训练 | `[U]` [官方技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露长度课程，但未给总处理量 |
 | Qwen2.5 | 最多 18T | 预训练 | `[D]` [官方博客](https://qwenlm.github.io/blog/qwen2.5-llm/)；不同尺寸口径需看模型卡 |
 | Qwen3 | 约 36T | 预训练 | `[D]` [官方博客](https://qwenlm.github.io/blog/qwen3/) |
 | GLM-5 | 28.55T | 预训练 | `[D]` [技术报告](https://arxiv.org/abs/2602.15763) |
@@ -103,6 +104,7 @@ $$
 - [DeepSeek-V2](https://arxiv.org/abs/2405.04434)
 - [DeepSeek-V3](https://arxiv.org/abs/2412.19437)
 - [MoonshotAI/Kimi-K2 technical report and weights](https://github.com/MoonshotAI/Kimi-K2)
+- [Kimi K3 official technical report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
 - [Qwen2.5 LLM official blog](https://qwenlm.github.io/blog/qwen2.5-llm/)
 - [Qwen3 official blog](https://qwenlm.github.io/blog/qwen3/)
 - [GLM-5 Technical Report](https://arxiv.org/abs/2602.15763)

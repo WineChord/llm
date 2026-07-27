@@ -215,6 +215,14 @@ $$
 
 近期的 SLO-aware 研究如 [SCORPIO（2025）](https://arxiv.org/abs/2505.23022)尝试联合预测和调度。它们应作为研究路线呈现；生产策略仍要对预测偏差、负载漂移和故障恢复做独立验证。
 
+### Fleet 级 affinity 与故障回退
+
+单 worker 的 cache-aware score 还需要 fleet 级 ownership。可以用 consistent hash 为同一 cache identity 选择 primary 与 secondary worker：正常请求优先命中 primary，热点或故障时转向 secondary。hash ring 必须纳入模型、adapter、cache schema 和安全域；成员变化要限制 remap 范围。
+
+secondary 不等于拥有可用缓存。若目标 worker 没有完整前缀或联合状态校验失败，正确回退是重新 prefill，而不是拼接部分 KV。请求 metadata、sampler 和 stream owner 的迁移也必须原子化。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露了 primary/secondary consistent hashing 与故障后 re-prefill 的 fleet 方案，完整设计见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
+不同请求类别的成本可跨三个数量级：短对话、长上下文 agent、视觉输入和高 effort 推理不能共享一个“并发数”配额。admission 应按类别同时预算 prefill FLOPs、预计 decode tokens、KV byte-seconds、工具/环境 slot 和 deadline，并保留独立 headroom。这样拒绝的是当前系统无法兑现的资源契约，而不是事后依赖大量抢占维持表面吞吐。
+
 ## 抢占选择
 
 显存不足时常见两条路线：
@@ -280,3 +288,4 @@ $$
 - [Preble](https://arxiv.org/abs/2407.00023)
 - [Llumnix](https://arxiv.org/abs/2406.03243)
 - [SCORPIO（2025）](https://arxiv.org/abs/2505.23022)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

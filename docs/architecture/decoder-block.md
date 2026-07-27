@@ -67,6 +67,79 @@ $$
 
 若为了保持参数量接近而调整中间宽度，必须说明比较的是相同 hidden width、相同参数量还是相同 FLOPs。激活函数名称不能代替矩阵形状。
 
+## SiTU-GLU：给乘法分支加平滑上界 {#situ-glu}
+
+SwiGLU 的 gate factor $a\operatorname{Sigmoid}(a)$ 与 up factor $b$ 都无界；二者在同一坐标同时变大时，
+乘积会近似二次增长。大规模、低精度训练中，这类 outlier 会沿 expert MLP 和 residual path 放大。
+直接 hard clamp 能截断数值，却在阈值外给出零梯度和不连续的导数变化。
+
+定义 smooth cap
+
+$$
+\operatorname{softcap}(z;\beta)
+=
+\beta\tanh\left(\frac{z}{\beta}\right).
+$$
+
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)提出
+Sigmoid Tanh Unit GLU（SiTU-GLU），分别约束 gate 的线性因子与 up branch：
+
+$$
+\operatorname{SiTU\text{-}GLU}(x)
+=
+\left[
+\beta_1\tanh\left(\frac{W_gx}{\beta_1}\right)
+\odot\operatorname{Sigmoid}(W_gx)
+\right]
+\odot
+\left[
+\beta_2\tanh\left(\frac{W_ux}{\beta_2}\right)
+\right].
+$$
+
+当 $z\to0$ 时，$\beta\tanh(z/\beta)=z+O(z^3/\beta^2)$，因此局部保留 SwiGLU 的一阶形状；
+当 $\beta_1,\beta_2\to\infty$ 时逐点回到 SwiGLU。另一方面，
+$|\tanh z|<1$ 且 $0<\operatorname{Sigmoid}z<1$，所以 down-projection 之前的每个坐标满足
+
+$$
+\left\|\operatorname{SiTU\text{-}GLU}(x)\right\|_\infty
+<
+\beta_1\beta_2.
+$$
+
+K3 取 $\beta_1=4,\beta_2=25$，上界为 $100$。这个上界约束的是 elementwise gated hidden，
+不是经过 $W_d$ 后的 MLP 输出，也不等于全模型不会出现 outlier。K3 将它用于
+[Stable LatentMoE](moe.md#latent-moe) 的 routed experts；完整架构关系见
+[Kimi K3](../landscape/works/kimi-k3.md)。
+
+### SiTU-GLU reference
+
+```python
+import torch
+import torch.nn.functional as F
+
+def softcap(x, beta):
+    assert beta > 0
+    return beta * torch.tanh(x / beta)
+
+def situ_glu(gate_logit, up_value, beta1=4., beta2=25.):
+    assert gate_logit.shape == up_value.shape
+    gate = softcap(gate_logit, beta1) * torch.sigmoid(gate_logit)
+    return gate * softcap(up_value, beta2)
+
+extreme = torch.tensor([-1e4, -10., 0., 10., 1e4])
+hidden = situ_glu(extreme, extreme)
+assert hidden.abs().max() <= 100
+small = torch.linspace(-1e-3, 1e-3, 17, dtype=torch.float64)
+torch.testing.assert_close(
+    situ_glu(small, small), F.silu(small) * small, atol=1e-12, rtol=1e-6,
+)
+```
+
+实现 checkpoint 时还要固定 gate/up 投影是否带 bias、$\beta$ 是常数还是可学习参数、激活计算 dtype
+以及 fused kernel 的近似误差。只替换 activation 而沿用另一配方的初始化、宽度和学习率，不能隔离
+SiTU-GLU 自身的效果。
+
 ### 最小语义实现 {#pre-norm-decoder-block}
 
 下面把 pre-norm block 的三项核心语义放在同一计算图里：RMSNorm 用 FP32 归约后转回输入 dtype，SwiGLU 保留 gate/up 两条投影，两个子层都写回同一 residual stream。输入和输出均为 `[batch, time, dim]`；`attn` 是保持该 shape 的可替换模块。
@@ -158,3 +231,4 @@ attention 细节见[注意力家族](attention-variants.md)，完整主干见[Tr
 - [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
 - [Root Mean Square Layer Normalization](https://arxiv.org/abs/1910.07467)
 - [GLU Variants Improve Transformer](https://arxiv.org/abs/2002.05202)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

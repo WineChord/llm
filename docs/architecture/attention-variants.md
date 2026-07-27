@@ -107,6 +107,74 @@ $$
 
 这类矩阵结合能把一部分上投影从历史 token 侧移到当前 query 侧。但 RoPE 之类位置相关变换通常不能任意穿过低秩投影；位置分支、量化 scale 和并行分片也会限制吸收方式。理论 cache 大小只有落到 kernel 和张量布局后才成为实际收益。
 
+## Gated MLA 与混合注意力
+
+MLA 解决的是“全局注意力怎样减少历史缓存”，线性注意力解决的是“怎样用有限状态替代随长度增长的
+历史”。两者不是互斥选项。[Kimi Linear](https://arxiv.org/abs/2510.26692)与
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)给出一种
+层间混合：大多数层使用 KDA 递推，周期性插入 MLA，让 token 仍能对全局历史作精确、内容相关寻址。
+K3 的一个 block 是 3 层 KDA 加 1 层 Gated MLA，并让主干最后一层仍为 Gated MLA。
+
+这组设计把职责拆开：
+
+- KDA 以固定大小 state 提供位置敏感、带 recency bias 的传播；
+- MLA 用低维 latent cache 保留不受局部窗口限制的全局内容交互；
+- 周期性 full attention 修补有限状态在精确召回和 key 冲突上的结构性弱点；
+- 混合比例则在状态计算、KV bytes、全局寻址频率与 kernel 成熟度间取舍。
+
+K3 的 MLA 层不对 $Q,K$ 施加显式位置编码（NoPE）。这并不表示整个模型没有顺序信息：作者把顺序和
+新近性主要交给层间穿插的 KDA recurrence，而让 MLA 专注全局内容匹配。这样的 NoPE 结论依赖混合
+主干，不能脱离 KDA 复制到纯 MLA 模型，也不能仅凭“无需调整 RoPE”推导任意长度上的有效利用能力。
+
+在 ungated MLA 输出 $\tilde o_t$ 后，K3 增加 full-rank、逐通道输出门：
+
+$$
+y_t
+=
+W_o\left[
+\operatorname{Sigmoid}(W_gx_t)
+\odot
+\tilde o_t
+\right].
+$$
+
+full-rank 指 $W_g$ 直接从 hidden width 映射到输出通道，不先经过小 bottleneck。它让每个 token
+决定全局读出的哪些通道进入 residual stream，但不改变 MLA 的 attention probability 或 cache
+形状。报告还说明训练时保留 FP32 attention output，以缓解 flash-attention 输出的 biased rounding；
+这是训练 kernel 的精度与片上存储选择，不能从公式中省略后仍宣称数值路径等价。
+
+### Full-rank output gate {#gated-attention-output}
+
+下面固定“先按输入生成 channel gate，再做输出投影”的顺序。零 gate projection 时 sigmoid 恰为
+$1/2$；若 output projection 为恒等映射，结果应是 attention output 的一半。
+
+```python
+import torch
+import torch.nn.functional as F
+
+def gated_attention_output(x, attention_output, gate_weight, output_weight):
+    assert x.shape == attention_output.shape
+    width = x.size(-1)
+    assert gate_weight.shape == output_weight.shape == (width, width)
+    gate = torch.sigmoid(F.linear(x.float(), gate_weight.float()))
+    output = F.linear(gate * attention_output.float(), output_weight.float())
+    return output.to(x.dtype), gate
+
+x = torch.randn(2, 5, 8)
+attention_output = torch.randn_like(x)
+output, gate = gated_attention_output(
+    x, attention_output, torch.zeros(8, 8), torch.eye(8),
+)
+torch.testing.assert_close(output, attention_output / 2)
+torch.testing.assert_close(gate, torch.full_like(gate, .5))
+assert output.shape == x.shape
+```
+
+模型级实现还要补齐 latent projection 的权重吸收、NoPE 位置约定、causal/padding mask、FP32 输出
+buffer、head layout 与增量 cache。混合架构的整体信息流见
+[Kimi K3](../landscape/works/kimi-k3.md)，KDA 的递推真值见
+[状态空间与线性注意力](state-space-linear-attention.md#kda-recurrence)。
+
 ## Mask 与增量位置
 
 attention 实现至少同时处理：
@@ -139,3 +207,5 @@ attention 实现至少同时处理：
 - [Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/abs/1911.02150)
 - [GQA: Training Generalized Multi-Query Transformer Models](https://arxiv.org/abs/2305.13245)
 - [DeepSeek-V2](https://arxiv.org/abs/2405.04434)
+- [Kimi Linear: An Expressive, Efficient Attention Architecture](https://arxiv.org/abs/2510.26692)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

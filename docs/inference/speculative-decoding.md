@@ -140,6 +140,15 @@ $T_{\mathrm{state}}$ 包含候选组织、采样、KV 提交 / 回滚、grammar 
 
 这些 2024–2025 路线说明候选不必来自完整独立语言模型，但会新增 draft head、训练数据、版本和运行时 tree verification。论文速度不能直接外推到不同 target、batch、temperature 或服务引擎。
 
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露了一项 EAGLE-3 训练实例：以预训练的 multi-token-prediction 模块初始化 draft，冻结 target，做七步 unroll，并取第一、第四和最后一个 Attention Residual block 的特征。其 draft 只用 temperature $1$ 的 LK loss，不再混合交叉熵：
+
+$$
+\mathcal L_{\mathrm{LK}}
+=-\log\sum_v\min\!\left(p(v),q(v)\right).
+$$
+
+对归一化分布，$\sum_v\min(p_v,q_v)=1-\operatorname{TV}(p,q)$，因此目标直接提高两分布的重叠质量，而不是只惩罚 target token 的负对数概率。[LK Losses](https://arxiv.org/abs/2602.23881)给出这一目标的一手论述。上述层位、unroll 深度和 loss 组合属于 K3 具体 recipe；迁移到另一架构时要重新搜索并测 accepted tokens、draft cost 与最终分布。整体证据见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
 ### 模型原生多 token 预测
 
 若 target 训练时包含 multi-token prediction heads，可以复用模型内部特征产生候选。它减少额外模型驻留，但仍要定义候选分布、验证路径和部署兼容；“模型能预测多个未来 token”不等于服务默认能精确接受它们。
@@ -185,6 +194,12 @@ advance stream and RNG exactly once
 - streaming cursor 与 finish reason。
 
 拒绝后只裁剪 token array、却保留多写入的 KV 或 grammar state，会让后续输出静默偏离。
+
+### Recurrent state replay
+
+对 KDA、SSM 或其他 recurrent 层，每个 speculative branch 都复制完整 state 会迅速放大显存与写带宽。另一条路线是在 draft 阶段缓存状态更新所需的 projected inputs，target 接受前缀后，再把被接受 token 的更新在片上顺序 replay，最后一次性提交新 state。这样把“每个候选分支一份 state”改成“候选输入 + 一份 committed state”。
+
+这种 replay 必须保持接受 token 的原顺序、数值格式和 gate 语义；拒绝分支的 projected inputs 不得推进 committed state。[ReplaySSM](https://tridao.me/blog/2026/replayssm/)描述了 recurrent speculative decoding 的相关机制，K3 报告则将 state replay 用于其 KDA 路径。它优化的是状态事务，不改变前文 target acceptance 的分布条件。
 
 ## 与 Logit Processor 的组合
 
@@ -285,4 +300,7 @@ $$
 - [EAGLE-2](https://arxiv.org/abs/2406.16858)
 - [EAGLE-3（2025）](https://arxiv.org/abs/2503.01840)
 - [SafeAILab/EAGLE](https://github.com/SafeAILab/EAGLE)
+- [LK Losses](https://arxiv.org/abs/2602.23881)
+- [ReplaySSM](https://tridao.me/blog/2026/replayssm/)
 - [TensorRT-LLM 的 speculative decoding 文档](https://nvidia.github.io/TensorRT-LLM/1.2.0/features/speculative-decoding.html)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

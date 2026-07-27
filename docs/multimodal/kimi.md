@@ -1,92 +1,153 @@
-# Kimi 多模态与 Agent 演化
+# Kimi 家族的多模态分支
 
-Kimi 家族展示了一条从长上下文语言模型、稀疏专家、视觉输入到长时 agent 的连续路线。分析时应把模型能力、训练方法和产品 harness 分开；本页公开信息核验截至 2026-07-27。
+Kimi 家族的多模态路线并不是“语言模型后来接上一个视觉 encoder”。Kimi-VL 先独立探索视觉语言 MoE，K2.5 再把视觉 token、thinking、工具使用与 Agent Swarm 放进同一训练系统，K3 则让 MoonViT-V2 从 next-token prediction 开始与 3T 级 hybrid backbone 联合训练。音频仍由 Kimi-Audio 形成另一条分支。
 
-## 家族节点
+本页只讨论家族与模态之间的关系。完整发布日期、权重、代码、API 与许可证见[Kimi 技术谱系](../landscape/kimi-timeline.md)；K3 的 150 项引用及其归因边界见[引用图谱](../landscape/kimi-k3-reference-map.md)；K3 架构、训练、系统和评测的逐层解释见[工作深读](../landscape/works/kimi-k3.md)。
 
-| 节点 | 公开对象 | 可复用观察 |
-| --- | --- | --- |
-| Kimi K2 | [技术报告与权重](https://github.com/MoonshotAI/Kimi-K2) | 大规模 MoE、MuonClip 与 agentic data |
-| Kimi K2.5 | [技术报告](https://arxiv.org/abs/2602.02276) | 视觉输入、thinking 与 agent swarm 能力共同训练 |
-| Kimi K3 | [官方技术博客](https://www.kimi.com/blog/kimi-k3) | 更大稀疏模型、原生视觉、长上下文与长时 coding |
-| Kimi-Audio | [官方仓库](https://github.com/MoonshotAI/Kimi-Audio) | 音频理解、生成与对话是独立模态路线 |
+## 家族分叉而不是版本替换
 
-版本号不自动代表统一架构：具体参数、训练阶段、开放权重和 API 能力应逐版本核对。
+```text
+Kimi k1.5 ── 长上下文 reasoning RL
+                  │
+Kimi-VL ── 视觉语言 MoE ─┐
+                         ├─ K2.5 ── native visual agent / thinking / swarm
+K2 ── 1T MoE / agentic ─┘                         │
+Kimi Linear ── KDA / hybrid attention ────────────┼─ K3
+Attention Residuals ── depth retrieval ───────────┘
 
-## K2：MoE 与优化器
+Kimi-Audio ── audio understanding / generation / conversation
+```
 
-MoE 路由仍可写成
+Kimi-VL、K2.5 和 K3 有继承关系，却不是同一个 checkpoint 的连续小修订：
 
-$$
-y=\sum_{i\in \operatorname{TopK}(g(x))}p_iE_i(x),
-$$
+| 节点 | 多模态对象 | 训练或结构焦点 | 不应混淆的边界 |
+| --- | --- | --- | --- |
+| [Kimi-VL](https://arxiv.org/abs/2504.07491) | 图像、视频、长文档与语言 | 轻量激活的视觉语言 MoE、视觉 reasoning 与长上下文 | 它的 vision encoder 不是 K3 MoonViT-V2 的同义词 |
+| [Kimi K2.5](https://arxiv.org/abs/2602.02276) | text + vision 的原生联合模型 | continual pretraining、zero-vision SFT、joint text-vision RL、Agent Swarm | swarm 是 agent system，不是视觉 encoder 架构 |
+| [Kimi K3](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf) | text、image、video 输入进入同一 agentic model | MoonViT-V2、1M context、KDA / MLA / AttnRes / MoE 联合训练 | 报告公开了设计与权重，没有公开完整视觉数据配方 |
+| [Kimi-Audio](https://github.com/MoonshotAI/Kimi-Audio) | speech、通用音频、音频生成与对话 | audio tokenizer / encoder、理解与生成闭环 | 它是并行分支，不是 K3 已披露的输入模态 |
 
-但大规模训练的关键不只是 top-$k$。专家容量、跨节点 all-to-all、路由稳定性和 optimizer state 共同决定可训练性。K2 公开材料强调 Muon 系优化方法与大规模稀疏训练的结合，阅读时应追踪：
+K2 本身在这里主要扮演 shared language / MoE foundation：它提供大规模稀疏 backbone、MuonClip 与 agentic post-training 经验。Kimi Linear 和 Attention Residuals 则分别把 sequence 与 depth 信息流接入 K3。它们对多模态的重要性不是“专门看图”，而是决定视觉 token 进入 backbone 后怎样跨长序列、跨层和跨 expert 流动。
 
-- 矩阵参数与向量参数是否使用不同更新规则；
-- 正交化或谱约束如何近似；
-- learning rate、weight decay 和 clipping 怎样与规模联动；
-- optimizer 的额外计算是否被通信或主干计算掩盖。
+## Kimi-VL：先解决视觉语言桥与长视觉上下文
 
-优化器名称不能替代完整配方，见[优化与稳定性](../training/optimization.md)。
+Kimi-VL 使用视觉 encoder、projector 与 MoE language decoder，把图像和视频表示映射到语言 token 所在的 embedding space。它的重要性不只在 benchmark 数字，而在于把四类负载放进同一模型：
 
-## K2.5：能力组合不等于模块拼接
+- 高分辨率图像带来大量局部 patch；
+- 多图与长文档要求跨页、跨图建立关系；
+- 视频同时增加空间和时间 token；
+- visual agent 还会把 crop、zoom、OCR 或 Python 结果重新写回上下文。
 
-视觉、thinking、工具使用和并行 agent 若分别训练，容易出现相互覆盖：视觉微调削弱代码，工具轨迹使输出格式固化，长推理又增加延迟。联合训练的核心问题是数据混合与能力路由：
+因此“能输入图片”与“能在长程 agent 中持续利用视觉观察”是两种证据。前者可由静态 VQA 支持，后者需要保留工具轨迹、环境状态、观察顺序和总视觉 token 预算。
 
-$$
-p(D)=
-\alpha D_{\text{text}}+
-\beta D_{\text{vision}}+
-\gamma D_{\text{reasoning}}+
-\delta D_{\text{agent}}.
-$$
+Kimi-VL 公开了 A3B-Instruct 与后续 Thinking checkpoint，并采用 MIT 许可证；它没有因此公开 K3 的 MoonViT-V2 训练数据或实现。
 
-系数不仅是样本比例，还受到序列长度、loss mask 和采样难度影响。公开 benchmark 只能显示结果，不能反推出精确混合配方。
+## K2.5：视觉与 reasoning 不再分阶段拼接
 
-## K3：结构、规模与长时任务
+K2.5 在 K2-Base 上进行约 15T mixed visual-text token 的 continual pretraining。它强调三件相互制约的事：
 
-官方资料将 K3 描述为带原生视觉和长上下文的大规模稀疏模型，并引入 Kimi Delta Attention 与 Attention Residuals。对这类新架构，适合按三层阅读：
+1. 视觉数据进入主干继续预训练，而不是只在末端做小规模 adapter tuning；
+2. text-only instruction 能力要在视觉 SFT 后保持，因而需要 zero-vision SFT 等平衡阶段；
+3. joint text-vision RL 让视觉观察、thinking 与工具 action 进入同一 trajectory。
 
-1. **数学对象**：状态如何更新，跨 token 或跨层信息如何压缩；
-2. **系统实现**：训练 kernel、缓存、并行与通信是否匹配；
-3. **任务证据**：收益来自 checkpoint，还是长时任务 harness 与额外推理预算。
-
-长时 coding 结果尤其不能只归因于模型。上下文压缩、任务检查点、工具权限、失败恢复和缓存都会进入系统质量，见[Coding Agent](../applications/coding-agents.md)。
-
-## Agent swarm 的判断框架
-
-并行 agent 不是自动增益。若把任务拆成 $m$ 个子任务，总时间近似
+抽象地看，一个混合 batch 的贡献不只由样本概率决定：
 
 $$
-T\approx \max_i T_i+T_{\text{coord}}+T_{\text{merge}}+T_{\text{verify}}.
+\mathbb E[\mathcal L]
+=
+\sum_m p(m)\,
+\mathbb E_{x\sim D_m}
+\left[
+\frac{\sum_t w_{m,t}\ell_{m,t}}{\sum_t w_{m,t}}
+\right].
 $$
 
-只有当子任务依赖弱、合并成本低且验证可分解时，$\max_i T_i$ 的并行收益才可能覆盖协调开销。模型自报“多个 agent”不能证明它们拥有独立状态或真实并行。
+$m$ 可以是 text、image、video、reasoning 或 agent trajectory；长视频即使样本数少，也可能因 token 数和 loss mask 获得很大梯度权重。公开的“数据比例”如果没有 sequence length、packing 和 reduction 口径，仍不足以重建真实 mixture。
 
-评测应记录：
+### Agent Swarm 位于系统层
 
-- 并行度、模型调用数和总 token；
-- 共享上下文与写冲突策略；
-- 合并者是否重新验证所有结果；
-- 单 agent 等预算基线；
-- 成功率与尾延迟，而非最佳展示。
+K2.5 的 Agent Swarm 让一个 orchestrator 动态拆分任务并并行执行多个 subagent。其收益可写成
 
-## 多模态边界
+$$
+T_{\text{wall}}
+\approx
+\max_i T_i
++T_{\text{dispatch}}
++T_{\text{merge}}
++T_{\text{verify}},
+$$
 
-“原生视觉”至少应核对：
+而总成本更接近所有分支 token 与工具调用之和。只有子任务依赖弱、写冲突可控、结果容易验证时，并行 wall time 才可能下降。多模态让拆分更丰富，也增加共享图像、视频与 artifact state 的一致性问题。
 
-- 视觉数据是否进入主训练，而非上线时外接描述器；
-- 图像 token 与文本 token 如何融合；
-- 高分辨率、多图、视频和 OCR 的预算；
-- 视觉输出是否由同一模型生成；
-- 图像内指令与系统指令的权限关系。
+因此评测 Agent Swarm 应同时记录并行度、总 token、tool calls、共享状态、失败重试、单 agent 等预算基线和尾延迟。它不是 K2.5 vision encoder 的组件，也不是 K3 white-box RL environment 的别名。
 
-通用机制见[原生多模态与生成](native-generation.md)，模型谱系记录方法见[模型谱系](../landscape/index.md)。
+## K3：MoonViT-V2 进入三条信息流
+
+K3 报告称 MoonViT-V2 约 401M 参数，从 next-token prediction 目标开始训练，再由轻量 projector 把视觉表示送入 shared embedding space。进入 backbone 后，视觉 token 与文本 token 共同经过：
+
+- **sequence mixing**：大部分 KDA 层压缩历史状态，周期性 Gated MLA 恢复全局 token-to-token retrieval；
+- **depth mixing**：Block AttnRes 选择 embedding 与早期 block output；
+- **channel mixing**：Stable LatentMoE 在 latent space 中路由到 896 个 routed experts 中的 16 个，并保留 shared experts。
+
+这比“视觉 encoder + LLM”多出一层关键问题：不同模态如何共同穿过有限状态、全局 attention、depth route 和 sparse experts。比如图像中的一个细节如果只短暂出现，KDA state 是否能保存它、何时由 MLA 重新读取、哪些 expert 接收该 token，都会影响后续长程行为。
+
+### 从头 NTP 训练能支持什么结论
+
+报告的消融显示，作者配方内从随机初始化开始的 vision encoder 优于先做视觉预训练再接语言模型的方案。最窄结论是：在其数据、backbone、优化器和预算下，end-to-end next-token objective 能形成更匹配语言主干的视觉表示。
+
+它不能推出：
+
+- 独立视觉预训练普遍无用；
+- 所有数据规模都适合从头训练 encoder；
+- MoonViT-V2 的收益可与 backbone、数据或 post-training 完全分离；
+- 公开 checkpoint 已给出可复现的视觉数据 provenance。
+
+更一般的视觉语言桥与 early fusion 路线见[视觉语言模型](vision-language.md)和[统一理解与生成](unified-understanding-generation.md)。
+
+## 视觉能力如何进入 Agent 闭环
+
+K3 的视觉 RL 环境让模型在 isolated Python sandbox 中反复执行 crop、zoom、transform、计算和验证，再把生成图像或数值作为新 observation。一个视觉问题由此变成：
+
+$$
+o_0 \rightarrow a_0 \rightarrow o_1
+\rightarrow a_1 \rightarrow \cdots
+\rightarrow o_T \rightarrow \hat y,
+$$
+
+其中 observation 不只是一张初始图片，还包括工具产生的新视图。最终分数同时测量 perception、planning、代码、工具协议和 verifier。报告中 CharXiv、MATH-Vision、ZeroBench 等“无工具 / 有 Python”双分数正是在区分这两层能力。
+
+这条路线与[文档与 GUI grounding](document-gui-grounding.md)、[工具调用](../applications/tool-use.md)和[Agentic RL 轨迹契约](../agentic-rl/trajectory-contract.md)相连。比较模型时必须固定图像预处理、最大 patch / frame 数、工具、最大步数、reasoning effort 和采样次数。
+
+## Kimi-Audio：另一条仍需单独追踪的模态路线
+
+Kimi-Audio 同时覆盖 audio understanding、speech recognition、audio generation 与 conversation。与 K3 的关系是家族共享研究积累，而不是报告已证明的模态合并：
+
+- K3 官方模型卡列出的主体模态是 text 与 image，报告还讨论 video 输入；
+- Kimi-Audio 有自己的模型、代码、checkpoint 与评测工具；
+- 除非后续一手材料明确说明，不能把 Kimi-Audio 能力写进 K3 checkpoint。
+
+音频 codec、离散 token、流式生成和 duplex conversation 的通用机制见[音频语言模型](audio-language-models.md)。
+
+## 一张可审计的多模态核对表
+
+| 层面 | 最少需要记录的事实 |
+| --- | --- |
+| 公开物 | paper、checkpoint、inference code、training code、API 与 license 分列 |
+| 视觉输入 | resize / crop、patch size、dynamic resolution、多图与视频帧预算 |
+| 融合 | encoder、projector、token order、position、cross-attention 或 early fusion |
+| 数据 | image / video / document 来源、比例、token 权重、去重与污染边界 |
+| 训练 | 预训练、SFT、RL 各阶段是否包含视觉，loss mask 与 reduction 口径 |
+| 工具 | Python / browser / GUI 工具、observation 回写、最大步骤与 sandbox |
+| 评测 | 无工具与有工具分开，保留 sampling、pass@$k$、harness 和日期 |
+| 安全 | 图像内指令、OCR 注入、跨模态权限、敏感视觉数据与持久化历史 |
+
+沿家族阅读时，先用[时间线](../landscape/kimi-timeline.md)确认公开对象，再用[K3 引用图谱](../landscape/kimi-k3-reference-map.md)追到方法与 benchmark 原作，最后回到[K3 工作深读](../landscape/works/kimi-k3.md)检查公式、系统接口和证据边界。
 
 ## Reference {#reference}
 
-- [MoonshotAI/Kimi-K2 technical report and weights](https://github.com/MoonshotAI/Kimi-K2)
-- [Kimi K2.5 Technical Report](https://arxiv.org/abs/2602.02276)
-- [Kimi K3 official technical blog](https://www.kimi.com/blog/kimi-k3)
-- [MoonshotAI/Kimi-Audio](https://github.com/MoonshotAI/Kimi-Audio)
+- [Kimi-VL Technical Report](https://arxiv.org/abs/2504.07491)
+- [Kimi K2: Open Agentic Intelligence](https://arxiv.org/abs/2507.20534)
+- [Kimi K2.5: Visual Agentic Intelligence](https://arxiv.org/abs/2602.02276)
+- [Kimi K3 official technical report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [Kimi K3 model card and weights](https://huggingface.co/moonshotai/Kimi-K3)
+- [Kimi-Audio Technical Report](https://arxiv.org/abs/2504.18425)

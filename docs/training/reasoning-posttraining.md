@@ -34,6 +34,18 @@ $$
 
 搜索状态必须包含可重放的 prompt、已选动作、环境 observation、预算和终止原因。不同候选共享 prefix 时，还要避免缓存或随机状态串线。
 
+### Effort-conditioned policy
+
+推理预算可以成为显式条件，而不只是把 `max_tokens` 调大。设 $e\in\{\text{low},\text{high},\text{max}\}$，策略学习的是
+
+$$
+\pi_\theta(y\mid x,e),
+$$
+
+训练和评测都应在同一问题上横向比较不同 $e$ 的正确率、reasoning token、工具调用和 wall-clock。如果 high/max 只让文本更长而没有改善 verifier 通过率或恢复能力，模型学到的是 verbosity，不是可控计算。
+
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)把三档 effort 同时用于 RL teacher routing 与每题预算课程，形成了一项完整实例；其通用含义是把“能力—成本工作点”纳入策略接口。具体 teacher、阈值与预算没有完整披露，不能外推为固定 recipe。后训练与 serving 的衔接见 [Kimi K3](../landscape/works/kimi-k3.md)，预算惩罚和 partial rollout 见[在线 RL](online-rl.md)。
+
 ## Verifier
 
 ### Outcome verifier
@@ -157,3 +169,4 @@ pass@$k$、judge、bootstrap 与污染工具见[评测工具](../practice/evalua
 - [STaR: Bootstrapping Reasoning With Reasoning](https://arxiv.org/abs/2203.14465)
 - [DeepSeek-R1](https://arxiv.org/abs/2501.12948)
 - [DeepSeekMath](https://arxiv.org/abs/2402.03300)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

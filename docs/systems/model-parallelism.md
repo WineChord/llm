@@ -100,6 +100,43 @@ $$
 
 [Ring Attention](https://arxiv.org/abs/2310.01889)让 K/V block 沿环传递，并尝试用本地 block attention 覆盖通信。每个 query block 的 softmax 需要跨 block 保持全局最大值和归一化分母，不能独立 softmax 后简单相加。
 
+### 仿射状态的 context parallel
+
+若序列模块的一个 segment 可压缩成
+
+$$
+S_{\mathrm{out}}=M_{\mathrm{seg}}S_{\mathrm{in}}+\widetilde S_{\mathrm{seg}},
+$$
+
+两个相邻 segment 的变换可结合：
+
+$$
+(M_b,\widetilde S_b)\circ(M_a,\widetilde S_a)
+=
+(M_bM_a,\ M_b\widetilde S_a+\widetilde S_b).
+$$
+
+这个 combine 具有结合性，因此每个 context rank 可先本地计算固定大小的 $(M,\widetilde S)$，再 all-gather 并做 prefix scan，而不必收集整段 token 状态。下面用小矩阵验证组合方向：
+
+```python
+import torch
+
+def compose_affine(first, second):
+    ma, ba = first
+    mb, bb = second
+    if ma.ndim != 2 or mb.shape != ma.shape or ba.shape != bb.shape:
+        raise ValueError("affine summaries must align")
+    return mb @ ma, mb @ ba + bb
+
+ma, mb = torch.tensor([[2., 0.], [0., .5]]), torch.tensor([[1., 1.], [0., 2.]])
+ba, bb = torch.tensor([1., -1.]), torch.tensor([.5, 2.])
+x = torch.tensor([3., 4.])
+mc, bc = compose_affine((ma, ba), (mb, bb))
+torch.testing.assert_close(mc @ x + bc, mb @ (ma @ x + ba) + bb)
+```
+
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)把这一路线称为 KDA Context Parallelism（KCP）。其收益依赖局部 state 计算、固定大小 summary 通信和 scan 是否能重叠；只有递推确实可写成结合的 segment summary 时才成立，不能套到任意 attention。具体部署见 [Kimi K3](../landscape/works/kimi-k3.md)，KDA 算法入口见 [Kimi Linear](https://github.com/MoonshotAI/Kimi-Linear)。
+
 ## Expert Parallel
 
 MoE 将专家放在不同 rank，token 经 all-to-all dispatch 到目标专家，再 combine 回原顺序。通信发生在 token 表示上，而 TP 通信发生在层内部分结果上。两者组合时需要决定：
@@ -159,3 +196,5 @@ collective 语义见[集合通信与分片](collectives-sharding.md)，算子效
 - [GPipe](https://arxiv.org/abs/1811.06965)
 - [Zero Bubble Pipeline Parallelism](https://arxiv.org/abs/2401.10241)
 - [Ring Attention](https://arxiv.org/abs/2310.01889)
+- [Kimi Linear](https://github.com/MoonshotAI/Kimi-Linear)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

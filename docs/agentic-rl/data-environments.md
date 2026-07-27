@@ -34,6 +34,23 @@ cost
 
 合成数据应使用独立 verifier，并保留生成模型与筛选规则，否则 student 可能只学习 teacher 的格式偏差。
 
+### 用知识图谱扩展任务覆盖
+
+开放域任务若只从独立关键词采样，很容易得到主题重复、依赖关系浅的样本。一个更系统的合成管线可以先构造层级知识图谱：
+
+```text
+seed domain
+  -> search and propose coarse concepts
+  -> deduplicate nodes and edges
+  -> recursively expand non-atomic nodes
+  -> stop at independently testable concepts
+  -> sample related nodes with ancestor context
+  -> retrieve public evidence
+  -> synthesize task and independent verifier
+```
+
+这相当于在概念 DAG 上结合 breadth-first 的覆盖与 depth-first 的细化；停止条件应由“是否能独立提出并验证任务”决定，而不是固定深度。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露了这种 coarse-to-fine、递归多 agent 的知识图谱合成实例。可迁移的是节点去重、祖先上下文、公开证据和独立验证四个边界，不能把生成图自身当成事实源。整体方法见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
 ## 环境的四类状态
 
 1. **静态状态**：代码仓库、文档、数据库快照；
@@ -42,6 +59,17 @@ cost
 4. **权限状态**：可读、可写、需确认与禁止动作。
 
 只有静态快照通常可完全重放。外部服务应使用版本化模拟器、录制回放或明确的在线评测窗口。
+
+### 持久环境
+
+个人助理、项目协作和长时软件任务的状态会跨轮次、跨天变化。此类环境不应每个 episode 都重置为同一空壳，而应把 mock 邮件、知识库、消息、画布或文件系统作为有版本的 persistent state，并让日历事件、用户消息和后台变化按 seed 注入。训练记录必须区分：
+
+- agent 产生的副作用；
+- 模拟器自主产生的事件；
+- evaluator 的只读观察；
+- checkpoint/fork 后继承或隔离的状态。
+
+K3 报告描述了一组可跨模拟天、数千次工具调用和百万级上下文推进的持久助理环境。这些量级是团队报告的工程实例，不等于公开 benchmark；真正可复用的是环境状态机、确定性事件源和跨 checkpoint 的终态验证。
 
 ## 工具契约
 
@@ -68,6 +96,12 @@ cost
 
 工具 schema 变更会造成 environment drift，应与模型和轨迹共同版本化。
 
+### White-box harness
+
+Agent 的可观察行为由模型与 scaffold 共同生成。若训练系统能够组合 system prompt、工具集合、context management、skills、memory 和 subagent，就可以在 rollout 时显式采样 harness，而不是把某个前端固化成唯一环境。K3 报告称其同一训练框架可实例化 Kimi Code、Claude Code、Codex、OpenClaw 与 Hermes 一类界面；这支持的结论是“harness 应成为版本化实验变量”，不代表这些实现拥有相同协议或能力。
+
+每条轨迹除模型 revision 外，还要记录 harness component digest。训练集可在若干合理 scaffold 间变化，held-out 则保留未见组合，以测量模型是否依赖某个 prompt、tool alias 或压缩器的偶然特征。
+
 ## Verifier
 
 强 verifier 直接判断目标状态，如单元测试、形式证明、棋局结果或数据库约束。弱 verifier 依赖模型评分或启发式。
@@ -81,6 +115,18 @@ Verifier 至少要测试：
 - **coverage**：是否只测到表面格式。
 
 若 agent 可以修改测试文件，奖励函数就必须从受保护环境运行；否则“全部通过”可能只是 reward hacking。
+
+### Agent Evaluation Task
+
+可验证 agent 任务可以抽象为五元组
+
+$$
+\mathcal E=(s_0,g,\mathcal A,B,V),
+$$
+
+其中 $s_0$ 是初始状态，$g$ 是受约束目标，$\mathcal A$ 是工具动作空间，$B$ 是 token/步骤/提交预算，$V$ 是独立 verifier。关键不是提供一条参考轨迹，而是让 agent 在预算内自行探索，再由 $V$ 读取终态。K3 报告将其称为 Agent Evaluation Task（AET），并强调 verifier 与 agent 隔离、公开测试与隐藏测试并存、限制提交次数；这些约束同样适用于训练环境。
+
+Kernel 生成是强 verifier 的一个代表：任务可跨 CUDA、Triton、CuTe 等 DSL 和 BF16/FP8/FP4 dtype，先以数值阈值判定正确，再按相对专家实现或 roofline 给效率奖励。必须防止 agent 通过复用输入缓存、降低精度或操纵计时绕过目标；CUDA Graph replay、随机输入与隐藏 shape 应在 agent 权限之外。
 
 ## 数据筛选
 
@@ -128,3 +174,5 @@ token/action mask、旧策略概率和终止字段见[轨迹与策略契约](tra
 - [AgentBench: Evaluating LLMs as Agents](https://arxiv.org/abs/2308.03688)
 - [SWE-bench: Can Language Models Resolve Real-World GitHub Issues?](https://arxiv.org/abs/2310.06770)
 - [Datasheets for Datasets](https://arxiv.org/abs/1803.09010)
+- [AgentENV](https://github.com/kvcache-ai/AgentENV)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

@@ -93,6 +93,20 @@ else:
 
 只训练成功调用会让模型不熟悉超时、权限不足和部分成功。工具 schema 版本应随样本保存。
 
+### 可扩展的 Agent 序列接口
+
+当一条样本同时包含对话、推理状态、工具定义、调用和返回值时，chat template 已经是一项协议设计，而不只是字符串拼接。一个可演进的接口至少要分开：
+
+- 对整段会话长期生效的 global options；
+- 在历史消息之后临时注入的 one-shot options；
+- assistant 的思考、面向用户响应与工具调用 channel；
+- 调用序号、工具名、参数类型和对应返回值；
+- 未知字段的前向兼容与 schema revision。
+
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)中的 XTML 是这种 typed markup 的一个实例：全局选项位于消息历史之前，一次性选项在历史之后；工具调用用 index 对齐结果，并允许显式类型参数。可迁移的重点是“结构和作用域由 parser 验证”，而不是复制某组标签。训练序列化器、rollout parser 与服务端必须共享同一 golden corpus，逐 token 对齐 role、channel、escaping、EOS 和 loss mask。更完整的接口演进见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
+内部思考是否保存、是否进入监督、是否在下一轮可见、是否对最终用户返回，是四个独立开关。任何实现都应按产品和安全边界显式定义，而不能因为序列里存在一个 reasoning channel 就默认公开或监督全部中间文本。
+
 ## Packing 与权重
 
 短样本 packing 能提高有效 token 比，但不能让独立对话跨边界 attention。若每个 batch 先按 token 求均值，长回答贡献更多梯度；若先按样本求均值，短回答权重提高。两者都合理，但必须与数据混合目标一致。
@@ -118,6 +132,8 @@ $$
 - 训练节省是否转化为服务简化。
 
 具体方法见[参数高效训练与压缩](peft-compression.md)。
+
+若目标部署使用低精度 expert 权重或 activation，量化契约还可能从 SFT 延续到在线 RL。这样做可减少“训练高精度、rollout 低精度”造成的策略分布偏差，但也把 scale、格式和 kernel 版本变成训练数据的一部分；K3 报告的 MXFP4 expert weight、MXFP8 expert input 路线是一项具体实例。通用 QAT 边界见[量化](../inference/quantization.md)，不能仅凭存储位宽推断质量或速度。
 
 ## 学习率与训练长度
 
@@ -179,3 +195,4 @@ $$
 - [Finetuned Language Models Are Zero-Shot Learners](https://arxiv.org/abs/2109.01652)
 - [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)
 - [Self-Instruct: Aligning Language Models with Self-Generated Instructions](https://arxiv.org/abs/2212.10560)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

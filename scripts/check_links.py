@@ -23,6 +23,28 @@ REQUIRED_DEEP_LINKS = {
     "/reinforcement-learning/trust-region-ppo/": {"trpo"},
     "/reinforcement-learning/critic-free-baselines/": {"rloo"},
     "/landscape/works/sao-compactionrl/": {"sao", "compactionrl"},
+    "/landscape/works/kimi-k3/": {
+        "kda-recurrence",
+        "kda-chunkwise",
+        "attention-residuals",
+        "quantile-balancing",
+        "mopd",
+        "flashkda-kcp",
+        "appendices",
+    },
+    "/landscape/works/kimi-linear-flashkda/": {
+        "kcp-affine-scan",
+    },
+    "/landscape/works/attention-residuals/": {
+        "attnres-online-merge",
+    },
+    "/landscape/works/latentmoe-quantile-balancing/": {
+        "stable-latent-moe-reference",
+        "qb-coordinate-reference",
+    },
+    "/landscape/works/moonep/": {
+        "exact-rank-plan",
+    },
     "/reinforcement-learning/grpo/": {"group-std", "dynamic-sampling"},
     "/landscape/works/dapo/": {
         "clip-higher",

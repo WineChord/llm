@@ -52,6 +52,21 @@
 - Peng et al., [RWKV: Reinventing RNNs for the Transformer Era](https://arxiv.org/abs/2305.13048)
 - Sun et al., [Retentive Network](https://arxiv.org/abs/2307.08621)
 
+## Kimi 家族与 K3
+
+[Kimi 技术谱系](landscape/kimi-timeline.md)区分各节点的报告、权重、代码、API、许可证与发布日期；[K3 工作深读](landscape/works/kimi-k3.md)连接结构、训练、系统和评测；[150 项引用图谱](landscape/kimi-k3-reference-map.md)进一步标明每项文献是直接来源、前身、并行工作、benchmark 还是比较对象。KDA、depth mixing、latent routing 与 expert parallel 分别见[Kimi Linear 与 FlashKDA](landscape/works/kimi-linear-flashkda.md)、[Attention Residuals](landscape/works/attention-residuals.md)、[Stable LatentMoE 与 Quantile Balancing](landscape/works/latentmoe-quantile-balancing.md)和[MoonEP](landscape/works/moonep.md)；视觉与音频分支另见[Kimi 家族的多模态路线](multimodal/kimi.md)。
+
+- Kimi Team, [Kimi k1.5: Scaling Reinforcement Learning with LLMs](https://arxiv.org/abs/2501.12599)
+- Kimi Team, [Kimi-VL Technical Report](https://arxiv.org/abs/2504.07491)
+- Kimi Team, [Kimi K2: Open Agentic Intelligence](https://arxiv.org/abs/2507.20534)
+- Kimi Team, [Kimi Linear: An Expressive, Efficient Attention Architecture](https://arxiv.org/abs/2510.26692)
+- Kimi Team, [Kimi K2.5: Visual Agentic Intelligence](https://arxiv.org/abs/2602.02276)
+- Kimi Team, [Attention Residuals](https://arxiv.org/abs/2603.15031)
+- Kimi Team, [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- Moonshot AI, [Kimi K3 model card and weights](https://huggingface.co/moonshotai/Kimi-K3)
+- Moonshot AI, [FlashKDA](https://github.com/MoonshotAI/FlashKDA)
+- Moonshot AI, [MoonEP](https://github.com/MoonshotAI/MoonEP)
+
 ## 多模态与生成
 
 对应[多模态](multimodal/index.md)、[统一理解与生成](multimodal/unified-understanding-generation.md)、[文档与 GUI](multimodal/document-gui-grounding.md)、[音频语言模型](multimodal/audio-language-models.md)和[视频与世界模型](multimodal/video-world-models.md)。
@@ -104,7 +119,7 @@
 - Sutton and Barto, [Reinforcement Learning: An Introduction, Second Edition](https://mitpress.mit.edu/9780262039246/reinforcement-learning/)
 - Williams, [Simple Statistical Gradient-Following Algorithms for Connectionist Reinforcement Learning](https://doi.org/10.1007/BF00992696)
 - Watkins and Dayan, [Q-learning](https://doi.org/10.1007/BF00992698)
-- Sutton et al., [Policy Gradient Methods for Reinforcement Learning with Function Approximation](https://proceedings.neurips.cc/paper/2000/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html)
+- Sutton et al., [Policy Gradient Methods for Reinforcement Learning with Function Approximation](https://proceedings.neurips.cc/paper_files/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html)
 - Mnih et al., [Human-level control through deep reinforcement learning](https://www.nature.com/articles/nature14236)
 - Schulman et al., [Trust Region Policy Optimization](https://proceedings.mlr.press/v37/schulman15.html)
 - Schulman et al., [High-Dimensional Continuous Control Using Generalized Advantage Estimation](https://arxiv.org/abs/1506.02438)

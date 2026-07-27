@@ -27,6 +27,20 @@
 
 [从可下载权重到可研究系统](lineages/open-model-ecosystem.md)则补上另一条历史：公开 API、权重、代码、数据、中间 checkpoint 与许可证逐层扩大了研究者真正能够检验的对象。
 
+### 当一条模型家族汇合多条技术路线
+
+[Kimi 技术谱系](kimi-timeline.md)没有把同名模型排成发布列表，而是沿长推理、稀疏宽度、线性状态、深度寻址、原生视觉和 agent system 六条支线解释 K1.5、Kimi-VL、K2、Kimi Linear、K2.5、Attention Residuals 与 K3 怎样前后衔接。页面同时区分 paper、weights、code、API、license 与 release date，避免把“公开报告”“开放权重”和“完整系统可复现”写成同一件事。
+
+K3 是观察这种汇流的一个切面：
+
+- [Kimi Linear 与 FlashKDA](works/kimi-linear-flashkda.md)沿 fast weights、DeltaNet、KDA、chunkwise kernel 与 KCP 追踪有限状态如何落到 GPU；
+- [Attention Residuals](works/attention-residuals.md)从 PreNorm dilution 推到 Full/Block AttnRes、online softmax 与 pipeline cache；
+- [Stable LatentMoE 与 Quantile Balancing](works/latentmoe-quantile-balancing.md)区分原始 LatentMoE 与 K3 的数值、激活和路由增量；
+- [K3 工作深读](works/kimi-k3.md)把模型结构、预训练、长上下文、post-training、系统和评测还原成相互制约的闭环；
+- [MoonEP](works/moonep.md)解释动态冗余 expert 如何在不改变路由语义时固定 rank 负载；
+- [K3 引用图谱](kimi-k3-reference-map.md)逐项解释技术报告 150 项文献在论证链中的角色，并区分直接来源、技术前身、并行工作、benchmark 与比较基线；
+- [Kimi 多模态分支](../multimodal/kimi.md)单独梳理 Kimi-VL、K2.5、MoonViT-V2 与 Kimi-Audio，避免把家族经验误写成同一 checkpoint 的能力。
+
 ### 当稠密 attention 不再是唯一答案
 
 [容量与激活计算怎样分开](lineages/conditional-compute.md)追踪 sparse gating 如何把参数容量与每 token 计算部分解耦，又把瓶颈转移到负载、overflow 与 all-to-all。[从显式寻址到有限状态](lineages/linear-time-sequence-models.md)区分 kernelized attention、fast weights、S4 与 selective SSM，解释它们在哪些代数结构上汇合、又在哪里保持不同。

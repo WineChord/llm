@@ -30,3 +30,5 @@
 ## 索引
 
 [术语表](glossary.md) · [精选文献](references.md) · [证据与研究方法](guide/evidence.md) · [更新日志](changelog.md)
+
+近期可从 [Kimi K3：从三条信息流到完整系统](landscape/works/kimi-k3.md)进入，沿架构、预训练、后训练、Agentic RL、3T 训练、百万 token 推理与评测协议逐层展开；[Kimi 演化](landscape/kimi-timeline.md)和[K3 引用图谱](landscape/kimi-k3-reference-map.md)分别补足时间脉络与 150 项一手来源。

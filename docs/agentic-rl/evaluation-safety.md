@@ -40,6 +40,23 @@ $$
 
 否则系统改进可能被误写成 checkpoint 改进。模型、提示、工具 schema、环境镜像和 verifier 都要固定版本。
 
+对 white-box harness，还应逐组件注册 system prompt、context management、skills、memory、subagent 与工具实现，并提前声明选择规则。若同一模型试过多个 scaffold 后只报告最佳结果，结果是 model–harness search 的上界，不是固定系统的无偏估计。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露了一套可组合多种 coding/agent scaffold 的训练与评测框架；其通用审计方式与具体结果见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
+## 终态任务与隐藏验证
+
+Agent Evaluation Task（AET）不向模型提供标准动作路径，只给初始环境、受约束目标、工具集合和预算，最终由独立 verifier 读取环境终态。评测协议至少要包含：
+
+```text
+initial state and immutable task ID
+allowed actions, permissions and budget
+public feedback and hidden verifier
+submission limit and retry semantics
+terminal state, side effects and cost
+verifier isolation and audit revision
+```
+
+公开测试帮助 agent 调试，隐藏测试和提交上限限制对 verifier 的穷举适配。Kernel 任务还需用随机 shape、独立计时、数值阈值和 CUDA Graph replay 检测输入缓存、降精度或计时投机；助理环境则需同时检查邮件、知识库、消息等多个应用终态。只看 agent 自报“完成”不构成通过。
+
 ## Reward Hacking
 
 常见模式包括：
@@ -110,9 +127,13 @@ $$
 
 通用可靠性见[可靠性与安全](../evaluation/reliability-safety.md)，环境设计见[数据与环境](data-environments.md)。
 
+Cyber agent 评测尤其要分开 exploit puzzle、多步网络环境、真实软件候选发现和部署 guard。[UK AISI/CAISI 对 Kimi K3 的初步评估](https://www.aisi.gov.uk/blog/preliminary-assessment-of-kimi-k3s-cyber-capabilities)显示同一模型在这些层级上的结果并不一致：ExploitBench 为 $32\%$，ACE 为 $0/41$，10 个更现实任务中完成 1 个。该结论只适用于评估时的模型入口、harness、预算和日期；它既不能由较强 puzzle 表现推出真实环境全面成功，也不能把 guard 未阻断动作等同于 exploit 已完成。更完整的 threat-model 记录见[安全评测](../evaluation/safety-evaluation.md#cyber-evidence-card)。
+
 ## Reference {#reference}
 
 - [Concrete Problems in AI Safety](https://arxiv.org/abs/1606.06565)
 - [ToolEmu: Identifying the Risks of LM Agents with an LM-Emulated Sandbox](https://arxiv.org/abs/2309.15817)
 - [AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents](https://arxiv.org/abs/2406.13352)
 - [NIST AI 600-1: Generative Artificial Intelligence Profile](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence)
+- [UK AISI/CAISI Preliminary Assessment of Kimi K3 Cyber Capabilities](https://www.aisi.gov.uk/blog/preliminary-assessment-of-kimi-k3s-cyber-capabilities)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

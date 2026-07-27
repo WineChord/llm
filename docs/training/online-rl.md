@@ -60,6 +60,17 @@ prompt/environment snapshot
 
 同步系统可以让 rollout、target 构造与 learner step 严格成批；异步系统则以更高设备利用率换取 policy lag、队列选择偏差和更复杂的版本治理。无论使用哪种算法，都应同时核算生成 token、保留样本、训练 token、wall-clock 与最终能力，而不只比较 learner steps。
 
+### Partial rollout
+
+长轨迹的尾延迟会让同步 batch 长时间等待。部分 rollout 可以对 $N$ 个 prompt 各计划 $K$ 条轨迹，在累计完成 $\lambda NK$ 条后开始 learner step；尚未完成的轨迹进入 `paused`，下一轮从已保存状态继续。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)给出了这一机制的工程实例，完整上下文见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
+`paused` 不是 `truncated`：前者仍属于同一 episode，后者由预算或协议结束。可恢复记录至少包含 environment snapshot、KV/sampler 状态、工具调用游标、behavior revision、已产生 token 的 log-prob 与当前 reward 状态。它缩短 barrier，却会引入两类新偏差：
+
+- 先完成轨迹更早进入训练，数据分布与长度、环境速度相关；
+- 暂停轨迹恢复时，current policy 已更新，旧 token 与新 token 可能来自不同版本。
+
+因此 $\lambda$、pause age、完成/暂停长度分布和版本跨度都应入账；若一个 episode 允许跨版本继续，必须逐 token 保存 behavior identity，并采用明确的 off-policy 校正或丢弃规则。
+
 ## Reward 与 verifier
 
 可验证任务通常把最终答案、测试或环境状态转成 reward。必须区分：
@@ -76,6 +87,20 @@ infrastructure error
 infra error 不应自动记为零 reward；否则策略会学习规避某些机器或工具状态。reward 还应分解为任务、格式、长度、成本和安全项，并保留未加权原值。
 
 reward model 的校准与不可辨识性见[奖励建模](reward-modeling.md)，推理任务中的 verifier 设计见[推理后训练](reasoning-posttraining.md)。
+
+### Effort 与长度约束
+
+固定最大 token 只给出硬上限，不能表达“这道题应花多少推理成本”。可为 prompt $x$ 建立基准预算 $b_0(x)$，再按 effort condition 和课程系数 $\tau$ 形成阈值；例如
+
+$$
+r_{\mathrm{budget}}(x,y)=
+\begin{cases}
+-1,&T(y)>\tau b_0(x),\\
+0,&\text{otherwise}.
+\end{cases}
+$$
+
+一般推理任务可只计 reasoning token；agent 任务则还要声明是否计入工具参数、工具结果和最终响应。预算惩罚必须与正确性 reward 分开报告，否则模型可能通过短而错误的回答“优化成本”。K3 报告还采用 generative reward model 的分步协议：先阅读候选、构造任务相关 rubric，再评分并保存 scorepad，同时用相对基准长度限制无效冗长。可迁移的是让评分依据和长度分量可审计；模型裁判本身仍需独立校准与隐藏 verifier。
 
 ## 正确性与失效
 
@@ -113,3 +138,4 @@ reward model 的校准与不可辨识性见[奖励建模](reward-modeling.md)，
 - [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)
 - [DeepSeekMath](https://arxiv.org/abs/2402.03300)
 - [IMPALA: Scalable Distributed Deep-RL with Importance Weighted Actor-Learner Architectures](https://arxiv.org/abs/1802.01561)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

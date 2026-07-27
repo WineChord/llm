@@ -147,6 +147,19 @@ $$
 
 [DeepEP](https://github.com/deepseek-ai/DeepEP)提供了面向 MoE dispatch / combine 的官方实现，并区分训练吞吐与低延迟推理路径。它依赖具体互联、buffer 和通信语义，应按版本核对支持范围。
 
+### 精确 rank 平衡与冗余 expert
+
+仅让全局 expert token 数接近均匀，仍可能把热门 expert 的通信和 GEMM 集中到少数 rank。可以为部分 expert 放置动态冗余副本，再在不改变 top-$k$ expert identity 的前提下，把路由记录分配给不同 replica，使每个 rank 接收恰好相同数量的 token。
+
+[MoonEP 深读](../landscape/works/moonep.md)从分配约束、online GPU plan、zero-copy/static buffer 和梯度归并还原了这条路线；其[官方仓库](https://github.com/MoonshotAI/MoonEP)提供当前实现入口。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)描述的算法为每个 rank 限制至多约 $E/R$ 个冗余 expert，并求一个紧近似的 replica allocation；数据面再使用 zero-copy buffer、静态通信 shape 与 workload-aware GEMM。这里必须分清：
+
+- top-$k$ 的 global expert 选择属于模型语义；
+- 在同权重 replica 间选 owner 属于系统调度；
+- replica weight 版本、optimizer update 和 checkpoint 映射必须一致；
+- “每 rank token 数相等”不保证 NIC 路径、expert shape 和 GEMM 时间相等。
+
+因此验证既要做 token 守恒和 logits 对齐，也要报告每 rank dispatch bytes、GEMM tile 数、尾延迟与副本同步开销。K3 中的整体并行布局见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
 ## Grouped 与 block-sparse GEMM
 
 每个 expert 收到的 token 数 $M_e$ 不同。逐 expert 启动 GEMM 会产生大量小 kernel；padding 到统一 capacity 又浪费计算。
@@ -257,6 +270,8 @@ MoE 的理论激活 FLOPs 较低，不代表相同质量、相同延迟或相同
 ## Reference {#reference}
 
 - [DeepEP](https://github.com/deepseek-ai/DeepEP)
+- [MoonEP](https://github.com/MoonshotAI/MoonEP)
 - [MegaBlocks](https://arxiv.org/abs/2211.15841)
 - [DeepSeek-V3](https://arxiv.org/abs/2412.19437)
 - [Megatron Core MoE 指南](https://docs.nvidia.com/megatron-core/developer-guide/latest/user-guide/features/moe.html)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

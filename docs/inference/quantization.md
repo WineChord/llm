@@ -150,6 +150,24 @@ FP8 不是一种单一格式。E4M3 与 E5M2 在精度和动态范围间取舍�
 
 它们属于活跃演进的软件与硬件接口。页面中的 bit、tile、scale 和支持矩阵必须随明确的软件版本与设备更新，不能把某一代 GPU 的结果外推到其他平台。
 
+### 从 SFT 延续到 RL 的 QAT
+
+部署量化若只在训练结束后转换，rollout policy 看到的分布可能与 learner 计算梯度时不同。Quantization-Aware Training（QAT）可以从 SFT 开始模拟或直接执行目标低精度路径，并在在线 RL 中继续保持相同 format，使 rollout、old log-prob 重算与 learner 尽量处在同一数值语义下。
+
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)给出一个 MoE 实例：routed expert 权重采用 MXFP4、expert 输入采用 MXFP8，非 expert 路径保持较高精度，QAT 从 SFT 延续到 RL，rollout 与 trainer 使用同一方案。通用设计要点是按参数族声明格式，而不是把模型统称为“FP4”：
+
+```text
+tensor family and layer scope
+storage / compute / accumulator formats
+block and scale layout
+fake-quant or native low-bit operator
+forward, backward and optimizer behavior
+rollout/trainer kernel revision
+high-precision exceptions and fallback counters
+```
+
+低精度路径仍可能因硬件、kernel 或 graph shape 回退。若 rollout 与 learner 的实际 fallback 比例不同，就应把差异视为 behavior-policy mismatch，而不是普通数值噪声。K3 的完整后训练与部署组合见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
 ## KV Cache 量化
 
 KV 量化降低长上下文的容量和 decode 读取量，但误差会在每一层、每个后续 token 中被反复使用。key 与 value 的统计性质可能不同：
@@ -260,3 +278,5 @@ expected kernel and supported hardware
 - [SmoothQuant](https://arxiv.org/abs/2211.10438)
 - [NVIDIA Transformer Engine 的 FP8 说明](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/examples/fp8_primer.html)
 - [MXFP8](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/features/low_precision_training/mxfp8/mxfp8.html)
+- [NVFP4](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/features/low_precision_training/nvfp4/nvfp4.html)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

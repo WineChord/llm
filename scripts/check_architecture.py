@@ -163,6 +163,8 @@ REQUIRED_CLUSTERS = {
         "landscape/lineages/inference-serving.md",
         "landscape/lineages/retrieval-agents.md",
         "landscape/lineages/evaluation.md",
+        "landscape/kimi-timeline.md",
+        "landscape/kimi-k3-reference-map.md",
     },
     "deep-reads": {
         "landscape/works/lstm.md",
@@ -180,6 +182,11 @@ REQUIRED_CLUSTERS = {
         "landscape/works/dapo.md",
         "landscape/works/vapo.md",
         "landscape/works/sao-compactionrl.md",
+        "landscape/works/kimi-linear-flashkda.md",
+        "landscape/works/attention-residuals.md",
+        "landscape/works/latentmoe-quantile-balancing.md",
+        "landscape/works/kimi-k3.md",
+        "landscape/works/moonep.md",
         "landscape/works/megatron-zero.md",
         "landscape/works/flashattention.md",
         "landscape/works/vllm-pagedattention.md",
@@ -219,6 +226,47 @@ REQUIRED_EDGES = {
     "landscape/works/vapo.md": {
         "reinforcement-learning/advantage-estimation-gae.md",
         "practice/llm-policy-optimization.md",
+    },
+    "landscape/works/kimi-k3.md": {
+        "architecture/state-space-linear-attention.md",
+        "architecture/attention-position.md",
+        "architecture/moe.md",
+        "architecture/long-context.md",
+        "training/distillation.md",
+        "agentic-rl/training-systems.md",
+        "systems/model-parallelism.md",
+        "inference/cache-reuse.md",
+        "inference/speculative-decoding.md",
+        "evaluation/safety-evaluation.md",
+        "landscape/works/kimi-linear-flashkda.md",
+        "landscape/works/attention-residuals.md",
+        "landscape/works/latentmoe-quantile-balancing.md",
+        "landscape/works/moonep.md",
+    },
+    "landscape/works/kimi-linear-flashkda.md": {
+        "landscape/works/kimi-k3.md",
+        "architecture/state-space-linear-attention.md",
+    },
+    "landscape/works/attention-residuals.md": {
+        "landscape/works/kimi-k3.md",
+        "architecture/attention-position.md",
+    },
+    "landscape/works/latentmoe-quantile-balancing.md": {
+        "landscape/works/kimi-k3.md",
+        "architecture/moe.md",
+    },
+    "landscape/works/moonep.md": {
+        "landscape/works/kimi-k3.md",
+        "systems/moe-systems.md",
+    },
+    "landscape/kimi-timeline.md": {
+        "landscape/works/kimi-k3.md",
+        "landscape/kimi-k3-reference-map.md",
+        "multimodal/kimi.md",
+    },
+    "multimodal/kimi.md": {
+        "landscape/works/kimi-k3.md",
+        "landscape/kimi-timeline.md",
     },
 }
 

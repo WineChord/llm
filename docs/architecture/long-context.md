@@ -45,6 +45,53 @@ $$
 
 只在短样本上重复 padding 到长长度，不会产生长距离监督。把多条无关文档拼接成长序列也可能让模型学会忽略远处内容。
 
+## NoPE、递推与渐进长度课程
+
+RoPE 扩长需要处理训练外相位；另一条路线是不在 attention 的 $Q,K$ 上加入显式位置变换，而让因果
+计算本身携带顺序。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+给出一个混合实例：KDA 的 ShortConv、逐 token decay 与 recurrent update 对排列顺序敏感，周期性的
+MLA 层则使用 NoPE 做全局内容寻址。这里的“无显式位置编码”不等于 permutation invariant：
+交换两个 token 会改变 KDA 状态到达后续位置时的内容。
+
+这条分工也说明 NoPE 不能单独评价。K3 的 position signal 来自
+[KDA recurrence](state-space-linear-attention.md#kda-recurrence)，而不是 NoPE-MLA 自己；把后者移到
+纯全注意力网络，或改变 KDA/MLA 的 3:1 插层比例，都是另一个实验。作者报告从短窗口扩到 1M 时无需
+RoPE rescaling 或 interpolation；这证明该 checkpoint 的位置参数不需改写，不证明训练外任意长度都
+有同等检索、推理与生成质量。
+
+### 8K → 64K → 256K → 1M
+
+K3 把昂贵的长序列计算集中到后期，公开了四阶段窗口课程：
+
+| 阶段 | 窗口 | 主要作用 | 仍需核对 |
+| --- | ---: | --- | --- |
+| Pre-training I | 8K | 先学习主体语言、视觉与代码分布 | 短序列是否形成局部捷径 |
+| Pre-training II | 64K | 在主体预训练中引入更长依赖 | 长样本比例与 packing |
+| Cooldown I | 256K | 用较小训练预算适应长状态与全局寻址 | batch/token 预算变化 |
+| Cooldown II | 1M | 在目标窗口上直接训练 | 并行、数值稳定与有效利用 |
+
+报告没有公开每一阶段的完整 token allocation 与切换 step，复现时不能用表格补造这些缺失参数。
+“渐进”也不是窗口数字自动递增：每次扩长都会改变每 batch 的序列数、梯度噪声、activation memory、
+并行通信和长短样本混合，需要同时追踪 loss spike、状态范数、远程证据命中率和实际 step time。
+
+### 长数据必须提供远程监督
+
+自然长文档和视频并不天然是高质量长上下文训练样本。K3 的公开流程包含 exact/fuzzy dedup、视频帧
+perceptual hashing、规则与 classifier 质量过滤、文件结构校验，并对稀缺的真实长且连贯样本上采样。
+这些步骤分别处理重复、损坏和分布占比，不能互相替代。
+
+仅拼接仍可能让每个子任务局部可解。报告还构造经过排列与串接的多模态文档和子任务，让解答必须读取
+散布在整段上下文中的证据。设计这类数据时至少保存 source boundary、证据 span、原始顺序与变换记录，
+并做三个反事实：
+
+1. 删除远端证据后答案应不可恢复；
+2. 只保留局部邻域不能凭模板猜中；
+3. 调换冲突证据的时间或来源，答案应随之改变。
+
+这比“样本 token 数达到 1M”更接近有效监督。它仍需配合下文的 retrieval、reasoning、generation
+矩阵，分别证明能找到、能组合、能长期保持一致。K3 的架构、训练与系统如何共同承载这条课程，见
+[Kimi K3](../landscape/works/kimi-k3.md)。
+
 ## Attention sinks 与滑动窗口
 
 局部滑动窗口把每个 token 的可见范围限制为 $w$，计算和缓存可接近 $O(Tw)$，但远距离信息必须通过层间传播、全局 token 或外部记忆保留。某些流式 attention 在丢弃早期 token 后明显退化，保留少量初始 sink token 可以稳定分布；这是一种缓存策略，不等于模型能完整记住被淘汰内容。
@@ -100,3 +147,5 @@ known failure regions
 - [RoFormer: Enhanced Transformer with Rotary Position Embedding](https://arxiv.org/abs/2104.09864)
 - [YaRN: Efficient Context Window Extension of Large Language Models](https://arxiv.org/abs/2309.00071)
 - [Ring Attention](https://arxiv.org/abs/2310.01889)
+- [Kimi Linear: An Expressive, Efficient Attention Architecture](https://arxiv.org/abs/2510.26692)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

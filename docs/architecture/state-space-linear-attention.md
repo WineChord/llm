@@ -291,17 +291,121 @@ $$
 | 系统 | prefill、decode、峰值内存、state bytes、吞吐 |
 | 质量 | 相同数据、token、激活参数与计算预算比较 |
 
-## 前沿观察：Kimi Linear
+## KDA：逐通道遗忘与误差写入
 
-[Kimi Linear](https://arxiv.org/abs/2510.26692)提出 Kimi Delta Attention，并公开了[官方实现](https://github.com/MoonshotAI/Kimi-Linear)。论文报告在其控制配方中以 KDA 与 MLA 混合，获得长上下文缓存和吞吐收益。
+[Kimi Linear](https://arxiv.org/abs/2510.26692)把 channel-wise decay 与 delta rule 合成 Kimi Delta
+Attention（KDA）。对单个 head，先让旧状态按 key channel 衰减，再用当前 key 对旧预测作误差写入：
 
-适合确认的事实是：论文、kernel、模型与实现接口已经公开，可直接研究 delta rule、chunkwise 算法和混合层。尚不能由此推出：
+$$
+\bar S_{t-1}=\operatorname{Diag}(\alpha_t)S_{t-1},
+$$
 
-- 任意数据与规模下线性注意力都优于 full attention；
-- 论文中的最长上下文质量可外推到其他 checkpoint；
-- 理论或单套硬件结果等于所有 runtime 的端到端收益。
+$$
+S_t
+=
+\bar S_{t-1}
++\beta_tk_t
+\left(v_t-k_t^\top\bar S_{t-1}\right)^\top,
+\qquad
+\tilde o_t=S_t^\top q_t.
+$$
 
-因此该路线应保留在观察层，等独立复现、不同规模和多种服务栈证据积累后再调整定位。
+其中 $\alpha_t\in(0,1)^{d_k}$ 是逐通道 retention，$\beta_t\in(0,1)$ 是写入强度。展开第二式可得
+
+$$
+S_t
+=
+\left(I-\beta_tk_tk_t^\top\right)
+\operatorname{Diag}(\alpha_t)S_{t-1}
++\beta_tk_tv_t^\top.
+$$
+
+这条顺序不能交换：先衰减旧状态，再询问“当前 key 在衰减后的状态中已经预测出什么”。KDA 的
+$q,k$ 经过 ShortConv、Swish 和 L2 normalization，$v$ 经过 ShortConv 与 Swish；卷积给局部模式，
+有限状态负责远程传播。完整投影与 chunkwise UT transform 见
+[Kimi Linear 论文](https://arxiv.org/abs/2510.26692)及其
+[官方实现](https://github.com/MoonshotAI/Kimi-Linear)；从 fast weights、delta rule 到 K3
+有界 decay、FlashKDA 与 KCP 的完整算法—系统链，见
+[Kimi Linear、KDA 与 FlashKDA](../landscape/works/kimi-linear-flashkda.md)。
+
+### 有界 log-decay 与 chunk kernel
+
+chunkwise KDA 在 chunk 间递推、chunk 内并行。其矩阵化会用累计 retention 的倒数缩放 key；若
+$\log\alpha_t$ 无下界，短 tile 内也可能出现极端倒数，迫使 diagonal tile 回到逐位置计算。
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)把每个
+head 的 log-decay 改为
+
+$$
+g_t^h
+=
+g_{\min}\operatorname{Sigmoid}\left(e^{A_h}z_t^h\right)
+\in(g_{\min},0)^{d_k},
+\qquad
+\alpha_t^h=e^{g_t^h},
+$$
+
+并取 $g_{\min}=-5$。于是 16-token tile 的累计 log-decay 落在 $(-80,0)$，倒数严格小于
+$e^{80}$，仍在 BF16 动态范围内；作者据此让 causal diagonal 与 off-diagonal tile 都走 dense
+Tensor Core GEMM。这个界保证的是中间缩放不因该项溢出，并不自动保证长递推的误差、状态范数或端到端
+kernel 都稳定。
+
+K3 还把 recurrent output 做 head-wise RMSNorm 后施加 full-rank、逐通道门：
+
+$$
+y_t
+=
+W_o\left[
+\operatorname{Sigmoid}(W_gx_t)
+\odot
+\operatorname{RMSNorm}(\tilde o_t)
+\right].
+$$
+
+门控制“本 token 从有限状态读出的哪些通道写回 residual stream”，与控制写入强度的
+$\beta_t$ 不是同一个门。K3 的主干按 **3 层 KDA + 1 层 Gated MLA** 重复，并让最后一层仍为
+全局注意力；完整组合见[Kimi K3](../landscape/works/kimi-k3.md)。
+
+### KDA recurrent reference {#kda-recurrence}
+
+下面直接实现上述逐 token 真值。两段执行携带中间状态，应与整段执行一致；有界映射的最小 retention
+也由断言锁定。
+
+```python
+import math
+import torch
+
+def bounded_decay(logit, log_scale, lower=-5.):
+    return (lower * torch.sigmoid(log_scale.exp() * logit)).exp()
+
+def kda_recurrence(keys, values, queries, beta, alpha, state=None):
+    assert keys.shape == queries.shape and keys.size(0) == values.size(0)
+    assert alpha.shape == keys.shape and beta.shape == (keys.size(0),)
+    state = values.new_zeros(keys.size(1), values.size(1)) if state is None else state
+    output = []
+    for key, value, query, rate, decay in zip(keys, values, queries, beta, alpha):
+        state = decay[:, None] * state
+        state = state + rate * torch.outer(key, value - key @ state)
+        output.append(state.T @ query)
+    return torch.stack(output), state
+
+torch.manual_seed(0)
+keys = torch.nn.functional.normalize(torch.randn(9, 4), dim=-1)
+values, queries = torch.randn(9, 3), torch.randn(9, 4)
+beta, alpha = torch.sigmoid(torch.randn(9)), bounded_decay(torch.randn(9, 4), torch.zeros(4))
+whole, final = kda_recurrence(keys, values, queries, beta, alpha)
+left, middle = kda_recurrence(keys[:4], values[:4], queries[:4], beta[:4], alpha[:4])
+right, chunked = kda_recurrence(keys[4:], values[4:], queries[4:], beta[4:], alpha[4:], middle)
+torch.testing.assert_close(torch.cat((left, right)), whole)
+torch.testing.assert_close(chunked, final)
+assert alpha.min() > math.exp(-5) and alpha.max() < 1
+```
+
+这段代码没有 ShortConv、head/batch 轴、UT transform 或 fused gate，作用是固定 decay-before-delta、
+current-token read 和 chunk state 语义。生产实现还要分别校验 recurrent、chunkwise、prefill 与 decode
+路径，并测量状态 dtype、tile size 和累计误差。
+
+公开证据足以确认算法、实现接口与 K3 中的具体组合；还不能据此推出任意数据、规模和 runtime 上线性
+注意力都优于 full attention。应把关联回忆、长文推理和端到端吞吐继续作为独立验证轴。
 
 最小 selective scan、delta rule 与路径等价实验见[序列模型手撕实现](../practice/sequence-models.md)，与精确注意力的缓存比较见[KV Cache](../inference/kv-cache.md)。
 
@@ -315,3 +419,6 @@ $$
 - [RWKV: Reinventing RNNs for the Transformer Era](https://arxiv.org/abs/2305.13048)
 - [Hyena](https://arxiv.org/abs/2302.10866)
 - [Griffin](https://arxiv.org/abs/2402.19427)
+- [Kimi Linear: An Expressive, Efficient Attention Architecture](https://arxiv.org/abs/2510.26692)
+- [MoonshotAI/Kimi-Linear](https://github.com/MoonshotAI/Kimi-Linear)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

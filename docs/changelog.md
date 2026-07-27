@@ -2,6 +2,10 @@
 
 ## 2026-07-28
 
+- 新增 [Kimi K3 工作深读](landscape/works/kimi-k3.md)：贯通 KDA / Gated MLA、Attention Residuals、Stable LatentMoE、原生视觉、Per-Head Muon、渐进长上下文、九路 RL 与 MOPD、3T 训练、百万 token Agentic RL、混合缓存、公开与内部评测、许可证和未公开边界；报告中的图、表、28 个编号公式及附录 A–F 均进入可检查的阅读索引。
+- 将 [Kimi Linear 与 FlashKDA](landscape/works/kimi-linear-flashkda.md)、[Attention Residuals](landscape/works/attention-residuals.md)、[Stable LatentMoE 与 Quantile Balancing](landscape/works/latentmoe-quantile-balancing.md)及 [MoonEP](landscape/works/moonep.md)拆成独立深读，分别固定递推/并行、深度寻址、窄路由/分位数更新和动态 expert placement 的公式、代码与系统边界。
+- 建立 [Kimi 技术谱系](landscape/kimi-timeline.md)与 [K3 的 150 项引用图谱](landscape/kimi-k3-reference-map.md)，把 paper、weights、code、API、license 和发布日期分开记录，并为每项官方引用标明它在论证链中的角色。
+- 将 K3 的可复用机制融入架构、训练、Agentic RL、分布式系统、推理、评测和多模态主干页；关键公式配套带断言的最小实现，公开结论与训练数据、算力、超参数、消融和安全材料中的未知项保持分层。
 - 将最小可执行实现融入 canonical 机制页：从[概率目标](foundations/probability-objectives.md)、[序列构造](data/sequence-construction.md)、[Decoder Block](architecture/decoder-block.md)延伸到[训练](training/offline-preference.md)、[系统](systems/attention-kernels.md)、[推理运行时](inference/runtime.md)、[强化学习](reinforcement-learning/advantage-estimation-gae.md)、[智能体](applications/agent-runtime.md)与[统计推断](evaluation/statistical-inference.md)，让公式、状态语义和关键断言在同一阅读路径中相互校验。
 - 建立默认展开与折叠的代码层级：核心计算路径保持可见，较长的辅助实现与测试使用可搜索、可复制、可键盘操作并支持稳定深链的原生折叠区，在桌面与移动端保持一致的阅读体验。
 - 调整[阅读方法](guide/method.md)、[知识架构](guide/architecture.md)和[手撕实现](practice/minimal-implementations.md)的分工：正文维护通用语义核，实践页组织跨机制组合与完整验证，工作深读保留论文特有增量。

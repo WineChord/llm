@@ -185,6 +185,21 @@ frontier 只比较给定点，不估计统计不确定性，也不把攻击严�
 
 输入感知与时延分解见[多模态评测](multimodal-evaluation.md)。
 
+## 网络安全能力的证据卡 {#cyber-evidence-card}
+
+Cyber evaluation 同时涉及能力、潜在危害与部署防护，至少应把证据分成：
+
+1. 题目型 exploit benchmark；
+2. 多步网络环境；
+3. 真实软件候选漏洞的人工复核；
+4. 模型级拒答、产品 guard 与执行权限。
+
+这些层不能互相替代。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)报告其内部环境中 K3 完成 14/36 个 exploit，GLM-5.2 为 8/36；K3 的成功项中 10 个属于 user-space。团队还报告人工复核后约 $70\%$ 的候选为真实问题，并在 6 个项目中确认 16 个新问题。报告没有公开足够环境、候选全集和复核协议，因此这些数字应标记为**开发团队自报、不可独立重建**，不能据此推断通用网络安全水平。工作页中的逐项边界见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
+[UK AISI/CAISI 的独立初步评估](https://www.aisi.gov.uk/blog/preliminary-assessment-of-kimi-k3s-cyber-capabilities)提供了另一层证据：K3 在其 ExploitBench 上为 $32\%$，GLM-5.2 为 $24\%$；在 ACE 的 41 项中为 $0$；32-step 网络任务平均得分为 17，GLM-5.2 为 11，文中对照的领先美国模型为 28.5；在 10 个更现实任务中完成 1 个。评估还观察到既有 safeguards 没有阻止部分 offensive action。每个数字都绑定该机构当时的 harness、访问方式、攻击预算与日期，不能与内部 36 题直接合并。
+
+这组证据只覆盖网络安全能力与相关 safeguard 行为。若报告未提供生物、化学、说服操纵、隐私、公平性、越权副作用或多模态安全结果，应在报告卡写成 `not evaluated`，而不是从 cyber 结果推出“整体安全”或“整体不安全”。
+
 ## 实现契约
 
 ```text
@@ -246,3 +261,5 @@ paired/cluster 区间见[统计推断](statistical-inference.md)，可靠性总�
 - [Llama Guard](https://arxiv.org/abs/2312.06674)
 - [OpenAI Instruction Hierarchy](https://openai.com/index/the-instruction-hierarchy/)
 - [Instruction Hierarchy Challenge](https://openai.com/index/instruction-hierarchy-challenge/)
+- [UK AISI/CAISI Preliminary Assessment of Kimi K3 Cyber Capabilities](https://www.aisi.gov.uk/blog/preliminary-assessment-of-kimi-k3s-cyber-capabilities)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

@@ -8,6 +8,7 @@ DOCS = sorted((ROOT / "docs").rglob("*.md"))
 FILES = [ROOT / "README.md", *DOCS]
 LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 REFERENCE_LINK = re.compile(r"(?<!!)\[([^\]]+)\]\((https://[^)]+)\)")
+NUMBERED_REFERENCE = re.compile(r"(?m)^- \*\*\[(\d+)\] ")
 ARXIV = re.compile(r"https://arxiv\.org/abs/\d{4}\.\d{4,5}")
 TABLE_SEPARATOR = re.compile(
     r"^\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|?\s*$"
@@ -56,6 +57,8 @@ REQUIRED_PAGES = (
     "guide/evidence.md",
     "landscape/index.md",
     "landscape/training-tokens.md",
+    "landscape/kimi-timeline.md",
+    "landscape/kimi-k3-reference-map.md",
     "multimodal/native-generation.md",
     "multimodal/vision-language.md",
     "multimodal/document-gui-grounding.md",
@@ -168,6 +171,11 @@ WORK_PAGES = (
     "landscape/works/dapo.md",
     "landscape/works/vapo.md",
     "landscape/works/sao-compactionrl.md",
+    "landscape/works/kimi-linear-flashkda.md",
+    "landscape/works/attention-residuals.md",
+    "landscape/works/latentmoe-quantile-balancing.md",
+    "landscape/works/kimi-k3.md",
+    "landscape/works/moonep.md",
     "landscape/works/megatron-zero.md",
     "landscape/works/flashattention.md",
     "landscape/works/vllm-pagedattention.md",
@@ -267,6 +275,37 @@ def unfenced_lines(text: str) -> list[str]:
 for relative in (*REQUIRED_PAGES, *LINEAGE_PAGES, *WORK_PAGES, *RL_PAGES):
     if not (ROOT / "docs" / relative).is_file():
         errors.append(f"docs/{relative}: 缺少知识架构核心页面")
+
+k3_map = ROOT / "docs/landscape/kimi-k3-reference-map.md"
+if k3_map.is_file():
+    k3_ids = [int(value) for value in NUMBERED_REFERENCE.findall(
+        k3_map.read_text(encoding="utf-8")
+    )]
+    missing_k3_ids = sorted(set(range(1, 151)) - set(k3_ids))
+    duplicate_k3_ids = sorted({
+        value for value in k3_ids if k3_ids.count(value) > 1
+    })
+    if len(k3_ids) != 150 or missing_k3_ids or duplicate_k3_ids:
+        errors.append(
+            "docs/landscape/kimi-k3-reference-map.md: "
+            f"K3 bibliography 必须覆盖 150 个编号且各出现一次；"
+            f"当前 {len(k3_ids)} 项，缺失 {missing_k3_ids}，重复 {duplicate_k3_ids}"
+        )
+
+k3_work = ROOT / "docs/landscape/works/kimi-k3.md"
+if k3_work.is_file():
+    k3_text = k3_work.read_text(encoding="utf-8")
+    for marker in (
+        "报告的 16 幅图",
+        "五张正式表",
+        "28 个编号公式",
+        "## 附录 A–F 为什么不是边角料 {#appendices}",
+    ):
+        if marker not in k3_text:
+            errors.append(
+                "docs/landscape/works/kimi-k3.md: "
+                f"缺少报告完整性索引：{marker}"
+            )
 
 for relative in LINEAGE_PAGES:
     path = ROOT / "docs" / relative

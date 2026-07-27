@@ -16,6 +16,21 @@ $$
 
 激活随 batch、序列长度、层数和 hidden size 增长。activation checkpointing 只保存部分边界，反向时重算中间结果，以计算换内存。选择 checkpoint 粒度时要测 wall-clock，而不只看理论重算 FLOPs。
 
+### 逐 tensor 的存储策略
+
+统一写成“开启 checkpointing”会掩盖不同 activation 的成本。更细的 planner 应为每类 tensor 在以下策略中选择：
+
+| 策略 | 节省设备内存 | 新成本 | 适用条件 |
+| --- | --- | --- | --- |
+| recompute | 高 | 额外 forward FLOPs | 重算便宜、依赖可重放 |
+| quantize | 中到高 | 量化误差与 pack/unpack | 有稳定 scale 与快 kernel |
+| CPU offload | 高 | PCIe/CXL 传输 | 可提前预取 |
+| remote offload | 高 | 网络与远端容量 | 其他并行 rank 有空闲窗口 |
+
+选择目标应最小化关键路径时间，而不是单 tensor 字节。一个统一 activation pool 还需跟踪生命周期、prefetch deadline、stream event、量化 schema 与 fallback；不同策略共享 allocator，才能避免每种路径各自预留造成碎片。
+
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露了一项具体实现：按 tensor 选择重算、blockwise FP8、CPU offload 或向其他 pipeline rank 远端 offload，并统一管理存储；梯度采用 CPU ZeRO-2，Muon 更新则通过点对点通信组织。这说明空闲显存、网络和 CPU 内存可以成为同一规划问题，但最佳策略依赖 pipeline 空泡、拓扑与 tensor 生命周期。完整系统组合见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
 ## Roofline 视角
 
 算术强度：
@@ -52,3 +67,4 @@ $$
 - [Mixed Precision Training](https://arxiv.org/abs/1710.03740)
 - [Megatron Core](https://github.com/NVIDIA/Megatron-LM)
 - [PyTorch FSDP](https://pytorch.org/docs/stable/fsdp.html)
+- [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
