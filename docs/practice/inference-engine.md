@@ -355,3 +355,9 @@ def goodput(records, window_seconds, slo):
 - admission 为输出上限预留 KV，过载行为明确。
 
 机制与成本见 [KV Cache](../inference/kv-cache.md)、[调度与服务](../inference/serving.md)、[量化](../inference/quantization.md)和[推测解码](../inference/speculative-decoding.md)。
+
+## Reference {#reference}
+
+- [Orca: A Distributed Serving System for Transformer-Based Generative Models](https://www.usenix.org/conference/osdi22/presentation/yu)
+- [Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/abs/2309.06180)
+- [SGLang: Efficient Execution of Structured Language Model Programs](https://arxiv.org/abs/2312.07104)

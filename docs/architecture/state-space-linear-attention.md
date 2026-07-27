@@ -247,3 +247,14 @@ $$
 因此该路线应保留在观察层，等独立复现、不同规模和多种服务栈证据积累后再调整定位。
 
 最小 selective scan、delta rule 与路径等价实验见[序列模型手撕实现](../practice/sequence-models.md)，与精确注意力的缓存比较见[KV Cache](../inference/kv-cache.md)。
+
+## Reference {#reference}
+
+- [Efficiently Modeling Long Sequences with Structured State Spaces](https://arxiv.org/abs/2111.00396)
+- [Mamba: Linear-Time Sequence Modeling with Selective State Spaces](https://arxiv.org/abs/2312.00752)
+- [Mamba 官方实现](https://github.com/state-spaces/mamba)
+- [Transformers are SSMs](https://arxiv.org/abs/2405.21060)
+- [Retentive Network](https://arxiv.org/abs/2307.08621)
+- [RWKV: Reinventing RNNs for the Transformer Era](https://arxiv.org/abs/2305.13048)
+- [Hyena](https://arxiv.org/abs/2302.10866)
+- [Griffin](https://arxiv.org/abs/2402.19427)

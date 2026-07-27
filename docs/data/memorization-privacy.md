@@ -101,3 +101,9 @@ PII/secret 检测应组合确定性规则、上下文分类和人工复核，并
 7. 对训练和评测日志做内容最小化，避免保存新的敏感副本。
 
 来源与删除传播图见[来源、谱系与快照](sources-provenance.md)，训练阶段的可重放状态见[预训练](../training/pretraining.md)。
+
+## Reference {#reference}
+
+- [Extracting Training Data from Large Language Models](https://arxiv.org/abs/2012.07805)
+- [Scalable Extraction of Training Data](https://arxiv.org/abs/2311.17035)
+- [TOFU](https://arxiv.org/abs/2401.06121)

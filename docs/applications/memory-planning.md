@@ -130,3 +130,10 @@ how to verify:
 - 注入文本能否污染长期记忆。
 
 状态持久化与恢复见[智能体运行时](agent-runtime.md)，检索实现可复用[索引与召回](retrieval-indexing.md)中的数据与权限契约。
+
+## Reference {#reference}
+
+- [MemGPT](https://arxiv.org/abs/2310.08560)
+- [ReAct](https://arxiv.org/abs/2210.03629)
+- [Tree of Thoughts: Deliberate Problem Solving with Large Language Models](https://arxiv.org/abs/2305.10601)
+- [Reflexion: Language Agents with Verbal Reinforcement Learning](https://arxiv.org/abs/2303.11366)

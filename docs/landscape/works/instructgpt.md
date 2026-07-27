@@ -129,3 +129,9 @@ KL 的 sampled log-ratio 是 reward estimator，不是完整分布上的精确 K
 2. 在答案可执行验证的领域，能否用规则 reward 做在线探索——见 [DeepSeek-R1](deepseek-r1.md)。
 
 整条因果脉络见[从续写到偏好与在线学习](../lineages/training-alignment.md)。目标与系统细节分别见[监督微调](../../training/supervised-finetuning.md)、[奖励建模](../../training/reward-modeling.md)、[在线 RL](../../training/online-rl.md)和[评测协议](../../evaluation/language-model-evaluation.md)。
+
+## Reference {#reference}
+
+- [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)
+- [openai/following-instructions-human-feedback](https://github.com/openai/following-instructions-human-feedback)
+- [summarize-from-feedback](https://github.com/openai/summarize-from-feedback)

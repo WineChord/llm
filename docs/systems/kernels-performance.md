@@ -117,3 +117,10 @@ profiler trace and critical path
 ```
 
 微基准变快不等于端到端变快。若该 kernel 原本只占 step time 的 5%，即使速度翻倍，上限收益也很小。应配合[系统资源模型](index.md)和[推理运行时](../inference/runtime.md)定位真正瓶颈。
+
+## Reference {#reference}
+
+- [Roofline: An Insightful Visual Performance Model for Multicore Architectures](https://doi.org/10.1145/1498765.1498785)
+- [CUDA C++ Programming Guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/)
+- [FlashAttention](https://arxiv.org/abs/2205.14135)
+- [FlashAttention-2](https://arxiv.org/abs/2307.08691)

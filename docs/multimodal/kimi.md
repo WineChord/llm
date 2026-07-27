@@ -83,3 +83,10 @@ $$
 - 图像内指令与系统指令的权限关系。
 
 通用机制见[原生多模态与生成](native-generation.md)，模型谱系记录方法见[模型谱系](../landscape/index.md)。
+
+## Reference {#reference}
+
+- [MoonshotAI/Kimi-K2 technical report and weights](https://github.com/MoonshotAI/Kimi-K2)
+- [Kimi K2.5 Technical Report](https://arxiv.org/abs/2602.02276)
+- [Kimi K3 official technical blog](https://www.kimi.com/blog/kimi-k3)
+- [MoonshotAI/Kimi-Audio](https://github.com/MoonshotAI/Kimi-Audio)

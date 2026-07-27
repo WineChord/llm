@@ -58,3 +58,8 @@ Transformer 继承了 additive attention 的核心思想：保留多个状态并
 - attention 权重是计算系数，不自动等于可解释的因果对齐。
 
 cross-attention 随后迁移到图文桥接、条件生成与检索增强；self-attention 则成为通用 token mixer。机制细节见 [Transformer](../../architecture/transformer.md)、[注意力与位置](../../architecture/attention-position.md)和[位置编码](../../architecture/position-encoding.md)，长序列的系统边界见[长上下文](../../architecture/long-context.md)与 [KV Cache](../../inference/kv-cache.md)。
+
+## Reference {#reference}
+
+- [Sequence to Sequence Learning with Neural Networks](https://proceedings.neurips.cc/paper_files/paper/2014/hash/5a18e133cbf9f257297f410bb7eca942-Abstract.html)
+- [Neural Machine Translation by Jointly Learning to Align and Translate](https://arxiv.org/abs/1409.0473)

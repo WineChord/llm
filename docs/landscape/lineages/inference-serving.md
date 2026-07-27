@@ -193,3 +193,14 @@ Admission 需要同时估计未来 KV 增长、prompt 工作量、输出长度�
 | 分布式 KV | 单机容量与冷前缀 | 网络、目录、版本和隔离 |
 
 最好的方案不是把所有机制同时打开，而是先定位当前 SLO 下的首个瓶颈，再验证新增状态和通信是否仍落在收益预算内。
+
+## Reference {#reference}
+
+- [Orca: A Distributed Serving System for Transformer-Based Generative Models](https://www.usenix.org/conference/osdi22/presentation/yu)
+- [Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/abs/2309.06180)
+- [SGLang: Efficient Execution of Structured Language Model Programs](https://arxiv.org/abs/2312.07104)
+- [Sarathi-Serve](https://www.usenix.org/conference/osdi24/presentation/agrawal)
+- [Fast Inference from Transformers via Speculative Decoding](https://arxiv.org/abs/2211.17192)
+- [Splitwise](https://arxiv.org/abs/2311.18677)
+- [DistServe](https://www.usenix.org/conference/osdi24/presentation/zhong-yinmin)
+- [Mooncake](https://arxiv.org/abs/2407.00079)

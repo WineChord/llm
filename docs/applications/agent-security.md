@@ -141,3 +141,10 @@ $$
 - 修复策略后重放无副作用评测。
 
 运行时状态与恢复见[智能体运行时](agent-runtime.md)，工具权限与幂等见[工具调用](tool-use.md)，生产门禁见[可靠性与安全](../evaluation/reliability-safety.md)。
+
+## Reference {#reference}
+
+- [OWASP Prompt Injection](https://owasp.org/www-community/attacks/PromptInjection)
+- [InjecAgent](https://arxiv.org/abs/2403.02691)
+- [AgentDojo](https://arxiv.org/abs/2406.13352)
+- [ToolEmu](https://arxiv.org/abs/2309.15817)

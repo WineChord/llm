@@ -158,3 +158,9 @@ request distribution and cache state
 8. 只保留端到端收益大于维护与可靠性成本的优化。
 
 完整测试口径见[基准与可靠性](benchmarking-reliability.md)。
+
+## Reference {#reference}
+
+- [FlashAttention](https://arxiv.org/abs/2205.14135)
+- [Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/abs/2309.06180)
+- [Fast Inference from Transformers via Speculative Decoding](https://arxiv.org/abs/2211.17192)

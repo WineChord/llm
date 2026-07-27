@@ -98,3 +98,8 @@ next action
 [Anthropic 的长时 agent harness 文章](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)强调初始化、进度文件、增量提交和重新进入任务。通用原则是：每个新工作周期都能从外部状态重建事实，并留下下一周期可验证的入口。
 
 Coding 场景见[Coding Agent](../applications/coding-agents.md)，训练侧状态见[训练系统](training-systems.md)。
+
+## Reference {#reference}
+
+- [METR 的 time-horizon 方法](https://metr.org/time-horizons/)
+- [Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)

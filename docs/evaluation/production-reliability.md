@@ -137,3 +137,10 @@ new regression tests
 避免把根因简化为“模型幻觉”。如果检索提供了过期文档、工具返回错误状态而验证层未检查，修复点就在整条链路。
 
 具体错误类型见[幻觉与事实性](hallucination.md)与[指令遵循](instruction-following.md)，服务性能见[调度与服务](../inference/serving.md)。
+
+## Reference {#reference}
+
+- [Google SRE: Service Level Objectives](https://sre.google/sre-book/service-level-objectives/)
+- [OpenTelemetry Specification](https://opentelemetry.io/docs/specs/otel/)
+- [Making retries safe with idempotent APIs](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/)
+- [NIST AI 600-1: Generative Artificial Intelligence Profile](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence)

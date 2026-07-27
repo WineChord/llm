@@ -152,3 +152,11 @@ $\varnothing$ 表示无需调用。仅报告“工具名准确率”会忽略过
 | 终态 | 响应成功但业务未完成 |
 
 schema 校验与安全 dispatch 的紧凑实现见[手撕：检索与智能体](../practice/retrieval-agents.md)，多步状态与恢复见[智能体运行时](agent-runtime.md)。
+
+## Reference {#reference}
+
+- [OpenAI Structured Outputs](https://openai.com/index/introducing-structured-outputs-in-the-api/)
+- [Anthropic tool use](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview)
+- [Model Context Protocol tools specification](https://modelcontextprotocol.io/specification/2025-11-25/server/tools)
+- [Model Context Protocol schema 2025-11-25](https://modelcontextprotocol.io/specification/2025-11-25/schema)
+- [Agent2Agent specification](https://a2a-protocol.org/latest/specification/)

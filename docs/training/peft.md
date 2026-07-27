@@ -152,3 +152,14 @@ training data snapshot and evaluation protocol
 7. 对任务、通用能力、长度、语言、校准和安全做分层回归。
 
 SFT 的 mask 与数据权重见[监督微调](supervised-finetuning.md)，方法与压缩边界见[参数高效训练与压缩](peft-compression.md)，最小 LoRA 断言见[训练目标实现](../practice/training-objectives.md)。
+
+## Reference {#reference}
+
+- [Adapters](https://arxiv.org/abs/1902.00751)
+- [Prefix Tuning](https://arxiv.org/abs/2101.00190)
+- [Prompt Tuning](https://arxiv.org/abs/2104.08691)
+- [LoRA](https://arxiv.org/abs/2106.09685)
+- [QLoRA](https://arxiv.org/abs/2305.14314)
+- [DoRA: Weight-Decomposed Low-Rank Adaptation](https://arxiv.org/abs/2402.09353)
+- [AdaLoRA](https://arxiv.org/abs/2303.10512)
+- [QingruZhang/AdaLoRA](https://github.com/QingruZhang/AdaLoRA)

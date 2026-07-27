@@ -93,3 +93,10 @@ attention 实现至少同时处理：
 | Prefix cache | cache key、position 与 adapter 是否完全兼容 |
 
 位置机制见[长上下文](long-context.md)，缓存管理见[KV Cache](../inference/kv-cache.md)，IO 优化见[Kernel 与性能](../systems/kernels-performance.md)。
+
+## Reference {#reference}
+
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- [Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/abs/1911.02150)
+- [GQA: Training Generalized Multi-Query Transformer Models](https://arxiv.org/abs/2305.13245)
+- [DeepSeek-V2](https://arxiv.org/abs/2405.04434)

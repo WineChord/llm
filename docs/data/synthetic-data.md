@@ -115,3 +115,9 @@ $$
 7. 保存失败生成和拒绝原因，检查筛选是否系统性清空某些 slice。
 
 推理轨迹从搜索进入训练的闭环见[推理后训练](../training/reasoning-posttraining.md)，统计与污染检查见[评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [The Curse of Recursion](https://arxiv.org/abs/2404.05090)
+- [Is Model Collapse Inevitable?](https://arxiv.org/abs/2404.01413)
+- [Generalized Knowledge Distillation for Auto-Regressive Sequence Models](https://arxiv.org/abs/2306.13649)

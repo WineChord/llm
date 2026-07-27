@@ -190,3 +190,13 @@ $$
 适合进入观察层的结论是：surprise 驱动的可塑记忆为“固定窗口之外如何持续更新状态”提供了一种具体设计。论文报告的超长上下文和任务收益仍属于给定模型、数据与实现中的作者实验；在独立复现、更多规模和服务栈证据形成前，不应写成通用的无限记忆能力。
 
 状态递推的实现与 recall 压力测试见[序列模型手撕实现](../practice/sequence-models.md)，外部文档记忆见[RAG](../applications/rag.md)，KV 生命周期见[KV Cache](../inference/kv-cache.md)。
+
+## Reference {#reference}
+
+- [Transformer-XL](https://arxiv.org/abs/1901.02860)
+- [Compressive Transformer](https://arxiv.org/abs/1911.05507)
+- [RETRO](https://arxiv.org/abs/2112.04426)
+- [Memorizing Transformers](https://arxiv.org/abs/2203.08913)
+- [Learning to (Learn at Test Time)](https://arxiv.org/abs/2407.04620)
+- [Titans](https://arxiv.org/abs/2501.00663)
+- [Titans: Learning to Memorize at Test Time — Google Research](https://research.google/pubs/titans-learning-to-memorize-at-test-time/)

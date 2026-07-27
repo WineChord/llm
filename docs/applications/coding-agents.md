@@ -103,3 +103,12 @@ discover -> design -> edit -> local_verify -> publish -> remote_verify
 - [Pi](https://github.com/badlogic/pi-mono)：轻量代理循环与可扩展工具。
 
 这些项目变化很快，具体命令与能力应以各自版本化文档为准。通用工具调用见[工具与智能体](agents.md)，强化学习视角见[Agentic RL](../agentic-rl/index.md)。
+
+## Reference {#reference}
+
+- [METR 的 time-horizon 方法](https://metr.org/time-horizons/)
+- [SWE-bench](https://arxiv.org/abs/2310.06770)
+- [OpenAI Codex](https://github.com/openai/codex)
+- [Claude Code 文档](https://docs.anthropic.com/en/docs/claude-code/overview)
+- [OpenCode](https://github.com/anomalyco/opencode)
+- [badlogic/pi-mono agent framework](https://github.com/badlogic/pi-mono)

@@ -109,3 +109,8 @@ JSON grammar、正则、有限状态机和 schema-constrained decoding 能保证
 - 注入攻击下的任务保持率。
 
 幻觉与证据见[幻觉与事实性](hallucination.md)，工具权限见[Agentic RL 评测与安全](../agentic-rl/evaluation-safety.md)。
+
+## Reference {#reference}
+
+- [Instruction-Following Evaluation for Large Language Models / IFEval](https://arxiv.org/abs/2311.07911)
+- [FollowBench](https://arxiv.org/abs/2310.20410)

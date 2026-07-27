@@ -170,3 +170,14 @@ RLVR 描述奖励来源，并不指定 PPO、RLOO 或 GRPO。verifier 也只验�
 - RLVR 在可判定领域提供高精度 reward，不代表开放式写作、事实综合与安全判断都可被确定性验证。
 
 机制细节分别见[后训练总览](../../training/post-training.md)、[奖励建模](../../training/reward-modeling.md)、[离线偏好优化](../../training/offline-preference.md)与[在线 RL](../../training/online-rl.md)。
+
+## Reference {#reference}
+
+- [Finetuned Language Models Are Zero-Shot Learners / FLAN](https://arxiv.org/abs/2109.01652)
+- [Learning from Human Preferences](https://arxiv.org/abs/1706.03741)
+- [Fine-Tuning Language Models from Human Preferences](https://arxiv.org/abs/1909.08593)
+- [Learning to Summarize from Human Feedback](https://arxiv.org/abs/2009.01325)
+- [Scaling Laws for Reward Model Overoptimization](https://arxiv.org/abs/2210.10760)
+- [Constitutional AI](https://arxiv.org/abs/2212.08073)
+- [Back to Basics: Revisiting REINFORCE Style Optimization for Learning from Human Feedback](https://arxiv.org/abs/2402.14740)
+- [DeepSeekMath](https://arxiv.org/abs/2402.03300)

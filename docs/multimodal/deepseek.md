@@ -83,3 +83,11 @@ $$
 | 关键失效 | 细节遗漏、语言先验 | 模态干扰、生成一致性 | 阅读顺序、表格与公式 |
 
 原理见[多模态融合与训练](architecture-training.md)和[原生多模态与生成](native-generation.md)，家族主干见[DeepSeek 演化案例](../landscape/deepseek-timeline.md)。
+
+## Reference {#reference}
+
+- [DeepSeek-VL: Towards Real-World Vision-Language Understanding](https://arxiv.org/abs/2403.05525)
+- [DeepSeek-VL2: Mixture-of-Experts Vision-Language Models](https://arxiv.org/abs/2412.10302)
+- [Janus](https://arxiv.org/abs/2410.13848)
+- [Janus-Pro](https://arxiv.org/abs/2501.17811)
+- [deepseek-ai/DeepSeek-OCR](https://github.com/deepseek-ai/DeepSeek-OCR)

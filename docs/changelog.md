@@ -2,6 +2,7 @@
 
 ## 2026-07-27
 
+- 为 162 篇知识页统一可深链的 `Reference` 书目，补齐原论文、规范、官方文档与实现入口，并在[阅读方法](guide/method.md#page-reference)中固定页级引用规则；索引、导航、术语表、更新日志与[全站文献](references.md)按页面职责避免机械重复。
 - 建立带有历史脉络的[技术谱系](landscape/index.md)：从[计数模型到可学习状态](landscape/lineages/counts-to-learned-state.md)、[递归到注意力](landscape/lineages/transduction-to-attention.md)、[预训练目标](landscape/lineages/pretraining-objectives.md)延伸到[后训练与对齐](landscape/lineages/training-alignment.md)、[分布式训练](landscape/lineages/distributed-training-systems.md)、[推理服务](landscape/lineages/inference-serving.md)、[多模态](landscape/lineages/multimodal-generation.md)、[检索与智能体](landscape/lineages/retrieval-agents.md)及[评测](landscape/lineages/evaluation.md)，并新增 22 篇带公式、来源、实现边界与可执行代码的关键工作深读。
 - 新增 [SAO 与 CompactionRL](landscape/works/sao-compactionrl.md)：沿时间轴解释 single-rollout 异步更新、DIS 与 critic，沿空间轴解释学习式摘要、token-level normalization 与跨 segment 信用。
 - 统一入口层：[首页](index.md)提供主题地图，[学习路线](guide/roadmap.md)提供递进路径，[知识架构](guide/architecture.md)定义章节边界，[覆盖地图](guide/coverage.md)连接概念、机制、实现与验证。

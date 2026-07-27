@@ -56,3 +56,14 @@
 实践模板见[实验方法](../practice/index.md)。
 
 模型版本、训练 token、产品能力或供应商声明需要更严格的来源与时效管理，见[证据与研究方法](evidence.md)。
+
+## 页级书目 {#page-reference}
+
+实质性知识页以 `Reference` 作为最后一个二级章节，集中列出理解和核验本页所需的原论文、标准、官方文档与官方实现。正文中与具体结论相邻的链接仍然保留：就地引用回答“这句话依据什么”，页末书目回答“继续核验和深入阅读什么”，两者不能互相替代。
+
+书目链接使用可独立理解的题名，避免裸 URL 与“论文”“点击这里”一类脱离上下文便失去意义的标签。来源随版本变化时，在正文中补充版本、日期或 commit；同一目标在书目中只出现一次。索引、导航、术语表、更新日志与全站文献索引不机械重复页级书目。
+
+## Reference {#reference}
+
+- [Diátaxis documentation framework](https://diataxis.fr/)
+- [ACM Artifact Review and Badging](https://www.acm.org/publications/policies/artifact-review-and-badging-current)

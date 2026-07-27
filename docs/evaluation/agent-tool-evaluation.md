@@ -185,3 +185,14 @@ effect/cluster CI and known environment limits
 ```
 
 安全攻击矩阵见[安全评测](safety-evaluation.md)，统计重采样见[统计推断](statistical-inference.md)，最小状态与 pass 指标实现见[评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [tau-bench](https://arxiv.org/abs/2406.12045)
+- [WebArena](https://arxiv.org/abs/2307.13854)
+- [OSWorld](https://arxiv.org/abs/2404.07972)
+- [SWE-bench](https://arxiv.org/abs/2310.06770)
+- [GAIA](https://arxiv.org/abs/2311.12983)
+- [AgentBench](https://arxiv.org/abs/2308.03688)
+- [BFCL](https://gorilla.cs.berkeley.edu/leaderboard)
+- [AgentDojo](https://arxiv.org/abs/2406.13352)

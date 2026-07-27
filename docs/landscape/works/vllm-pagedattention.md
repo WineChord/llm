@@ -174,7 +174,7 @@ $$
 
 传输只有在 model、adapter、position、dtype 和 cache schema 完全兼容时才能复用。安装应幂等，同一请求重试不能生成两份 owner。跨 worker 的数据路径见[推理服务谱系](../lineages/inference-serving.md)和[Prefill–Decode 分离](../../inference/disaggregation.md)。
 
-## 原始工作与实现边界
+## Reference {#reference}
 
 - [PagedAttention/vLLM 论文](https://arxiv.org/abs/2309.06180)是一手算法与系统评测来源。
 - [vLLM 官方仓库](https://github.com/vllm-project/vllm)持续演进 scheduler、KV manager、prefix caching、distributed serving 与 kernel；当前类名和配置不能反向当作论文接口。

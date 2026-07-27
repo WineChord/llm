@@ -168,3 +168,14 @@ known untested channels and human audit
 ```
 
 paired/cluster 区间见[统计推断](statistical-inference.md)，可靠性总览见[可靠性与安全](reliability-safety.md)，最小评测实现见[评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [XSTest](https://arxiv.org/abs/2308.01263)
+- [HarmBench](https://arxiv.org/abs/2402.04249)
+- [JailbreakBench](https://arxiv.org/abs/2404.01318)
+- [A StrongREJECT for Empty Jailbreaks](https://arxiv.org/abs/2402.10260)
+- [AgentDojo](https://arxiv.org/abs/2406.13352)
+- [Llama Guard](https://arxiv.org/abs/2312.06674)
+- [OpenAI Instruction Hierarchy](https://openai.com/index/the-instruction-hierarchy/)
+- [Instruction Hierarchy Challenge](https://openai.com/index/instruction-hierarchy-challenge/)

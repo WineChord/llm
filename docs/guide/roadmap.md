@@ -114,3 +114,8 @@ LLM 横跨统计学习、模型结构、分布式系统和交互环境。先建�
 6. 写清数据、版本、预算、分母、effect 与未知。
 
 [覆盖地图](coverage.md)用于检查是否只掌握了名词，[证据与研究方法](evidence.md)用于区分论文结论、实现状态与外推。
+
+## Reference {#reference}
+
+- [Deep Learning](https://www.deeplearningbook.org/)
+- [Dive into Deep Learning](https://d2l.ai/)

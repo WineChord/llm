@@ -130,3 +130,10 @@ stop and detokenization rules
 ```
 
 KV 分支与分页见[KV Cache](kv-cache.md)，请求级状态见[推理运行时](runtime.md)，加速选择见[加速与量化](acceleration.md)。
+
+## Reference {#reference}
+
+- [The Curious Case of Neural Text Degeneration](https://arxiv.org/abs/1904.09751)
+- [Fast Inference from Transformers via Speculative Decoding](https://arxiv.org/abs/2211.17192)
+- [Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads](https://arxiv.org/abs/2401.10774)
+- [EAGLE: Speculative Sampling Requires Rethinking Feature Uncertainty](https://arxiv.org/abs/2401.15077)

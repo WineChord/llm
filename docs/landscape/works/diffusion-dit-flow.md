@@ -103,9 +103,9 @@ Flow Matching 把“噪声 schedule”推广为“概率路径与速度场”，
 
 新工作若只宣布换用 Transformer，却没有说明表示压缩、参数化、采样器和等算力比较，就很难知道收益来自哪里。更完整的采样公式、离散表示和验证矩阵见[多模态生成模型](../../multimodal/generative-modeling.md)，理解与生成怎样合流见[多模态技术谱系](../lineages/multimodal-generation.md)。
 
-## 原作与实现
+## Reference {#reference}
 
-- [DDPM 论文](https://arxiv.org/abs/2006.11239)与[作者实现](https://github.com/hojonathanho/diffusion)；
-- [Latent Diffusion 论文](https://arxiv.org/abs/2112.10752)与[官方实现](https://github.com/CompVis/latent-diffusion)；
-- [DiT 论文](https://arxiv.org/abs/2212.09748)与[官方实现](https://github.com/facebookresearch/DiT)；
-- [Flow Matching 论文](https://arxiv.org/abs/2210.02747)；后续的 [Flow Matching Guide and Code](https://arxiv.org/abs/2412.06264)提供了通用[参考库](https://github.com/facebookresearch/flow_matching)，它不是 2022 原论文实验代码。
+- [DDPM 论文](https://arxiv.org/abs/2006.11239)与[hojonathanho/diffusion](https://github.com/hojonathanho/diffusion)；
+- [Latent Diffusion 论文](https://arxiv.org/abs/2112.10752)与[CompVis/latent-diffusion](https://github.com/CompVis/latent-diffusion)；
+- [DiT 论文](https://arxiv.org/abs/2212.09748)与[facebookresearch/DiT](https://github.com/facebookresearch/DiT)；
+- [Flow Matching 论文](https://arxiv.org/abs/2210.02747)；后续的 [Flow Matching Guide and Code](https://arxiv.org/abs/2412.06264)提供了通用[facebookresearch/flow_matching](https://github.com/facebookresearch/flow_matching)，它不是 2022 原论文实验代码。

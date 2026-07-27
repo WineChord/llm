@@ -117,3 +117,9 @@ teacher 在目标域不可靠、teacher 查询成本超过直接标注、两者�
 7. 对 tokenizer、模板、logit 截断和 teacher 版本做恢复测试。
 
 目标函数的最小实现与不变量见[训练目标实现](../practice/training-objectives.md)，合成样本的谱系与筛选见[合成数据](../data/synthetic-data.md)。
+
+## Reference {#reference}
+
+- [Distilling the Knowledge in a Neural Network](https://arxiv.org/abs/1503.02531)
+- [Generalized Knowledge Distillation for Auto-Regressive Sequence Models](https://arxiv.org/abs/2306.13649)
+- [Minitron](https://arxiv.org/abs/2407.14679)

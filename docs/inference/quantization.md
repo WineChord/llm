@@ -213,3 +213,14 @@ expected kernel and supported hardware
 报告必须包含硬件、模型、格式、group、calibration、kernel、batch / 长度分布、warmup、fallback 比例与质量门槛。只给“INT4 比 FP16 快多少”没有可迁移性。
 
 数值表示的基础边界见[精度与数值](../systems/precision-numerics.md)，把压缩收益放回请求分布与硬件关键路径的方法见[推理基准与可靠性](benchmarking-reliability.md)。
+
+## Reference {#reference}
+
+- [GPTQ](https://arxiv.org/abs/2210.17323)
+- [AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration](https://arxiv.org/abs/2306.00978)
+- [SpQR](https://arxiv.org/abs/2306.03078)
+- [AQLM](https://arxiv.org/abs/2401.06118)
+- [LLM.int8()](https://arxiv.org/abs/2208.07339)
+- [SmoothQuant](https://arxiv.org/abs/2211.10438)
+- [NVIDIA Transformer Engine 的 FP8 说明](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/examples/fp8_primer.html)
+- [MXFP8](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/features/low_precision_training/mxfp8/mxfp8.html)

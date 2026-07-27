@@ -146,3 +146,14 @@ Teacher 或强搜索器可以生成成功轨迹，再蒸馏到 student；目标�
 8. 保留固定难度锚点，并报告课程实际 token share 与重复暴露。
 
 pass@$k$、judge、bootstrap 与污染工具见[评测工具](../practice/evaluation-tooling.md)，搜索与 verifier 的更多算法见[搜索、过程奖励与验证](../agentic-rl/search-verification.md)。
+
+## Reference {#reference}
+
+- [Self-Consistency Improves Chain of Thought Reasoning](https://arxiv.org/abs/2203.11171)
+- [Tree of Thoughts](https://arxiv.org/abs/2305.10601)
+- [Training Verifiers to Solve Math Word Problems](https://arxiv.org/abs/2110.14168)
+- [Let's Verify Step by Step](https://arxiv.org/abs/2305.20050)
+- [OmegaPRM](https://arxiv.org/abs/2406.06592)
+- [STaR: Bootstrapping Reasoning With Reasoning](https://arxiv.org/abs/2203.14465)
+- [DeepSeek-R1](https://arxiv.org/abs/2501.12948)
+- [DeepSeekMath](https://arxiv.org/abs/2402.03300)

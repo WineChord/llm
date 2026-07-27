@@ -243,3 +243,14 @@ $$
 | 系统 | 采样步数、延迟、峰值显存与吞吐 |
 
 理解与生成怎样共享主干见[理解与生成统一](unified-understanding-generation.md)，音视频的离散表示见[音频与语音](audio-language-models.md)和[视频与世界模型](video-world-models.md)，最小 VQ、加噪、CFG 与 flow sampler 见[多模态手撕实现](../practice/multimodal.md)。
+
+## Reference {#reference}
+
+- [VQ-VAE](https://arxiv.org/abs/1711.00937)
+- [VQGAN](https://arxiv.org/abs/2012.09841)
+- [MaskGIT](https://arxiv.org/abs/2202.04200)
+- [Denoising Diffusion Probabilistic Models](https://arxiv.org/abs/2006.11239)
+- [DDIM](https://arxiv.org/abs/2010.02502)
+- [High-Resolution Image Synthesis with Latent Diffusion Models](https://arxiv.org/abs/2112.10752)
+- [Scalable Diffusion Models with Transformers](https://arxiv.org/abs/2212.09748)
+- [Flow Matching for Generative Modeling](https://arxiv.org/abs/2210.02747)

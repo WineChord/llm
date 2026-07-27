@@ -166,3 +166,10 @@ $$
 - TTFT、goodput、显存机会成本和失败恢复。
 
 只报告命中率会把大量无价值短命中误判为成功。
+
+## Reference {#reference}
+
+- [SGLang: Efficient Execution of Structured Language Model Programs](https://arxiv.org/abs/2312.07104)
+- [Mooncake](https://arxiv.org/abs/2407.00079)
+- [LMCache](https://github.com/LMCache/LMCache)
+- [Preble](https://arxiv.org/abs/2407.00023)

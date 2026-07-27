@@ -130,3 +130,9 @@ Outcome reward 只评估最终答案，标注便宜但信用分配稀疏。Proce
 7. 进入在线 RL 前冻结 reward 版本、归一化、clip 和组合权重。
 
 偏好数据结构见[偏好、过程与轨迹数据](../data/feedback-trajectories.md)，从 reward 到策略优化见[在线 RL](online-rl.md)，最小 BT 目标与校准工具见[训练目标实现](../practice/training-objectives.md)和[评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)
+- [Scaling Laws for Reward Model Overoptimization](https://arxiv.org/abs/2210.10760)
+- [Let's Verify Step by Step](https://arxiv.org/abs/2305.20050)

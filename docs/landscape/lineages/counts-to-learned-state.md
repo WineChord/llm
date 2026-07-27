@@ -86,3 +86,13 @@ $$
 encoder–decoder 随后把 recurrent state 用作条件生成接口，却把整个输入压成一个向量；[注意力机制](transduction-to-attention.md)转而保留一张可寻址的状态表。更晚的[状态空间与线性注意力](../../architecture/state-space-linear-attention.md)又回到有限状态，但用结构化动力学、并行 scan 和输入相关选择重新设计它。
 
 概率分解、困惑度和 tokenizer 口径见[语言建模](../../foundations/language-modeling.md)、[概率、损失与梯度](../../foundations/probability-objectives.md)与[分词](../../foundations/tokenization.md)；可执行递推 reference 见[手撕：递推与记忆](../../practice/sequence-models.md)。
+
+## Reference {#reference}
+
+- [Katz backoff](https://ieeexplore.ieee.org/document/1165125)
+- [Brown 等人的 class-based $n$-gram](https://aclanthology.org/J92-4003/)
+- [A Neural Probabilistic Language Model](https://www.jmlr.org/papers/v3/bengio03a.html)
+- [Elman 1990](https://onlinelibrary.wiley.com/doi/10.1207/s15516709cog1402_1)
+- [Mikolov 等人 2010](https://www.isca-archive.org/interspeech_2010/mikolov10_interspeech.html)
+- [Hochreiter 与 Schmidhuber 1997](https://direct.mit.edu/neco/article/9/8/1735/6109/Long-Short-Term-Memory)
+- [Gers、Schmidhuber 与 Cummins 2000](https://direct.mit.edu/neco/article/12/10/2451/6415/Learning-to-Forget-Continual-Prediction-with-LSTM)

@@ -259,3 +259,14 @@ $$
 | 线上探索风险高 | 离线数据 + 保守部署 |
 
 算法选择必须与[轨迹与策略契约](trajectory-contract.md)、[数据与环境](data-environments.md)和[训练系统](training-systems.md)共同设计。若需要先补齐 value、Bellman、TD 与 actor–critic，阅读[强化学习基础](rl-foundations.md)；若训练信号来自多候选与过程评分，阅读[搜索、过程奖励与验证](search-verification.md)。
+
+## Reference {#reference}
+
+- [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
+- [DeepSeekMath](https://arxiv.org/abs/2402.03300)
+- [Understanding R1-Zero-Like Training / Dr. GRPO](https://arxiv.org/abs/2503.20783)
+- [DAPO](https://arxiv.org/abs/2503.14476)
+- [GSPO](https://arxiv.org/abs/2507.18071)
+- [SAPO](https://arxiv.org/abs/2511.20347)
+- [ReMax](https://arxiv.org/abs/2310.10505)
+- [Process Reinforcement through Implicit Rewards / PRIME](https://arxiv.org/abs/2502.01456)

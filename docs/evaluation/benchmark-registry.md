@@ -141,3 +141,14 @@ execution date and dynamic snapshot
 6. 与上一 revision 做 bridge，区分模型变化和 benchmark 变化。
 
 统计聚合见[指标与评测设计](metrics.md)，污染审计见[评测污染](contamination.md)，逐样本记录实现见[评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [MMLU](https://arxiv.org/abs/2009.03300)
+- [Evaluating Large Language Models Trained on Code / HumanEval](https://arxiv.org/abs/2107.03374)
+- [Holistic Evaluation of Language Models / HELM](https://arxiv.org/abs/2211.09110)
+- [GPQA](https://arxiv.org/abs/2311.12022)
+- [Instruction-Following Evaluation for Large Language Models / IFEval](https://arxiv.org/abs/2311.07911)
+- [PALOMA: A Benchmark for Evaluating Language Model Fit](https://arxiv.org/abs/2312.10523)
+- [MMMU](https://arxiv.org/abs/2311.16502)
+- [LiveCodeBench](https://arxiv.org/abs/2403.07974)

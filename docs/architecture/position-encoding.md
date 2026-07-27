@@ -189,3 +189,13 @@ $$
 | 多模态 | crop、tile、frame 顺序变化后坐标仍一致 |
 
 RoPE 与 GQA 的组合实现见[注意力家族](attention-variants.md)，可执行的最小序列实验见[序列模型手撕实现](../practice/sequence-models.md)。
+
+## Reference {#reference}
+
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- [RoFormer: Enhanced Transformer with Rotary Position Embedding](https://arxiv.org/abs/2104.09864)
+- [Train Short, Test Long: Attention with Linear Biases](https://arxiv.org/abs/2108.12409)
+- [Qwen2-VL](https://arxiv.org/abs/2409.12191)
+- [Position Interpolation](https://arxiv.org/abs/2306.15595)
+- [YaRN: Efficient Context Window Extension of Large Language Models](https://arxiv.org/abs/2309.00071)
+- [LongRoPE](https://arxiv.org/abs/2402.13753)

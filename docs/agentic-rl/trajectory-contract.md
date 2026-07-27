@@ -175,3 +175,10 @@ $$
 6. 模拟 tokenizer、schema 或 verifier 版本不匹配，确认系统明确拒绝。
 
 数据来源与切分见[数据与环境](data-environments.md)，异步系统见[训练系统](training-systems.md)。
+
+## Reference {#reference}
+
+- [RLDS: an Ecosystem to Generate, Share and Use Datasets in Reinforcement Learning](https://arxiv.org/abs/2111.02767)
+- [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
+- [IMPALA: Scalable Distributed Deep-RL with Importance Weighted Actor-Learner Architectures](https://arxiv.org/abs/1802.01561)
+- [Gymnasium: Handling Time Limits](https://gymnasium.farama.org/v0.26.3/tutorials/handling_time_limits/)

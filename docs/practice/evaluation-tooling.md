@@ -299,3 +299,9 @@ assert frontier == {"attack_success_rate": 0.5, "false_refusal_rate": 0.5, "unau
 它们不能全部变成零分，也不能全部从分母删除。每类都应报告数量，并预先定义主分析与敏感性分析的处理方式。
 
 评测协议见[语言模型评测](../evaluation/language-model-evaluation.md)、[统计推断](../evaluation/statistical-inference.md)与[校准和不确定性](../evaluation/calibration-uncertainty.md)。
+
+## Reference {#reference}
+
+- [Evaluating Large Language Models Trained on Code / HumanEval](https://arxiv.org/abs/2107.03374)
+- [HELM: Holistic Evaluation of Language Models](https://arxiv.org/abs/2211.09110)
+- [EleutherAI/lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness)

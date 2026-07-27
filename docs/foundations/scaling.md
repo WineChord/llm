@@ -40,3 +40,8 @@ $$
 任何“规模”结论都应同时说明：模型版本、总参数与激活参数、训练 token 口径、上下文长度、精度、硬件、训练阶段、是否包含数据重复，以及数字是公开披露、实现推断还是未知。
 
 训练 token 的阶段与证据标签见[训练 token 口径](../landscape/training-tokens.md)，预算落到显存和关键路径时见[内存、数值与硬件](../systems/memory-numerics-hardware.md)。
+
+## Reference {#reference}
+
+- [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361)
+- [Training Compute-Optimal Large Language Models](https://arxiv.org/abs/2203.15556)

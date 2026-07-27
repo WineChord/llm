@@ -123,3 +123,8 @@ RNG, shard order and data cursor
 6. 对低资源来源抽查是否因过滤器或 tokenizer 膨胀而被系统性削弱。
 
 从文档到有效 token 的细节见[序列构造与打包](sequence-construction.md)，训练预算与规模外推见[规模律与实验设计](../training/scaling-experiment-design.md)。
+
+## Reference {#reference}
+
+- [DoReMi: Optimizing Data Mixtures Speeds Up Language Model Pretraining](https://arxiv.org/abs/2305.10429)
+- [RegMix: Data Mixture as Regression for Language Model Pre-training](https://arxiv.org/abs/2407.01492)

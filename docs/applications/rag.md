@@ -109,3 +109,9 @@ RAG 不自动消除幻觉；它只提供了让陈述可核验的机会。引用�
 - 对每次实验固定语料快照、索引版本、模型版本与参数。
 
 核心检索与融合代码见[手撕：检索与智能体](../practice/retrieval-agents.md)，统计评测见[手撕：评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [Retrieval-Augmented Generation](https://arxiv.org/abs/2005.11401)
+- [Dense Passage Retrieval for Open-Domain Question Answering](https://arxiv.org/abs/2004.04906)
+- [ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT](https://arxiv.org/abs/2004.12832)

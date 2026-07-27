@@ -47,3 +47,9 @@ $$
 5. MoE 依据专家大小与流量加入 expert parallel。
 
 每次组合后都重新测量 step time、通信暴露、显存峰值、收敛一致性和故障恢复。
+
+## Reference {#reference}
+
+- [ZeRO](https://arxiv.org/abs/1910.02054)
+- [Megatron-LM](https://arxiv.org/abs/1909.08053)
+- [GPipe](https://arxiv.org/abs/1811.06965)

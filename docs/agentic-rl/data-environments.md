@@ -121,3 +121,10 @@ $$
 - 报告模型是否能访问互联网、包管理器和历史 commit。
 
 token/action mask、旧策略概率和终止字段见[轨迹与策略契约](trajectory-contract.md)，训练算法见[数学与算法](math-algorithms.md)，过程数据生成见[搜索、过程奖励与验证](search-verification.md)，安全与评测见[评测与安全](evaluation-safety.md)。
+
+## Reference {#reference}
+
+- [RLDS: an Ecosystem to Generate, Share and Use Datasets in Reinforcement Learning](https://arxiv.org/abs/2111.02767)
+- [AgentBench: Evaluating LLMs as Agents](https://arxiv.org/abs/2308.03688)
+- [SWE-bench: Can Language Models Resolve Real-World GitHub Issues?](https://arxiv.org/abs/2310.06770)
+- [Datasheets for Datasets](https://arxiv.org/abs/1803.09010)

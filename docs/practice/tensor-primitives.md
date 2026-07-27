@@ -198,3 +198,9 @@ def finish_softmax(state):
 - partition：切 block 后合并与一次计算一致。
 
 这些原语怎样组成完整 block 见[手撕 Decoder-only Transformer](transformer-from-scratch.md)，数学推导见[Decoder Block](../architecture/decoder-block.md)。
+
+## Reference {#reference}
+
+- [FlashAttention](https://arxiv.org/abs/2205.14135)
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- [Root Mean Square Layer Normalization](https://arxiv.org/abs/1910.07467)

@@ -455,7 +455,7 @@ CompactionRL 使用 64K 或 80K 峰值工作窗口，最多压缩三次；SWE-be
 
 继续阅读：[Agentic RL 数学与算法](../../agentic-rl/math-algorithms.md)、[训练系统](../../agentic-rl/training-systems.md)、[长时任务](../../agentic-rl/long-horizon.md)与[轨迹契约](../../agentic-rl/trajectory-contract.md)。
 
-## 一手来源
+## Reference {#reference}
 
 - Hou et al., [Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning](https://arxiv.org/abs/2607.07508), v1, 2026-07-08。
 - Li et al., [CompactionRL: Reinforcement Learning with Context Compaction for Long-Horizon Agents](https://arxiv.org/abs/2607.05378), v1, 2026-07-06。

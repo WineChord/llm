@@ -108,3 +108,9 @@ parameter names, tying and tensor layout
 5. 记录第一个发生数值分叉的层，而不是只比较最终 logits。
 
 attention 细节见[注意力家族](attention-variants.md)，完整主干见[Transformer](transformer.md)，优化稳定性见[优化与稳定性](../training/optimization.md)。
+
+## Reference {#reference}
+
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- [Root Mean Square Layer Normalization](https://arxiv.org/abs/1910.07467)
+- [GLU Variants Improve Transformer](https://arxiv.org/abs/2002.05202)

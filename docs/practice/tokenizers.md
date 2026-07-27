@@ -161,3 +161,9 @@ assert unigram_viterbi("北京大学", cost) == ["北京", "大学"]
 - length：按语言、代码和 byte fallback slice 报 token 膨胀。
 
 subword BPE 在 NMT 中的经典应用见 [Sennrich et al.](https://arxiv.org/abs/1508.07909)，byte-level 变体可从 [GPT-2 技术报告](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)回溯，Unigram 与可逆预处理见 [SentencePiece](https://arxiv.org/abs/1808.06226)。模型侧影响见[分词与表示](../foundations/tokenization.md)。
+
+## Reference {#reference}
+
+- [Neural Machine Translation of Rare Words with Subword Units](https://arxiv.org/abs/1508.07909)
+- [GPT-2 技术报告](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)
+- [SentencePiece](https://arxiv.org/abs/1808.06226)

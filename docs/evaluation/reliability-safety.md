@@ -157,3 +157,9 @@ raw audit trail, privacy handling and known limits
 ```
 
 统计区间见[统计推断](statistical-inference.md)，上线 SLO 与事故闭环见[生产可靠性](production-reliability.md)，最小工具见[评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [OpenAI Instruction Hierarchy](https://openai.com/index/the-instruction-hierarchy/)
+- [HELM: Holistic Evaluation of Language Models](https://arxiv.org/abs/2211.09110)
+- [NIST AI 600-1: Generative Artificial Intelligence Profile](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence)

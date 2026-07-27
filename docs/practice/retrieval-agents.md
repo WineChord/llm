@@ -324,3 +324,9 @@ def run_agent(policy, runtime, initial_state, verify, max_steps):
 - security：不可信文档诱导外发或扩大权限。
 
 机制说明见[RAG](../applications/rag.md)、[工具调用](../applications/tool-use.md)、[运行时](../applications/agent-runtime.md)和[智能体安全](../applications/agent-security.md)。
+
+## Reference {#reference}
+
+- [RRF 原论文](https://research.google/pubs/reciprocal-rank-fusion-outperforms-condorcet-and-individual-rank-learning-methods/)
+- [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401)
+- [ReAct: Synergizing Reasoning and Acting in Language Models](https://arxiv.org/abs/2210.03629)

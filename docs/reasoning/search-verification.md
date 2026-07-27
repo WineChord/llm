@@ -196,3 +196,8 @@ $$
 | 成本 | tokens、节点、verifier、工具、平均与尾延迟 |
 
 本节的边界与阅读顺序见[推理与推理时计算总览](index.md)。搜索轨迹怎样用于策略与奖励训练，见[搜索、过程奖励与验证](../agentic-rl/search-verification.md)；候选生成和自适应停止见[推理时计算](test-time-compute.md)；最小 beam、PUCT 与校准实验见[测试时计算手撕实现](../practice/test-time-compute.md)。
+
+## Reference {#reference}
+
+- [Let's Verify Step by Step](https://arxiv.org/abs/2305.20050)
+- [Tree of Thoughts](https://arxiv.org/abs/2305.10601)

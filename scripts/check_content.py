@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DOCS = sorted((ROOT / "docs").rglob("*.md"))
 FILES = [ROOT / "README.md", *DOCS]
 LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+REFERENCE_LINK = re.compile(r"(?<!!)\[([^\]]+)\]\((https://[^)]+)\)")
 ARXIV = re.compile(r"https://arxiv\.org/abs/\d{4}\.\d{4,5}")
 TABLE_SEPARATOR = re.compile(
     r"^\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|?\s*$"
@@ -171,7 +172,38 @@ WORK_PAGES = (
     "landscape/works/react-toolformer.md",
     "landscape/works/helm-arena.md",
 )
+REFERENCE_HEADING = "## Reference {#reference}"
+REFERENCE_EXEMPT_PAGES = {
+    "agentic-rl/reading-list.md",
+    "changelog.md",
+    "glossary.md",
+    "references.md",
+}
+LEGACY_REFERENCE_HEADINGS = {
+    "## 一手来源",
+    "## 原作与实现",
+    "## 原作与实现边界",
+    "## 原始工作与实现边界",
+    "## 原作与代码",
+}
+GENERIC_REFERENCE_LABELS = {
+    "论文",
+    "原论文",
+    "项目页",
+    "官方实现",
+    "作者实现",
+    "公开实现",
+    "官方仓库",
+    "官方文档",
+    "官方博客",
+    "技术报告",
+    "报告",
+    "文档",
+    "参考库",
+    "仓库",
+}
 errors: list[str] = []
+reference_page_count = 0
 
 
 def table_cell_count(line: str) -> int:
@@ -181,6 +213,18 @@ def table_cell_count(line: str) -> int:
     if body.endswith("|") and not body.endswith(r"\|"):
         body = body[:-1]
     return len(re.split(r"(?<!\\)\|", body))
+
+
+def unfenced_lines(text: str) -> list[str]:
+    visible: list[str] = []
+    in_fence = False
+    for line in text.splitlines():
+        if line.lstrip().startswith("```"):
+            in_fence = not in_fence
+            continue
+        if not in_fence:
+            visible.append(line)
+    return visible
 
 
 for relative in (*REQUIRED_PAGES, *LINEAGE_PAGES, *WORK_PAGES):
@@ -216,6 +260,7 @@ for relative in WORK_PAGES:
 for path in FILES:
     text = path.read_text(encoding="utf-8")
     lines = text.splitlines()
+    visible_lines = unfenced_lines(text)
     if path.suffix == ".md" and not any(line.startswith("# ") for line in lines):
         errors.append(f"{path.relative_to(ROOT)}: 缺少一级标题")
     if path.parent != ROOT and len(text.strip()) < 240:
@@ -245,6 +290,77 @@ for path in FILES:
         errors.append(f"{path.relative_to(ROOT)}:{open_fence}: 代码块未闭合")
     if re.search(r"\b(?:TODO|TBD)\b|待补充|敬请期待", text, re.IGNORECASE):
         errors.append(f"{path.relative_to(ROOT)}: 不得发布占位内容")
+    if path in DOCS:
+        relative = path.relative_to(ROOT / "docs").as_posix()
+        legacy = sorted(LEGACY_REFERENCE_HEADINGS.intersection(visible_lines))
+        if legacy:
+            errors.append(
+                f"docs/{relative}: 使用旧来源标题，应统一为 {REFERENCE_HEADING}："
+                + "、".join(legacy)
+            )
+        reference_indexes = [
+            index
+            for index, line in enumerate(visible_lines)
+            if line == REFERENCE_HEADING
+        ]
+        requires_reference = (
+            path.name != "index.md"
+            and relative not in REFERENCE_EXEMPT_PAGES
+        )
+        if requires_reference and len(reference_indexes) != 1:
+            errors.append(
+                f"docs/{relative}: 知识页必须恰有一个 {REFERENCE_HEADING}"
+            )
+        if reference_indexes:
+            reference_page_count += 1
+            if len(reference_indexes) != 1:
+                errors.append(
+                    f"docs/{relative}: {REFERENCE_HEADING} 不得重复"
+                )
+            else:
+                reference_index = reference_indexes[0]
+                section_lines = visible_lines[reference_index + 1 :]
+                if any(line.startswith("## ") for line in section_lines):
+                    errors.append(
+                        f"docs/{relative}: Reference 必须是最后一个二级章节"
+                    )
+                section = "\n".join(section_lines)
+                sources = REFERENCE_LINK.findall(section)
+                minimum = 2 if relative in (*LINEAGE_PAGES, *WORK_PAGES) else 1
+                if len(sources) < minimum:
+                    errors.append(
+                        f"docs/{relative}: Reference 至少需要 {minimum} 个 HTTPS Markdown 链接"
+                    )
+                normalized = [
+                    url.split("#", 1)[0].rstrip("/") for _, url in sources
+                ]
+                if len(normalized) != len(set(normalized)):
+                    errors.append(
+                        f"docs/{relative}: Reference 存在重复目标"
+                    )
+                normalized_labels = [
+                    re.sub(r"[*_`]", "", label).strip().casefold()
+                    for label, _ in sources
+                ]
+                if len(normalized_labels) != len(set(normalized_labels)):
+                    errors.append(
+                        f"docs/{relative}: Reference 存在无法区分的重复链接标题"
+                    )
+                without_links = REFERENCE_LINK.sub("", section)
+                if re.search(r"https?://", without_links):
+                    errors.append(
+                        f"docs/{relative}: Reference 不得包含裸 URL"
+                    )
+                for label, _ in sources:
+                    clean_label = re.sub(r"[*_`]", "", label).strip()
+                    if (
+                        clean_label in GENERIC_REFERENCE_LABELS
+                        or len(clean_label) < 4
+                    ):
+                        errors.append(
+                            f"docs/{relative}: Reference 链接标题缺少可独立识别的信息："
+                            f"{label}"
+                        )
     for target in LINK.findall(text):
         target = target.split("#", 1)[0]
         if not target or target.startswith(("https://", "mailto:")):
@@ -267,4 +383,7 @@ if source_count < 120:
 if errors:
     print("\n".join(errors), file=sys.stderr)
     raise SystemExit(1)
-print(f"内容检查通过：{len(DOCS)} 个页面，{source_count} 个论文链接")
+print(
+    f"内容检查通过：{len(DOCS)} 个页面，{reference_page_count} 个页级 Reference，"
+    f"{source_count} 个论文链接"
+)

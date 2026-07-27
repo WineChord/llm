@@ -90,7 +90,7 @@ Chinchilla 模型用约 70B 参数和 1.4T token，在报告的任务中与显�
 5. 置信区间和外推距离；
 6. 对失败或异常运行不做选择性删除。
 
-## 原作与实现边界
+## Reference {#reference}
 
 - [Scaling Laws 论文](https://arxiv.org/abs/2001.08361)；
 - [Chinchilla 论文](https://arxiv.org/abs/2203.15556)与 [DeepMind 官方说明](https://deepmind.google/blog/an-empirical-analysis-of-compute-optimal-large-language-model-training/)。

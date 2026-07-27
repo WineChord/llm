@@ -214,3 +214,11 @@ contamination audit/execution date/known limits
 ```
 
 指标选择见[指标与评测设计](metrics.md)，区间与功效见[统计推断](statistical-inference.md)，最小实现见[评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness)
+- [lm-evaluation-harness task guide](https://github.com/EleutherAI/lm-evaluation-harness/blob/main/docs/task_guide.md)
+- [PALOMA: A Benchmark for Evaluating Language Model Fit](https://arxiv.org/abs/2312.10523)
+- [MMLU](https://arxiv.org/abs/2009.03300)
+- [Evaluating Large Language Models Trained on Code / HumanEval](https://arxiv.org/abs/2107.03374)

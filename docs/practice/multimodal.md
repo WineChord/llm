@@ -308,3 +308,12 @@ assert tubelets.shape == (1, 4 * 4 * 4, 3 * 2 * 4 * 3)
 - RVQ stage 数、音频实时系数与 streaming 连续性。
 
 概念页见[多模态融合](../multimodal/architecture-training.md)、[理解与生成统一](../multimodal/unified-understanding-generation.md)、[图像生成](../multimodal/generative-modeling.md)、[音频](../multimodal/audio-language-models.md)与[视频](../multimodal/video-world-models.md)。
+
+## Reference {#reference}
+
+- [Learning Transferable Visual Models From Natural Language Supervision](https://arxiv.org/abs/2103.00020)
+- [SigLIP](https://arxiv.org/abs/2303.15343)
+- [VQ-VAE](https://arxiv.org/abs/1711.00937)
+- [Denoising Diffusion Probabilistic Models](https://arxiv.org/abs/2006.11239)
+- [Flow Matching for Generative Modeling](https://arxiv.org/abs/2210.02747)
+- [EnCodec](https://arxiv.org/abs/2210.13438)

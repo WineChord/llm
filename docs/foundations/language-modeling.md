@@ -46,3 +46,9 @@ $$
 - 解码策略能改变多样性，但不能创造权重和上下文中不存在的可靠证据。
 
 原始基础见 [Attention Is All You Need](https://arxiv.org/abs/1706.03762)；缩放行为见[缩放与计算](scaling.md)。
+
+## Reference {#reference}
+
+- [A Neural Probabilistic Language Model](https://www.jmlr.org/papers/v3/bengio03a.html)
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- [Language Models are Few-Shot Learners](https://arxiv.org/abs/2005.14165)

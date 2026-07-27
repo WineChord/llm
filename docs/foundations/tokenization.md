@@ -192,3 +192,10 @@ Perplexity 依赖 tokenization，两个词表上的 token-level PPL 不能直接
 | Checkpoint | embedding/output shape、ID 范围、版本与 hash |
 
 Tokenizer 生成的序列如何参与 packing、label shift 与 loss mask，见[序列构造与打包](../data/sequence-construction.md)；token 单位怎样影响评测，见[语言模型评测协议](../evaluation/language-model-evaluation.md)。
+
+## Reference {#reference}
+
+- [Neural Machine Translation of Rare Words with Subword Units](https://arxiv.org/abs/1508.07909)
+- [Unigram 分词](https://arxiv.org/abs/1804.10959)
+- [SentencePiece](https://arxiv.org/abs/1808.06226)
+- [google/sentencepiece](https://github.com/google/sentencepiece)

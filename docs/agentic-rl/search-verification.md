@@ -130,3 +130,10 @@ $$
 - 搜索数据用于训练后的 held-out 回归。
 
 策略梯度见[数学与算法](math-algorithms.md)，轨迹字段见[轨迹与策略契约](trajectory-contract.md)，奖励攻击见[评测与安全](evaluation-safety.md)。
+
+## Reference {#reference}
+
+- [Tree of Thoughts: Deliberate Problem Solving with Large Language Models](https://arxiv.org/abs/2305.10601)
+- [Let's Verify Step by Step](https://arxiv.org/abs/2305.20050)
+- [Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm](https://arxiv.org/abs/1712.01815)
+- [Scaling LLM Test-Time Compute Optimally can be More Effective than Scaling Model Parameters](https://arxiv.org/abs/2408.03314)

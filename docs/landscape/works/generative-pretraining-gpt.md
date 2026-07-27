@@ -87,3 +87,10 @@ GPT-1 在当时一组语言理解任务上展示了生成式预训练与判别�
 - 官方仓库能重建原始数据、硬件和完整训练运行。
 
 它留下的最重要遗产，是一个足够简单、能不断扩展的目标—接口组合。现代预训练、SFT 与对话 mask 的完整契约见[预训练](../../training/pretraining.md)和[监督微调](../../training/supervised-finetuning.md)。
+
+## Reference {#reference}
+
+- [Improving Language Understanding by Generative Pre-Training](https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf)
+- [finetune-transformer-lm](https://github.com/openai/finetune-transformer-lm)
+- [GPT-2 技术报告](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)
+- [Language Models are Few-Shot Learners](https://arxiv.org/abs/2005.14165)

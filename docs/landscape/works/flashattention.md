@@ -160,7 +160,7 @@ Online softmax 使用全局 running maximum 保持稳定，但浮点加法顺序
 
 降低 dtype 只有在 load/store、计算和 accumulator 路径确实采用对应格式时才减少关键路径成本。精度边界见[精度与数值](../../systems/precision-numerics.md)。
 
-## 原始工作与实现边界
+## Reference {#reference}
 
 - [FlashAttention 原论文](https://arxiv.org/abs/2205.14135)是算法与 IO 分析的一手来源。
 - [FlashAttention-2](https://arxiv.org/abs/2307.08691)和 [FlashAttention-3](https://arxiv.org/abs/2407.08608)分别代表工作划分与 Hopper 异步流水的后续演进。

@@ -166,13 +166,13 @@ $$
 
 组合并行的目标是最小化关键路径上的 exposed communication，而不是让每个并行度都尽可能大。完整的 collective 和布局推导见[集合通信与状态分片](../../systems/collectives-sharding.md)与[模型并行](../../systems/model-parallelism.md)。
 
-## 原始工作与实现边界
+## Reference {#reference}
 
 - [Megatron-LM 原始论文](https://arxiv.org/abs/1909.08053)固定了经典 Transformer tensor-parallel 切分。
 - [Megatron 大规模训练论文](https://arxiv.org/abs/2104.04473)研究 TP、PP、DP 的组合与 interleaved pipeline。
 - [NVIDIA Megatron-LM 官方仓库](https://github.com/NVIDIA/Megatron-LM)持续加入 sequence/context/expert parallel、distributed optimizer 与新硬件路径；当前代码不能反向代表 2019 论文的全部实验条件。
 - [ZeRO 原始论文](https://arxiv.org/abs/1910.02054)给出三阶段冗余消除与通信分析。
 - [DeepSpeed ZeRO 官方指南](https://www.deepspeed.ai/tutorials/zero/)描述一种生产实现及其配置；offload、quantization 和新 runtime 特性需要按具体版本核验。
-- [PyTorch FSDP 论文](https://arxiv.org/abs/2304.11277)与[官方文档](https://docs.pytorch.org/docs/stable/fsdp.html)提供另一套 fully sharded 执行与 API 语义，不应把 FSDP 配置名机械映射成某个 DeepSpeed stage。
+- [PyTorch FSDP 论文](https://arxiv.org/abs/2304.11277)与[PyTorch Fully Sharded Data Parallel documentation](https://docs.pytorch.org/docs/stable/fsdp.html)提供另一套 fully sharded 执行与 API 语义，不应把 FSDP 配置名机械映射成某个 DeepSpeed stage。
 
 评测必须同时报告模型 shape、TP/PP/DP 网格、物理拓扑、microbatch、dtype、checkpoint/recompute、峰值显存、collective 暴露和有效 token throughput。只报告 GPU 数量无法复现实验。

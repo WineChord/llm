@@ -91,3 +91,8 @@ Seq2Seq 在当时的机器翻译设置中展示了大规模 LSTM encoder–decod
 - 后来的 scaled dot-product attention 与 additive attention 在所有条件下等价。
 
 有限状态的前序见[LSTM](lstm.md)，现代 cross-attention 在多模态和生成中的迁移见[冻结模型之间怎样架桥](visual-language-bridges.md)与[RAG](rag.md)，实现层的 mask 细节见[张量原语](../../practice/tensor-primitives.md)。
+
+## Reference {#reference}
+
+- [Sequence to Sequence Learning with Neural Networks](https://proceedings.neurips.cc/paper_files/paper/2014/hash/5a18e133cbf9f257297f410bb7eca942-Abstract.html)
+- [Neural Machine Translation by Jointly Learning to Align and Translate](https://arxiv.org/abs/1409.0473)

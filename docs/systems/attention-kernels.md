@@ -213,3 +213,14 @@ attention kernel 至少固定：
 8. 在 graph capture、请求取消与 cache COW 后重复 correctness test，检查异步生命周期错误。
 
 kernel 层结论应回到[性能成本模型](performance-model.md)核对 Amdahl 上限，并与[GPU 执行模型](gpu-execution.md)中的 tile、流水和资源约束一起解释。
+
+## Reference {#reference}
+
+- [FlashAttention](https://arxiv.org/abs/2205.14135)
+- [FlashAttention-2](https://arxiv.org/abs/2307.08691)
+- [FlashAttention-3](https://arxiv.org/abs/2407.08608)
+- [FlashAttention-4](https://arxiv.org/abs/2603.05451)
+- [Dao-AILab/flash-attention](https://github.com/Dao-AILab/flash-attention)
+- [FlashInfer](https://arxiv.org/abs/2501.01005)
+- [flashinfer-ai/flashinfer](https://github.com/flashinfer-ai/flashinfer)
+- [vAttention](https://arxiv.org/abs/2405.04437)

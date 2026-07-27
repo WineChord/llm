@@ -207,3 +207,10 @@ MoE 的理论激活 FLOPs 较低，不代表相同质量、相同延迟或相同
 8. 在线推理同时测平均吞吐、TPOT 尾延迟、hot-expert 情况和质量差异。
 
 系统设计应先用[性能成本模型](performance-model.md)量化激活计算和通信，再按[GPU 执行模型](gpu-execution.md)检查小 GEMM 与 permutation 是否真正映射到硬件。token permutation、并行线性层与 checkpoint manifest 的紧凑 reference 见[手撕：分布式与容错](../practice/distributed-systems.md)。
+
+## Reference {#reference}
+
+- [DeepEP](https://github.com/deepseek-ai/DeepEP)
+- [MegaBlocks](https://arxiv.org/abs/2211.15841)
+- [DeepSeek-V3](https://arxiv.org/abs/2412.19437)
+- [Megatron Core MoE 指南](https://docs.nvidia.com/megatron-core/developer-guide/latest/user-guide/features/moe.html)

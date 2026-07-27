@@ -120,3 +120,10 @@ $$
 - 出现 NaN 时是否找到第一个非有限张量，而不是只降低学习率。
 
 概率目标连接[语言建模](language-modeling.md)、[监督微调](../training/supervised-finetuning.md)和[策略优化](../agentic-rl/math-algorithms.md)。
+
+## Reference {#reference}
+
+- [A Neural Probabilistic Language Model](https://www.jmlr.org/papers/v3/bengio03a.html)
+- [PyTorch CrossEntropyLoss documentation](https://docs.pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html)
+- [PyTorch gradcheck documentation](https://docs.pytorch.org/docs/stable/generated/torch.autograd.gradcheck.gradcheck.html)
+- [Transformers: Perplexity of fixed-length models](https://huggingface.co/docs/transformers/main/perplexity)

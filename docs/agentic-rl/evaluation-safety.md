@@ -109,3 +109,10 @@ $$
 - 在长轨迹中是否逐步偏离原始约束。
 
 通用可靠性见[可靠性与安全](../evaluation/reliability-safety.md)，环境设计见[数据与环境](data-environments.md)。
+
+## Reference {#reference}
+
+- [Concrete Problems in AI Safety](https://arxiv.org/abs/1606.06565)
+- [ToolEmu: Identifying the Risks of LM Agents with an LM-Emulated Sandbox](https://arxiv.org/abs/2309.15817)
+- [AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents](https://arxiv.org/abs/2406.13352)
+- [NIST AI 600-1: Generative Artificial Intelligence Profile](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence)

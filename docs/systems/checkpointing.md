@@ -289,3 +289,10 @@ ZeRO/FSDP shard 与 reshard 的基础语义见[集合通信与状态分片](coll
 8. 长期演练 partial write、worker failure 和存储故障。
 
 恢复排查可结合[调试手册](../practice/debugging.md)，manifest 原子提交与恢复校验的紧凑 reference 见[手撕：分布式与容错](../practice/distributed-systems.md)。通过一次读取测试只证明一个样本可读；可靠 checkpoint 需要持续的故障注入、跨版本迁移和独立恢复证据。
+
+## Reference {#reference}
+
+- [PyTorch Distributed Checkpoint](https://docs.pytorch.org/docs/stable/distributed.checkpoint.html)
+- [PyTorch 异步 checkpoint recipe](https://docs.pytorch.org/tutorials/recipes/distributed_async_checkpoint_recipe.html)
+- [ByteCheckpoint](https://arxiv.org/abs/2407.20143)
+- [A Higher Order Estimate of the Optimum Checkpoint Interval for Restart Dumps](https://doi.org/10.1016/j.future.2004.11.016)

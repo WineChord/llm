@@ -203,3 +203,14 @@ reward model 的校准与不可辨识性见[奖励建模](reward-modeling.md)，
 8. save/resume 后 policy version、old log-prob、data cursor 和 reference 必须连续。
 
 目标函数的最小实现见[训练目标实现](../practice/training-objectives.md)，多步动作与异步轨迹见[轨迹与策略契约](../agentic-rl/trajectory-contract.md)。
+
+## Reference {#reference}
+
+- [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
+- [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)
+- [Back to Basics: Revisiting REINFORCE Style Optimization for Learning from Human Feedback](https://arxiv.org/abs/2402.14740)
+- [ReMax](https://arxiv.org/abs/2310.10505)
+- [DeepSeekMath](https://arxiv.org/abs/2402.03300)
+- [DAPO](https://arxiv.org/abs/2503.14476)
+- [Understanding R1-Zero-Like Training / Dr. GRPO](https://arxiv.org/abs/2503.20783)
+- [IMPALA: Scalable Distributed Deep-RL with Importance Weighted Actor-Learner Architectures](https://arxiv.org/abs/1802.01561)

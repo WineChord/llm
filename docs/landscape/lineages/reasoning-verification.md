@@ -185,3 +185,14 @@ RLVR 的优势是 reward 可重复执行、误差边界相对清楚；它的限�
 - [DeepSeek-R1](../works/deepseek-r1.md) 展示了一套特定 base model、数据与评测下的公开配方，不构成完整生产训练复现。
 
 训练闭环的机制页见[推理后训练](../../training/reasoning-posttraining.md)，多步环境与动作信用见[Agentic RL 的搜索、过程奖励与验证](../../agentic-rl/search-verification.md)。
+
+## Reference {#reference}
+
+- [Chain-of-Thought Prompting](https://arxiv.org/abs/2201.11903)
+- [Self-Consistency Improves Chain of Thought Reasoning](https://arxiv.org/abs/2203.11171)
+- [Training Verifiers to Solve Math Word Problems](https://arxiv.org/abs/2110.14168)
+- [Let's Verify Step by Step](https://arxiv.org/abs/2305.20050)
+- [PRM800K](https://github.com/openai/prm800k)
+- [Improving Mathematical Reasoning with Process Supervision](https://openai.com/index/improving-mathematical-reasoning-with-process-supervision/)
+- [Tree of Thoughts](https://arxiv.org/abs/2305.10601)
+- [Scaling LLM Test-Time Compute Optimally](https://arxiv.org/abs/2408.03314)

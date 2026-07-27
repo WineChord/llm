@@ -59,3 +59,9 @@ $$
 - chat template、position IDs 与 KV Cache 增量位置是否一致。
 
 原始架构见 [Attention Is All You Need](https://arxiv.org/abs/1706.03762)。子层与归一化见 [Decoder Block](decoder-block.md)，MHA/GQA/MLA 见[注意力家族](attention-variants.md)，位置外推见[长上下文](long-context.md)，高效实现见[Kernel 与性能](../systems/kernels-performance.md)。
+
+## Reference {#reference}
+
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- [Root Mean Square Layer Normalization](https://arxiv.org/abs/1910.07467)
+- [RoFormer: Enhanced Transformer with Rotary Position Embedding](https://arxiv.org/abs/2104.09864)

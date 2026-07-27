@@ -67,3 +67,14 @@ $$
 - 下游是冻结表示、全量微调、生成还是上下文学习。
 
 否则，架构、目标、数据和计算的收益会被混成一个数字。通用概率口径见[语言建模](../../foundations/language-modeling.md)与[概率、损失与梯度](../../foundations/probability-objectives.md)，训练流程见[预训练](../../training/pretraining.md)，紧凑实现见[手撕：训练目标](../../practice/training-objectives.md)。
+
+## Reference {#reference}
+
+- [Improving Language Understanding by Generative Pre-Training](https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf)
+- [finetune-transformer-lm](https://github.com/openai/finetune-transformer-lm)
+- [BERT 2018 preprint](https://arxiv.org/abs/1810.04805)
+- [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://aclanthology.org/N19-1423/)
+- [TensorFlow 代码与预训练模型](https://github.com/google-research/bert)
+- [Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer](https://arxiv.org/abs/1910.10683)
+- [JMLR 2020](https://www.jmlr.org/papers/volume21/20-074/20-074.pdf)
+- [text-to-text-transfer-transformer](https://github.com/google-research/text-to-text-transfer-transformer)

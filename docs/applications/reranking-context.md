@@ -120,3 +120,11 @@ content: ...
 - 端到端答案正确性和引用支持性。
 
 最终输出怎样绑定证据见[证据约束生成](grounded-generation.md)，核心融合与 MMR 实现见[手撕：检索与智能体](../practice/retrieval-agents.md)。
+
+## Reference {#reference}
+
+- [HyDE](https://arxiv.org/abs/2212.10496)
+- [Carbonell 与 Goldstein](https://aclanthology.org/X98-1025/)
+- [Lost in the Middle](https://arxiv.org/abs/2307.03172)
+- [LLMLingua](https://arxiv.org/abs/2310.05736)
+- [RAPTOR](https://arxiv.org/abs/2401.18059)

@@ -107,3 +107,10 @@ $$
 - 许可、隐私、删除和保留期限。
 
 目标函数见[奖励建模与偏好优化](../training/reward-preference.md)，在线环境数据见[Agentic RL 数据与环境](../agentic-rl/data-environments.md)。
+
+## Reference {#reference}
+
+- [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)
+- [Let's Verify Step by Step](https://arxiv.org/abs/2305.20050)
+- [RLDS: an Ecosystem to Generate, Share and Use Datasets in Reinforcement Learning](https://arxiv.org/abs/2111.02767)
+- [Datasheets for Datasets](https://arxiv.org/abs/1803.09010)

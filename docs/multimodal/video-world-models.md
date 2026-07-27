@@ -190,3 +190,12 @@ $$
 | 开环/闭环 | 离线预测与环境实际执行分别评测 |
 
 动作输出和闭环验证见[具身智能与动作](embodied-agents.md)，长输入利用见[长上下文](../architecture/long-context.md)，时空 patch 与 mask 练习见[多模态手撕实现](../practice/multimodal.md)。
+
+## Reference {#reference}
+
+- [VideoPoet](https://arxiv.org/abs/2312.14125)
+- [Lumiere](https://arxiv.org/abs/2401.12945)
+- [CogVideoX](https://arxiv.org/abs/2408.06072)
+- [Genie](https://arxiv.org/abs/2402.15391)
+- [V-JEPA](https://arxiv.org/abs/2404.08471)
+- [Sora 技术说明](https://openai.com/index/video-generation-models-as-world-simulators/)

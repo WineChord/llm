@@ -186,3 +186,8 @@ tokens, latency, cost and known limits
 ```
 
 事实 claim 的 judge 口径见[幻觉与事实性](hallucination.md)，统计聚合见[统计推断](statistical-inference.md)，最小 swap/BT 工具见[评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena](https://arxiv.org/abs/2306.05685)
+- [Judging the Judges](https://arxiv.org/abs/2406.07791)

@@ -101,3 +101,9 @@ $$
 6. **回归**：检查导航、内部链接、数学公式和窄屏渲染。
 
 阅读全站时，可把本页与[阅读方法](method.md)、[实验方法](../practice/index.md)和[模型谱系](../landscape/index.md)结合使用。
+
+## Reference {#reference}
+
+- [ACM Artifact Review and Badging](https://www.acm.org/publications/policies/artifact-review-and-badging-current)
+- [Lessons from the Trenches on Reproducible Evaluation of Language Models](https://arxiv.org/abs/2405.14782)
+- [NIST AI Risk Management Framework 1.0](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10)

@@ -94,3 +94,9 @@ known failure regions
 ```
 
 注意力结构见[注意力家族](attention-variants.md)，长序列并行见[模型并行](../systems/model-parallelism.md)，在线容量见[推理运行时](../inference/runtime.md)。
+
+## Reference {#reference}
+
+- [RoFormer: Enhanced Transformer with Rotary Position Embedding](https://arxiv.org/abs/2104.09864)
+- [YaRN: Efficient Context Window Extension of Large Language Models](https://arxiv.org/abs/2309.00071)
+- [Ring Attention](https://arxiv.org/abs/2310.01889)

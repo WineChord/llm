@@ -121,3 +121,10 @@ $$
 - judge 更换后的桥接评测。
 
 偏好数据契约见[偏好、过程与轨迹数据](../data/feedback-trajectories.md)，在线策略算法见[Agentic RL 数学与算法](../agentic-rl/math-algorithms.md)。
+
+## Reference {#reference}
+
+- [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)
+- [Direct Preference Optimization](https://arxiv.org/abs/2305.18290)
+- [A General Theoretical Paradigm to Understand Learning from Human Preferences / IPO](https://arxiv.org/abs/2310.12036)
+- [KTO: Model Alignment as Prospect Theoretic Optimization](https://arxiv.org/abs/2402.01306)

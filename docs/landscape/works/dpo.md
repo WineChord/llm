@@ -137,3 +137,9 @@ truncation, packing and grouped split
 DPO 把固定偏好数据利用得更简单，但没有回答“怎样主动发现更好的 reasoning trajectory”。数学、代码等任务若有可执行 verifier，可以让当前策略在线生成候选并获得新 reward；这一分支在 [DeepSeek-R1](deepseek-r1.md) 中形成 reasoning RL 与 distillation 闭环。
 
 整条历史见[从续写到偏好与在线学习](../lineages/training-alignment.md)。更完整的假设、IPO/KTO/SimPO 与验证方法见[离线偏好优化](../../training/offline-preference.md)，在线数据与 old/reference 契约见[在线 RL](../../training/online-rl.md)。
+
+## Reference {#reference}
+
+- [Direct Preference Optimization](https://arxiv.org/abs/2305.18290)
+- [eric-mitchell/direct-preference-optimization](https://github.com/eric-mitchell/direct-preference-optimization)
+- [TRL 的 DPOTrainer](https://huggingface.co/docs/trl/main/en/dpo_trainer)

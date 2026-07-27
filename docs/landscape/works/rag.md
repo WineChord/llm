@@ -87,3 +87,10 @@ query -> retrieve -> rerank -> pack -> generate -> cite -> verify
 ## 它留下的方向
 
 RAG 把“模型知道什么”改写成“模型、索引和运行时共同能访问什么”。随后工具调用把外部状态从只读文档扩展到可执行动作，Agent 又把一次检索扩展为多步轨迹。下一篇[ReAct 与 Toolformer](react-toolformer.md)正从这里开始；整条历史见[从参数记忆到可行动系统](../lineages/retrieval-agents.md)。
+
+## Reference {#reference}
+
+- [Retrieval-Augmented Generation](https://arxiv.org/abs/2005.11401)
+- [REALM](https://arxiv.org/abs/2002.08909)
+- [Dense Passage Retrieval](https://arxiv.org/abs/2004.04906)
+- [Fusion-in-Decoder](https://arxiv.org/abs/2007.01282)

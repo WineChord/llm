@@ -199,3 +199,13 @@ $$
 | 系统 | 分辨率、视觉 token、延迟与失败重试 |
 
 视觉 token 和动态分辨率见[多模态融合、位置与训练](architecture-training.md)，紧凑坐标与 mask 实现见[多模态手撕实现](../practice/multimodal.md)。
+
+## Reference {#reference}
+
+- [OCR-free Document Understanding Transformer / Donut](https://arxiv.org/abs/2111.15664)
+- [Pix2Struct](https://arxiv.org/abs/2210.03347)
+- [Kosmos-2](https://arxiv.org/abs/2306.14824)
+- [SeeClick: Harnessing GUI Grounding for Advanced Visual GUI Agents](https://arxiv.org/abs/2401.10935)
+- [ScreenAI](https://arxiv.org/abs/2402.04615)
+- [ScreenAI official publication page](https://research.google/pubs/screenai-a-vision-language-model-for-ui-and-infographics-understanding/)
+- [Nougat](https://arxiv.org/abs/2308.13418)

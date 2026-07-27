@@ -61,3 +61,11 @@ $$
 [Attention Residuals](https://arxiv.org/abs/2603.15031)及其[官方实现](https://github.com/MoonshotAI/Attention-Residuals)把 attention 用在网络深度方向，对先前层表示进行内容相关加权。它改变的是 residual aggregation，不是 token 序列上的 MHA/GQA，也不属于位置编码。
 
 截至公开论文所披露的证据，该方法在作者给定规模、数据和实现中得到验证，并给出 block-level 近似以降低跨层状态与通信成本。其跨模型家族、训练栈和更大规模的通用收益仍需独立证据，因此只作为前沿观察，不纳入稳定注意力分类。
+
+## Reference {#reference}
+
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- [GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints](https://arxiv.org/abs/2305.13245)
+- [RoFormer: Enhanced Transformer with Rotary Position Embedding](https://arxiv.org/abs/2104.09864)
+- [Attention Residuals](https://arxiv.org/abs/2603.15031)
+- [MoonshotAI/Attention-Residuals](https://github.com/MoonshotAI/Attention-Residuals)

@@ -193,3 +193,10 @@ systematic uncertainties outside the interval
 ```
 
 指标与分母见[指标与评测设计](metrics.md)，paired/cluster 实现见[评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [Bootstrap Methods: Another Look at the Jackknife](https://projecteuclid.org/journals/annals-of-statistics/volume-7/issue-1/Bootstrap-Methods-Another-Look-at-the-Jackknife/10.1214/aos/1176344552.full)
+- [Bootstrap-Based Improvements for Inference with Clustered Errors](https://direct.mit.edu/rest/article/90/3/414/57731/Bootstrap-Based-Improvements-for-Inference-with)
+- [A Simple Sequentially Rejective Multiple Test Procedure](https://www.jstor.org/stable/4615733)
+- [Controlling the False Discovery Rate: A Practical and Powerful Approach to Multiple Testing](https://www.math.tau.ac.il/~ybenja/MyPapers/benjamini_hochberg1995.pdf)

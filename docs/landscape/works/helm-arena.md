@@ -75,8 +75,8 @@ RAG、工具和 Agent 让评测对象包含外部服务，推理时搜索让预�
 
 统计细节见[统计推断](../../evaluation/statistical-inference.md)与[生成式裁判](../../evaluation/generative-judges.md)，污染和动态 holdout 见[评测污染](../../evaluation/contamination.md)，完整历史位置见[从困惑度到运行中的评测](../lineages/evaluation.md)。
 
-## 原作与实现
+## Reference {#reference}
 
-- [HELM 论文](https://arxiv.org/abs/2211.09110)与[官方仓库](https://github.com/stanford-crfm/helm)；
-- [MT-Bench / LLM-as-a-Judge 论文](https://arxiv.org/abs/2306.05685)与[公开实现](https://github.com/lm-sys/FastChat/tree/main/fastchat/llm_judge)；
+- [HELM 论文](https://arxiv.org/abs/2211.09110)与[stanford-crfm/helm](https://github.com/stanford-crfm/helm)；
+- [MT-Bench / LLM-as-a-Judge 论文](https://arxiv.org/abs/2306.05685)与[FastChat LLM judge implementation](https://github.com/lm-sys/FastChat/tree/main/fastchat/llm_judge)；
 - [Chatbot Arena 论文](https://arxiv.org/abs/2403.04132)与承载其早期公开实现的 [FastChat](https://github.com/lm-sys/FastChat)；当前项目入口见 [LMArena](https://lmarena.ai/)。

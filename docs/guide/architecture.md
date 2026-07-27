@@ -127,3 +127,8 @@ evaluation and primary evidence
 7. 结论来自理论、原论文、官方实现还是仍待独立验证。
 
 阅读纪律见[阅读方法](method.md)，事实与时效口径见[证据与研究方法](evidence.md)。
+
+## Reference {#reference}
+
+- [Diátaxis documentation framework](https://diataxis.fr/)
+- [MkDocs Material navigation](https://squidfunk.github.io/mkdocs-material/setup/setting-up-navigation/)

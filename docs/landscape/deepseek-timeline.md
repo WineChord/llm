@@ -77,3 +77,14 @@ VL、VL2、Janus 与 OCR 系列处理不同问题：
 - 产品模型名复用时，建立新的 checkpoint 记录而非覆盖旧条目。
 
 训练数字口径见[训练 token 口径](training-tokens.md)，通用谱系模板见[模型谱系](index.md)。
+
+## Reference {#reference}
+
+- [DeepSeek LLM](https://arxiv.org/abs/2401.02954)
+- [DeepSeek-Coder: When the Large Language Model Meets Programming](https://arxiv.org/abs/2401.14196)
+- [DeepSeekMath](https://arxiv.org/abs/2402.03300)
+- [DeepSeek-VL: Towards Real-World Vision-Language Understanding](https://arxiv.org/abs/2403.05525)
+- [DeepSeek-V2](https://arxiv.org/abs/2405.04434)
+- [DeepSeek-V3](https://arxiv.org/abs/2412.19437)
+- [DeepSeek-R1](https://arxiv.org/abs/2501.12948)
+- [Janus](https://arxiv.org/abs/2410.13848)

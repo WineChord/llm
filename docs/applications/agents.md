@@ -109,3 +109,8 @@ $m_t$ 是记忆，$p_t$ 是当前计划，$b_t$ 是预算与权限。模型只�
 6. 需要从轨迹学习时进入 [Agentic RL](../agentic-rl/index.md)。
 
 最小 schema 校验与工具调度代码见[手撕：检索与智能体](../practice/retrieval-agents.md)。
+
+## Reference {#reference}
+
+- [ReAct](https://arxiv.org/abs/2210.03629)
+- [Toolformer](https://arxiv.org/abs/2302.04761)

@@ -188,3 +188,9 @@ def majority_decided(counts, remaining):
 - 测试数据或 hidden verifier 泄漏进训练。
 
 机制与证据见[推理时计算](../reasoning/test-time-compute.md)、[验证与搜索](../reasoning/search-verification.md)和[推理训练](../training/reasoning-posttraining.md)。
+
+## Reference {#reference}
+
+- [Self-Consistency Improves Chain of Thought Reasoning](https://arxiv.org/abs/2203.11171)
+- [Tree of Thoughts: Deliberate Problem Solving with Large Language Models](https://arxiv.org/abs/2305.10601)
+- [Scaling LLM Test-Time Compute Optimally can be More Effective than Scaling Model Parameters](https://arxiv.org/abs/2408.03314)

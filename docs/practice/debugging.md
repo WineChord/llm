@@ -223,3 +223,9 @@ $$
 - 文档中的不变量、限制和版本更新。
 
 实验怎样留证见[实验方法](index.md)，统计差异是否可信见[评测工具](evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [PyTorch reproducibility notes](https://docs.pytorch.org/docs/stable/notes/randomness.html)
+- [PyTorch numerical accuracy notes](https://docs.pytorch.org/docs/stable/notes/numerical_accuracy.html)
+- [NCCL troubleshooting guide](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/troubleshooting.html)

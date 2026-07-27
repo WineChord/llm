@@ -259,3 +259,10 @@ $$
 大规模训练的并行效率可结合 [Megatron-LM 的扩展研究](https://arxiv.org/abs/2104.04473)校准；训练 token 与模型规模的决策边界可参考 [Chinchilla](https://arxiv.org/abs/2203.15556)。这些论文提供特定模型和硬件条件下的证据，不替代当前工作负载的测量。
 
 把模型落到实际线程束、访存与融合行为见 [GPU 执行模型](gpu-execution.md)，服务侧则应把平均吞吐转换为带 SLO 的[调度与 Goodput](../inference/scheduling-goodput.md)。
+
+## Reference {#reference}
+
+- [DeepSeek LLM](https://arxiv.org/abs/2401.02954)
+- [NCCL collective 语义](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/collectives.html)
+- [Megatron 的大规模训练研究](https://arxiv.org/abs/2104.04473)
+- [Training Compute-Optimal Large Language Models](https://arxiv.org/abs/2203.15556)

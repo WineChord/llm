@@ -139,3 +139,9 @@ $$
 - 与同硬件共置基线的比较。
 
 单引擎状态见[推理运行时](runtime.md)，在线容量策略见[调度与服务](serving.md)。
+
+## Reference {#reference}
+
+- [DistServe](https://www.usenix.org/conference/osdi24/presentation/zhong-yinmin)
+- [Splitwise: Efficient Generative LLM Inference Using Phase Splitting](https://arxiv.org/abs/2311.18677)
+- [Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving](https://arxiv.org/abs/2407.00079)

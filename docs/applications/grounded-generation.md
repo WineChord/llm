@@ -126,3 +126,8 @@ judge 也会受提示、顺序和模型家族影响。必须保留人工校准�
 评测集应包含直接事实、多证据组合、数字计算、否定条件、冲突来源、时间变化、不可回答与对抗注入。每个样本保存 gold claims、允许的证据集合、不可回答原因和风险等级。
 
 引用质量与幻觉边界见[幻觉与事实性](../evaluation/hallucination.md)，检索前半段见[索引与召回](retrieval-indexing.md)，精度/召回代码见[手撕：评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401)
+- [Self-RAG](https://arxiv.org/abs/2310.11511)

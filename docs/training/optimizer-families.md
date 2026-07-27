@@ -115,3 +115,9 @@ resume conversion rules
 ```
 
 混合精度与故障诊断见[优化与稳定性](optimization.md)，状态分片见[集合通信与分片](../systems/collectives-sharding.md)。
+
+## Reference {#reference}
+
+- [On the Importance of Initialization and Momentum in Deep Learning](https://proceedings.mlr.press/v28/sutskever13.html)
+- [Decoupled Weight Decay Regularization](https://arxiv.org/abs/1711.05101)
+- [Muon is Scalable for LLM Training](https://arxiv.org/abs/2502.16982)

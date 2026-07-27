@@ -214,3 +214,10 @@ cluster confidence intervals and known limits
 ```
 
 judge 协议见[生成式评测与 LLM Judge](generative-judges.md)，污染与跨模态变体见[评测污染](contamination.md)，最小统计工具见[评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [MMMU](https://arxiv.org/abs/2311.16502)
+- [OSWorld](https://arxiv.org/abs/2404.07972)
+- [VBench: Comprehensive Benchmark Suite for Video Generative Models](https://arxiv.org/abs/2311.17982)
+- [Fréchet Audio Distance](https://arxiv.org/abs/1812.08466)

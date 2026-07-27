@@ -124,3 +124,10 @@ $$
 - 分别报告计算、通信、空泡和未重叠时间。
 
 collective 语义见[集合通信与分片](collectives-sharding.md)，算子效率见[Kernel 与性能](kernels-performance.md)。
+
+## Reference {#reference}
+
+- [Megatron-LM](https://arxiv.org/abs/1909.08053)
+- [GPipe](https://arxiv.org/abs/1811.06965)
+- [Zero Bubble Pipeline Parallelism](https://arxiv.org/abs/2401.10241)
+- [Ring Attention](https://arxiv.org/abs/2310.01889)

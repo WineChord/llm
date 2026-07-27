@@ -74,3 +74,10 @@ Seq2seq 把 encoder 最终状态用作整句摘要后，这个瓶颈变得尤为
 现代状态空间模型同样研究有限状态怎样吸收历史，只是使用结构化线性 dynamics、卷积 duality 和硬件 scan。[Mamba](s4-mamba.md)又引入输入依赖的选择性更新。它们并不是 LSTM 的直接放大版，却继承了同一个根问题：有限状态应该何时写、何时忘、怎样在训练和推理之间保持一致。
 
 前序历史见[从计数、分布式表示到可学习状态](../lineages/counts-to-learned-state.md)，后续寻址转折见[从固定向量到全局内容寻址](../lineages/transduction-to-attention.md)，现代递推实现见[递推与记忆](../../practice/sequence-models.md)。
+
+## Reference {#reference}
+
+- [Hochreiter 与 Schmidhuber 1997](https://direct.mit.edu/neco/article/9/8/1735/6109/Long-Short-Term-Memory)
+- [Elman 1990](https://onlinelibrary.wiley.com/doi/10.1207/s15516709cog1402_1)
+- [A Neural Probabilistic Language Model](https://www.jmlr.org/papers/v3/bengio03a.html)
+- [Gers、Schmidhuber 与 Cummins 2000](https://direct.mit.edu/neco/article/12/10/2451/6415/Learning-to-Forget-Continual-Prediction-with-LSTM)

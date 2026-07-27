@@ -122,3 +122,8 @@ assert reward("<answer>4</answer>", 4) > reward("4", 4) > reward("5", 4)
 训练侧，R1 承接 SFT、在线 RL、group-relative advantage 与 distillation，见[从续写到偏好与在线学习](../lineages/training-alignment.md)。推理侧，它把长轨迹、候选验证、搜索数据和 RLVR 连接起来，见[从外显推理到可验证搜索](../lineages/reasoning-verification.md)。
 
 机制细节见[推理后训练](../../training/reasoning-posttraining.md)、[在线 RL](../../training/online-rl.md)、[推理时计算](../../reasoning/test-time-compute.md)、[搜索与验证](../../reasoning/search-verification.md)和[Agentic RL 数学与算法](../../agentic-rl/math-algorithms.md)。
+
+## Reference {#reference}
+
+- [DeepSeek-R1](https://arxiv.org/abs/2501.12948)
+- [DeepSeek-R1 官方仓库](https://github.com/deepseek-ai/DeepSeek-R1)

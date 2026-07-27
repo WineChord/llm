@@ -178,3 +178,11 @@ P/D 分离时，还必须在 prefill 前预留或有界承诺 decode 容量；�
 - 与相同硬件、相同质量和相同请求流的简单基线比较。
 
 容量结论必须附带硬件、并行布局、dtype、模型版本、调度参数、并发和测量窗口。缺少这些条件的“每秒 token”不能用于生产规划。
+
+## Reference {#reference}
+
+- [Goodput-oriented LLM serving analysis](https://arxiv.org/abs/2410.14257)
+- [Orca: A Distributed Serving System for Transformer-Based Generative Models](https://www.usenix.org/conference/osdi22/presentation/yu)
+- [Preble](https://arxiv.org/abs/2407.00023)
+- [Kubernetes Gateway API Inference Extension 的 InferencePool](https://gateway-api-inference-extension.sigs.k8s.io/api-types/inferencepool/)
+- [Virtual Token Counter](https://arxiv.org/abs/2401.00588)

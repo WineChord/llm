@@ -66,3 +66,10 @@ assert torch.allclose(weight.sum(-1), torch.ones(2, 4), atol=1e-6)
 这些工作在各自的数据、冻结策略和任务中展示了“复用强单模态组件”这条路线的可行性与竞争力，也暴露了桥接的长期张力：视觉信息必须适配语言 token 接口，而语言模型未必保留空间结构。后来的多分辨率切片、二维位置编码、视觉 token pruning 和原生多模态训练都在缓解这一问题。
 
 这段历史的前一站是[CLIP](clip.md)，后一站是[统一理解与生成](../../multimodal/unified-understanding-generation.md)。训练计算图、冻结策略与数据阶段见[融合与训练](../../multimodal/architecture-training.md)，完整谱系见[从“看懂”到“生成”](../lineages/multimodal-generation.md)。
+
+## Reference {#reference}
+
+- [Flamingo](https://arxiv.org/abs/2204.14198)
+- [BLIP-2](https://arxiv.org/abs/2301.12597)
+- [Visual Instruction Tuning / LLaVA](https://arxiv.org/abs/2304.08485)
+- [LLaVA 1.5](https://arxiv.org/abs/2310.03744)

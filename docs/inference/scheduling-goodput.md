@@ -225,3 +225,13 @@ $$
 8. FIFO、简单 continuous batching 和目标策略的同流量比较。
 
 至少报告 offered load、accepted load、rejected load、goodput、TTFT / TPOT / E2E 分位数、队列时间、KV 水位、抢占次数、cache 命中收益和各租户服务份额。
+
+## Reference {#reference}
+
+- [Goodput-oriented LLM serving analysis](https://arxiv.org/abs/2410.14257)
+- [Orca: A Distributed Serving System for Transformer-Based Generative Models](https://www.usenix.org/conference/osdi22/presentation/yu)
+- [Sarathi-Serve](https://www.usenix.org/conference/osdi24/presentation/agrawal)
+- [Virtual Token Counter](https://arxiv.org/abs/2401.00588)
+- [Preble](https://arxiv.org/abs/2407.00023)
+- [Llumnix](https://arxiv.org/abs/2406.03243)
+- [SCORPIO（2025）](https://arxiv.org/abs/2505.23022)

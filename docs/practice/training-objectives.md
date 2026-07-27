@@ -384,3 +384,14 @@ def vtrace(log_rho, reward, value, terminated, gamma=0.99,
 | missingness | timeout、invalid 与 infra error 不静默变成普通零奖励 |
 
 目标推导见[偏好优化](../training/offline-preference.md)与[在线 RL](../training/online-rl.md)，跨 rank 的 loss 与 global norm 见[手撕：分布式与容错](distributed-systems.md)。
+
+## Reference {#reference}
+
+- [LoRA](https://arxiv.org/abs/2106.09685)
+- [Distilling the Knowledge in a Neural Network](https://arxiv.org/abs/1503.02531)
+- [Direct Preference Optimization](https://arxiv.org/abs/2305.18290)
+- [A General Theoretical Paradigm to Understand Learning from Human Preferences / IPO](https://arxiv.org/abs/2310.12036)
+- [SimPO: Simple Preference Optimization with a Reference-Free Reward](https://arxiv.org/abs/2405.14734)
+- [Generalized Advantage Estimation](https://arxiv.org/abs/1506.02438)
+- [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
+- [Back to Basics: Revisiting REINFORCE Style Optimization for Learning from Human Feedback](https://arxiv.org/abs/2402.14740)

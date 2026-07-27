@@ -204,3 +204,11 @@ $$
 Google 对 [bfloat16](https://docs.cloud.google.com/tpu/docs/bfloat16) 的说明展示了指数范围与尾数精度的设计取舍；具体 GPU kernel 和数据布局则应结合 [CUDA Programming Guide](https://docs.nvidia.com/cuda/cuda-programming-guide/index.html)及目标运行时验证。
 
 低比特表示进入部署后的校准与 kernel 约束见[量化](../inference/quantization.md)，训练中发现 overflow、NaN 与续训漂移的顺序见[调试手册](../practice/debugging.md)。
+
+## Reference {#reference}
+
+- [NVIDIA Transformer Engine 的 FP8 说明](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/examples/fp8_primer.html)
+- [MXFP8](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/features/low_precision_training/mxfp8/mxfp8.html)
+- [NVFP4](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/features/low_precision_training/nvfp4/nvfp4.html)
+- [bfloat16](https://docs.cloud.google.com/tpu/docs/bfloat16)
+- [CUDA Programming Guide](https://docs.nvidia.com/cuda/cuda-programming-guide/index.html)

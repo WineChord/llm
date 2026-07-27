@@ -128,3 +128,9 @@ $$
 5. 推理服务使用完全一致的模板、特殊 token 与 adapter。
 
 后续偏好阶段见[奖励建模与偏好优化](reward-preference.md)，训练稳定性见[优化与稳定性](optimization.md)。
+
+## Reference {#reference}
+
+- [Finetuned Language Models Are Zero-Shot Learners](https://arxiv.org/abs/2109.01652)
+- [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)
+- [Self-Instruct: Aligning Language Models with Self-Generated Instructions](https://arxiv.org/abs/2212.10560)

@@ -205,3 +205,10 @@ known source gaps and contamination
 ```
 
 概率与 abstention 见[校准与不确定性](calibration-uncertainty.md)，引用与 judge 攻击见[生成式评测与 LLM Judge](generative-judges.md)，实现入口见[评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [FActScore](https://arxiv.org/abs/2305.14251)
+- [Long-Form Factuality in Large Language Models / SAFE](https://arxiv.org/abs/2403.18802)
+- [SelfCheckGPT](https://arxiv.org/abs/2303.08896)
+- [Retrieval-Augmented Generation](https://arxiv.org/abs/2005.11401)

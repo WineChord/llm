@@ -45,3 +45,10 @@ $$
 - 驱动、runtime、collective library、kernel 与框架版本。
 
 只说“用了多少张 GPU”无法复现性能。训练框架的代表性参考包括 [Megatron-LM](https://github.com/NVIDIA/Megatron-LM) 与 [PyTorch FSDP](https://pytorch.org/docs/stable/fsdp.html)。状态怎样切分见[集合通信与状态分片](collectives-sharding.md)，算术强度怎样落到 kernel 见[Kernel 与性能](kernels-performance.md)。
+
+## Reference {#reference}
+
+- [Roofline: An Insightful Visual Performance Model for Multicore Architectures](https://doi.org/10.1145/1498765.1498785)
+- [Mixed Precision Training](https://arxiv.org/abs/1710.03740)
+- [Megatron Core](https://github.com/NVIDIA/Megatron-LM)
+- [PyTorch FSDP](https://pytorch.org/docs/stable/fsdp.html)

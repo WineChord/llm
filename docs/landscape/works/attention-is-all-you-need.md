@@ -75,3 +75,8 @@ self-attention 缩短了信息路径，却留下三笔新债：
 Transformer 的持久影响不是一套不可更改的 2017 block。后来的 decoder-only 预训练、双向 encoder、视觉 patch、跨模态桥接、稀疏 attention 和高效 kernel 都保留了“query 寻址 key、读取 value”的接口，同时更改 norm、位置、FFN、head 共享与执行方式。
 
 前序矛盾见[从固定向量到内容寻址](../lineages/transduction-to-attention.md)。现代 block 的 canonical 推导见 [Transformer](../../architecture/transformer.md)、[Decoder Block](../../architecture/decoder-block.md)与[注意力和位置](../../architecture/attention-position.md)；完整可执行模型和 KV 对照见[手撕：Decoder-only Transformer](../../practice/transformer-from-scratch.md)。
+
+## Reference {#reference}
+
+- [Attention Is All You Need](https://proceedings.neurips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html)
+- [Tensor2Tensor](https://github.com/tensorflow/tensor2tensor)

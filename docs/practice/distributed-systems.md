@@ -357,3 +357,10 @@ def checkpoint_interval(checkpoint_seconds, mean_time_between_failures):
 - data cursor、mixture 或 tokenizer 不匹配。
 
 系统机制见[集合通信与状态分片](../systems/collectives-sharding.md)、[模型并行](../systems/model-parallelism.md)与[检查点](../systems/checkpointing.md)，推理侧的物理内存见[手撕：推理引擎](inference-engine.md)。
+
+## Reference {#reference}
+
+- [Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism](https://arxiv.org/abs/1909.08053)
+- [ZeRO: Memory Optimizations Toward Training Trillion Parameter Models](https://arxiv.org/abs/1910.02054)
+- [GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism](https://arxiv.org/abs/1811.06965)
+- [NVIDIA NCCL user guide](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/)

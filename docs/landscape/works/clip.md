@@ -71,3 +71,10 @@ CLIP 的目标奖励全局语义匹配，不要求精确计数、局部定位或
 CLIP 同时给出了视觉表示、文本表示和二者可比较的坐标系。后来的生成模型用它做文本条件或质量信号，视觉语言模型把其视觉 encoder 接到 LLM，开放词表检测和分割也借用相同思想。它的影响并非一种固定架构，而是一种接口：语言可以在推理时描述视觉任务。
 
 接下来读[冻结模型之间怎样架桥](visual-language-bridges.md)，会看到相似度空间怎样进一步变成可生成、可对话的视觉上下文；完整机制和训练陷阱见[视觉语言模型](../../multimodal/vision-language.md)与[多模态手撕实现](../../practice/multimodal.md)。
+
+## Reference {#reference}
+
+- [Learning Transferable Visual Models From Natural Language Supervision](https://arxiv.org/abs/2103.00020)
+- [openai/CLIP](https://github.com/openai/CLIP)
+- [ALIGN](https://arxiv.org/abs/2102.05918)
+- [SigLIP](https://arxiv.org/abs/2303.15343)

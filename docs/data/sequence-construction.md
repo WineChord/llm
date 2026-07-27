@@ -123,3 +123,10 @@ source mixture and random seed
 发布训练前固定一组金丝雀样本，打印 token、解码文本、role、segment、position、attention 可见区间和 label。至少包含短文本、空字段、多轮工具、Unicode、代码、超长截断与 packed 多样本。再用一个极小 batch 过拟合，确认 loss 能下降且生成模板闭合。
 
 下一步可读[监督微调](../training/supervised-finetuning.md)和[轨迹与反馈数据](feedback-trajectories.md)。
+
+## Reference {#reference}
+
+- [Transformers: Writing a chat template](https://huggingface.co/docs/transformers/main/chat_templating_writing)
+- [Transformers: Causal language modeling](https://huggingface.co/docs/transformers/main/en/tasks/language_modeling)
+- [PyTorch CrossEntropyLoss documentation](https://docs.pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html)
+- [FlashAttention official implementation](https://github.com/Dao-AILab/flash-attention)

@@ -114,11 +114,11 @@ Switch 还突出 bfloat16、router 精度、初始化和 selective precision 等
 - 理论路由组合数与真实专家专业化；
 - 训练平均负载与在线 decode 尾延迟。
 
-## 原作与实现边界
+## Reference {#reference}
 
 - [Sparse MoE 论文](https://arxiv.org/abs/1701.06538)；
 - [GShard 论文](https://arxiv.org/abs/2006.16668)；
 - [Switch Transformer 论文](https://arxiv.org/abs/2101.03961)与 [Mesh TensorFlow MoE 实现](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)；
-- [DeepSeekMoE 论文](https://arxiv.org/abs/2401.06066)与[官方仓库](https://github.com/deepseek-ai/DeepSeek-MoE)。
+- [DeepSeekMoE 论文](https://arxiv.org/abs/2401.06066)与[deepseek-ai/DeepSeek-MoE](https://github.com/deepseek-ai/DeepSeek-MoE)。
 
 代码仓库对应具体软件世代，不保证一条命令重建论文全部数据、硬件和训练运行。完整历史位置见[容量与激活计算怎样分开](../lineages/conditional-compute.md)，架构定义见[Mixture of Experts](../../architecture/moe.md)，紧凑 dispatch 实现见[分布式与容错](../../practice/distributed-systems.md)。

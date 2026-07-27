@@ -213,3 +213,11 @@ $$
 自定义 Triton kernel 若需进入编译图，应遵守 [PyTorch 官方集成契约](https://docs.pytorch.org/tutorials/recipes/torch_compile_user_defined_triton_kernel_tutorial.html)；平台级 benchmark 还应记录驱动、runtime、时钟与功耗状态。
 
 从算术强度判断优化上限见[性能模型](performance-model.md)，attention 的具体数据流与 online softmax 见 [Attention Kernel](attention-kernels.md)。
+
+## Reference {#reference}
+
+- [CUDA Programming Guide](https://docs.nvidia.com/cuda/cuda-programming-guide/index.html)
+- [FlashAttention-3](https://arxiv.org/abs/2407.08608)
+- [Triton tutorials](https://triton-lang.org/main/getting-started/tutorials/)
+- [CUTLASS](https://github.com/NVIDIA/cutlass)
+- [PyTorch: Using User-Defined Triton Kernels with torch.compile](https://docs.pytorch.org/tutorials/recipes/torch_compile_user_defined_triton_kernel_tutorial.html)

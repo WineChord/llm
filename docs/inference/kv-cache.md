@@ -162,3 +162,13 @@ tenant and permission boundary
 性能报告至少包含有效 KV 容量、碎片率、读带宽、分配延迟、page / block 大小、命中率、TTFT、TPOT、goodput 和 p99。只报告“最大上下文长度”无法说明系统在并发服务中的可用性。
 
 block table、引用计数、copy-on-write 与调度预算的可审计实现见[手撕：推理引擎](../practice/inference-engine.md)。
+
+## Reference {#reference}
+
+- [Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/abs/2309.06180)
+- [vAttention](https://arxiv.org/abs/2405.04437)
+- [KIVI](https://arxiv.org/abs/2402.02750)
+- [KVQuant](https://arxiv.org/abs/2401.18079)
+- [StreamingLLM](https://arxiv.org/abs/2309.17453)
+- [H2O: Heavy-Hitter Oracle for Efficient Generative Inference of Large Language Models](https://arxiv.org/abs/2306.14048)
+- [PyramidKV](https://arxiv.org/abs/2406.02069)

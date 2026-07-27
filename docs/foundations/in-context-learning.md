@@ -153,3 +153,9 @@ $$
 | 是否值得成本 | 相同总 token 与延迟预算比较 |
 
 长位置效应见[长上下文](../architecture/long-context.md)，检索侧的候选构造见[RAG](../applications/rag.md)，参数更新式适配见[参数高效与压缩](../training/peft-compression.md)。
+
+## Reference {#reference}
+
+- [Language Models are Few-Shot Learners](https://arxiv.org/abs/2005.14165)
+- [Transformers Learn In-Context by Gradient Descent](https://arxiv.org/abs/2212.07677)
+- [In-context Learning and Induction Heads](https://arxiv.org/abs/2209.11895)

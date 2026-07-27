@@ -124,3 +124,12 @@ ANN 只能近似给定 embedding 空间中的近邻。它不能修复 embedding 
 | 离线好、线上差 | 查询分布、语料新鲜度、解析失败 |
 
 候选如何精排和压缩见[重排与上下文工程](reranking-context.md)，BM25、RRF 与精确向量检索代码见[手撕：检索与智能体](../practice/retrieval-agents.md)。
+
+## Reference {#reference}
+
+- [Simple and Proven Approaches to Text Retrieval](https://www.microsoft.com/en-us/research/publication/simple-proven-approaches-to-text-retrieval/)
+- [Dense Passage Retrieval](https://arxiv.org/abs/2004.04906)
+- [ColBERT](https://arxiv.org/abs/2004.12832)
+- [ColBERTv2](https://arxiv.org/abs/2112.01488)
+- [RRF 原论文](https://research.google/pubs/reciprocal-rank-fusion-outperforms-condorcet-and-individual-rank-learning-methods/)
+- [HNSW](https://arxiv.org/abs/1603.09320)

@@ -93,3 +93,9 @@ judge / human annotation protocol
 7. 对通用能力、安全和目标域分别设置停止与回滚门槛。
 
 多步工具与长时环境继续见 [Agentic RL](../agentic-rl/index.md)，统计和 judge 口径见[评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)
+- [Direct Preference Optimization](https://arxiv.org/abs/2305.18290)
+- [Constitutional AI: Harmlessness from AI Feedback](https://arxiv.org/abs/2212.08073)

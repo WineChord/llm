@@ -63,3 +63,11 @@ $$
 - 增长的 token、工具调用和 wall-clock 是否计入同一预算。
 
 这套坐标把“能调用工具”的表面现象还原成可分析的系统。检索侧继续读[检索与索引](../../applications/retrieval-indexing.md)和[有依据生成](../../applications/grounded-generation.md)；行动侧继续读[记忆与规划](../../applications/memory-planning.md)、[Agent 安全](../../applications/agent-security.md)和[Agent 与工具评测](../../evaluation/agent-tool-evaluation.md)。
+
+## Reference {#reference}
+
+- [REALM](https://arxiv.org/abs/2002.08909)
+- [Dense Passage Retrieval](https://arxiv.org/abs/2004.04906)
+- [Retrieval-Augmented Generation](https://arxiv.org/abs/2005.11401)
+- [Toolformer](https://arxiv.org/abs/2302.04761)
+- [ReAct](https://arxiv.org/abs/2210.03629)

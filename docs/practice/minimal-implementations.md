@@ -60,3 +60,8 @@
 - 性能代码必须保留一个更慢、更直白的 reference。
 
 实验设计见[实验方法](index.md)，从 loss 到系统逐层排错见[调试手册](debugging.md)。
+
+## Reference {#reference}
+
+- [PyTorch gradcheck documentation](https://docs.pytorch.org/docs/stable/generated/torch.autograd.gradcheck.gradcheck.html)
+- [PyTorch numerical accuracy notes](https://docs.pytorch.org/docs/stable/notes/numerical_accuracy.html)

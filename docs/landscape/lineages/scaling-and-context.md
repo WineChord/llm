@@ -92,3 +92,12 @@ $$
 6. 行为提升是现象证据，还是已有干预支持的机制解释。
 
 这样才能把“规模”从口号还原成可以证伪的实验对象。预训练目标如何形成这一基座见[预训练目标谱系](pretraining-objectives.md)，开放 checkpoint 如何改变缩放研究见[从可下载权重到可研究系统](open-model-ecosystem.md)。
+
+## Reference {#reference}
+
+- [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361)
+- [Language Models are Few-Shot Learners](https://arxiv.org/abs/2005.14165)
+- [Training Compute-Optimal Large Language Models](https://arxiv.org/abs/2203.15556)
+- [In-context Learning and Induction Heads](https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/)
+- [Scaling Data-Constrained Language Models](https://arxiv.org/abs/2305.16264)
+- [DoReMi: Optimizing Data Mixtures Speeds Up Language Model Pretraining](https://arxiv.org/abs/2305.10429)

@@ -131,3 +131,10 @@ benchmark decontamination 的匹配对象至少包括：
 6. 在新快照上复用相同规则时检查分数漂移，而不是只比较通过率。
 
 过滤后的真实训练权重见[数据混合与课程](mixtures-curricula.md)，记忆与抽取风险见[记忆化、隐私与删除](memorization-privacy.md)，污染统计实现见[评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [DataComp-LM](https://arxiv.org/abs/2406.11794)
+- [Deduplicating Training Data Makes Language Models Better](https://arxiv.org/abs/2107.06499)
+- [google-research/deduplicate-text-datasets](https://github.com/google-research/deduplicate-text-datasets)
+- [Investigating Data Contamination in Modern Benchmarks](https://arxiv.org/abs/2311.04850)

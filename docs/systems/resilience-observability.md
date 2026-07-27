@@ -231,3 +231,12 @@ $$
 - 团队能维护故障注入和升级兼容矩阵。
 
 可靠性的成熟度应以恢复演练和长期 goodput 证明，而不是以配置项数量衡量。collective、全局归一化与 checkpoint 提交的不变量可结合[手撕：分布式与容错](../practice/distributed-systems.md)逐项验证。
+
+## Reference {#reference}
+
+- [NCCL collective 语义](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/collectives.html)
+- [NVIDIA DCGM profiling](https://docs.nvidia.com/datacenter/dcgm/latest/learn/modules/profiling.html)
+- [NVIDIA DCGM diagnostics](https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/dcgm-diagnostics.html)
+- [TorchElastic agent](https://docs.pytorch.org/docs/stable/elastic/agent.html)
+- [TorchFT](https://github.com/pytorch/torchft)
+- [NVIDIA Resiliency Extension](https://github.com/NVIDIA/nvidia-resiliency-ext)

@@ -99,3 +99,13 @@ train-parallel and decode-recurrent duality
 ```
 
 这提供了混合设计空间，也要求更严格的比较：state size、recall、训练稳定性、prefill 速度、decode state、chunk equivalence 与 wall-clock 缺一不可。最小实现见[递推与记忆](../../practice/sequence-models.md)，完整机制边界见[状态空间与线性注意力](../../architecture/state-space-linear-attention.md)。
+
+## Reference {#reference}
+
+- [Linear Transformer](https://proceedings.mlr.press/v119/katharopoulos20a.html)
+- [Performer](https://arxiv.org/abs/2009.14794)
+- [Fast Weight Programmers](https://proceedings.mlr.press/v139/schlag21a.html)
+- [HiPPO](https://proceedings.neurips.cc/paper/2020/hash/102f0bb6efb3a6128a3c750dd16729be-Abstract.html)
+- [Efficiently Modeling Long Sequences with Structured State Spaces](https://arxiv.org/abs/2111.00396)
+- [Mamba: Linear-Time Sequence Modeling with Selective State Spaces](https://arxiv.org/abs/2312.00752)
+- [Transformers are SSMs](https://arxiv.org/abs/2405.21060)

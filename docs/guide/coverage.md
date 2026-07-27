@@ -89,3 +89,8 @@
 8. 链接是否指向概念的 canonical page。
 
 页面边界见[知识架构](architecture.md)，实验验收见[实验方法](../practice/index.md)，来源判断见[证据与研究方法](evidence.md)。
+
+## Reference {#reference}
+
+- [ACM Artifact Review and Badging](https://www.acm.org/publications/policies/artifact-review-and-badging-current)
+- [NIST AI Risk Management Framework 1.0](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10)

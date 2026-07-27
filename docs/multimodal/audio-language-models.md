@@ -226,3 +226,13 @@ $$
 | 对话 | 抢话、打断、静音、重叠和长时间会话 |
 
 音频 token 的紧凑 RVQ、delay stream 与 streaming state 练习见[多模态手撕实现](../practice/multimodal.md)，共享融合接口见[多模态融合、位置与训练](architecture-training.md)。
+
+## Reference {#reference}
+
+- [Robust Speech Recognition via Large-Scale Weak Supervision / Whisper](https://arxiv.org/abs/2212.04356)
+- [EnCodec](https://arxiv.org/abs/2210.13438)
+- [AudioLM](https://arxiv.org/abs/2209.03143)
+- [MusicGen](https://arxiv.org/abs/2306.05284)
+- [SeamlessM4T](https://arxiv.org/abs/2308.11596)
+- [Moshi](https://arxiv.org/abs/2410.00037)
+- [kyutai-labs/moshi](https://github.com/kyutai-labs/moshi)

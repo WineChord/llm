@@ -160,3 +160,10 @@ $$
 | behavior policy | 生成轨迹的精确 checkpoint 与解码策略 |
 
 动作粒度决定 log-prob、credit assignment 和 replay 语义。下一步读[轨迹与策略契约](trajectory-contract.md)，再进入[数学与算法](math-algorithms.md)。
+
+## Reference {#reference}
+
+- [Reinforcement Learning: An Introduction, Second Edition](https://mitpress.mit.edu/9780262039246/reinforcement-learning/)
+- [Generalized Advantage Estimation](https://arxiv.org/abs/1506.02438)
+- [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
+- [IMPALA: Scalable Distributed Deep-RL with Importance Weighted Actor-Learner Architectures](https://arxiv.org/abs/1802.01561)

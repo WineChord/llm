@@ -272,3 +272,10 @@ $$
 8. 结果附带硬件、软件、并行、dtype、配置和测量日期。
 
 只有通过这些门，局部加速才可被解释为可运营的服务改进。
+
+## Reference {#reference}
+
+- [vLLM 的指标定义](https://docs.vllm.ai/en/stable/design/metrics/)
+- [OpenTelemetry GenAI semantic conventions](https://github.com/open-telemetry/semantic-conventions/blob/main/docs/gen-ai/gen-ai-metrics.md)
+- [NVIDIA DCGM](https://docs.nvidia.com/datacenter/dcgm/latest/)
+- [NVIDIA DCGM diagnostics](https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/dcgm-diagnostics.html)

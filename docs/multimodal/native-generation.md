@@ -33,3 +33,8 @@
 7. 理解、生成、grounding 与系统成本是否分别评测。
 
 案例页面可说明具体模型的组合方式，但通用机制以以上主题页为准。
+
+## Reference {#reference}
+
+- [Chameleon: Mixed-Modal Early-Fusion Foundation Models](https://arxiv.org/abs/2405.09818)
+- [Transfusion: Predict the Next Token and Diffuse Images with One Multi-Modal Model](https://arxiv.org/abs/2408.11039)

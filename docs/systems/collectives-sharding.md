@@ -119,3 +119,10 @@ $$
 6. 定期验证跨并行度转换。
 
 更完整的恢复状态见[检查点与容错](checkpointing.md)，层内与层间切分见[模型并行](model-parallelism.md)。
+
+## Reference {#reference}
+
+- [ZeRO](https://arxiv.org/abs/1910.02054)
+- [Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism](https://arxiv.org/abs/1909.08053)
+- [PyTorch FSDP: Experiences on Scaling Fully Sharded Data Parallel](https://arxiv.org/abs/2304.11277)
+- [NVIDIA NCCL user guide](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/)

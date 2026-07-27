@@ -103,3 +103,10 @@ quality, throughput, tail latency and memory
 ```
 
 [Switch Transformer](https://arxiv.org/abs/2101.03961)展示了 top-1 稀疏路由，[DeepSeek-V3](https://arxiv.org/abs/2412.19437)则把细粒度专家、无辅助损失均衡和系统配方结合。替代序列架构见[稀疏与替代架构](moe-alternatives.md)，分布式实现见[模型并行](../systems/model-parallelism.md)。
+
+## Reference {#reference}
+
+- [DeepSeekMoE](https://arxiv.org/abs/2401.06066)
+- [Auxiliary-Loss-Free Load Balancing Strategy for Mixture-of-Experts](https://arxiv.org/abs/2408.15664)
+- [Switch Transformers](https://arxiv.org/abs/2101.03961)
+- [DeepSeek-V3](https://arxiv.org/abs/2412.19437)

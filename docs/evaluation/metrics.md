@@ -195,3 +195,10 @@ known coverage and contamination limits
 ```
 
 计算 paired/cluster 区间见[统计推断](statistical-inference.md)，最小实现见[评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [HELM: Holistic Evaluation of Language Models](https://arxiv.org/abs/2211.09110)
+- [Evaluating Large Language Models Trained on Code](https://arxiv.org/abs/2107.03374)
+- [On Calibration of Modern Neural Networks](https://arxiv.org/abs/1706.04599)
+- [MLPerf Inference Documentation](https://docs.mlcommons.org/inference/)

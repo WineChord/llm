@@ -204,3 +204,11 @@ execution date, cutoffs and remaining uncertainty
 ```
 
 训练语料的去重机制见[过滤、去重与污染](../data/filtering-dedup.md)，逐项审计工具见[评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [Deduplicating Training Data Makes Language Models Better](https://arxiv.org/abs/2107.06499)
+- [google-research/deduplicate-text-datasets](https://github.com/google-research/deduplicate-text-datasets)
+- [Investigating Data Contamination in Modern Benchmarks](https://arxiv.org/abs/2311.04850)
+- [LiveCodeBench](https://arxiv.org/abs/2403.07974)
+- [LiveBench](https://arxiv.org/abs/2406.19314)

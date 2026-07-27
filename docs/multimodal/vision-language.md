@@ -129,3 +129,9 @@ tile 顺序与二维位置必须可恢复；否则模型看到的是一串局部
 同时记录任务质量、输入分辨率、tile 数、视觉 token、TTFT、显存和语言-only baseline。caption、VQA、OCR、grounding、图表、多图与视觉 agent 是不同能力，不应压成一个总分。
 
 更一般的融合方式见[多模态融合与训练](architecture-training.md)，生成式目标见[多模态生成模型](generative-modeling.md)。
+
+## Reference {#reference}
+
+- [An Image is Worth 16x16 Words](https://arxiv.org/abs/2010.11929)
+- [Learning Transferable Visual Models From Natural Language Supervision](https://arxiv.org/abs/2103.00020)
+- [Visual Instruction Tuning / LLaVA](https://arxiv.org/abs/2304.08485)

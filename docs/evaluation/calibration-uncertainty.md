@@ -197,3 +197,9 @@ confidence intervals and known blind spots
 ```
 
 统计区间见[统计推断](statistical-inference.md)，事实 claim 的 support/unknown 见[幻觉与事实性](hallucination.md)，最小实现见[评测工具](../practice/evaluation-tooling.md)。
+
+## Reference {#reference}
+
+- [Teaching Models to Express Their Uncertainty in Words](https://arxiv.org/abs/2205.14334)
+- [Language Models Mostly Know What They Know](https://arxiv.org/abs/2207.05221)
+- [Semantic Uncertainty](https://arxiv.org/abs/2302.09664)

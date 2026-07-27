@@ -209,3 +209,9 @@ else:
 - 训练权重加载、weight tying 和词表扩展。
 
 结构推导见 [Transformer](../architecture/transformer.md)与 [Decoder Block](../architecture/decoder-block.md)，cache 的物理管理见[手撕推理引擎](inference-engine.md)。
+
+## Reference {#reference}
+
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- [Root Mean Square Layer Normalization](https://arxiv.org/abs/1910.07467)
+- [GLU Variants Improve Transformer](https://arxiv.org/abs/2002.05202)

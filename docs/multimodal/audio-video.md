@@ -37,3 +37,8 @@ $$
 - 长序列能被输入，却不能稳定定位中部事件。
 
 音频与视频的最小 token packing、RVQ、时空位置和 causal mask 练习见[多模态手撕实现](../practice/multimodal.md)。
+
+## Reference {#reference}
+
+- [AudioLM: A Language Modeling Approach to Audio Generation](https://arxiv.org/abs/2209.03143)
+- [VideoPoet: A Large Language Model for Zero-Shot Video Generation](https://arxiv.org/abs/2312.14125)

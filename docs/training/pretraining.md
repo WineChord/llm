@@ -156,3 +156,9 @@ $$
 7. 同时报告训练 loss、跨域 PPL、目标能力、记忆化、稳定性、吞吐和总成本。
 
 训练规模的实验设计见[规模律与实验设计](scaling-experiment-design.md)，系统并行见[并行训练](../systems/parallelism.md)。
+
+## Reference {#reference}
+
+- [DataComp-LM](https://arxiv.org/abs/2406.11794)
+- [OLMo: Accelerating the Science of Language Models](https://arxiv.org/abs/2402.00838)
+- [Tensor Programs V: Tuning Large Neural Networks via Zero-Shot Hyperparameter Transfer](https://arxiv.org/abs/2203.03466)

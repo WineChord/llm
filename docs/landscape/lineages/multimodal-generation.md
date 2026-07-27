@@ -48,3 +48,14 @@
 - **可验证性**：开放式描述容易显得流畅，grounding、计数、时序因果和生成一致性却需要可定位的证据。
 
 读新工作时，先问它改变了哪一个瓶颈，再看它是否只是增加数据、模型和推理预算。这样，模型名称会不断更换，技术位置仍然清楚。
+
+## Reference {#reference}
+
+- [Flamingo](https://arxiv.org/abs/2204.14198)
+- [BLIP-2](https://arxiv.org/abs/2301.12597)
+- [Visual Instruction Tuning / LLaVA](https://arxiv.org/abs/2304.08485)
+- [VQ-VAE](https://arxiv.org/abs/1711.00937)
+- [Denoising Diffusion Probabilistic Models](https://arxiv.org/abs/2006.11239)
+- [High-Resolution Image Synthesis with Latent Diffusion Models](https://arxiv.org/abs/2112.10752)
+- [Scalable Diffusion Models with Transformers](https://arxiv.org/abs/2212.09748)
+- [Flow Matching for Generative Modeling](https://arxiv.org/abs/2210.02747)

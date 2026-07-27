@@ -179,3 +179,13 @@ $$
 | 成本是否可控 | 每模态 token、prefill、decode/采样步数 |
 
 离散与连续生成目标见[图像生成](generative-modeling.md)，融合接口见[多模态融合、位置与训练](architecture-training.md)，最小 modality mask 与 loss 见[多模态手撕实现](../practice/multimodal.md)。
+
+## Reference {#reference}
+
+- [Chameleon: Mixed-Modal Early-Fusion Foundation Models](https://arxiv.org/abs/2405.09818)
+- [Emu3](https://arxiv.org/abs/2409.18869)
+- [Janus](https://arxiv.org/abs/2410.13848)
+- [deepseek-ai/Janus](https://github.com/deepseek-ai/Janus)
+- [Transfusion](https://arxiv.org/abs/2408.11039)
+- [Show-o](https://arxiv.org/abs/2408.12528)
+- [showlab/Show-o](https://github.com/showlab/Show-o)

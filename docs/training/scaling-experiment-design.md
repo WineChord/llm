@@ -163,3 +163,10 @@ hardware utilization and failed runs
 7. 将模型选择与最终冻结评测分开，避免选择偏差。
 
 数据质量和真实暴露见[数据工程](../data/index.md)，运行时性能模型见[性能模型](../systems/performance-model.md)。
+
+## Reference {#reference}
+
+- [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361)
+- [Training Compute-Optimal Large Language Models](https://arxiv.org/abs/2203.15556)
+- [Beyond Chinchilla-Optimal](https://arxiv.org/abs/2401.00448)
+- [DeepSeek LLM](https://arxiv.org/abs/2401.02954)

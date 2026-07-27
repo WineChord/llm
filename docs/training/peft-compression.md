@@ -83,3 +83,9 @@ PEFT、蒸馏、剪枝和量化各自引入误差与版本状态。若无法建�
 6. 组合方法按单步、两两组合和最终组合做消融，定位不可逆退化。
 
 SFT 的 loss 与数据边界见[监督微调](supervised-finetuning.md)，最小训练目标检查见[训练目标实现](../practice/training-objectives.md)。
+
+## Reference {#reference}
+
+- [LoRA](https://arxiv.org/abs/2106.09685)
+- [QLoRA](https://arxiv.org/abs/2305.14314)
+- [Minitron](https://arxiv.org/abs/2407.14679)

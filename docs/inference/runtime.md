@@ -143,3 +143,9 @@ tokenizer 和网络发送通常放在独立线程或进程，但状态顺序必�
 9. 固定 seed 下的可接受重放边界。
 
 策略与过载控制见[调度与服务](serving.md)，跨集群阶段拆分见[Prefill–Decode 分离](disaggregation.md)。
+
+## Reference {#reference}
+
+- [Orca: A Distributed Serving System for Transformer-Based Generative Models](https://www.usenix.org/conference/osdi22/presentation/yu)
+- [Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/abs/2309.06180)
+- [Sarathi-Serve](https://www.usenix.org/conference/osdi24/presentation/agrawal)

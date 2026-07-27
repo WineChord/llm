@@ -81,7 +81,7 @@ $$
 
 它们分别对应[工具调用](../../applications/tool-use.md)、[搜索与验证](../../reasoning/search-verification.md)和[Agentic RL](../../agentic-rl/index.md)。完整前后关系见[从参数记忆到可行动系统](../lineages/retrieval-agents.md)，运行时边界见[Agent Runtime](../../applications/agent-runtime.md)。
 
-## 原作与代码
+## Reference {#reference}
 
-- [ReAct 论文](https://arxiv.org/abs/2210.03629)、[项目页](https://react-lm.github.io/)与[作者实现](https://github.com/ysymyth/ReAct)；
+- [ReAct 论文](https://arxiv.org/abs/2210.03629)、[ReAct project page](https://react-lm.github.io/)与[ysymyth/ReAct](https://github.com/ysymyth/ReAct)；
 - [Toolformer 论文](https://arxiv.org/abs/2302.04761)。论文公开了训练流程与实验，但没有把完整训练系统作为官方仓库发布；复现应明确这一证据边界。

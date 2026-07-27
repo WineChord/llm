@@ -196,3 +196,9 @@ $$
 | 泛化 | 新对象、任务、环境与机器人形态 |
 
 视频状态预测见[视频与世界模型](video-world-models.md)，GUI 动作的坐标与状态问题见[文档、图表、GUI 与 Grounding](document-gui-grounding.md)，多模态输入接口见[融合、位置与训练](architecture-training.md)。
+
+## Reference {#reference}
+
+- [PaLM-E](https://arxiv.org/abs/2303.03378)
+- [Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware](https://arxiv.org/abs/2304.13705)
+- [RT-2](https://arxiv.org/abs/2307.15818)

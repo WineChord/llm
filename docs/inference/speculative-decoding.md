@@ -229,3 +229,14 @@ $$
 性能矩阵至少包含 task、温度、prompt / output 长度、batch、接受长度分布、draft / verify 时间、TTFT、TPOT、goodput、显存与功耗。[TensorRT-LLM 的 speculative decoding 文档](https://nvidia.github.io/TensorRT-LLM/1.2.0/features/speculative-decoding.html)可用于核对一种生产实现的模式与约束，但最终结论必须以目标版本和本地工作负载为准。
 
 候选接受、状态回滚与分页 KV 边界的紧凑 reference 见[手撕：推理引擎](../practice/inference-engine.md)。
+
+## Reference {#reference}
+
+- [Fast Inference from Transformers via Speculative Decoding](https://arxiv.org/abs/2211.17192)
+- [并行 speculative sampling](https://arxiv.org/abs/2302.01318)
+- [Medusa](https://arxiv.org/abs/2401.10774)
+- [EAGLE](https://arxiv.org/abs/2401.15077)
+- [EAGLE-2](https://arxiv.org/abs/2406.16858)
+- [EAGLE-3（2025）](https://arxiv.org/abs/2503.01840)
+- [SafeAILab/EAGLE](https://github.com/SafeAILab/EAGLE)
+- [TensorRT-LLM 的 speculative decoding 文档](https://nvidia.github.io/TensorRT-LLM/1.2.0/features/speculative-decoding.html)

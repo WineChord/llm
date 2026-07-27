@@ -186,3 +186,14 @@ $$
 | 长作业频繁失败 | async/sharded checkpoint | staging 内存、存储与网络争用 |
 
 正确顺序是先重建峰值显存和关键路径，再加入最少的并行维度。每加一种机制，都重新验证单步数值、通信暴露、峰值显存、故障恢复和端到端有效 token throughput。
+
+## Reference {#reference}
+
+- [Parameter Server](https://www.usenix.org/conference/osdi14/technical-sessions/presentation/li_mu)
+- [PyTorch DDP 的设计研究](https://arxiv.org/abs/2006.15704)
+- [NCCL collective 语义](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/collectives.html)
+- [ZeRO](https://arxiv.org/abs/1910.02054)
+- [PyTorch FSDP](https://arxiv.org/abs/2304.11277)
+- [Megatron-LM](https://arxiv.org/abs/1909.08053)
+- [GPipe](https://arxiv.org/abs/1811.06965)
+- [PipeDream](https://arxiv.org/abs/1806.03377)

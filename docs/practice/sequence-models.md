@@ -200,3 +200,11 @@ def associative_recall_batch(batch, pairs, vocab, generator=None):
 - hybrid attention 的局部精确路径与递推路径分别消融。
 
 架构推导见[状态空间与线性注意力](../architecture/state-space-linear-attention.md)与[记忆架构](../architecture/memory-architectures.md)。
+
+## Reference {#reference}
+
+- [Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context](https://arxiv.org/abs/1901.02860)
+- [Generalization through Memorization: Nearest Neighbor Language Models](https://arxiv.org/abs/1911.00172)
+- [Mamba: Linear-Time Sequence Modeling with Selective State Spaces](https://arxiv.org/abs/2312.00752)
+- [Zoology](https://arxiv.org/abs/2312.04927)
+- [Learning to (Learn at Test Time): RNNs with Expressive Hidden States](https://arxiv.org/abs/2407.04620)

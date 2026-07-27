@@ -64,3 +64,14 @@
 ## 继续阅读
 
 模型规模与数据配比的变化见[从规模规律到上下文内适应](scaling-and-context.md)，训练数字的可比边界见[训练 token 口径](../training-tokens.md)，完整发布事件怎样拆分可参考[DeepSeek 演化案例](../deepseek-timeline.md)。这条谱系关心的是可研究性，不替代具体模型的机制分析。
+
+## Reference {#reference}
+
+- [Language Models are Few-Shot Learners](https://arxiv.org/abs/2005.14165)
+- [GPT-NeoX-20B](https://arxiv.org/abs/2204.06745)
+- [OPT: Open Pre-trained Transformer Language Models](https://arxiv.org/abs/2205.01068)
+- [BLOOM](https://arxiv.org/abs/2211.05100)
+- [GPT-NeoX](https://github.com/EleutherAI/gpt-neox)
+- [OPT 项目](https://github.com/facebookresearch/metaseq/tree/main/projects/OPT)
+- [bigscience/bloom model card](https://huggingface.co/bigscience/bloom)
+- [LLaMA](https://arxiv.org/abs/2302.13971)

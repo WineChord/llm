@@ -225,3 +225,13 @@ $\lambda$ 控制的是容量分配，不只是数值尺度。应监控每个目�
 | 鲁棒 | 压缩、旋转、噪声、模态缺失、媒体内攻击 |
 
 可执行的 patchify、CLIP/SigLIP loss、resampler、模态 mask 与位置练习见[多模态手撕实现](../practice/multimodal.md)。文档和坐标见[文档、图表、GUI 与 Grounding](document-gui-grounding.md)，统一生成目标见[理解与生成统一](unified-understanding-generation.md)。
+
+## Reference {#reference}
+
+- [Visual Instruction Tuning / LLaVA](https://arxiv.org/abs/2304.08485)
+- [BLIP-2](https://arxiv.org/abs/2301.12597)
+- [Perceiver IO](https://arxiv.org/abs/2107.14795)
+- [Flamingo](https://arxiv.org/abs/2204.14198)
+- [Learning Transferable Visual Models From Natural Language Supervision](https://arxiv.org/abs/2103.00020)
+- [SigLIP](https://arxiv.org/abs/2303.15343)
+- [Qwen2-VL](https://arxiv.org/abs/2409.12191)

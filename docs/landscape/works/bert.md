@@ -81,3 +81,9 @@ BERT 不为每个任务重新设计 backbone。句级任务读取 `[CLS]` 表示
 BERT 系统展示了深层双向 Transformer 表示可以通过大规模无标注预训练迁移到多类理解任务；它没有证明 MLM、NSP 或 encoder-only 在所有任务上最优。
 
 三类预训练信息流的比较见[预训练目标与信息流](../lineages/pretraining-objectives.md)。通用机制见 [Transformer](../../architecture/transformer.md)与[语言建模](../../foundations/language-modeling.md)，mask 与损失实现约束见[概率、损失与梯度](../../foundations/probability-objectives.md)和[手撕：训练目标](../../practice/training-objectives.md)。
+
+## Reference {#reference}
+
+- [BERT 2018 preprint](https://arxiv.org/abs/1810.04805)
+- [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://aclanthology.org/N19-1423/)
+- [TensorFlow 代码与预训练模型](https://github.com/google-research/bert)

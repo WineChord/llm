@@ -200,3 +200,9 @@ $$
 [Scaling LLM Test-Time Compute Optimally](https://arxiv.org/abs/2408.03314)给出了按问题难度选择计算策略的实证框架；[DeepSeek-R1 深读](../landscape/works/deepseek-r1.md)把可验证奖励、在线 RL、多阶段数据与蒸馏的公开证据拆开。对开放和闭源系统，都应把可观察的预算—质量曲线与未披露训练机制分开。
 
 本节的边界与阅读顺序见[推理与推理时计算总览](index.md)，搜索与 verifier 的计算图见[搜索与验证](search-verification.md)，底层采样见[解码](../inference/decoding.md)，紧凑实现与测试见[测试时计算手撕实现](../practice/test-time-compute.md)。
+
+## Reference {#reference}
+
+- [Chain-of-Thought Prompting](https://arxiv.org/abs/2201.11903)
+- [Self-Consistency Improves Chain of Thought Reasoning](https://arxiv.org/abs/2203.11171)
+- [Scaling LLM Test-Time Compute Optimally](https://arxiv.org/abs/2408.03314)

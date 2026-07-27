@@ -113,3 +113,12 @@ chunk equivalence 和 reset 是服务系统必须保持的状态语义。若 chu
 - [S4 官方实现](https://github.com/state-spaces/s4)与 [Mamba 官方实现](https://github.com/state-spaces/mamba)分别对应不同代码路径和 kernel 依赖。
 
 比较 SSM、attention 与 hybrid 时，应固定参数、训练 token、上下文、精度、batch、prefill/decode 形态和真实硬件。完整谱系见[从显式寻址到有限状态](../lineages/linear-time-sequence-models.md)，机制与更多 delta-rule 实现见[状态空间与线性注意力](../../architecture/state-space-linear-attention.md)和[递推与记忆](../../practice/sequence-models.md)。
+
+## Reference {#reference}
+
+- [HiPPO](https://proceedings.neurips.cc/paper/2020/hash/102f0bb6efb3a6128a3c750dd16729be-Abstract.html)
+- [Efficiently Modeling Long Sequences with Structured State Spaces](https://arxiv.org/abs/2111.00396)
+- [Mamba: Linear-Time Sequence Modeling with Selective State Spaces](https://arxiv.org/abs/2312.00752)
+- [Transformers are SSMs](https://arxiv.org/abs/2405.21060)
+- [S4 官方实现](https://github.com/state-spaces/s4)
+- [Mamba 官方实现](https://github.com/state-spaces/mamba)

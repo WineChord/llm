@@ -128,3 +128,10 @@ source
 6. **切片核验**：使用条件和时间边界在混合、去重与导出后仍被保留。
 
 过滤决策见[过滤、去重与污染](filtering-dedup.md)，从文档到张量的精确接口见[序列构造与打包](sequence-construction.md)。
+
+## Reference {#reference}
+
+- [Dolma: An Open Corpus of Three Trillion Tokens](https://arxiv.org/abs/2402.00159)
+- [OLMo: Accelerating the Science of Language Models](https://arxiv.org/abs/2402.00838)
+- [The FineWeb Datasets](https://arxiv.org/abs/2406.17557)
+- [DataComp-LM](https://arxiv.org/abs/2406.11794)

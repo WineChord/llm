@@ -72,3 +72,11 @@ $$
 - 结论是否越过了数据与场景支持的范围。
 
 完整执行流程见[语言模型评测协议](../../evaluation/language-model-evaluation.md)，各 benchmark 的任务与风险见[Benchmark Registry](../../evaluation/benchmark-registry.md)。
+
+## Reference {#reference}
+
+- [MMLU](https://arxiv.org/abs/2009.03300)
+- [BIG-bench](https://arxiv.org/abs/2206.04615)
+- [Holistic Evaluation of Language Models / HELM](https://arxiv.org/abs/2211.09110)
+- [Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena](https://arxiv.org/abs/2306.05685)
+- [Chatbot Arena](https://arxiv.org/abs/2403.04132)

@@ -96,3 +96,14 @@ $$
 | notes | 多模态、采样或换算条件 |
 
 研究方法见[证据与研究方法](../guide/evidence.md)，结构与数据配比见[缩放与计算](../foundations/scaling.md)。
+
+## Reference {#reference}
+
+- [DeepSeek LLM](https://arxiv.org/abs/2401.02954)
+- [DeepSeek-V2](https://arxiv.org/abs/2405.04434)
+- [DeepSeek-V3](https://arxiv.org/abs/2412.19437)
+- [MoonshotAI/Kimi-K2 technical report and weights](https://github.com/MoonshotAI/Kimi-K2)
+- [Qwen2.5 LLM official blog](https://qwenlm.github.io/blog/qwen2.5-llm/)
+- [Qwen3 official blog](https://qwenlm.github.io/blog/qwen3/)
+- [GLM-5 Technical Report](https://arxiv.org/abs/2602.15763)
+- [Training Compute-Optimal Large Language Models](https://arxiv.org/abs/2203.15556)

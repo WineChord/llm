@@ -172,3 +172,10 @@ reference 若使用不同 tokenizer 或模板，log-ratio 不再位于同一 act
 8. 用事实性、可执行成功、安全、校准和多样性验证 judge 胜率。
 
 奖励数据与偏差见[奖励建模](reward-modeling.md)，需要在线探索时见[在线 RL](online-rl.md)，目标函数的最小对照见[训练目标实现](../practice/training-objectives.md)。
+
+## Reference {#reference}
+
+- [Direct Preference Optimization](https://arxiv.org/abs/2305.18290)
+- [A General Theoretical Paradigm to Understand Learning from Human Preferences / IPO](https://arxiv.org/abs/2310.12036)
+- [KTO: Model Alignment as Prospect Theoretic Optimization](https://arxiv.org/abs/2402.01306)
+- [SimPO: Simple Preference Optimization with a Reference-Free Reward](https://arxiv.org/abs/2405.14734)

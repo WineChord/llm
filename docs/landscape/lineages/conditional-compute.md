@@ -94,3 +94,12 @@ MoE 的优势依赖足够大规模、合理路由和高效通信。小模型、�
 - 质量、吞吐、显存与尾延迟。
 
 这条谱系的核心不是“稀疏替代稠密”，而是把容量扩展的成本从矩阵乘转移到路由与系统。机制总览见[Mixture of Experts](../../architecture/moe.md)，邻近的另一条效率路线见[从显式寻址到有限状态](linear-time-sequence-models.md)。
+
+## Reference {#reference}
+
+- [Adaptive Mixtures of Local Experts](https://www.cs.toronto.edu/~hinton/mixex.html)
+- [Sparsely-Gated MoE](https://arxiv.org/abs/1701.06538)
+- [GShard](https://arxiv.org/abs/2006.16668)
+- [Switch Transformers](https://arxiv.org/abs/2101.03961)
+- [ST-MoE](https://arxiv.org/abs/2202.08906)
+- [DeepSeekMoE](https://arxiv.org/abs/2401.06066)

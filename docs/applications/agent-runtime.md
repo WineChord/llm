@@ -153,3 +153,10 @@ awaiting_approval
 - 工具 schema 在任务中途升级。
 
 能在 happy path 跑通不是可恢复系统。最小状态机代码见[手撕：检索与智能体](../practice/retrieval-agents.md)，生产 SLO 与事故复盘见[生产可靠性](../evaluation/production-reliability.md)。
+
+## Reference {#reference}
+
+- [ReAct: Synergizing Reasoning and Acting in Language Models](https://arxiv.org/abs/2210.03629)
+- [Temporal durable execution documentation](https://docs.temporal.io/temporal)
+- [Making retries safe with idempotent APIs](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/)
+- [OpenTelemetry Specification](https://opentelemetry.io/docs/specs/otel/)
