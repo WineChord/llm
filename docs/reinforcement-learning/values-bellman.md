@@ -17,9 +17,17 @@ $$
 A^\pi(s,a)=Q^\pi(s,a)-V^\pi(s).
 $$
 
-因为 $V^\pi(s)=\sum_a\pi(a\mid s)Q^\pi(s,a)$，所以对
-$a\sim\pi(\cdot\mid s)$ 有
-$\mathbb E_\pi[A^\pi(s,a)\mid s]=0$。
+因为
+
+$$
+V^\pi(s)=\sum_a\pi(a\mid s)Q^\pi(s,a),
+$$
+
+所以对 $a\sim\pi(\cdot\mid s)$ 有
+
+$$
+\mathbb E_\pi[A^\pi(s,a)\mid s]=0.
+$$
 
 value 不是即时 reward，也不是单条轨迹的 realized return。它是由策略、环境动力学、终止规则和 discount 共同决定的条件期望。MDP 对象与转移约定见 [MDP、POMDP 与回报](decision-processes.md)。
 
