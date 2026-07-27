@@ -53,6 +53,8 @@ next action
 
 应删除重复工具输出、已否定假设和无关探索，但保留否定结论本身，防止再次走回同一路径。
 
+如果摘要由 policy 自己生成、后续执行以摘要重建状态，并让摘要 token 也接受任务终态奖励，压缩就从运行时整理进入了训练目标。[CompactionRL](../landscape/works/sao-compactionrl.md#compactionrl)展示了这种接口，同时用全局 token mean 和跨 segment 的 GAE 折扣近似修复可变分段造成的优化偏差。
+
 ## 失败恢复
 
 长时系统需要把失败分类：

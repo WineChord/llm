@@ -135,6 +135,8 @@ $$
 
 组内奖励全相等时，GRPO 没有相对学习信号。强行除以极小标准差不会创造信息，只会制造数值噪声。组大小、采样温度、reward 离散度和 response 长度共同决定方差。
 
+当 rollout 扩展为长程环境交互，组内等待和上下文膨胀会成为新的物理瓶颈。[SAO 与 CompactionRL](../works/sao-compactionrl.md)分别把 single-rollout 异步更新和策略生成的上下文摘要接回 critic-based PPO；这不是算法接力，而是数据形态改变后对调度、状态表示与信用分配的重新设计。
+
 ## RLVR 改变 reward provenance
 
 数学答案、代码测试、结构化约束和环境终态有时可以由确定性程序检查。此时可以用

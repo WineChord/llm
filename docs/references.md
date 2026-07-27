@@ -121,6 +121,9 @@
 - Liu et al., [Understanding R1-Zero-Like Training / Dr. GRPO](https://arxiv.org/abs/2503.20783)
 - Cui et al., [Process Reinforcement through Implicit Rewards / PRIME](https://arxiv.org/abs/2502.01456)
 - Fu et al., [AReaL: A Large-Scale Asynchronous Reinforcement Learning System](https://arxiv.org/abs/2505.24298)
+- Yue et al., [VAPO: Efficient and Reliable Reinforcement Learning for Advanced Reasoning Tasks](https://arxiv.org/abs/2504.05118)
+- Hou et al., [Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning](https://arxiv.org/abs/2607.07508)
+- Li et al., [CompactionRL: Reinforcement Learning with Context Compaction for Long-Horizon Agents](https://arxiv.org/abs/2607.05378)
 
 ## 推理、搜索与智能体
 
@@ -168,6 +171,7 @@
 - [SGLang](https://github.com/sgl-project/sglang)
 - [FlashInfer](https://github.com/flashinfer-ai/flashinfer)
 - [veRL](https://github.com/volcengine/verl)
+- [slime](https://github.com/THUDM/slime)
 - [OpenRLHF](https://github.com/OpenRLHF/OpenRLHF)
 - [TRL](https://github.com/huggingface/trl)
 

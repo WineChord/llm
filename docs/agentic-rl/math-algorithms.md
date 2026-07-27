@@ -231,7 +231,7 @@ $$
 
 ### 单 rollout 异步优化
 
-成组方法要求同一 prompt 的多个 rollout 都完成，长尾 agent episode 会阻塞整组。[SAO](https://arxiv.org/abs/2607.07508)使用每个 prompt 单条轨迹、learned critic 和 stored rollout log-probability；其双侧重要性区间只保留
+成组方法要求同一 prompt 的多个 rollout 都完成，长尾 agent episode 会阻塞整组。[SAO](../landscape/works/sao-compactionrl.md#sao)使用每个 prompt 单条轨迹、learned critic 和 stored rollout log-probability；其双侧重要性区间只保留
 
 $$
 1-\epsilon_l<
@@ -240,6 +240,8 @@ $$
 $$
 
 内的 token。这样可以流式消费轨迹，却增加 critic 成本、冷启动和丢弃 tail token 的偏差。单 rollout 解决的是调度障碍，不自动解决长时信用。
+
+当一次任务经上下文压缩拆成多个 segment 时，还要避免 segment-count bias，并恢复早期 segment 到最终奖励的有效 token 距离；对应的 token mean 与跨段修正见 [CompactionRL](../landscape/works/sao-compactionrl.md#compactionrl)。
 
 ## 选择方法
 

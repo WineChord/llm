@@ -45,6 +45,7 @@
 - [InstructGPT](works/instructgpt.md)连接 demonstration、pairwise reward 与 online PPO；
 - [DPO](works/dpo.md)从 KL-regularized policy 推出离线 pair objective，却不提供在线探索；
 - [DeepSeek-R1](works/deepseek-r1.md)把规则奖励 RL、cold start、rejection sampling、二次对齐与蒸馏放进多阶段流程。
+- [SAO 与 CompactionRL](works/sao-compactionrl.md)把长程 Agentic RL 的 group barrier 与 context exhaustion 拆成时间轴、空间轴，再连接 token-level correction、critic 与跨段信用。
 
 ### 从单卡计算到分布式状态
 

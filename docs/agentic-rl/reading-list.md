@@ -49,7 +49,8 @@
 | [Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) | 跨上下文工作周期与可恢复状态 |
 | [veRL](https://github.com/volcengine/verl) | rollout、训练角色与分布式执行 |
 | [AReaL](https://arxiv.org/abs/2505.24298) | 异步 rollout、policy lag 与吞吐 |
-| [SAO](https://arxiv.org/abs/2607.07508) | 单 rollout、critic 与双侧重要性筛选 |
+| [SAO](../landscape/works/sao-compactionrl.md#sao) | 单 rollout、critic 与双侧重要性筛选 |
+| [CompactionRL](../landscape/works/sao-compactionrl.md#compactionrl) | 学习式摘要、token normalization 与跨段信用 |
 | [Agent Lightning](https://arxiv.org/abs/2508.03680) | 任意 agent 轨迹的层级信用分解 |
 
 长时结果应同时记录 checkpoint、harness、工具、预算和外部状态。

@@ -65,6 +65,8 @@ agent 轨迹长度重尾：简单任务几步结束，困难任务可能运行�
 
 参数热更新必须保证一个 episode 内模型版本是否允许变化；若允许，轨迹概率就不再来自单一 policy。
 
+[SAO](../landscape/works/sao-compactionrl.md#sao)进一步把 prompt 内的多 rollout 等待视为异步 barrier：单条轨迹完成后即可进入训练队列，但 learner 仍须保存真实 behavior log-probability、限制 policy lag，并审计 DIS 丢弃了哪些 token。
+
 ## Reward 与 Verifier 服务
 
 可验证奖励经常包含编译、测试、浏览器或远程 API，吞吐与 GPU 推理不同。Verifier 集群需要：

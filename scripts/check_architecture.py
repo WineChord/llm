@@ -149,6 +149,7 @@ REQUIRED_CLUSTERS = {
         "landscape/works/instructgpt.md",
         "landscape/works/dpo.md",
         "landscape/works/deepseek-r1.md",
+        "landscape/works/sao-compactionrl.md",
         "landscape/works/megatron-zero.md",
         "landscape/works/flashattention.md",
         "landscape/works/vllm-pagedattention.md",

@@ -175,6 +175,7 @@ nav:
               - InstructGPT: landscape/works/instructgpt.md
               - DPO: landscape/works/dpo.md
               - DeepSeek-R1: landscape/works/deepseek-r1.md
+              - SAO 与 CompactionRL: landscape/works/sao-compactionrl.md
           - 训练与推理系统:
               - Megatron-LM 与 ZeRO: landscape/works/megatron-zero.md
               - FlashAttention: landscape/works/flashattention.md
