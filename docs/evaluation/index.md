@@ -23,6 +23,7 @@
 
 ## 专题入口
 
+- [语言模型评测协议](language-model-evaluation.md)：PPL、多选打分、生成、pass@$k$、judge 与污染。
 - [指标与协议](metrics.md)：样本、方差、评分器与比较边界。
 - [可靠性与安全](reliability-safety.md)：校准、分布漂移、隐私和攻击面。
 - [幻觉与事实性](hallucination.md)：错误分类、引用验证、检索与 abstention。

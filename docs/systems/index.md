@@ -33,4 +33,11 @@ $$
 - 更大的 global batch 可能提高硬件效率，却改变优化轨迹和收敛 token。
 - 训练成功一次不代表可恢复、可重复或可长期运行。
 
-继续阅读[并行训练](parallelism.md)、[内存、数值与硬件](memory-numerics-hardware.md)及[检查点与容错](checkpointing.md)。
+## 阅读路径
+
+- [并行训练总览](parallelism.md)先建立 DP、TP、PP、CP、SP 与 EP 的坐标。
+- [集合通信与状态分片](collectives-sharding.md)解释 all-reduce、reduce-scatter、all-gather、DDP、ZeRO 与 FSDP。
+- [模型并行](model-parallelism.md)推导 tensor、pipeline、context 和 expert parallel 的布局。
+- [Kernel 与性能](kernels-performance.md)连接 roofline、online softmax、FlashAttention、fusion 与 benchmark。
+- [内存、数值与硬件](memory-numerics-hardware.md)建立显存和精度账本。
+- [检查点与容错](checkpointing.md)定义严格恢复所需的分布式状态。

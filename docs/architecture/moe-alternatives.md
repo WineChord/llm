@@ -20,6 +20,8 @@ $$
 
 [Switch Transformer](https://arxiv.org/abs/2101.03961) 使用 top-1 路由简化稀疏训练；[DeepSeekMoE](https://arxiv.org/abs/2401.06066) 讨论更细粒度专家与共享专家。比较 MoE 时必须同时报告总参数、激活参数、每 token FLOPs、通信拓扑和端到端吞吐。
 
+路由概率、capacity、溢出策略、无辅助损失均衡和 expert parallel 的完整计算路径见 [Mixture of Experts](moe.md)。本页其余部分集中讨论非标准序列混合器与混合结构。
+
 ## State Space Models
 
 状态空间模型以状态递推压缩历史，目标是让序列计算随长度近似线性。[Mamba](https://arxiv.org/abs/2312.00752) 让状态参数依赖输入，并设计硬件感知扫描算法。它减少标准 attention 的二次项，但状态容量、并行训练 kernel、检索精度和生态兼容性仍需具体评估。

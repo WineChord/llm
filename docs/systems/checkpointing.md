@@ -39,3 +39,5 @@
 5. 记录恢复时间目标与允许丢失的 step 数。
 
 容错不是“失败后能重新提交”，而是能证明没有静默跳样本、重样本、错 scheduler 或读到不一致 shard。
+
+ZeRO/FSDP shard 与 reshard 语义见[集合通信与状态分片](collectives-sharding.md)，数值与数据游标的恢复排查见[调试手册](../practice/debugging.md)。

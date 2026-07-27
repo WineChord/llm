@@ -25,4 +25,11 @@ prefill 常有较大的矩阵乘法，decode 更容易受内存带宽、批处�
 
 请求经过 tokenizer、admission control、scheduler、模型执行、采样、streaming 与后处理。若存在 prefix cache、tool call、RAG 或安全分类器，端到端延迟还包含这些组件。
 
-先读 [KV Cache](kv-cache.md)，再读[调度与服务](serving.md)和[加速与量化](acceleration.md)。
+## 阅读路径
+
+1. [解码](decoding.md)：greedy、sampling、beam、grammar、停止与 speculative decoding。
+2. [KV Cache](kv-cache.md)：容量、分页、prefix 与压缩。
+3. [推理运行时](runtime.md)：请求状态、continuous batching、block table、chunked prefill 与 streaming。
+4. [调度与服务](serving.md)：SLO、容量、过载与公平。
+5. [Prefill–Decode 分离](disaggregation.md)：跨 worker 的 KV 传输、路由与恢复。
+6. [加速与量化](acceleration.md)：kernel、低比特、图与路由。

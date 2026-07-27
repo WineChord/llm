@@ -42,3 +42,5 @@ AdamW 将 weight decay 与自适应梯度更新解耦，见 [Decoupled Weight De
 5. 检查 resume 前后数据游标、随机数与 scheduler。
 
 不要用降低学习率掩盖错误 mask、坏数据、通信丢失或 checkpoint 不一致。
+
+AdamW、Muon、参数分组和更新尺度的系统比较见[优化器家族](optimizer-families.md)，softmax/交叉熵的数值起点见[概率、损失与梯度](../foundations/probability-objectives.md)。

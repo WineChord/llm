@@ -39,3 +39,5 @@ cross-encoder 或 LLM reranker 能提高排序质量，但增加延迟。上下�
 ## 安全
 
 检索文档是外部数据，不是系统指令。需要隔离 prompt injection、租户权限、恶意文件、PII、索引投毒和过期内容。引用链接只能证明来源存在，不能自动证明模型陈述被来源支持。
+
+完整应用边界见[检索、工具与智能体](index.md)，引用支持性与不可回答问题见[幻觉与事实性](../evaluation/hallucination.md)，多轮工具权限见[工具与智能体](agents.md)。

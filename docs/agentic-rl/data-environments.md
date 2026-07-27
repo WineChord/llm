@@ -120,4 +120,4 @@ $$
 - 时间切分必须冻结依赖与外部服务，否则难度变化不可归因；
 - 报告模型是否能访问互联网、包管理器和历史 commit。
 
-训练算法见[数学与算法](math-algorithms.md)，安全与评测见[评测与安全](evaluation-safety.md)。
+token/action mask、旧策略概率和终止字段见[轨迹与策略契约](trajectory-contract.md)，训练算法见[数学与算法](math-algorithms.md)，过程数据生成见[搜索、过程奖励与验证](search-verification.md)，安全与评测见[评测与安全](evaluation-safety.md)。

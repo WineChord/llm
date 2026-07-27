@@ -2,6 +2,8 @@
 
 注意力变体通常在三个目标间取舍：表达能力、KV Cache 体积和硬件效率。理论 FLOPs 相同并不意味着 wall-clock 相同，kernel 融合、内存访问和张量形状往往更关键。
 
+本页保留为稳定总览。MHA、MQA、GQA 与 MLA 的计算和 cache 形态见[注意力家族](attention-variants.md)；RoPE 插值、YaRN、滑动窗口与长序列评测见[长上下文](long-context.md)；online softmax 与 FlashAttention 实现见[Kernel 与性能](../systems/kernels-performance.md)。
+
 ## MHA、MQA 与 GQA
 
 - **Multi-Head Attention**：每个 query head 有独立 K/V head，容量高但 KV Cache 大。

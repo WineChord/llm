@@ -36,3 +36,5 @@ weight-only 量化对 decode 常有效，因为每 token 反复读取权重；pr
 - adapter 合并、权重共享与多模型调度。
 
 任何加速报告都应给出未优化基线、相同输出质量、完整请求分布、硬件、并发与尾延迟。
+
+采样与精确接受规则见[解码](decoding.md)，online softmax 与融合 kernel 见[Kernel 与性能](../systems/kernels-performance.md)，真实请求的 shape 与缓存状态见[推理运行时](runtime.md)。

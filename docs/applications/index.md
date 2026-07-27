@@ -23,3 +23,5 @@
 ## 选择原则
 
 如果问题可以由一次检索和一次生成解决，不要先引入复杂智能体。循环会放大延迟、成本、状态漂移和攻击面。先读 [RAG](rag.md)，再读[工具与智能体](agents.md)；仓库级执行系统见 [Coding Agent](coding-agents.md)，多步策略训练见 [Agentic RL](../agentic-rl/index.md)。
+
+全站知识地图在[首页](../index.md)；应用层与模型、推理和评测的边界见[知识架构](../guide/architecture.md)。

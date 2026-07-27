@@ -41,3 +41,5 @@
 - 设计回滚、降级和 kill switch。
 
 最终目标不是让模型“看起来更自信”，而是让系统的正确、未知、失败和拒绝都可观察。
+
+具体事实错误与引用验证见[幻觉与事实性](hallucination.md)，评测实现口径见[语言模型评测协议](language-model-evaluation.md)，上线观测与降级见[生产可靠性](production-reliability.md)。

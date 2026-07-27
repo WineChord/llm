@@ -31,3 +31,5 @@ Unigram 从较大的候选词表出发，迭代删除贡献较低的子词，通
 - 词表扩展后，新增 embedding 如何初始化，旧检查点是否兼容。
 
 Tokenizer 变化通常意味着数据统计、上下文长度和 checkpoint 接口一起变化，不能只替换一个词表文件。
+
+模板、BOS/EOS、label shift 与 packing 的落地见[序列构造与打包](../data/sequence-construction.md)，token 单位怎样影响 PPL 见[语言模型评测协议](../evaluation/language-model-evaluation.md)。

@@ -2,6 +2,8 @@
 
 并行策略决定模型状态和计算沿哪些维度切分。实际系统通常组合多种并行，目标是在显存可容纳的前提下，让高带宽通信留在节点内、低频通信跨节点。
 
+本页保留为选择总览。collective、DDP、ZeRO 与 FSDP 的数据布局见[集合通信与状态分片](collectives-sharding.md)；column/row TP、pipeline schedule、Ring Attention 与 expert parallel 的计算路径见[模型并行](model-parallelism.md)。
+
 ## Data Parallel
 
 每个 rank 持有模型副本并处理不同数据，随后同步梯度。Distributed Data Parallel 通常 all-reduce 梯度；ZeRO/FSDP 进一步分片 optimizer state、梯度与参数。

@@ -16,14 +16,17 @@
 
 ## 模型结构
 
+- Zhang & Sennrich, [RMSNorm](https://arxiv.org/abs/1910.07467)
 - Su et al., [RoFormer / RoPE](https://arxiv.org/abs/2104.09864)
 - Press et al., [Train Short, Test Long / ALiBi](https://arxiv.org/abs/2108.12409)
+- Peng et al., [YaRN](https://arxiv.org/abs/2309.00071)
 - Shazeer, [Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/abs/1911.02150)
 - Ainslie et al., [GQA](https://arxiv.org/abs/2305.13245)
 - Dao et al., [FlashAttention](https://arxiv.org/abs/2205.14135)
 - Dao, [FlashAttention-2](https://arxiv.org/abs/2307.08691)
 - Fedus et al., [Switch Transformers](https://arxiv.org/abs/2101.03961)
 - Dai et al., [DeepSeekMoE](https://arxiv.org/abs/2401.06066)
+- Wang et al., [Auxiliary-Loss-Free Load Balancing](https://arxiv.org/abs/2408.15664)
 - Gu & Dao, [Mamba](https://arxiv.org/abs/2312.00752)
 - Peng et al., [RWKV](https://arxiv.org/abs/2305.13048)
 
@@ -55,6 +58,8 @@
 - Yang et al., [Tensor Programs V: Tuning Large Neural Networks via Zero-Shot Hyperparameter Transfer](https://arxiv.org/abs/2203.03466)
 - Ouyang et al., [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)
 - Rafailov et al., [Direct Preference Optimization](https://arxiv.org/abs/2305.18290)
+- Azar et al., [A General Theoretical Paradigm to Understand Learning from Human Preferences / IPO](https://arxiv.org/abs/2310.12036)
+- Ethayarajh et al., [KTO](https://arxiv.org/abs/2402.01306)
 - Bai et al., [Constitutional AI](https://arxiv.org/abs/2212.08073)
 - Shao et al., [DeepSeekMath](https://arxiv.org/abs/2402.03300)
 - Hu et al., [LoRA](https://arxiv.org/abs/2106.09685)
@@ -63,6 +68,7 @@
 - Frantar et al., [GPTQ](https://arxiv.org/abs/2210.17323)
 - Lin et al., [AWQ](https://arxiv.org/abs/2306.00978)
 - Xiao et al., [SmoothQuant](https://arxiv.org/abs/2211.10438)
+- Liu et al., [Muon is Scalable for LLM Training](https://arxiv.org/abs/2502.16982)
 - Schulman et al., [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
 - DeepSeek-AI et al., [DeepSeek-R1](https://arxiv.org/abs/2501.12948)
 - Liu et al., [Understanding R1-Zero-Like Training / Dr. GRPO](https://arxiv.org/abs/2503.20783)
@@ -91,9 +97,12 @@
 - Rajbhandari et al., [ZeRO](https://arxiv.org/abs/1910.02054)
 - Shoeybi et al., [Megatron-LM](https://arxiv.org/abs/1909.08053)
 - Huang et al., [GPipe](https://arxiv.org/abs/1811.06965)
+- Qi et al., [Zero Bubble Pipeline Parallelism](https://arxiv.org/abs/2401.10241)
+- Liu et al., [Ring Attention](https://arxiv.org/abs/2310.01889)
 - Yu et al., [Orca](https://arxiv.org/abs/2206.02658)
 - Kwon et al., [Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/abs/2309.06180)
 - Agrawal et al., [Sarathi-Serve](https://arxiv.org/abs/2403.02310)
+- Zhong et al., [DistServe](https://arxiv.org/abs/2401.09670)
 - Leviathan et al., [Fast Inference from Transformers via Speculative Decoding](https://arxiv.org/abs/2211.17192)
 - [Megatron-LM / Megatron Core](https://github.com/NVIDIA/Megatron-LM)
 - [vLLM Documentation](https://docs.vllm.ai/)
@@ -138,5 +147,10 @@
 - [Stanford CS336: Language Modeling from Scratch](https://stanford-cs336.github.io/)
 - [Hugging Face LLM Course](https://huggingface.co/learn/llm-course/)
 - [Full Stack Deep Learning](https://fullstackdeeplearning.com/)
+
+## 连续生成模型
+
+- Ho et al., [Denoising Diffusion Probabilistic Models](https://arxiv.org/abs/2006.11239)
+- Lipman et al., [Flow Matching for Generative Modeling](https://arxiv.org/abs/2210.02747)
 
 引用论文结果时应回到具体版本、表格、实验设置和限制；本页是导航，不替代原文。

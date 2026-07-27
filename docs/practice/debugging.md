@@ -42,3 +42,5 @@ NaN 出现后降低学习率可能暂时隐藏问题；先定位第一个非有�
 ## 最小原则
 
 保留一个慢但可信的 reference path。优化路径只有在固定输入上同时通过数值、任务质量和性能验证后才可替代参考。
+
+可直接用于逐层对照的基础实现见[最小实现](minimal-implementations.md)，公式与数值路径见[概率、损失与梯度](../foundations/probability-objectives.md)和[Kernel 与性能](../systems/kernels-performance.md)。

@@ -1,0 +1,119 @@
+# Kernel 与性能
+
+大模型性能优化的核心是减少关键路径上的无效计算、数据搬运、同步和 launch。FLOPs 相同的两个实现可能相差很大；理论复杂度更低的方法也可能因 kernel 粒度差而更慢。
+
+## Roofline
+
+算术强度定义为
+
+$$
+I=\frac{\text{FLOPs}}{\text{bytes moved}}.
+$$
+
+若硬件峰值计算为 $F_{\max}$、内存带宽为 $B_{\max}$，可达到的性能受
+
+$$
+F\le\min(F_{\max},I B_{\max})
+$$
+
+约束。大矩阵 prefill 更可能 compute-bound；小 batch decode、norm、采样与 KV 读取更容易 bandwidth-bound 或 launch-bound。
+
+## GEMM 形状
+
+矩阵乘法性能不仅由 $MNK$ 决定，还取决于：
+
+- 维度是否对齐 tensor core tile；
+- batch 与序列展平后的 $M$ 是否足够大；
+- 权重 layout 与 transpose；
+- dtype、累加精度和 scale；
+- fusion 前后的中间 tensor；
+- TP/EP 分片是否把 GEMM 切得过小。
+
+MoE 小专家和 decode 小 batch 常造成 skinny GEMM。提高理论并行度可能反而降低单 kernel 利用率。
+
+## Online softmax
+
+分块 attention 不能先保存完整 score 矩阵。对已处理元素维护最大值 $m$ 与指数和 $\ell$。加入新 block、其局部最大值为 $m_b$、局部指数和为 $\ell_b$ 时：
+
+$$
+m'=\max(m,m_b),
+$$
+
+$$
+\ell'
+=e^{m-m'}\ell+e^{m_b-m'}\ell_b.
+$$
+
+加权输出累加器也按相同 scale 重标定。这个 recurrence 使不同 score block 能在不物化完整矩阵的情况下得到与标准 softmax 等价的结果。
+
+## FlashAttention
+
+[FlashAttention](https://arxiv.org/abs/2205.14135)通过 tiling 将 Q/K/V block 放入片上存储，使用 online softmax 累加，减少 HBM 往返；它是 exact attention 的 IO 优化，不是近似线性 attention。[FlashAttention-2](https://arxiv.org/abs/2307.08691)进一步调整 thread block 与 warp 的工作划分。
+
+实现仍要正确处理：
+
+- causal、padding、window 与 packed mask；
+- 不同 Q/K 长度；
+- dropout 随机数可重放；
+- GQA/MQA 的 head 映射；
+- backward 中重算统计；
+- FP16/BF16 输入与 FP32 累加；
+- head dimension 和硬件支持范围。
+
+## Fusion
+
+融合可减少中间 tensor 和 launch，例如：
+
+- bias + activation；
+- gated MLP 的两分支与逐元素乘；
+- residual + dropout + norm；
+- dequantize + GEMM；
+- sampling 的 temperature、mask 与 top-$k$。
+
+但融合越大，动态 shape、调试、编译时间和寄存器压力越难控制。若寄存器溢出到 local memory，融合可能变慢。始终保留可比较的 reference path。
+
+## Reduction、scan 与 permutation
+
+norm、softmax、router top-$k$、MoE token permutation、prefix scan 和采样都不是 GEMM。它们常受：
+
+- 非连续访问；
+- 多阶段归约；
+- 原子操作争用；
+- 动态输出大小；
+- host-device 同步；
+- 小 tensor launch。
+
+优化时先测有效带宽与 occupancy，再决定融合、分块或使用专门库。不要用 GEMM 的峰值利用率评价所有算子。
+
+## CUDA Graph 与编译
+
+CUDA Graph 可复用一组稳定 kernel launch，降低 CPU 调度开销；它要求可复用的地址和形状管理。在线推理 batch 持续变化时，通常需要按 shape bucket 捕获多个 graph，并为 KV block、采样状态和 adapter 设计稳定 buffer。
+
+编译器生成 kernel 能做算子融合和布局优化，但 graph break、动态控制流和版本变化会造成重新编译。报告性能时说明 warmup 与 compile time 是否计入。
+
+## 正确性阶梯
+
+1. 高精度标量或框架 reference；
+2. 向量化未融合实现；
+3. 单个自定义 kernel；
+4. 融合 forward；
+5. backward 与 gradient check；
+6. 混合精度；
+7. 分布式与真实调度。
+
+比较指标包括最大绝对/相对误差、任务质量和梯度误差。softmax 尾部概率接近零时，相对误差可能失真；需要按输出语义选择容差。
+
+## Benchmark 纪律
+
+```text
+hardware, clocks and power state
+driver, runtime, compiler and library versions
+tensor shapes, strides and dtypes
+warmup and repetitions
+quantiles, not only the minimum
+allocation and data transfer boundaries
+numerical tolerance and output quality
+profiler trace and critical path
+```
+
+微基准变快不等于端到端变快。若该 kernel 原本只占 step time 的 5%，即使速度翻倍，上限收益也很小。应配合[系统资源模型](index.md)和[推理运行时](../inference/runtime.md)定位真正瓶颈。

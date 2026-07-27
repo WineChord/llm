@@ -2,6 +2,8 @@
 
 后训练把基础模型的分布能力转化为可交互行为。它不能凭空补回预训练缺失的知识，也不能只靠一个奖励分数定义所有可靠性。
 
+本页提供阶段总览。SFT 的模板、mask、packing 与训练回归见[监督微调](supervised-finetuning.md)；reward model、DPO、IPO、KTO 和 offline/online 边界见[奖励建模与偏好优化](reward-preference.md)；多步策略算法见[Agentic RL 数学与算法](../agentic-rl/math-algorithms.md)。
+
 ## Supervised Fine-Tuning
 
 SFT 对示范答案做条件语言建模。关键变量包括数据质量、任务混合、chat template、只对 response 计算 loss 与否、长度截断以及拒答样本比例。高质量小数据可能优于低质量大数据，但“质量”必须由目标任务和人工审查定义。

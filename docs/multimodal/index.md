@@ -24,8 +24,11 @@ VLM、MLLM 与通用多模态模型都试图让文本模型读取或生成图像
 
 ## 阅读路径
 
-- [融合与训练](architecture-training.md)：projector、resampler、cross-attention、分辨率与训练阶段。
-- [原生多模态与生成](native-generation.md)：连续/离散表示、自回归/扩散与理解—生成冲突。
+- [视觉语言模型](vision-language.md)：ViT、CLIP、projector、视觉 token 合并与分辨率。
+- [融合与训练](architecture-training.md)：projector、resampler、cross-attention 与训练阶段。
+- [原生多模态与生成](native-generation.md)：连续/离散表示与理解—生成冲突。
+- [多模态生成模型](generative-modeling.md)：自回归、diffusion、flow matching 与 conditioning。
+- [音频与视频](audio-video.md)：时序 token、流式、压缩、同步与评测。
 - [Kimi 案例](kimi.md)：MoE、视觉、长上下文与 agent 能力如何组合。
 - [DeepSeek 案例](deepseek.md)：VL、VL2、Janus 与 OCR 路线怎样分化。
 

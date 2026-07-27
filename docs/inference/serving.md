@@ -2,6 +2,8 @@
 
 在线服务面对长度未知、到达随机、优先级不同的请求。调度器的任务是在显存约束下组合 batch，并控制交互延迟与吞吐。
 
+本页关注服务策略和 SLO。block table、copy-on-write、抢占、detokenization 等单引擎状态见[推理运行时](runtime.md)，跨资源池的 KV 传输与全局 admission 见[Prefill–Decode 分离](disaggregation.md)。
+
 ## Continuous Batching
 
 静态 batch 等最慢请求结束后再换批，会产生空闲槽。continuous batching 在 token step 边界移除完成请求、加入新请求。[Orca](https://arxiv.org/abs/2206.02658) 描述了迭代级调度与选择性 batching。

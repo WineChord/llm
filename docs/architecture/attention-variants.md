@@ -1,0 +1,95 @@
+# 注意力家族
+
+注意力架构同时决定表达能力、KV Cache 形状和服务带宽。比较 MHA、MQA、GQA 与低秩 KV 路线时，必须把训练计算和增量 decode 分开。
+
+## 统一记号
+
+设模型有 $H_q$ 个 query head、$H_{kv}$ 个 key/value head，每个 head 维度为 $d_h$。第 $a$ 个 query head 使用映射 $g(a)$ 找到对应 K/V head：
+
+$$
+o_a=
+\operatorname{softmax}\left(
+\frac{Q_aK_{g(a)}^\top}{\sqrt{d_h}}+M
+\right)V_{g(a)}.
+$$
+
+不同家族主要改变 $H_{kv}$ 和 $g$：
+
+| 方法 | $H_{kv}$ | 共享关系 | 主要权衡 |
+| --- | ---: | --- | --- |
+| MHA | $H_q$ | 每个 Q 独立 K/V | 容量高，缓存最大 |
+| MQA | $1$ | 所有 Q 共享 K/V | 缓存最小，可能损失质量 |
+| GQA | $1<H_{kv}<H_q$ | 每组 Q 共享 K/V | 质量与带宽折中 |
+
+[GQA](https://arxiv.org/abs/2305.13245)还给出从 MHA checkpoint uptrain 的路线，说明架构选择既可以从头训练，也可以通过受控转换获得。
+
+## KV Cache 成本
+
+对 $L$ 层、batch $B$、缓存长度 $T$ 和每元素 $s$ 字节，
+
+$$
+M_{\text{KV}}
+=2LBTH_{kv}d_hs.
+$$
+
+decode 每步还要读取历史 K/V，因此减少 $H_{kv}$ 同时降低容量和带宽压力。prefill 仍需处理完整注意力矩阵，收益不一定与 cache 缩减比例相同。
+
+## Multi-head Latent Attention
+
+低秩 KV 路线不直接缓存展开后的每个 K/V head，而是先把隐藏状态压缩为潜变量：
+
+$$
+c_t^{KV}=W^{DKV}h_t,
+$$
+
+再恢复内容相关的 key 与 value：
+
+$$
+k_t^C=W^{UK}c_t^{KV},
+\qquad
+v_t^C=W^{UV}c_t^{KV}.
+$$
+
+[DeepSeek-V2](https://arxiv.org/abs/2405.04434)中的 Multi-head Latent Attention 把这条路线与可单独缓存的位置分支组合。它的价值不只来自低秩分解，还取决于推理时能否将部分投影吸收到 query 或输出计算中，避免每步显式恢复大 K/V 张量。
+
+## 权重吸收的边界
+
+若注意力 score 中出现
+
+$$
+(W_Qh_t)^\top(W_Kc_j),
+$$
+
+可在满足线性与布局条件时改写为
+
+$$
+h_t^\top(W_Q^\top W_K)c_j.
+$$
+
+这类矩阵结合能把一部分上投影从历史 token 侧移到当前 query 侧。但 RoPE 之类位置相关变换通常不能任意穿过低秩投影；位置分支、量化 scale 和并行分片也会限制吸收方式。理论 cache 大小只有落到 kernel 和张量布局后才成为实际收益。
+
+## Mask 与增量位置
+
+attention 实现至少同时处理：
+
+- causal mask；
+- padding 或 packed segment mask；
+- sliding-window 或局部—全局 pattern；
+- prefix-LM 的双向前缀；
+- 增量 decode 中 query 长度与 cache 长度不同；
+- 多模态 token 或工具 span 的结构约束。
+
+一个常见错误是用方阵上三角 mask 处理 $T_q\ne T_k$ 的增量输入，导致 query 对历史位置错位。应根据绝对 position 或 cache offset 构造语义，而不是依赖张量恰好为方阵。
+
+## 选择框架
+
+| 场景 | 首要问题 |
+| --- | --- |
+| 从头预训练 | 质量、训练稳定性与目标部署共同决定 head 结构 |
+| 改造已有 checkpoint | 权重聚合、短期 uptraining 与回归成本 |
+| 长上下文服务 | KV bytes/token、读取带宽与 cache 并发 |
+| 量化部署 | K/V 或潜变量的误差传播与 scale 粒度 |
+| Tensor Parallel | Q/K/V head 能否均匀分片，是否需要复制 |
+| Prefix cache | cache key、position 与 adapter 是否完全兼容 |
+
+位置机制见[长上下文](long-context.md)，缓存管理见[KV Cache](../inference/kv-cache.md)，IO 优化见[Kernel 与性能](../systems/kernels-performance.md)。

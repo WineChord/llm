@@ -6,6 +6,10 @@
 
 只保存部分前向激活，反向时重算其余激活，以计算换显存。
 
+**Action mask**
+
+标记轨迹中哪些 token 或 span 由策略选择并应进入 policy loss；observation、prompt 与 padding 通常不属于动作。
+
 **Alignment**
 
 让模型行为更符合任务、偏好、原则或安全边界的一组训练与系统方法；不等于单一算法。
@@ -50,6 +54,10 @@ Byte Pair Encoding，迭代合并高频相邻符号的子词算法。
 
 在生成迭代边界动态加入新请求和移除已完成请求的服务调度。
 
+**Context parallelism, CP**
+
+沿序列维度分片 attention 上下文，并交换 K/V block 或归一化统计的并行方式。
+
 **Data parallelism, DP**
 
 多个副本处理不同数据，并同步梯度或分片状态。
@@ -57,6 +65,10 @@ Byte Pair Encoding，迭代合并高频相邻符号的子词算法。
 **Decode**
 
 自回归推理中逐步生成新 token 的阶段。
+
+**Disaggregated serving**
+
+将 prefill 与 decode 放在不同 worker 或资源池，并传输 KV Cache 的服务架构。
 
 **DPO**
 
@@ -75,6 +87,10 @@ Agent 交互的外部状态与转移规则，可包含工具、模拟器、代�
 Fully Sharded Data Parallel，按 rank 分片参数、梯度与 optimizer state 的数据并行路线。
 
 ## G–P
+
+**Flow matching**
+
+通过回归概率路径上的向量场训练 Continuous Normalizing Flow 的生成建模方法。
 
 **Goodput**
 
@@ -112,6 +128,10 @@ Inter-token latency / time per output token，描述流式生成相邻 token 的
 
 自回归推理中缓存历史 token 的 attention key/value，避免重复计算。
 
+**Log-sum-exp**
+
+稳定计算 $\log\sum_i e^{z_i}$ 的基本操作，通常先减去最大 logit。
+
 **LoRA**
 
 Low-Rank Adaptation，用低秩增量更新冻结权重的参数高效微调方法。
@@ -127,6 +147,10 @@ Model FLOPs Utilization，用模型理论有效 FLOPs 与硬件峰值比较的�
 **MLLM**
 
 Multimodal Large Language Model，能处理文本以外一个或多个模态的大模型。
+
+**MLA**
+
+Multi-head Latent Attention，将 K/V 压缩为潜变量并结合投影吸收降低缓存的一类注意力结构。
 
 **Model lineage**
 
@@ -160,6 +184,10 @@ Proximal Policy Optimization，带裁剪目标的策略梯度算法，常用于 
 
 生成 rollout 的 behavior policy 与 learner 当前 policy 之间的版本或分布差异。
 
+**Process reward model, PRM**
+
+对中间步骤或状态提供过程评分的模型；评分是否代表最终可达性需要单独校准。
+
 ## Q–Z
 
 **Quantization**
@@ -185,6 +213,18 @@ Reinforcement Learning from Human Feedback，使用人类偏好训练奖励或�
 **RoPE**
 
 Rotary Position Embedding，用位置相关旋转把相对位置信息注入 Q/K。
+
+**RMSNorm**
+
+按均方根缩放表示、不减去均值的归一化方法。
+
+**Rollout**
+
+策略在任务或环境中从初始状态到终止或截断产生的一次交互序列。
+
+**Sequence parallelism, SP**
+
+沿 token 维分片部分逐 token activation 与算子的并行方式，常与 tensor parallel 组合。
 
 **SFT**
 
@@ -225,6 +265,10 @@ Vision-Language Model，联合处理视觉与语言的模型。
 **Verifier**
 
 根据目标状态、测试、规则或评分模型判断输出或轨迹是否满足条件的组件。
+
+**YaRN**
+
+面向 RoPE 模型的上下文扩展方法，组合频率相关缩放与 attention scale。
 
 **ZeRO**
 

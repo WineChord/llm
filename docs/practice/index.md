@@ -46,3 +46,5 @@ def attention(q, k, v, causal=True):
 ## 复现层级
 
 “能运行”只证明接口可用；“指标接近”还需要相同数据与协议；“机制成立”则需要对照和消融。复现结论应明确属于哪一层。
+
+softmax、RMSNorm、GQA、online softmax、分页映射与组相对优势的可审计 reference 见[最小实现](minimal-implementations.md)，跨层故障定位见[调试手册](debugging.md)。

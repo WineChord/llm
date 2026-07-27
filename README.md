@@ -11,7 +11,7 @@
 
 - 从语言建模、分词、缩放规律到 Transformer、稀疏模型与替代架构。
 - 从数据工程、预训练、后训练到分布式训练、推理服务与硬件效率。
-- 覆盖模型谱系、多模态、检索增强、Coding Agent、Agentic RL、评测与生产可靠性。
+- 覆盖长上下文、MoE、多模态生成、AI Infra、检索增强、Coding Agent、Agentic RL、评测与生产可靠性。
 - 区分稳定原理、工程经验、实验结果与时效性事实，优先引用论文和官方资料。
 
 ## 本地预览
@@ -21,6 +21,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 python scripts/check_content.py
+python scripts/check_architecture.py
 python scripts/check_python.py
 python scripts/check_rendering.py
 mkdocs build --strict

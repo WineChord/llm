@@ -31,4 +31,10 @@ $\alpha<1$ 提高小数据源权重，但也可能导致过拟合和重复记忆
 - 合成数据会继承生成器偏差；缺少来源标签时难以回滚。
 - benchmark 题目或答案进入训练集后，分数不再代表泛化。
 
-进一步阅读[质量与治理](quality-governance.md)和[预训练](../training/pretraining.md)。开放语料工程可参考 [Dolma](https://arxiv.org/abs/2402.00159)、[RefinedWeb](https://arxiv.org/abs/2306.01116) 与 [DataComp-LM](https://arxiv.org/abs/2406.11794)。
+## 三类数据契约
+
+- [序列构造与打包](sequence-construction.md)连接模板、token、attention、position 与训练 label。
+- [偏好、过程与轨迹数据](feedback-trajectories.md)处理成对选择、步骤监督、环境状态和 verifier。
+- [质量与治理](quality-governance.md)处理来源、去重、隐私、删除和版本。
+
+之后进入[预训练](../training/pretraining.md)或[监督微调](../training/supervised-finetuning.md)。开放语料工程可参考 [Dolma](https://arxiv.org/abs/2402.00159)、[RefinedWeb](https://arxiv.org/abs/2306.01116) 与 [DataComp-LM](https://arxiv.org/abs/2406.11794)。

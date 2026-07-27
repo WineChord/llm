@@ -48,3 +48,5 @@
 - 多图顺序、帧采样或模态占位 token 与推理模板不一致。
 
 多模态 benchmark 需要按能力拆分；代表性综合评测可参考 [MMMU](https://arxiv.org/abs/2311.16502)。
+
+ViT、CLIP 与视觉 token 的实现语义见[视觉语言模型](vision-language.md)，连续生成目标见[多模态生成模型](generative-modeling.md)，音视频的时间维见[音频与视频](audio-video.md)。

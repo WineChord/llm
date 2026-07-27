@@ -115,4 +115,4 @@ agent 轨迹长度重尾：简单任务几步结束，困难任务可能运行�
 
 [veRL](https://github.com/volcengine/verl)提供面向大语言模型 RL 的训练与 rollout 组织，可用于理解 actor、critic、reference、reward 和推理引擎如何分离。阅读框架时，优先追踪数据对象与版本边界，而非只记命令行参数。
 
-分布式基础见[并行训练](../systems/parallelism.md)和[检查点与容错](../systems/checkpointing.md)。
+behavior version、old log-prob 与异步 batch 字段见[轨迹与策略契约](trajectory-contract.md)，分布式基础见[集合通信与状态分片](../systems/collectives-sharding.md)、[模型并行](../systems/model-parallelism.md)和[检查点与容错](../systems/checkpointing.md)。

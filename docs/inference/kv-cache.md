@@ -32,3 +32,5 @@ block 太大增加尾部浪费，太小增加映射开销和 kernel 复杂度。
 - 跨层共享或低秩表示：需要架构支持。
 
 “支持更长上下文”必须同时给出质量、缓存容量、并发、TTFT 与 decode 延迟。
+
+block table、copy-on-write、抢占和 prefix cache 的请求级状态见[推理运行时](runtime.md)；跨 prefill/decode worker 的 cache 迁移见[Prefill–Decode 分离](disaggregation.md)。

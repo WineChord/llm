@@ -22,4 +22,12 @@
 - 评测集污染、回归门槛与安全边界；
 - 训练 FLOPs、失败重跑和最终服务成本。
 
-从[预训练](pretraining.md)开始，结合[优化与稳定性](optimization.md)理解训练曲线，再进入[后训练](post-training.md)和[参数高效与压缩](peft-compression.md)。
+## 阅读路径
+
+1. [预训练](pretraining.md)：数据暴露、token 预算与持续训练。
+2. [监督微调](supervised-finetuning.md)：模板、loss mask、packing 与能力混合。
+3. [优化与稳定性](optimization.md)和[优化器家族](optimizer-families.md)：数值路径、AdamW、Muon 与更新尺度。
+4. [后训练总览](post-training.md)与[奖励建模和偏好优化](reward-preference.md)：RM、RLHF、DPO、IPO、KTO 与可验证奖励。
+5. [参数高效与压缩](peft-compression.md)：LoRA、量化、蒸馏与部署回归。
+
+涉及多步环境和在线 rollout 时，再进入 [Agentic RL](../agentic-rl/index.md)。

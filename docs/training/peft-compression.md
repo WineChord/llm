@@ -31,3 +31,5 @@ $$
 - weight-only 量化主要减少权重带宽；长 batch decode 还可能受 KV 和激活限制。
 
 [GPTQ](https://arxiv.org/abs/2210.17323)、[AWQ](https://arxiv.org/abs/2306.00978) 与 [SmoothQuant](https://arxiv.org/abs/2211.10438) 代表不同 PTQ 路线。比较时应报告量化粒度、校准集、kernel、真实延迟、吞吐、显存和逐任务质量，而不只写 bit 数。
+
+SFT 中 adapter 的数据与回归边界见[监督微调](supervised-finetuning.md)，量化后的服务瓶颈见[加速与量化](../inference/acceleration.md)。

@@ -28,4 +28,4 @@ $$
 
 ## 推荐顺序
 
-先读[语言建模](language-modeling.md)，再读[分词与表示](tokenization.md)和[缩放与计算](scaling.md)。随后进入[模型结构](../architecture/index.md)。
+先读[语言建模](language-modeling.md)，再用[概率、损失与梯度](probability-objectives.md)把 softmax、交叉熵、困惑度和数值稳定性落到实现；之后阅读[分词与表示](tokenization.md)和[缩放与计算](scaling.md)，再进入[模型结构](../architecture/index.md)。

@@ -102,20 +102,28 @@ nav:
   - 起点:
       - 学习路线: guide/roadmap.md
       - 阅读方法: guide/method.md
+      - 知识架构: guide/architecture.md
       - 证据与研究方法: guide/evidence.md
   - 原理与模型:
       - 基础:
           - 知识地图: foundations/index.md
           - 语言建模: foundations/language-modeling.md
+          - 概率、损失与梯度: foundations/probability-objectives.md
           - 分词与表示: foundations/tokenization.md
           - 缩放与计算: foundations/scaling.md
       - 数据:
           - 数据工程: data/index.md
+          - 序列构造与打包: data/sequence-construction.md
+          - 偏好、过程与轨迹数据: data/feedback-trajectories.md
           - 质量与治理: data/quality-governance.md
       - 模型结构:
           - 总览: architecture/index.md
           - Transformer: architecture/transformer.md
-          - 注意力与位置: architecture/attention-position.md
+          - Decoder Block: architecture/decoder-block.md
+          - 注意力与位置总览: architecture/attention-position.md
+          - 注意力家族: architecture/attention-variants.md
+          - 长上下文: architecture/long-context.md
+          - Mixture of Experts: architecture/moe.md
           - 稀疏与替代架构: architecture/moe-alternatives.md
       - 模型谱系:
           - 总览: landscape/index.md
@@ -123,27 +131,39 @@ nav:
           - DeepSeek 演化案例: landscape/deepseek-timeline.md
   - 多模态:
       - 总览: multimodal/index.md
+      - 视觉语言模型: multimodal/vision-language.md
       - 融合与训练: multimodal/architecture-training.md
       - 原生多模态与生成: multimodal/native-generation.md
+      - 多模态生成模型: multimodal/generative-modeling.md
+      - 音频与视频: multimodal/audio-video.md
       - Kimi 案例: multimodal/kimi.md
       - DeepSeek 案例: multimodal/deepseek.md
   - 训练与系统:
       - 训练与对齐:
           - 总览: training/index.md
           - 预训练: training/pretraining.md
+          - 监督微调: training/supervised-finetuning.md
           - 优化与稳定性: training/optimization.md
-          - 后训练与偏好学习: training/post-training.md
+          - 优化器家族: training/optimizer-families.md
+          - 后训练总览: training/post-training.md
+          - 奖励建模与偏好优化: training/reward-preference.md
           - 参数高效与压缩: training/peft-compression.md
       - 系统与基础设施:
           - 总览: systems/index.md
-          - 并行训练: systems/parallelism.md
+          - 并行训练总览: systems/parallelism.md
+          - 集合通信与状态分片: systems/collectives-sharding.md
+          - 模型并行: systems/model-parallelism.md
+          - Kernel 与性能: systems/kernels-performance.md
           - 内存、数值与硬件: systems/memory-numerics-hardware.md
           - 检查点与容错: systems/checkpointing.md
   - 推理与应用:
       - 推理与服务:
           - 总览: inference/index.md
+          - 解码: inference/decoding.md
           - KV Cache: inference/kv-cache.md
-          - 调度与服务: inference/serving.md
+          - 推理运行时: inference/runtime.md
+          - 调度与服务策略: inference/serving.md
+          - Prefill–Decode 分离: inference/disaggregation.md
           - 加速与量化: inference/acceleration.md
       - 检索与智能体:
           - 总览: applications/index.md
@@ -152,14 +172,18 @@ nav:
           - Coding Agent: applications/coding-agents.md
   - Agentic RL:
       - 总览: agentic-rl/index.md
+      - 强化学习基础: agentic-rl/rl-foundations.md
       - 数学与算法: agentic-rl/math-algorithms.md
+      - 轨迹与策略契约: agentic-rl/trajectory-contract.md
       - 数据与环境: agentic-rl/data-environments.md
+      - 搜索、过程奖励与验证: agentic-rl/search-verification.md
       - 训练系统: agentic-rl/training-systems.md
       - 长时任务: agentic-rl/long-horizon.md
       - 评测与安全: agentic-rl/evaluation-safety.md
       - 阅读清单: agentic-rl/reading-list.md
   - 评测与可靠性:
       - 总览: evaluation/index.md
+      - 语言模型评测协议: evaluation/language-model-evaluation.md
       - 评测设计: evaluation/metrics.md
       - 可靠性与安全: evaluation/reliability-safety.md
       - 幻觉与事实性: evaluation/hallucination.md
@@ -168,6 +192,7 @@ nav:
   - 实践与索引:
       - 实践:
           - 实验方法: practice/index.md
+          - 最小实现: practice/minimal-implementations.md
           - 调试手册: practice/debugging.md
       - 术语表: glossary.md
       - 文献: references.md

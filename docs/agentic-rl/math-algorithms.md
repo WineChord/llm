@@ -33,15 +33,23 @@ r_t(\theta)=
 {\pi_{\theta_{\text{old}}}(a_t\mid h_t)}
 $$
 
-与 clipped objective
+先定义截断算子
 
 $$
-L^{\text{clip}}=
+c_\epsilon(r)=
+\max(1-\epsilon,\min(r,1+\epsilon)),
+$$
+
+再用较保守的代理收益
+
+$$
+J_{\text{PPO}}=
 \mathbb E_t\left[
-\min\left(
-r_t\hat A_t,
-\operatorname{clip}(r_t,1-\epsilon,1+\epsilon)\hat A_t
-\right)\right].
+\min\left\{
+r_t\hat A_t,\,
+c_\epsilon(r_t)\hat A_t
+\right\}
+\right].
 $$
 
 在语言模型中还常加入对 reference policy 的 KL 惩罚。PPO 适合复用 rollout，但需要 critic、旧策略概率和较复杂的批次管理。
@@ -124,13 +132,22 @@ $$
 
 ## DPO 与离线偏好
 
-[DPO](https://arxiv.org/abs/2305.18290)将偏好对直接转为分类式目标：
+[DPO](https://arxiv.org/abs/2305.18290)先衡量策略相对参考模型对一个回答增加了多少对数概率：
 
 $$
-\mathcal L_{\text{DPO}}=
--\mathbb E\log\sigma\left(
-\beta\log\frac{\pi_\theta(y_w\mid x)}{\pi_{\text{ref}}(y_w\mid x)}
--\beta\log\frac{\pi_\theta(y_l\mid x)}{\pi_{\text{ref}}(y_l\mid x)}
+s_\theta(x,y)=
+\beta\left[
+\log\pi_\theta(y\mid x)-\log\pi_{\mathrm{ref}}(y\mid x)
+\right].
+$$
+
+偏好损失把胜者 $y_w$ 与败者 $y_l$ 的相对增量之差作为二分类 logit：
+
+$$
+\mathcal L_{\mathrm{DPO}}=
+-\mathbb E_{(x,y_w,y_l)}
+\log\sigma\left(
+s_\theta(x,y_w)-s_\theta(x,y_l)
 \right).
 $$
 
@@ -228,4 +245,4 @@ $$
 | 长尾异步 rollout、每状态单次采样 | critic + SAO 式校正 |
 | 线上探索风险高 | 离线数据 + 保守部署 |
 
-算法选择必须与[数据与环境](data-environments.md)和[训练系统](training-systems.md)共同设计。
+算法选择必须与[轨迹与策略契约](trajectory-contract.md)、[数据与环境](data-environments.md)和[训练系统](training-systems.md)共同设计。若需要先补齐 value、Bellman、TD 与 actor–critic，阅读[强化学习基础](rl-foundations.md)；若训练信号来自多候选与过程评分，阅读[搜索、过程奖励与验证](search-verification.md)。

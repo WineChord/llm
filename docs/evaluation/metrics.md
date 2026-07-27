@@ -37,3 +37,5 @@ $$
 - [MMMU](https://arxiv.org/abs/2311.16502)：多学科多模态理解与推理。
 
 这些基准测量的对象和年代不同，不能合成一个无条件“智能分数”。
+
+不同 PPL、多项选择、生成 parser、pass@$k$ 与 LLM judge 实现怎样改变结果，见[语言模型评测协议](language-model-evaluation.md)。

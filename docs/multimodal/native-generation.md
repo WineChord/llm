@@ -115,4 +115,4 @@ $\lambda$ 不仅控制数值尺度，也控制容量分配；固定权重可能�
 - **鲁棒性**：裁切、旋转、压缩和图像内提示攻击；
 - **系统**：视觉 token、prefill、显存和首 token 延迟。
 
-架构接口见[多模态融合与训练](architecture-training.md)，家族案例见[Kimi](kimi.md)与[DeepSeek](deepseek.md)。
+架构接口见[多模态融合与训练](architecture-training.md)，diffusion 与 flow matching 的目标见[多模态生成模型](generative-modeling.md)，家族案例见[Kimi](kimi.md)与[DeepSeek](deepseek.md)。
