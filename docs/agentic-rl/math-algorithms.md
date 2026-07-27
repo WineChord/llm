@@ -103,7 +103,18 @@ $$
 f(r)=\frac{4}{\tau}\sigma\left(\tau(r-1)\right).
 $$
 
-在 $r=1$ 附近保留 on-policy 梯度，偏离较大时连续衰减。它并不自动消除 off-policy 偏差；序列内 ratio 分散程度和正负优势的 temperature 都必须监控。
+函数 $f$ 本身单调并在两端饱和；连续衰减的是它对 ratio 的梯度权重：
+
+$$
+f'(r)
+=
+4\sigma\left(\tau(r-1)\right)
+\left[1-\sigma\left(\tau(r-1)\right)\right]
+=
+\operatorname{sech}^2\left(\frac{\tau(r-1)}{2}\right).
+$$
+
+$f'(r)$ 在 $r=1$ 最大，随 $\lvert r-1\rvert$ 增大而平滑衰减，因此在 on-policy 邻域保留最强更新。它并不自动消除 off-policy 偏差；序列内 ratio 分散程度和正负优势的 temperature 都必须监控。
 
 ## Baseline 与过程奖励
 

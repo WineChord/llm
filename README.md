@@ -23,13 +23,18 @@ python -m pip install -r requirements.txt
 python scripts/check_content.py
 python scripts/check_architecture.py
 python scripts/check_python.py
+python scripts/check_snippets.py
 python scripts/check_rendering.py
 mkdocs build --strict
+python scripts/check_links.py --site-dir site
 python scripts/check_rendering.py --site-dir site --browser
 mkdocs serve
 ```
 
 浏览器打开 `http://127.0.0.1:8000/llm/`。
+
+安装 PyTorch 后，可额外运行 `python scripts/run_reference_snippets.py`，
+逐页执行手撕实现与断言。
 
 ## 目录
 

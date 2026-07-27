@@ -1,40 +1,62 @@
 # 稀疏与替代架构
 
-标准 dense Transformer 让每个 token 激活几乎全部参数。稀疏专家和替代序列模型试图把“参数容量”“每 token 计算”和“序列长度成本”解耦。
+Dense Transformer 同时沿两个方向增长：更多层和通道提高参数容量，更长序列提高注意力计算与缓存成本。MoE、状态空间模型、线性注意力、记忆和混合架构分别尝试解耦其中一部分成本。
 
-## Mixture of Experts
+本页保留为稳定比较入口：
 
-在稀疏 MoE 中，router 为 token 选择 top-$k$ 专家：
+- [Mixture of Experts](moe.md)：让每个 token 只激活部分参数；
+- [状态空间与线性注意力](state-space-linear-attention.md)：用有限状态递推降低长序列成本；
+- [记忆架构](memory-architectures.md)：在窗口、段、外部存储与可塑参数之间保存历史；
+- [长上下文](long-context.md)：位置扩展、稀疏可见性、分布式 attention 与有效长度；
+- [推理时计算](../reasoning/test-time-compute.md)：保持模型结构不变，在回答阶段分配更多采样与搜索。
 
-$$
-y=\sum_{i\in\operatorname{TopK}(g(x))}p_i(x)E_i(x)
-$$
+## 先区分优化对象
 
-总参数量可以很大，但每个 token 只激活少数专家。收益伴随新的系统成本：
+| 路线 | 主要解耦对象 | 不会自动解决 |
+| --- | --- | --- |
+| 稀疏 MoE | 总参数容量与每 token 激活计算 | 序列长度、通信、KV Cache |
+| MQA/GQA/MLA | KV Cache 与 query head 数 | attention 的全局二次 score |
+| Window/sparse attention | 可见边数量与序列长度 | 窗口外精确内容寻址 |
+| SSM/线性注意力 | 历史长度与递推状态大小 | 有限状态的信息容量 |
+| 外部检索 | 参数记忆与可更新知识 | 检索错误、额外延迟、证据利用 |
+| 测试时搜索 | 单次前向能力与回答计算预算 | 基础模型、verifier 与样本相关性 |
 
-- all-to-all 通信与专家并行；
-- token 分布不均导致 straggler；
-- capacity factor、溢出与丢 token 策略；
-- router collapse、专家重复和负载均衡损失；
-- checkpoint、量化与推理部署复杂度。
-
-[Switch Transformer](https://arxiv.org/abs/2101.03961) 使用 top-1 路由简化稀疏训练；[DeepSeekMoE](https://arxiv.org/abs/2401.06066) 讨论更细粒度专家与共享专家。比较 MoE 时必须同时报告总参数、激活参数、每 token FLOPs、通信拓扑和端到端吞吐。
-
-路由概率、capacity、溢出策略、无辅助损失均衡和 expert parallel 的完整计算路径见 [Mixture of Experts](moe.md)。本页其余部分集中讨论非标准序列混合器与混合结构。
-
-## State Space Models
-
-状态空间模型以状态递推压缩历史，目标是让序列计算随长度近似线性。[Mamba](https://arxiv.org/abs/2312.00752) 让状态参数依赖输入，并设计硬件感知扫描算法。它减少标准 attention 的二次项，但状态容量、并行训练 kernel、检索精度和生态兼容性仍需具体评估。
-
-[RWKV](https://arxiv.org/abs/2305.13048) 结合 Transformer 风格训练与 RNN 风格推理。此类架构的常数、kernel 成熟度和实际任务质量，往往比渐近复杂度更决定可用性。
+因此“更高效”必须附带明确分母：训练 FLOPs、decode FLOPs、峰值显存、KV bytes、通信量、端到端吞吐、延迟或质量约束。
 
 ## 混合架构
 
-attention、SSM、卷积和 MoE 可以按层或分支组合。混合设计常见理由：
+不同 token mixer 可以按层或分支组合。常见分工是：
 
-- 用 attention 保留精确内容寻址；
-- 用递推或卷积降低大部分长序列成本；
-- 用 MoE 增加通道容量；
-- 在局部窗口、全局 token 和外部检索之间分工。
+- local/full attention 保留精确内容寻址；
+- SSM 或线性注意力压缩大部分历史；
+- MoE 增加通道容量；
+- 外部检索提供可更新、可引用的非参数信息。
 
-评估混合架构时，应追踪信息经过哪些状态、哪些状态可缓存、哪些操作阻塞并行，以及部署栈是否真正支持。
+混合比例不是越复杂越好。实现需要回答：
+
+1. 哪些层拥有精确 KV；
+2. 哪些层只有固定大小 recurrent state；
+3. 状态能否 chunkwise 训练并逐 token 推理；
+4. 不同 mixer 的 norm、残差和位置接口是否一致；
+5. runtime 是否真正支持相应 kernel 与 cache；
+6. 质量收益来自架构还是参数量、数据和训练预算差异。
+
+## 比较协议
+
+公平比较至少固定：
+
+- tokenizer、训练数据与 token 数；
+- 总参数、激活参数和每 token FLOPs；
+- hidden size、状态大小、层数与优化器；
+- 训练硬件、kernel、batch 和 sequence length；
+- prefill、decode、短上下文与长上下文四类速度；
+- perplexity、关联回忆、复制、长程检索与真实任务；
+- checkpoint、量化、并行和服务栈成熟度。
+
+只比较渐近复杂度或单一 benchmark 容易把架构收益、工程成熟度和规模差异混在一起。
+
+## 证据边界
+
+稳定正文优先描述可复现的计算图、复杂度和已公开实现。新模型在自有配方上的结果适合作为案例，不应直接推出“已取代 attention”或“能无限记忆”。涉及前沿方案时，应同时写出公开 checkpoint、kernel、独立复现、测试规模和未验证外推。
+
+系统层的 MoE 通信见[MoE 系统](../systems/moe-systems.md)，序列模型的最小递推与等价性实验见[序列模型手撕实现](../practice/sequence-models.md)。

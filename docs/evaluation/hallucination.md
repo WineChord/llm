@@ -1,127 +1,205 @@
 # 幻觉与事实性
 
-“幻觉”通常指输出在语言上连贯，却与可验证事实、输入证据或任务约束不一致。它不是单一故障，因此也不存在一个统一指标或单一修复开关。
+“幻觉”通常指输出流畅，却与输入证据、可验证事实、任务约束或真实工具状态不一致。它不是单一故障：事实错误、引用错误、时间过期、推理错误和状态误报需要不同分母、证据与修复。
 
-## 先分类
+## 评测协议
 
-| 类型 | 判定参照 | 例子 |
+先冻结判定参照：
+
+| 类型 | 参照 | 示例 |
 | --- | --- | --- |
-| 内在不一致 | 给定上下文 | 摘要改变原文数字 |
-| 外在不可证实 | 外部事实 | 编造不存在的论文 |
-| 引用错误 | 指定来源 | 链接存在但不支持主张 |
-| 推理错误 | 规则与中间步骤 | 计算过程与答案矛盾 |
-| 工具状态错误 | 实际环境 | 声称文件已保存但未写入 |
-| 多模态错配 | 图像、音频或视频 | 未看清文字却补全内容 |
+| 内在一致性 | 给定上下文 | 摘要改变原文数字 |
+| 外部事实性 | 指定权威来源集合 | 编造不存在的论文 |
+| 引用支持 | 被引用页面与主张 | 链接存在但不支持结论 |
+| 完整性 | 题目要求或参考事实集 | 漏掉关键限制 |
+| 时效性 | 查询时间与对象版本 | 用旧任职信息回答当前问题 |
+| 推理/计算 | 规则、程序或 verifier | 中间计算与答案矛盾 |
+| 工具状态 | 实际环境终态 | 声称已保存但对象未变化 |
+| 多模态 grounding | 图片、音频、视频 | 将画面外对象写进描述 |
 
-事实性、校准与诚实也应区分：模型可能答错但置信度低，也可能知道证据不足却仍给出确定表述。
+开放域评测还需冻结检索源、索引时间、网络访问和证据质量规则。若来源集合本身不完整，结果只能表示“在该证据范围内未找到支持”，不能直接判定世界事实为假。
 
-## 成因
+## 统计对象：原子主张
 
-语言模型优化的是条件似然
+将回答拆成原子主张
 
 $$
-\mathcal L_{\text{NLL}}
-=-\sum_t\log p_\theta(x_t\mid x_{<t}),
+C(y)=\{c_1,\ldots,c_m\}.
 $$
 
-而不是对所有外部事实执行实时验证。错误还可能来自：
+每个 $c_i$ 关联零个或多个证据，并标为：
 
-- 训练语料冲突、过时或稀疏；
-- 解码追求流畅与确定性；
-- 指令要求必须回答，抑制“不知道”；
-- 检索返回噪声或被截断；
-- 长上下文中证据位置偏置；
-- 工具调用失败但状态未反馈；
-- 自动评分奖励格式而非正确性。
+```text
+supported
+contradicted
+not supported
+unknown / insufficient evidence
+stale for the requested time
+not factual / not applicable
+```
 
-## 检测方法
+[FActScore](https://arxiv.org/abs/2305.14251) 提出将长文本分解为 atomic facts，并计算可靠知识源支持的比例。[LongFact / SAFE](https://arxiv.org/abs/2403.18802) 进一步研究搜索增强的长文本事实评测。两者提供可复用框架，但 claim extraction、检索和 judge 都是可能出错的测量组件。
 
-### 有参考答案
+## 分母与指标
 
-使用 exact match、F1、事实三元组、NLI 或任务 verifier。自动指标应结合人工审计，因为语义等价和答案粒度会造成误判。
+设 $S$、$U$、$K$ 分别为 supported、unsupported/contradicted 与 unknown 的可判定计数，$A=S+U+K$ 为全部事实主张。
 
-### 无参考答案
+### Support precision
 
-[SelfCheckGPT](https://arxiv.org/abs/2303.08896)利用多次采样的一致性检测不可靠陈述。其直觉是：
+$$
+\operatorname{support\ precision}
+=\frac{S}{S+U}.
+$$
+
+unknown 不应静默从报告中消失，因此同时报告可判定率：
+
+$$
+\operatorname{decidable\ rate}
+=\frac{S+U}{A}.
+$$
+
+若将 unknown 一律算 unsupported，会把检索覆盖不足混入生成事实性；若全部排除，又会奖励无法验证的主张。
+
+### Completeness
+
+有独立参考需求或事实集 $G=\{g_1,\ldots,g_q\}$ 时：
+
+$$
+\operatorname{completeness}
+=
+\frac{|\{g\in G:\text{answer covers }g\}|}{|G|}.
+$$
+
+没有近似完整的 $G$ 时，不应把回答长度或 claim 数称为 recall。支持率高的短回答可能极不完整，因此 support precision 与 completeness 必须分开。
+
+### Freshness
+
+对有时间要求的主张，记录证据时间 $t_e$、对象版本 $v_e$ 与查询截止 $t_q$。freshness 不是“网页能打开”，而是证据是否在目标时间窗内支持同一对象和版本。至少报告：
+
+- 有时间要求的 claim 数；
+- 具备可核验证据时间的比例；
+- stale claim 比例；
+- 未披露更新时间的 unknown 比例。
+
+### 引用正确性
+
+引用评测分开：
+
+1. citation validity：目标可访问且对象正确；
+2. citation entailment：证据支持主张；
+3. citation completeness：需要证据的 claim 是否都覆盖；
+4. source quality：来源是否适合该主张；
+5. source freshness：时间与版本是否匹配。
+
+“有引用”不等于“引用支持”，引用多也不等于事实完整。
+
+## 检测机制
+
+### 有参考或 verifier
+
+exact match、结构化比较、计算器、编译器、测试和数据库状态适合确定性任务。parser 应保留 `invalid`、`timeout` 和 `infra error`，不能全部归入事实错误。
+
+### 多次采样
+
+[SelfCheckGPT](https://arxiv.org/abs/2303.08896) 用多次采样的一致性检测可能不可靠的陈述。直觉为
 
 $$
 \operatorname{risk}(c)\uparrow
 \quad\text{when}\quad
-\operatorname{disagreement}(c_1,\ldots,c_k)\uparrow.
+\operatorname{semantic\ disagreement}
+(c_1,\ldots,c_k)\uparrow.
 $$
 
-一致性只能提供信号：多个样本可能稳定复述同一错误，开放问题也可能有多个正确表述。
+表面字符串差异不是语义冲突；多个样本也可能稳定复述同一错误。一致性是 uncertainty signal，不是事实 verifier。
 
-### 引用验证
+### 检索增强
 
-将输出拆成原子主张 $c_i$，对每条寻找证据 $e_j$，判断
+[RAG](https://arxiv.org/abs/2005.11401) 将外部文档带入生成。端到端错误可按阶段审计：
 
 $$
-e_j\models c_i,\qquad e_j\perp c_i,\qquad e_j\not\models c_i.
+P(E)
+\le
+P(E_{\text{retrieve}})
++P(E_{\text{read}}\mid \neg E_{\text{retrieve}})
++P(E_{\text{generate}}\mid \text{usable evidence}).
 $$
 
-“有引用”不等于“被引用支持”。还需检查来源质量、时间、对象版本与主张范围。
+这是错误上界式的诊断分解，不假设事件独立。应分别测 retrieval recall、evidence selection、entailment 和有证据时的 generation。
+
+## 实现契约
+
+逐 claim 保存：
+
+```text
+answer and claim IDs
+claim extractor/version/span
+query and retrieved evidence IDs
+source URL/object/version/timestamps
+entailment label, judge/verifier version and confidence
+supported/contradicted/unknown/stale status
+human audit and disagreement
+```
+
+网页内容会变化，证据需保存 digest 或合法可重放 snapshot。judge 升级后应在同一 claim/evidence 上 bridge，而不是覆盖旧标签。
 
 ## 缓解分层
 
 ### 数据与训练
 
-- 提升语料质量、去重和时间标注；
-- 用反例训练拒绝不充分证据；
-- 训练模型区分事实、推断和未知；
-- 针对引用、工具结果和长上下文做监督。
+- 去重、时间标注与来源质量；
+- 反例和“证据不足”行为；
+- 引用、工具状态与长上下文监督；
+- 区分事实、推断和未知。
 
-### 推理
+### 推理与工具
 
-- 降低不必要的随机性；
-- 先拆主张，再逐条验证；
-- 允许澄清和 abstention；
-- 对数字、代码和引用使用确定性工具。
+- 先拆主张，再逐条检索和验证；
+- 数字、代码和状态使用确定性工具；
+- 允许澄清、abstain 和人工升级；
+- 写操作后读取真实对象，不以文本声明为完成证据。
 
-### 检索
+### 系统
 
-[RAG](https://arxiv.org/abs/2005.11401)把外部文档带入生成，但质量上限受检索召回、重排、切块和时效性约束。可把端到端错误粗分为
+- 来源、时间和 ACL 随 chunk 传播；
+- 检索空结果与冲突证据显式进入模型状态；
+- 高风险输出需要独立 verifier；
+- 监控支持率、unknown、stale、拒答和 coverage，而不是只看接受率。
 
-$$
-P(E)\le
-P(E_{\text{retrieve}})+
-P(E_{\text{read}}\mid \neg E_{\text{retrieve}})+
-P(E_{\text{generate}}\mid \text{evidence}).
-$$
+## 正确性与攻击失效
 
-检索失败、读错证据和有证据仍生成错误需要不同修复。
+- **claim 拆得越细分数越高/低**：原子化规则改变分母。
+- **只检索支持证据**：confirmation bias，未搜索反证。
+- **unknown 被删除**：检索失败样本从分母消失。
+- **引用外观欺骗 judge**：链接格式被当作支持。
+- **旧网页覆盖新事实**：freshness 与对象版本未核对。
+- **同一模型生成并评判**：共享偏差和记忆。
+- **检索文档含 prompt injection**：评测器或 Agent 被不可信文本劫持。
+- **无限拒答降低错误率**：coverage 和 usefulness 崩溃。
+- **工具返回成功码即视为成功**：业务终态未重读。
 
-### 工具与验证
+## 何时不用自动事实分数
 
-- 数学用解释器或符号工具；
-- 代码用编译器与测试；
-- 网页和文档用原始来源；
-- 状态变化后重新读取真实对象；
-- 对关键主张设置独立 verifier。
+法律、医疗、金融、实时政治、复杂科学争议和高影响状态变化，不能只依赖自动 claim/judge 总分。应使用领域专家、权威原始来源和明确时间边界。纯创作、意见或不可证伪陈述也不应被强行转换为事实 claim。
 
-## 评测
+## 验证与报告卡
 
-[TruthfulQA](https://arxiv.org/abs/2109.07958)关注模型是否复述常见误解。生产评测还应包含：
-
-- 可回答与不可回答问题；
-- 新旧版本冲突；
-- 引用可达但不支持主张；
-- 检索中混入恶意或无关文档；
-- 多跳证据和数字换算；
-- 工具失败、权限不足与状态漂移。
-
-同时报告正确率、引用支持率、过度拒绝率和校准。只降低回答率可以表面减少错误，却不代表系统更有用。
-
-## 生产闭环
+1. 在人工双盲子集上测 claim extraction、retrieval 和 entailment 各自误差。
+2. 按 claim 数、领域、来源、时间、回答长度和可回答性分层。
+3. 同时报 support precision、decidable rate、completeness、freshness 和 refusal。
+4. 对 supporting/contradicting evidence 顺序交换，检查 judge 稳定性。
+5. 用过期、无关、伪引用和注入文档做攻击测试。
+6. 记录检索和 judge 预算，避免更大搜索成本被写成模型事实能力。
 
 ```text
-claim extraction
-  -> evidence retrieval
-  -> entailment / tool verification
-  -> calibrated answer or abstention
-  -> logging and sampled review
-  -> error taxonomy
-  -> data / retrieval / policy fix
+target domain and reference/source policy
+model, retrieval index and execution date
+claim extraction and atomicity protocol
+evidence snapshot and source-quality rules
+support/unknown/stale denominators
+completeness reference set
+judge/verifier/human audit and confidence intervals
+coverage, refusal, latency and cost
+known source gaps and contamination
 ```
 
-指令冲突见[指令遵循](instruction-following.md)，上线防线见[生产可靠性](production-reliability.md)。
+概率与 abstention 见[校准与不确定性](calibration-uncertainty.md)，引用与 judge 攻击见[生成式评测与 LLM Judge](generative-judges.md)，实现入口见[评测工具](../practice/evaluation-tooling.md)。

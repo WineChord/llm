@@ -1,143 +1,243 @@
-# 多模态生成模型
+# 图像生成：离散 Token、Diffusion 与 Flow
 
-图像、音频与视频生成既可以被离散化为 token 做自回归预测，也可以在连续空间中学习去噪或向量场。三条路线优化的对象、采样路径和系统瓶颈不同。
+图像生成模型需要把简单先验分布或离散序列变成高维像素。主要路线分别建模：
 
-## 自回归离散 token
+- 离散视觉 token 的条件概率；
+- 加噪过程的反向去噪；
+- 噪声到数据之间的连续向量场。
 
-encoder 与量化器把连续信号映射为码本索引：
+三者的训练目标、采样路径和失败模式不同，不能只按最终样例比较。
 
-$$
-z=q(E(x)),
-\qquad z_i\in\{1,\ldots,K\}.
-$$
+## VQ 表示
 
-模型按顺序建模
-
-$$
-p(z\mid c)=\prod_t p(z_t\mid z_{<t},c).
-$$
-
-优点是与语言建模、交错模态和 grammar 统一；缺点是序列长、生成串行，且 tokenizer 的重建误差形成质量上限。二维图像还需要确定 raster、分层或其他 token 顺序。
-
-## Diffusion
-
-前向过程逐步向数据加噪，常写为
+Encoder 产生连续 latent：
 
 $$
-x_t=\alpha_tx_0+\sigma_t\epsilon,
+z_e=E(x).
+$$
+
+对每个位置选择最近码本向量：
+
+$$
+k^\star
+=
+\arg\min_j\|z_e-e_j\|_2^2,
+\qquad
+z_q=e_{k^\star}.
+$$
+
+[VQ-VAE](https://arxiv.org/abs/1711.00937)的典型目标包含重建、码本和 commitment：
+
+$$
+L
+=
+L_{\mathrm{recon}}
++
+\|\operatorname{sg}(z_e)-e\|_2^2
++
+\beta
+\|z_e-\operatorname{sg}(e)\|_2^2.
+$$
+
+Straight-through 路径可写为
+
+$$
+z_{\mathrm{st}}
+=
+z_e+\operatorname{sg}(z_q-z_e),
+$$
+
+前向使用 $z_q$，反向把 decoder 梯度传给 encoder。
+
+[VQGAN](https://arxiv.org/abs/2012.09841)加入感知与对抗目标，提高重建的感知质量。重建更锐利不一定意味着码本更适合语义建模；tokenizer 需同时评估 reconstruction、code usage 与下游生成。
+
+## 离散自回归与 masked generation
+
+量化后可建模
+
+$$
+p(z\mid c)
+=
+\prod_{t=1}^{N}
+p(z_t\mid z_{<t},c).
+$$
+
+优点是与语言模型、交错图文和受约束解码统一；缺点是生成步数随视觉 token 数增长，且 raster 顺序对二维局部性不友好。
+
+[MaskGIT](https://arxiv.org/abs/2202.04200)并行预测被 mask 的图像 token，并迭代保留高置信位置。迭代 masked generation 需要明确每步 remask schedule、置信度和最终未填位置处理。
+
+## Diffusion 前向过程
+
+[DDPM](https://arxiv.org/abs/2006.11239)定义逐步加噪。记
+
+$$
+\alpha_t=1-\beta_t,
+\qquad
+\bar\alpha_t=\prod_{s=1}^{t}\alpha_s,
+$$
+
+则可以直接采样任意时刻：
+
+$$
+x_t
+=
+\sqrt{\bar\alpha_t}x_0
++
+\sqrt{1-\bar\alpha_t}\epsilon,
 \qquad
 \epsilon\sim\mathcal N(0,I).
 $$
 
-模型可以预测噪声、原始样本、velocity 或 score。以噪声预测为例：
+噪声预测目标：
 
 $$
-\mathcal L_{\epsilon}
-=\mathbb E_{x_0,\epsilon,t}
+L_\epsilon
+=
+\mathbb E_{x_0,t,\epsilon}
 \left[
 w(t)
-\lVert
-\epsilon-\epsilon_\theta(x_t,t,c)
-\rVert_2^2
+\|\epsilon-\epsilon_\theta(x_t,t,c)\|_2^2
 \right].
 $$
 
-采样从噪声出发，数值积分反向过程。步数、scheduler、guidance 和 latent decoder 都影响质量与速度；训练 loss 不能单独预测感知质量。
+模型也可预测 $x_0$、score 或 velocity。Prediction type、noise schedule 与 sampler 必须成套匹配。
 
-## Flow Matching
+## DDIM 与采样
 
-Continuous Normalizing Flow 用 ODE 描述样本随时间移动：
+[DDIM](https://arxiv.org/abs/2010.02502)构造与 DDPM 共享训练边缘分布的非马尔可夫采样路径，可减少采样步数并控制随机性。少步不自动保持质量；时间步子集、参数化和 discretization 都会改变误差。
+
+## Latent diffusion
+
+[Latent Diffusion](https://arxiv.org/abs/2112.10752)先用 autoencoder 压缩图像：
+
+$$
+z=E(x),
+\qquad
+\hat x=D(z),
+$$
+
+再在 latent $z$ 上扩散。空间压缩降低计算，但 decoder 重建误差构成上限。实现必须固定 autoencoder 版本、latent scale、通道布局和像素归一化。
+
+[DiT](https://arxiv.org/abs/2212.09748)使用 Transformer 处理 latent patches，并通过时间和条件调制 block。其“Transformer”是去噪 backbone，不等于自回归语言模型。
+
+## Conditioning
+
+常见条件接口包括：
+
+- cross-attention；
+- AdaLN/FiLM 尺度与偏置；
+- 条件 token 拼接；
+- control encoder；
+- classifier-free guidance。
+
+Classifier-free guidance：
+
+$$
+\hat\epsilon
+=
+\epsilon_{\varnothing}
++
+w(\epsilon_c-\epsilon_{\varnothing}).
+$$
+
+$w$ 提高通常增强条件遵循，但可能降低多样性、产生过饱和和伪影。训练时条件 dropout、无条件分支定义与 batch 拼接顺序必须和推理一致。
+
+## Flow matching
+
+连续流满足
 
 $$
 \frac{dx_t}{dt}=v_\theta(x_t,t,c).
 $$
 
-[Flow Matching](https://arxiv.org/abs/2210.02747)选择一族连接噪声与数据的条件概率路径，并直接回归对应向量场：
+[Flow Matching](https://arxiv.org/abs/2210.02747)直接回归选定概率路径的条件向量场。对简单线性插值：
 
 $$
-\mathcal L_{\text{FM}}
-=\mathbb E_{t,x_t}
-\left[
-\lVert
-v_\theta(x_t,t,c)-u_t(x_t\mid x_1)
-\rVert_2^2
-\right].
+x_t=(1-t)x_0+tx_1,
+\qquad
+u_t=x_1-x_0.
 $$
 
-训练无需沿 ODE 完整模拟路径；推理仍需 ODE solver。路径选择、时间采样和 solver 步长共同决定效率，不能把“flow”简单解释为固定少步生成。
-
-## Conditioning
-
-文本条件可通过：
-
-- cross-attention；
-- AdaLN/FiLM 式尺度与偏置；
-- 拼接 token；
-- 独立 control encoder；
-- classifier-free guidance。
-
-classifier-free guidance 常用条件与无条件预测组合：
+目标：
 
 $$
-\hat\epsilon
-=\epsilon_\varnothing
-+w(\epsilon_c-\epsilon_\varnothing).
+L_{\mathrm{FM}}
+=
+\mathbb E
+\|v_\theta(x_t,t,c)-u_t\|_2^2.
 $$
 
-增大 $w$ 往往提高条件遵循，却可能降低多样性、饱和颜色或放大伪影。文本 encoder、negative prompt 和训练时条件 dropout 都属于配方。
+[Rectified Flow](https://arxiv.org/abs/2209.03003)研究把耦合路径变直以减少积分误差。训练不需要完整解 ODE，推理仍需 solver：
 
-## Latent 与 pixel space
+$$
+x_{t+\Delta t}
+=
+x_t+\Delta t\,v_\theta(x_t,t,c)
+$$
 
-在压缩 latent 中生成可降低空间尺寸和算力，但 autoencoder 会丢高频细节，并可能对文字、脸部或细线产生结构性误差。在 pixel/token space 直接生成避免这一瓶颈，却需要更大模型或更长序列。
+是最简单 Euler 步。时间方向、边界分布和步长写反会生成完全错误的过程。
 
-视频还增加时间压缩。若独立生成每帧，局部质量可以很高但时间一致性差；联合时空 latent 则显著增加内存与训练数据要求。
+## 少步与一致性
 
-## 理解与生成的共享
+[Consistency Models](https://arxiv.org/abs/2303.01469)学习同一概率流轨迹上不同点映射到一致输出，可支持一步或少步生成。应分别报告：
 
-视觉理解偏好语义不变性，生成偏好可逆的局部细节。可采用：
+- 是否从预训练 diffusion 蒸馏；
+- 一步、少步和多步质量；
+- 采样成本与训练额外成本；
+- 新分布和强 guidance 下的稳定性。
 
-| 方案 | 共享部分 | 风险 |
-| --- | --- | --- |
-| 完全独立 | 仅由 LLM/tool 协调 | 能力割裂、误差跨模块 |
-| 共享主干、独立 encoder/decoder | 高层推理状态 | 路由与表示对齐 |
-| 统一离散 token | tokenizer 与自回归主干 | 模态竞争、长序列 |
-| 连续生成头接语言主干 | 条件与语义表示 | 接口瓶颈与训练目标冲突 |
+## Shape 与实现契约
 
-“一个模型完成全部模态”必须落实到哪些参数和目标真正共享。
+图像 latent 常写为
 
-## 评测
+$$
+z\in\mathbb R^{B\times C\times H'\times W'}.
+$$
 
-### 图像
+DiT patchify 后：
 
-- 感知质量与多样性；
-- 文本、计数、空间关系和属性绑定；
-- identity/character consistency；
-- 局部编辑是否保持非目标区域；
-- 采样步数、延迟和显存。
+$$
+z_{\mathrm{seq}}
+\in
+\mathbb R^{B\times N\times d},
+\qquad
+N=\frac{H'}P\frac{W'}P.
+$$
 
-### 视频
+实现应固定：
 
-- 运动与物理一致性；
-- 时间连续、镜头切换和长时身份；
-- 文本条件在全时段是否保持；
-- 帧率、分辨率、时长与生成成本。
+1. 像素范围与 channel order；
+2. autoencoder latent scale；
+3. $\beta_t,\alpha_t,\bar\alpha_t$ 的索引约定；
+4. prediction type；
+5. 时间 $t$ 的方向和离散网格；
+6. conditional/unconditional batch 对齐；
+7. solver、步数和随机性；
+8. VQ codebook、特殊 token 与扫描顺序。
 
-### 音频
+## 失效模式
 
-- 内容正确性、说话人、韵律和噪声；
-- 流式首包与实时系数；
-- 语音理解和生成之间的一致性。
+- **Codebook collapse**：少数 code 占据大部分位置。
+- **Dead codes**：部分 embedding 永远不被选择。
+- **重建上限**：生成错误来自 tokenizer/autoencoder 而非 prior。
+- **参数化错配**：模型预测 $v$，sampler 按 $\epsilon$ 解释。
+- **Schedule 错位**：训练与推理时间索引不一致。
+- **CFG 过强**：条件遵循提高但多样性和自然度下降。
+- **Flow 方向错误**：从数据积分到噪声而非反向。
+- **Solver 截断**：少步误差集中在细节或构图。
+- **评测混淆**：只看感知质量，不测文字、计数和属性绑定。
 
-自动感知指标应与人工 pairwise、条件 verifier 和失效切片共同使用。
+## 验证矩阵
 
-## 实现检查
+| 层级 | 测试 |
+| --- | --- |
+| VQ | 最近邻、STE 梯度、code usage、原图重建 |
+| Forward noise | $t=0$、末端分布、经验均值与方差 |
+| Prediction | $\epsilon/x_0/v$ 相互转换 |
+| CFG | $w=0,1$ 与 batch 对齐 |
+| Flow | 边界、方向、Euler 步与解析向量场 |
+| Sampling | seed、步数、solver、guidance 网格 |
+| 语义 | 文字、数量、空间、属性绑定与身份 |
+| 系统 | 采样步数、延迟、峰值显存与吞吐 |
 
-- 时间参数、noise schedule 与训练/采样定义一致；
-- latent scale 与 autoencoder 版本一致；
-- prediction type 与 scheduler 匹配；
-- guidance 的 conditional/unconditional batch 对齐；
-- ODE/SDE solver 的方向、步长和边界正确；
-- mixed precision 下 norm、attention 和 decoder 无溢出；
-- 固定 seed 的可复现范围明确。
-
-统一表示的讨论见[原生多模态与生成](native-generation.md)，视觉接口见[视觉语言模型](vision-language.md)。
+理解与生成怎样共享主干见[理解与生成统一](unified-understanding-generation.md)，音视频的离散表示见[音频与语音](audio-language-models.md)和[视频与世界模型](video-world-models.md)，最小 VQ、加噪、CFG 与 flow sampler 见[多模态手撕实现](../practice/multimodal.md)。

@@ -13,6 +13,9 @@ DOCS_ROOT = ROOT / "docs"
 CONFIG = ROOT / "mkdocs.yml"
 LINK = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 H1 = re.compile(r"(?m)^# (.+?)\s*$")
+SECTION = re.compile(r"(?m)^#{2,3}[ \t]+(.+?)\s*$")
+EXPLICIT_ANCHOR = re.compile(r"\{#([A-Za-z0-9_-]+)\}")
+FENCED_CODE = re.compile(r"(?ms)^(`{3,}|~{3,})[^\n]*\n.*?^\1[ \t]*$")
 NAV_TARGET = re.compile(r":\s+([A-Za-z0-9_./-]+\.md)\s*$", re.MULTILINE)
 SPECIAL_OUTBOUND_EXEMPT = {
     "index.md",
@@ -26,34 +29,73 @@ SPECIAL_INBOUND_EXEMPT = {
 }
 REQUIRED_CLUSTERS = {
     "foundation": {
+        "foundations/tokenization.md",
+        "foundations/in-context-learning.md",
         "foundations/probability-objectives.md",
+    },
+    "data": {
+        "data/sources-provenance.md",
+        "data/filtering-dedup.md",
+        "data/mixtures-curricula.md",
         "data/sequence-construction.md",
+        "data/memorization-privacy.md",
     },
     "architecture": {
         "architecture/decoder-block.md",
         "architecture/attention-variants.md",
+        "architecture/position-encoding.md",
         "architecture/long-context.md",
         "architecture/moe.md",
+        "architecture/state-space-linear-attention.md",
+        "architecture/memory-architectures.md",
     },
     "training": {
         "training/supervised-finetuning.md",
         "training/reward-preference.md",
         "training/optimizer-families.md",
+        "training/reward-modeling.md",
+        "training/offline-preference.md",
+        "training/online-rl.md",
+        "training/distillation.md",
     },
     "systems": {
+        "systems/performance-model.md",
+        "systems/gpu-execution.md",
         "systems/collectives-sharding.md",
         "systems/model-parallelism.md",
         "systems/kernels-performance.md",
+        "systems/attention-kernels.md",
+        "systems/precision-numerics.md",
+        "systems/resilience-observability.md",
+    },
+    "reasoning": {
+        "reasoning/test-time-compute.md",
+        "reasoning/search-verification.md",
     },
     "inference": {
         "inference/decoding.md",
         "inference/runtime.md",
         "inference/disaggregation.md",
+        "inference/cache-reuse.md",
+        "inference/scheduling-goodput.md",
+        "inference/quantization.md",
+        "inference/speculative-decoding.md",
     },
     "multimodal": {
         "multimodal/vision-language.md",
+        "multimodal/document-gui-grounding.md",
         "multimodal/generative-modeling.md",
-        "multimodal/audio-video.md",
+        "multimodal/audio-language-models.md",
+        "multimodal/video-world-models.md",
+        "multimodal/embodied-agents.md",
+    },
+    "applications": {
+        "applications/retrieval-indexing.md",
+        "applications/reranking-context.md",
+        "applications/grounded-generation.md",
+        "applications/tool-use.md",
+        "applications/agent-runtime.md",
+        "applications/agent-security.md",
     },
     "agentic-rl": {
         "agentic-rl/rl-foundations.md",
@@ -62,7 +104,21 @@ REQUIRED_CLUSTERS = {
     },
     "evaluation": {
         "evaluation/language-model-evaluation.md",
+        "evaluation/statistical-inference.md",
+        "evaluation/calibration-uncertainty.md",
+        "evaluation/generative-judges.md",
+        "evaluation/agent-tool-evaluation.md",
+        "evaluation/safety-evaluation.md",
+        "evaluation/contamination.md",
+    },
+    "implementation": {
         "practice/minimal-implementations.md",
+        "practice/transformer-from-scratch.md",
+        "practice/training-objectives.md",
+        "practice/distributed-systems.md",
+        "practice/inference-engine.md",
+        "practice/retrieval-agents.md",
+        "practice/evaluation-tooling.md",
     },
 }
 
@@ -108,14 +164,33 @@ def main() -> int:
 
     for relative, path in docs_by_relative.items():
         text = path.read_text(encoding="utf-8")
-        titles = H1.findall(text)
+        prose = FENCED_CODE.sub("", text)
+        titles = H1.findall(prose)
         if len(titles) != 1:
             errors.append(
                 f"docs/{relative}: 一级标题数量应为 1，实际为 {len(titles)}"
             )
         elif titles:
             title_to_pages[titles[0].strip()].append(relative)
-        for label, raw_target in LINK.findall(text):
+        sections = [
+            re.sub(r"[ \t]+\{#[A-Za-z0-9_-]+\}[ \t]*$", "", title)
+            .strip()
+            .rstrip("#")
+            .strip()
+            for title in SECTION.findall(prose)
+        ]
+        duplicate_sections = sorted(
+            title for title, count in Counter(sections).items() if count > 1
+        )
+        for title in duplicate_sections:
+            errors.append(f"docs/{relative}: 二/三级标题重复“{title}”")
+        anchors = EXPLICIT_ANCHOR.findall(prose)
+        for anchor, count in sorted(Counter(anchors).items()):
+            if count > 1:
+                errors.append(
+                    f"docs/{relative}: 显式 fragment 重复 {count} 次：{anchor}"
+                )
+        for label, raw_target in LINK.findall(prose):
             if not label.strip():
                 errors.append(f"docs/{relative}: 链接标签为空")
             target = normalize_target(path, raw_target)

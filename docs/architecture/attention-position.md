@@ -1,46 +1,63 @@
 # 注意力与位置
 
-注意力变体通常在三个目标间取舍：表达能力、KV Cache 体积和硬件效率。理论 FLOPs 相同并不意味着 wall-clock 相同，kernel 融合、内存访问和张量形状往往更关键。
+注意力机制回答“当前位置从哪些内容读取什么”，位置机制回答“这些内容在序列或空间中的相对关系是什么”。二者共同作用，但属于不同设计轴。
 
-本页保留为稳定总览。MHA、MQA、GQA 与 MLA 的计算和 cache 形态见[注意力家族](attention-variants.md)；RoPE 插值、YaRN、滑动窗口与长序列评测见[长上下文](long-context.md)；online softmax 与 FlashAttention 实现见[Kernel 与性能](../systems/kernels-performance.md)。
+本页保留为稳定入口，避免旧链接失效：
 
-## MHA、MQA 与 GQA
+- [注意力家族](attention-variants.md)：MHA、MQA、GQA、MLA、mask 与 KV Cache；
+- [位置编码](position-encoding.md)：绝对位置、RoPE、ALiBi 与多维位置；
+- [长上下文](long-context.md)：位置扩展、稀疏模式、分布式计算与有效长度；
+- [Attention Kernel](../systems/attention-kernels.md)：online softmax、tiling 与硬件执行；
+- [KV Cache](../inference/kv-cache.md)：缓存布局、容量与增量解码。
 
-- **Multi-Head Attention**：每个 query head 有独立 K/V head，容量高但 KV Cache 大。
-- **Multi-Query Attention**：所有 query head 共享一组 K/V，显著减少缓存和读取带宽。
-- **Grouped-Query Attention**：若干 query head 共享一组 K/V，在质量与效率间折中。
+## 两个正交问题
 
-设 batch 为 $B$，缓存长度为 $T$，K/V head 数为 $H_{kv}$，head dimension 为 $d_h$，元素字节数为 $s$，单层 KV Cache 近似：
+标准注意力写作
 
 $$
-M_{\text{KV,layer}}=2BTH_{kv}d_hs
+Y
+=
+\operatorname{softmax}
+\left(
+\frac{QK^\top}{\sqrt{d_h}}+M+B_{\text{pos}}
+\right)V.
 $$
 
-因此减少 $H_{kv}$ 会直接降低 decode 阶段缓存带宽。[MQA](https://arxiv.org/abs/1911.02150) 与 [GQA](https://arxiv.org/abs/2305.13245) 给出了代表性设计。
+其中：
 
-## 高效精确注意力
+- $Q,K,V$ 以及 head 的共享方式属于内容路由；
+- $M$ 定义因果、窗口或块稀疏等可见性；
+- $B_{\text{pos}}$ 或施加在 $Q,K$ 上的位置变换定义顺序结构。
 
-[FlashAttention](https://arxiv.org/abs/2205.14135) 通过 tiling 与 online softmax 减少 HBM 读写，不是把精确注意力改成近似线性注意力。[FlashAttention-2](https://arxiv.org/abs/2307.08691) 进一步改善并行划分与工作分配。判断收益时要核对 head dimension、mask、dropout、序列长度与硬件支持。
+改变 KV head 数主要影响 cache；改变位置编码主要影响模型怎样区分距离；改变 mask 主要影响哪些位置可以互相读取。三者不可互相替代。
 
-## 位置表示
+## 稳定比较轴
 
-### RoPE
+| 设计轴 | 代表选择 | 首要代价 |
+| --- | --- | --- |
+| KV 共享 | MHA、GQA、MQA、MLA | 表达容量、缓存带宽、实现复杂度 |
+| 位置表示 | learned absolute、RoPE、ALiBi | 外推、分辨率、增量位置 |
+| 可见模式 | full、window、block sparse、global token | 信息可达性与 kernel 稀疏度 |
+| 精确实现 | 朴素 attention、FlashAttention | HBM 访问、并行划分、支持范围 |
+| 状态替代 | SSM、线性注意力、混合层 | 有限状态容量与内容寻址能力 |
 
-[Rotary Position Embedding](https://arxiv.org/abs/2104.09864) 对 Q/K 的二维子空间施加与位置相关的旋转，使点积自然包含相对位置信息。频率基数、缩放策略和训练长度会影响外推；简单扩大最大 position 参数并不等于模型学会长上下文。
+复杂度表达式必须附带 shape 与实现条件。理论 FLOPs 相同不代表 wall-clock 相同；理论线性复杂度也不保证短序列更快。
 
-### ALiBi
+## 阅读与诊断顺序
 
-[ALiBi](https://arxiv.org/abs/2108.12409) 在 attention score 上加入随相对距离变化的线性偏置，不增加位置 embedding。其简洁性有利于长度外推，但实际质量仍依赖模型与训练设置。
+遇到注意力或长上下文问题时，依次确认：
 
-## 长上下文不是单一指标
+1. 输入序列、位置 ID 和 causal mask 是否正确；
+2. query head 到 KV head 的映射是否正确；
+3. prefill 与 decode 是否使用同一位置定义；
+4. cache 中保存的是旋转前还是旋转后的 K；
+5. kernel 是否支持实际 head dimension、dtype 与 mask；
+6. 问题来自位置外推、信息不可见、缓存淘汰还是训练分布。
 
-必须分别测试：
+这个顺序能避免把实现错误误判为架构能力不足。
 
-- 能否在长输入中定位证据；
-- 证据位置变化时是否稳定；
-- 多跳整合与干扰项下是否可靠；
-- prefill 时间、显存与并发容量；
-- 训练长度之外的数值稳定性；
-- 生成长度与输入长度同时增长时的退化。
+## 前沿术语边界：跨深度 Attention
 
-位置外推、稀疏注意力、检索和状态压缩解决的是不同问题，不能只用“支持多少 token”概括。
+[Attention Residuals](https://arxiv.org/abs/2603.15031)及其[官方实现](https://github.com/MoonshotAI/Attention-Residuals)把 attention 用在网络深度方向，对先前层表示进行内容相关加权。它改变的是 residual aggregation，不是 token 序列上的 MHA/GQA，也不属于位置编码。
+
+截至公开论文所披露的证据，该方法在作者给定规模、数据和实现中得到验证，并给出 block-level 近似以降低跨层状态与通信成本。其跨模型家族、训练栈和更大规模的通用收益仍需独立证据，因此只作为前沿观察，不纳入稳定注意力分类。

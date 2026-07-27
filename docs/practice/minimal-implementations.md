@@ -1,124 +1,62 @@
-# 最小实现
+# 手撕实现
 
-最小实现用于固定数学与 shape 语义，再与框架、融合 kernel 和分布式路径比较。它追求可审计，不追求生产性能。
+这里的代码用于固定数学、shape 与状态语义。它比伪代码完整，比生产框架短：只保留不可替代的核心逻辑、退化分支和最小断言，再把性能优化留给专用 kernel 与运行时。
 
-## Stable softmax 与交叉熵
+## 阅读约定
 
-```python
-import torch
+每个实现都回答六个问题：
 
-def stable_log_softmax(x, dim=-1):
-    m = x.max(dim=dim, keepdim=True).values
-    z = x - m
-    return z - z.exp().sum(dim=dim, keepdim=True).log()
+1. 输入、输出与状态 shape 是什么；
+2. 公式里的归一化轴和 mask 在哪里；
+3. 哪些边界条件必须显式处理；
+4. 怎样与手算或框架 reference 对照；
+5. 哪些语义可优化、哪些不可改变；
+6. 代码在哪个规模以后不再适合直接使用。
 
-def cross_entropy(logits, labels):
-    logp = stable_log_softmax(logits, dim=-1)
-    return -logp.gather(-1, labels[..., None]).squeeze(-1)
-```
+代码以 Python 与 PyTorch reference 为主。低效的显式展开若能让语义更清楚，会被有意保留；正文同时指出生产实现应怎样避免复制、同步或无界循环。
 
-验证点：
+## 实现地图
 
-```python
-x = torch.tensor([[1000.0, 1001.0, 999.0]], dtype=torch.float64)
-y = torch.tensor([1])
-loss = cross_entropy(x, y)
-ref = torch.nn.functional.cross_entropy(x, y, reduction="none")
-torch.testing.assert_close(loss, ref)
-```
+| 专题 | 核心实现 | 主要不变量 |
+| --- | --- | --- |
+| [Tokenizer](tokenizers.md) | byte BPE、Unigram Viterbi、Unicode | round-trip、merge rank、兼容性 |
+| [张量原语](tensor-primitives.md) | softmax、CE、RMSNorm、SwiGLU、RoPE、GQA、online softmax | 数值稳定、mask、head 映射 |
+| [Decoder-only Transformer](transformer-from-scratch.md) | embedding、block、LM loss、KV decode、采样 | 因果性、位置、训练—增量一致 |
+| [递推与记忆](sequence-models.md) | selective scan、delta rule、segment/kNN memory | chunk 等价、reset、状态容量 |
+| [训练目标](training-objectives.md) | AdamW、LoRA、KD、BT、DPO、GAE、PPO、RLOO/GRPO、V-trace | mask、归一化、old/ref policy |
+| [分布式与容错](distributed-systems.md) | token loss、布局、collective、MoE dispatch、checkpoint manifest | 全局语义、顺序、原子提交 |
+| [推理引擎](inference-engine.md) | KV allocator、prefix reuse、调度、量化、推测解码 | COW、幂等、精确分布 |
+| [检索与智能体](retrieval-agents.md) | BM25、RRF、MMR、tool dispatch、事件归约 | 权限前置、去重、终态 |
+| [推理时计算](test-time-compute.md) | self-consistency、beam、PUCT、预算分配 | canonical answer、verifier、预算 |
+| [多模态](multimodal.md) | patch、对比、VQ、diffusion、flow、RVQ | 坐标、mask、模态归一、采样 |
+| [评测工具](evaluation-tooling.md) | pass@$k$、bootstrap、校准、引用与安全指标 | 配对、分层、分母与缺失值 |
 
-梯度应满足 $p-y$。可在 FP64 小张量上与 autograd 和有限差分比较。
+这些页面不是独立项目模板。需要训练器、服务端、配置系统或部署脚手架时，应选成熟框架；需要核对某个公式、排查 shape 或验证优化前后等价时，先回到这里。
 
-## RMSNorm
+## 验证阶梯
 
-```python
-def rms_norm(x, weight, eps=1e-6):
-    scale = (x.float().square().mean(dim=-1, keepdim=True) + eps).rsqrt()
-    return (x.float() * scale).to(x.dtype) * weight
-```
+实现按相同顺序升级：
 
-归约用 FP32，再转回输入 dtype。若生产 kernel 使用不同累加精度或把 weight 融入其他算子，先在固定输入上比较，再做端到端 logits 回归。
-
-## GQA
-
-下面的 reference 显式展开 K/V head，适合核对 head 映射：
-
-```python
-import math
-
-def gqa(q, k, v, causal=True):
-    b, hq, tq, d = q.shape
-    _, hkv, tk, _ = k.shape
-    if hq % hkv:
-        raise ValueError("query heads must be divisible by KV heads")
-    group = hq // hkv
-    k = k.repeat_interleave(group, dim=1)
-    v = v.repeat_interleave(group, dim=1)
-    score = q @ k.transpose(-2, -1) / math.sqrt(d)
-    if causal:
-        qi = torch.arange(tq, device=q.device) + tk - tq
-        kj = torch.arange(tk, device=q.device)
-        mask = kj[None, :] > qi[:, None]
-        score = score.masked_fill(mask, float("-inf"))
-    return score.softmax(dim=-1) @ v
-```
-
-生产实现不应真的复制 K/V；它应在 kernel 内映射 query head 到 KV head。这里保留低效展开，目的是让语义清楚。
-
-## Online softmax 合并
-
-对两个 score block，可以合并最大值、分母和加权 value：
-
-```python
-def merge_softmax(m1, l1, o1, m2, l2, o2):
-    m = torch.maximum(m1, m2)
-    a = torch.exp(m1 - m)
-    b = torch.exp(m2 - m)
-    l = a * l1 + b * l2
-    o = (a * l1 * o1 + b * l2 * o2) / l
-    return m, l, o
-```
-
-在小矩阵上把 score 沿 key 维切成不同 block，合并结果应与一次完整 softmax 接近。还要覆盖全 mask row、极大 logit 和非整除 block。
-
-## 分页 block table
-
-逻辑 token 位置 $t$ 到物理 slot 的最小映射：
-
-```python
-def physical_slot(block_table, block_size, token_pos):
-    logical_block, offset = divmod(token_pos, block_size)
-    physical_block = block_table[logical_block]
-    return physical_block * block_size + offset
-```
-
-真实运行时还需处理 block 未分配、copy-on-write、引用计数、不同层 cache base 与设备分片。这个函数只固定“逻辑序列不要求物理连续”的核心语义。
-
-## 组相对优势
-
-```python
-def group_advantage(reward, group, eps=1e-6):
-    advantage = torch.empty_like(reward)
-    for g in group.unique():
-        idx = group == g
-        r = reward[idx]
-        advantage[idx] = (r - r.mean()) / (r.std(unbiased=False) + eps)
-    return advantage
-```
-
-同组只有一个样本或奖励全相等时，优势接近零。生产实现还要明确是否按 prompt 分组、是否过滤无信号组，以及 sequence advantage 怎样广播到 action token。
-
-## 验证层级
-
-每个 reference 都按同一顺序升级：
-
-1. 手算或解析公式；
-2. FP64 小张量；
+1. 手算或解析结果；
+2. FP64 小张量与退化输入；
 3. 框架 reference；
-4. 自定义高性能 kernel；
+4. 自定义向量化实现；
 5. mixed precision；
-6. backward；
-7. 分布式 shape；
-8. 真实模型质量与性能。
+6. backward 与梯度检查；
+7. 分布式切分；
+8. 真实 shape 的正确性；
+9. 端到端质量；
+10. 性能与资源。
 
-若某层失败，回到第一个分叉点，不要通过放宽最终 logits 容差掩盖语义错误。数学目标见[概率、损失与梯度](../foundations/probability-objectives.md)，性能路径见[Kernel 与性能](../systems/kernels-performance.md)。
+第 4 层更快不代表第 1–3 层可以跳过。若最终 logits 偏差过大，应回到第一个分叉点，而不是直接放宽端到端容差。
+
+## 代码边界
+
+- 示例不包含 CLI、配置加载、日志平台和训练框架封装；
+- 随机算法显式传 generator 或 seed；
+- 归一化、reduction、mask 与 dtype 不使用含糊默认值；
+- 无定义的退化情况抛错或返回明确状态；
+- “成功”由断言或环境状态判断，不由打印文本声明；
+- 性能代码必须保留一个更慢、更直白的 reference。
+
+实验设计见[实验方法](index.md)，从 loss 到系统逐层排错见[调试手册](debugging.md)。
