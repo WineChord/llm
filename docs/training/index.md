@@ -2,7 +2,7 @@
 
 训练不是一条从 loss 单调走向能力的流水线。每个阶段都重新定义数据分布、可训练参数、目标函数和评测边界；如果只记录“用了哪个算法”，就无法解释模型究竟学到了什么。
 
-从监督示范、偏好建模到在线策略优化，并不存在一条永远正确的固定流水线。[后训练与对齐](../landscape/lineages/training-alignment.md)把 InstructGPT、Constitutional AI、DPO 与可验证奖励放回各自的反馈接口；[推理、搜索与验证](../landscape/lineages/reasoning-verification.md)进一步说明 inference-time search 怎样反过来成为训练数据和奖励来源。关键转折可从 [InstructGPT](../landscape/works/instructgpt.md)、[DPO](../landscape/works/dpo.md)与 [DeepSeek-R1](../landscape/works/deepseek-r1.md)逐项深读。
+从监督示范、偏好建模到在线策略优化，并不存在一条永远正确的固定流水线。[后训练与对齐](../landscape/lineages/training-alignment.md)把 InstructGPT、Constitutional AI、DPO 与可验证奖励放回各自的反馈接口；[强化学习](../reinforcement-learning/index.md)进一步展开序贯决策、策略优化和语言模型反馈，[推理、搜索与验证](../landscape/lineages/reasoning-verification.md)则说明 inference-time search 怎样反过来成为训练数据和奖励来源。关键转折可从 [InstructGPT](../landscape/works/instructgpt.md)、[DPO](../landscape/works/dpo.md)与 [DeepSeek-R1](../landscape/works/deepseek-r1.md)逐项深读。
 
 ## 生命周期
 
@@ -75,15 +75,16 @@ $\pi_{\text{old}}$ 用于 importance ratio 或 trust-region，$\pi_{\text{ref}}$
 6. [参数高效微调](peft.md)：LoRA、QLoRA、DoRA、adapter 与 merge 契约。
 7. [参数高效训练与压缩](peft-compression.md)：稳定总览与部署边界。
 
-### 对齐与推理
+### 反馈、策略与推理
 
 8. [后训练总览](post-training.md)：根据反馈接口选择方法。
 9. [奖励建模](reward-modeling.md)：Bradley–Terry、不可辨识性、偏差与过程奖励。
 10. [离线偏好优化](offline-preference.md)：KL 最优策略、DPO 及其假设。
-11. [在线 RL 与可验证奖励](online-rl.md)：PPO、RLOO、GRPO、policy lag 与退化组。
-12. [推理后训练](reasoning-posttraining.md)：从搜索和验证生成训练信号。
+11. [强化学习总览](../reinforcement-learning/index.md)：先建立 value、policy、feedback 与 data regime 的共同坐标。
+12. [在线 RL 与可验证奖励](online-rl.md)：PPO、RLOO、GRPO、policy lag 与退化组。
+13. [推理后训练](reasoning-posttraining.md)：从搜索和验证生成训练信号。
 
-多步环境、工具动作和长时信用分配继续见 [Agentic RL](../agentic-rl/index.md)；数据来源、真实 token share 和重复暴露见[数据工程](../data/index.md)。
+reward 来源与 optimizer 的关系见[反馈制度](../reinforcement-learning/feedback-regimes.md)，多步环境、工具动作和长时信用分配继续见 [Agentic RL](../agentic-rl/index.md)；数据来源、真实 token share 和重复暴露见[数据工程](../data/index.md)。
 
 ## 正确性与失效
 

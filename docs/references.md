@@ -91,13 +91,33 @@
 - Liu et al., [DoRA: Weight-Decomposed Low-Rank Adaptation](https://arxiv.org/abs/2402.09353)
 - Hinton et al., [Distilling the Knowledge in a Neural Network](https://arxiv.org/abs/1503.02531)
 - Agarwal et al., [Generalized Knowledge Distillation for Auto-Regressive Sequence Models](https://arxiv.org/abs/2306.13649)
+- Liu et al., [Muon is Scalable for LLM Training](https://arxiv.org/abs/2502.16982)
 - Frantar et al., [GPTQ](https://arxiv.org/abs/2210.17323)
 - Lin et al., [AWQ](https://arxiv.org/abs/2306.00978)
 - Xiao et al., [SmoothQuant](https://arxiv.org/abs/2211.10438)
 
-## 偏好、奖励与在线学习
+## 强化学习基础与策略优化
 
-对应[后训练](training/post-training.md)、[奖励建模](training/reward-modeling.md)、[离线偏好优化](training/offline-preference.md)、[在线 RL](training/online-rl.md)与[推理后训练](training/reasoning-posttraining.md)。
+对应[强化学习总览](reinforcement-learning/index.md)、[历史与脉络](reinforcement-learning/history.md)、[序贯决策](reinforcement-learning/decision-processes.md)、[价值与 Bellman](reinforcement-learning/values-bellman.md)、[策略优化](reinforcement-learning/policy-gradient.md)和[手撕强化学习](practice/reinforcement-learning.md)。
+
+- Bellman, [Dynamic Programming](https://press.princeton.edu/books/paperback/9780691146683/dynamic-programming)
+- Sutton and Barto, [Reinforcement Learning: An Introduction, Second Edition](https://mitpress.mit.edu/9780262039246/reinforcement-learning/)
+- Williams, [Simple Statistical Gradient-Following Algorithms for Connectionist Reinforcement Learning](https://doi.org/10.1007/BF00992696)
+- Watkins and Dayan, [Q-learning](https://doi.org/10.1007/BF00992698)
+- Sutton et al., [Policy Gradient Methods for Reinforcement Learning with Function Approximation](https://proceedings.neurips.cc/paper/2000/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html)
+- Mnih et al., [Human-level control through deep reinforcement learning](https://www.nature.com/articles/nature14236)
+- Schulman et al., [Trust Region Policy Optimization](https://proceedings.mlr.press/v37/schulman15.html)
+- Schulman et al., [High-Dimensional Continuous Control Using Generalized Advantage Estimation](https://arxiv.org/abs/1506.02438)
+- Schulman et al., [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
+- Haarnoja et al., [Soft Actor-Critic](https://proceedings.mlr.press/v80/haarnoja18b.html)
+- Espeholt et al., [IMPALA](https://proceedings.mlr.press/v80/espeholt18a.html)
+- Kumar et al., [Conservative Q-Learning for Offline Reinforcement Learning](https://proceedings.neurips.cc/paper/2020/hash/0d2b2061826a5df3221116a5085a6052-Abstract.html)
+- Ho and Ermon, [Generative Adversarial Imitation Learning](https://proceedings.neurips.cc/paper/2016/hash/cc7e2b878868cbae992d1fb743995d8f-Abstract.html)
+- Sutton, Precup, and Singh, [Between MDPs and Semi-MDPs: A Framework for Temporal Abstraction](https://doi.org/10.1016/S0004-3702(99)00052-1)
+
+## 语言模型反馈与策略学习
+
+对应[反馈制度](reinforcement-learning/feedback-regimes.md)、[RLHF 数据闭环](reinforcement-learning/rlhf-pipeline.md)、[奖励建模](training/reward-modeling.md)、[离线偏好优化](training/offline-preference.md)、[在线 RL](training/online-rl.md)、[RLVR](reinforcement-learning/rlvr.md)与[语言模型信用分配](reinforcement-learning/credit-assignment.md)。
 
 - Ouyang et al., [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)
 - Bai et al., [Constitutional AI](https://arxiv.org/abs/2212.08073)
@@ -116,7 +136,6 @@
 
 下列工作适合研究复现与条件化比较，不应直接视为跨模型、跨环境的默认配方。
 
-- Liu et al., [Muon is Scalable for LLM Training](https://arxiv.org/abs/2502.16982)
 - Yu et al., [DAPO](https://arxiv.org/abs/2503.14476)
 - Liu et al., [Understanding R1-Zero-Like Training / Dr. GRPO](https://arxiv.org/abs/2503.20783)
 - Cui et al., [Process Reinforcement through Implicit Rewards / PRIME](https://arxiv.org/abs/2502.01456)

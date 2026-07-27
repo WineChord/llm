@@ -7,11 +7,11 @@ LLM 横跨统计学习、模型结构、分布式系统和交互环境。先建�
 1. **表示与目标**：从[语言建模](../foundations/language-modeling.md)、[分词](../foundations/tokenization.md)和[概率、损失与梯度](../foundations/probability-objectives.md)理解 token 条件概率与训练目标。
 2. **基本计算图**：推导 [Transformer](../architecture/transformer.md)、[Decoder Block](../architecture/decoder-block.md)、[位置编码](../architecture/position-encoding.md)和[注意力家族](../architecture/attention-variants.md)。
 3. **数据到梯度**：连接[来源谱系](../data/sources-provenance.md)、[过滤去重](../data/filtering-dedup.md)、[混合课程](../data/mixtures-curricula.md)与[序列构造](../data/sequence-construction.md)。
-4. **训练到行为**：依次阅读[预训练](../training/pretraining.md)、[SFT](../training/supervised-finetuning.md)、[蒸馏](../training/distillation.md)、[奖励建模](../training/reward-modeling.md)和[偏好优化](../training/offline-preference.md)。
+4. **训练到行为**：依次阅读[预训练](../training/pretraining.md)、[SFT](../training/supervised-finetuning.md)和[蒸馏](../training/distillation.md)，再从[强化学习](../reinforcement-learning/index.md)理解反馈怎样改变策略分布。
 5. **计算到系统**：用[性能成本模型](../systems/performance-model.md)连接[数值精度](../systems/precision-numerics.md)、[GPU 执行](../systems/gpu-execution.md)、[集合通信](../systems/collectives-sharding.md)与[模型并行](../systems/model-parallelism.md)。
 6. **checkpoint 到服务**：从[解码](../inference/decoding.md)、[KV Cache](../inference/kv-cache.md)进入[运行时](../inference/runtime.md)、[调度与 Goodput](../inference/scheduling-goodput.md)、[量化](../inference/quantization.md)和 [P/D 分离](../inference/disaggregation.md)。
 7. **外部知识与行动**：学习[索引与召回](../applications/retrieval-indexing.md)、[重排与上下文](../applications/reranking-context.md)、[证据约束生成](../applications/grounded-generation.md)、[工具调用](../applications/tool-use.md)和[智能体运行时](../applications/agent-runtime.md)。
-8. **推理与反馈**：区分[推理时计算](../reasoning/test-time-compute.md)、[搜索与验证](../reasoning/search-verification.md)、[推理后训练](../training/reasoning-posttraining.md)与 [Agentic RL](../agentic-rl/index.md)。
+8. **推理与反馈**：区分[推理时计算](../reasoning/test-time-compute.md)、[搜索与验证](../reasoning/search-verification.md)、[RLHF / RLAIF / RLVR](../reinforcement-learning/feedback-regimes.md)、[推理后训练](../training/reasoning-posttraining.md)与 [Agentic RL](../agentic-rl/index.md)。
 9. **评测与边界**：最后用[评测协议](../evaluation/language-model-evaluation.md)、[统计推断](../evaluation/statistical-inference.md)、[校准](../evaluation/calibration-uncertainty.md)、[安全评测](../evaluation/safety-evaluation.md)验证整条链。
 
 共同主线的最低实践是完成[手撕 Decoder-only Transformer](../practice/transformer-from-scratch.md)、[训练目标](../practice/training-objectives.md)与[评测工具](../practice/evaluation-tooling.md)中的核心不变量。
@@ -79,6 +79,18 @@ LLM 横跨统计学习、模型结构、分布式系统和交互环境。先建�
 6. [Agentic RL 轨迹契约](../agentic-rl/trajectory-contract.md)和[训练系统](../agentic-rl/training-systems.md)。
 
 始终分开模型输出、外部证据、工具权限、环境终态和未授权副作用。
+
+### 强化学习与 LLM 后训练
+
+先把“反馈是什么”“数据从哪里来”和“怎样更新策略”拆开，再沿四层深入：
+
+1. 从 [MDP、POMDP 与回报](../reinforcement-learning/decision-processes.md)进入[价值与 Bellman](../reinforcement-learning/values-bellman.md)、[Monte Carlo 与 TD](../reinforcement-learning/prediction-control.md)；
+2. 用 [Policy Gradient](../reinforcement-learning/policy-gradient.md)、[Actor–Critic](../reinforcement-learning/actor-critic.md)和 [TRPO / PPO](../reinforcement-learning/trust-region-ppo.md)建立策略优化主线；
+3. 将语言模型重新写成策略，阅读[动作尺度](../reinforcement-learning/language-model-policy.md)、[KL 正则化控制](../reinforcement-learning/kl-regularized-control.md)、[反馈制度](../reinforcement-learning/feedback-regimes.md)与 [RLHF 数据闭环](../reinforcement-learning/rlhf-pipeline.md)；
+4. 比较[奖励建模](../training/reward-modeling.md)、[离线偏好优化](../training/offline-preference.md)、[无 critic baseline](../reinforcement-learning/critic-free-baselines.md)、[在线 RL](../training/online-rl.md)与 [RLVR](../reinforcement-learning/rlvr.md)；
+5. 最后处理[语言模型信用分配](../reinforcement-learning/credit-assignment.md)、[异步 off-policy 校正](../reinforcement-learning/off-policy-correction.md)、[Agentic RL](../agentic-rl/index.md)和[实验诊断](../reinforcement-learning/evaluation-debugging.md)。
+
+配套的[手撕强化学习](../practice/reinforcement-learning.md)用于固定 return、GAE、PPO、DPO、RLOO、GRPO 与 V-trace 的最小语义。算法名称相同而 action mask、归一化分母、behavior policy 或终止规则不同，不能视为同一实验。
 
 ### 多模态
 

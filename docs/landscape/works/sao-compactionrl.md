@@ -81,7 +81,7 @@ CompactionRL 把一个 rollout 拆成长度不同的多个 segment 后，究竟�
 | 方法级训练代码随论文公开 | 未发现 | 未发现 |
 | 论文称已用于 GLM-5.2 RL pipeline | 是 | 是 |
 
-[GLM-5.2 官方技术说明](https://z.ai/blog/glm-5.2)确认其 agentic 后训练以 slime 组织大规模 rollout，并描述了 critic-based single-rollout、compacted sub-trace 与 token-level loss；但开源框架本身不等于两项论文配方的完整可复现实现。
+最后一行是两篇方法论文各自给出的部署声明，不是独立复现实验。当前 [GLM-5.2 技术博客](https://z.ai/blog/glm-5.2)与公开模型卡没有逐项确认 SAO 或 CompactionRL 配方；较早的 [GLM-5 技术报告](https://arxiv.org/html/2602.15763#S4.SS1)披露了基于 slime 的异步 agentic RL 基础设施，但其中仍按 group-wise rollout 介绍训练流程。因此它只能支持相关系统脉络，不能替代两篇方法论文作为 GLM-5.2 具体训练实现的证据。
 
 ## SAO：时间轴上的异步稳定性 {#sao}
 
@@ -108,7 +108,7 @@ $$
 \frac{\pi_{\mathrm{old}}}{\pi_{\mathrm{rollout}}}.
 $$
 
-长轨迹生成期间 rollout engine 可能多次刷新权重，为每个 token 重建对应的完整历史 checkpoint 很昂贵。SAO 直接保存 rollout 阶段的 token log-probability，并计算
+长轨迹生成期间 rollout engine 可能多次刷新权重，为每个 token 重建对应的完整历史 checkpoint 很昂贵。SAO 保存 rollout 阶段记录的 token log-probability，并计算
 
 $$
 r_t(\theta)
@@ -119,7 +119,7 @@ r_t(\theta)
 \right).
 $$
 
-因此关键数据不是一条 episode 只带一个版本号，而是每个可训练 token 能对应到真实 behavior log-probability。temperature、top-$p$、top-$k$、grammar mask 或 routing 语义若改变了实际采样分布，却仍记录未经这些变换的 logits，ratio 就失去校正含义。
+论文把这一记录值作为每个可训练 token 的 behavior log-probability proxy，而不是只给整条 episode 附一个版本号。proxy 只有在记录过程覆盖真实采样语义时才等价于 behavior distribution：temperature、top-$p$、top-$k$、grammar mask 或 routing 若改变了实际分布，却仍保存变换前的 model log-probability，ratio 就不再是严格的重要性比率。
 
 ### DIS 不是普通 PPO clip
 
@@ -159,11 +159,11 @@ $$
 ```python
 import math
 import torch
-def dis_policy_loss(logp, behavior_logp, advantage, action_mask, eps_l, eps_h):
-    ratio = (logp - behavior_logp).exp()
+def dis_policy_loss(logp, rollout_logp, advantage, action_mask, eps_l, eps_h):
+    ratio = (logp - rollout_logp).exp()
     keep = action_mask & (ratio > 1 - eps_l) & (ratio < 1 + eps_h)
-    weight = ratio.detach() * advantage.detach() * keep
-    loss = -(weight * logp).sum() / keep.sum().clamp_min(1)
+    weight = ratio.detach() * advantage.detach() * keep.to(logp.dtype)
+    loss = -(weight * logp).sum() / action_mask.sum().clamp_min(1)
     return loss, keep
 logp = torch.tensor([0.0, math.log(0.69), math.log(6.1)], requires_grad=True)
 loss, keep = dis_policy_loss(
@@ -172,10 +172,10 @@ loss, keep = dis_policy_loss(
 )
 loss.backward()
 assert keep.tolist() == [True, False, False]
-torch.testing.assert_close(logp.grad, torch.tensor([-1.0, 0.0, 0.0]))
+torch.testing.assert_close(logp.grad, torch.tensor([-1.0 / 3, 0.0, 0.0]))
 ```
 
-实验中的区间并不总是数值上很窄：数学任务使用 $\epsilon_l=0.3,\epsilon_h=5.0$，coding 使用 $0.8,3.0$。“strict”指越界后置零，而不是上下界一定接近 $1$。
+分母仍是全部有效 action token 数；改用 `keep.sum()` 会把被拒绝 token 的零贡献重新归一化成“仅在幸存 token 上取均值”，改变公式中的 hard-zero 语义。实验中的区间并不总是数值上很窄：数学任务使用 $\epsilon_l=0.3,\epsilon_h=5.0$，coding 使用 $0.8,3.0$。“strict”指越界后置零，而不是上下界一定接近 $1$。
 
 ### critic 为什么要特殊照顾
 
@@ -190,7 +190,7 @@ torch.testing.assert_close(logp.grad, torch.tensor([-1.0, 0.0, 0.0]))
 
 $$
 \delta_t
-=r_t+\gamma V(a_{i+1,0})-V(a_{i,N}),
+=R_t+\gamma V(a_{i+1,0})-V(a_{i,N}),
 $$
 
 $$
@@ -202,7 +202,7 @@ $$
 
 ```python
 import torch
-def skip_observation_gae(reward, value, action_mask, gamma=0.99, lam=0.95):
+def skip_observation_gae(reward, value, action_mask, gamma, lam):
     idx = action_mask.nonzero(as_tuple=False).flatten()
     advantage = torch.zeros_like(value)
     gae = value.new_zeros(())
@@ -217,13 +217,14 @@ mask = torch.tensor([True, False, False, True])
 reward = torch.tensor([0.0, 0.0, 0.0, 1.0])
 v1 = torch.tensor([0.2, 999.0, -999.0, 0.4])
 v2 = torch.tensor([0.2, -3.0, 8.0, 0.4])
-a1 = skip_observation_gae(reward, v1, mask)
-a2 = skip_observation_gae(reward, v2, mask)
+test_gamma, test_lam = 0.9, 0.8
+a1 = skip_observation_gae(reward, v1, mask, test_gamma, test_lam)
+a2 = skip_observation_gae(reward, v2, mask, test_gamma, test_lam)
 torch.testing.assert_close(a1[mask], a2[mask])
 assert torch.count_nonzero(a1[~mask]) == 0
 ```
 
-真实实现还要区分 terminal 与 truncated、action 内部 token、跨 turn reward、padding 和 packed sequence；这些数据契约见[轨迹与策略契约](../../agentic-rl/trajectory-contract.md)。
+`test_gamma` 与 `test_lam` 只用于验证跳过 observation 位置这一机制，不是论文披露的 SAO 超参数：论文未报告精确 $\gamma$，policy 侧 $\lambda$ 采用前述 length-adaptive 规则。真实实现还要区分 terminal 与 truncated、action 内部 token、跨 turn reward、padding 和 packed sequence；这些数据契约见[轨迹与策略契约](../../agentic-rl/trajectory-contract.md)。
 
 ## CompactionRL：空间轴上的压缩信用 {#compactionrl}
 
@@ -381,7 +382,7 @@ task
 | 固定工作窗口内继续任务 | 否 | 直接处理 |
 | 跨压缩边界信用分配 | Skip-Observation GAE 不足以处理 | Cross-trajectory GAE 近似处理 |
 
-还要记录 segment provenance。一次原始任务的所有 execution/summary segment 应共享 immutable `trajectory_id`，并各自保存 `segment_index`、context reconstruction recipe、policy version、exact token IDs、behavior log-probability、action mask、compaction trigger、终止类型与最终 reward。否则系统可能重复消费 segment、把 mixed-policy 轨迹伪装成单一 behavior policy，或在压缩后无法重算同一个状态。
+还要记录 segment provenance。一次原始任务的所有 execution/summary segment 应共享 immutable `trajectory_id`，并各自保存 `segment_index`、context reconstruction recipe、policy version、exact token IDs、rollout 侧记录的 behavior log-probability proxy、action mask、compaction trigger、终止类型与最终 reward。否则系统可能重复消费 segment、把 mixed-policy 轨迹伪装成单一 behavior policy，或在压缩后无法重算同一个状态。
 
 ## 实验到底支持到哪里
 
@@ -420,7 +421,7 @@ CompactionRL 使用 64K 或 80K 峰值工作窗口，最多压缩三次；SWE-be
 ### Rollout
 
 - 保存 exact token IDs，而不是把文本重新 tokenize；
-- 保存实际 behavior distribution 下的 per-token log-probability；
+- 若要把 ratio 解释为严格 importance ratio，保存采样变换后的实际 behavior distribution 对应的 per-token log-probability；否则明确其只是 proxy；
 - action 与 summary token 进入 loss，observation、prompt、padding 不进入；
 - 明确一个 episode 内是否允许 policy refresh，并保存 per-segment / per-token provenance；
 - compaction 不得切开 action–observation 原子 step。
@@ -443,7 +444,7 @@ CompactionRL 使用 64K 或 80K 峰值工作窗口，最多压缩三次；SWE-be
 
 ### 开源边界
 
-[slime](https://github.com/THUDM/slime)公开了异步 rollout、PPO 与 GLM-5.2 大规模训练的基础设施入口；截至两篇论文 v1，未见论文配方对应的完整 method-level code release。可验证复现应把“框架可用”“目标函数可实现”“论文超参数已披露”和“端到端结果可复现”分成四个不同结论。
+[slime](https://github.com/THUDM/slime)公开了异步 rollout 与 PPO 的基础设施入口，[GLM-5 技术报告](https://arxiv.org/abs/2602.15763)披露了相关的大规模 agentic RL 系统；截至两篇论文 v1，未见论文配方对应的完整 method-level code release。可验证复现应把“框架可用”“目标函数可实现”“论文超参数已披露”和“端到端结果可复现”分成四个不同结论。
 
 ## 最值得记住的五句话
 
@@ -462,4 +463,5 @@ CompactionRL 使用 64K 或 80K 峰值工作窗口，最多压缩三次；SWE-be
 - Yue et al., [VAPO: Efficient and Reliable Reinforcement Learning for Advanced Reasoning Tasks](https://arxiv.org/abs/2504.05118)。
 - Schulman et al., [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)。
 - Shao et al., [DeepSeekMath](https://arxiv.org/abs/2402.03300)。
-- [THUDM/slime](https://github.com/THUDM/slime) 与 [GLM-5.2 官方技术说明](https://z.ai/blog/glm-5.2)。
+- [THUDM/slime](https://github.com/THUDM/slime)。
+- [GLM-5 技术报告](https://arxiv.org/abs/2602.15763)。

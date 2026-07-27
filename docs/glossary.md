@@ -16,6 +16,10 @@
 
 标记轨迹中哪些 token 或 span 由策略选择并进入 policy loss；observation、prompt 与 padding 通常不属于动作。
 
+**[Advantage](reinforcement-learning/actor-critic.md)**
+
+$A^\pi(s,a)=Q^\pi(s,a)-V^\pi(s)$，表示动作相对该状态下策略平均水平好多少；它不等于原始 reward。
+
 **Agent**
 
 在目标、状态和约束下循环观察、决策并作用于环境的系统；模型只是其中的策略或推理组件之一。
@@ -43,6 +47,10 @@
 **Behavior policy**
 
 实际产生 rollout 的策略；异步训练中它可能落后于正在更新的 learner policy。
+
+**[Bellman equation](reinforcement-learning/values-bellman.md)**
+
+把当前价值写成即时 reward 与下一状态价值期望的递推等式，是动态规划、TD 与 critic 的共同接口。
 
 **BF16**
 
@@ -80,6 +88,10 @@ Byte Pair Encoding，迭代合并高频相邻符号的子词算法。
 
 一次模型计算允许读取的 token 范围；声明长度不等于所有位置都能被可靠利用。
 
+**[Contextual bandit](reinforcement-learning/decision-processes.md)**
+
+每轮观察 context、选择动作并立即得到 reward，但动作不影响下一轮状态的决策模型；许多单轮 response-level 后训练可作此近似。
+
 **[Continuous batching](inference/serving.md)**
 
 在生成迭代边界动态加入新请求并移除已完成请求的服务调度方式。
@@ -116,6 +128,10 @@ Byte Pair Encoding，迭代合并高频相邻符号的子词算法。
 
 让学生模型学习教师的 logits、分布、表征、轨迹或偏好，以转移能力或压缩模型。
 
+**Discount factor**
+
+$\gamma\in[0,1]$，控制未来 reward 在 return 中的相对权重；它也可表达任务时域，而不只是数值稳定技巧。
+
 **[DPO](training/offline-preference.md)**
 
 Direct Preference Optimization，直接用 chosen/rejected 对与参考策略优化偏好的离线方法。
@@ -127,6 +143,10 @@ Expected Calibration Error，将预测按置信度分桶后汇总置信度与经
 **Environment**
 
 Agent 交互的外部状态与转移规则，可包含工具、模拟器、代码仓库、服务或现实系统。
+
+**[Entropy regularization](reinforcement-learning/exploration-entropy.md)**
+
+在策略目标中奖励分布熵，鼓励保留随机性；它能改变探索强度，但不保证产生语义上不同或有效的行为。
 
 **Estimand**
 
@@ -149,6 +169,10 @@ Agent 交互的外部状态与转移规则，可包含工具、模拟器、代�
 Fully Sharded Data Parallel，按 rank 分片参数、梯度与 optimizer state 的数据并行路线。
 
 ## G–P
+
+**[GAE](reinforcement-learning/multistep-traces.md)**
+
+Generalized Advantage Estimation，用 $\lambda$ 加权多步 TD residual，在 critic 偏差与采样方差之间折中。
 
 **[Goodput](inference/scheduling-goodput.md)**
 
@@ -210,6 +234,10 @@ Low-Rank Adaptation，用低秩增量更新冻结权重的参数高效微调方�
 
 放大 loss 或 gradient 以减轻 FP16 下溢，再在参数更新前缩回。
 
+**[Markov property](reinforcement-learning/decision-processes.md)**
+
+给定当前状态后，未来转移不再依赖更早历史。语言 Agent 的 context 通常只是对隐藏环境状态的部分观察。
+
 **LSH**
 
 Locality-Sensitive Hashing，让相似对象更可能落入同一桶，常用于近似去重和近邻检索。
@@ -245,6 +273,10 @@ Multi-Query Attention，多个 query head 共享同一组 K/V。
 **Offline preference learning**
 
 从固定偏好数据学习策略，不在训练中持续向当前策略采样新轨迹的方法族。
+
+**Occupancy measure**
+
+策略在时间上访问状态或状态—动作对的折扣频率分布；策略更新会改变该分布，因此在线 RL 的训练数据并非固定。
 
 **Online RL**
 
@@ -304,6 +336,10 @@ Retrieval-Augmented Generation，生成前检索外部证据并注入上下文�
 
 偏好优化或在线 RL 中用于定义 KL 约束或概率比的基准策略，通常是训练开始时的冻结策略。
 
+**[Return](reinforcement-learning/decision-processes.md)**
+
+从某一时刻开始的折扣累计 reward，常写为 $G_t=\sum_{k\ge0}\gamma^kR_{t+k+1}$。
+
 **Reward hacking**
 
 策略利用奖励函数、环境或验证器漏洞取得高分，却没有完成真实目标的行为。
@@ -323,6 +359,10 @@ Reinforcement Learning from AI Feedback，主要使用 AI 评审信号构造偏�
 **RLHF**
 
 Reinforcement Learning from Human Feedback，使用人类反馈训练奖励或策略的流程统称。
+
+**[RLVR](reinforcement-learning/rlvr.md)**
+
+Reinforcement Learning with Verifiable Rewards，主要依赖程序、形式规则或可查询环境结果提供可重复 reward；它描述反馈接口，不指定优化器。
 
 **RLOO**
 
@@ -352,6 +392,10 @@ Rotary Position Embedding，用位置相关旋转把相对位置信息注入 Q/K
 
 Supervised Fine-Tuning，在指令—答案或任务示范上做监督微调。
 
+**[SMDP](reinforcement-learning/models-planning-hierarchy.md)**
+
+Semi-Markov Decision Process，动作可持续不等时长并在结束后转移，适合描述 option、tool call 与长程子任务。
+
 **SLO**
 
 Service Level Objective，对延迟、可用性、正确性或成本等服务指标设定的目标边界。
@@ -368,6 +412,10 @@ State Space Model，以状态递推表示序列历史的一类模型。
 
 把单层张量运算沿 hidden、head 或其他维度分布到多个设备。
 
+**[TD error](reinforcement-learning/prediction-control.md)**
+
+$\delta_t=R_{t+1}+\gamma V(S_{t+1})-V(S_t)$，用一步 bootstrap 目标衡量当前价值预测误差。
+
 **[Test-time compute](reasoning/test-time-compute.md)**
 
 在权重固定后，通过更长生成、并行采样、搜索、验证或工具交互增加单题计算。
@@ -375,6 +423,10 @@ State Space Model，以状态递推表示序列历史的一类模型。
 **Token share**
 
 某数据源在实际训练 token 流中的占比；它不等于原始文档数或存储字节占比。
+
+**[Trust region](reinforcement-learning/trust-region-ppo.md)**
+
+限制新旧策略分布变化的更新思想；PPO clipping 是可计算的局部 surrogate，并不等价于严格满足 KL 约束。
 
 **Tokenizer**
 
@@ -407,6 +459,14 @@ Time to first token，从请求到首个输出 token 的时间。
 **VLM**
 
 Vision-Language Model，联合处理视觉与语言输入或输出的模型。
+
+**[V-trace](reinforcement-learning/off-policy-correction.md)**
+
+使用截断 importance weight 构造多步 value target 的 off-policy 校正方法；截断降低方差，也引入偏差。
+
+**[Value function](reinforcement-learning/values-bellman.md)**
+
+$V^\pi(s)$ 或 $Q^\pi(s,a)$，表示在给定策略下从状态或状态—动作对出发的期望 return。
 
 **World model**
 

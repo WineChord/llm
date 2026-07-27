@@ -66,14 +66,15 @@ task sampler
 
 ## 推荐阅读路径
 
-1. [强化学习基础](rl-foundations.md)：MDP/POMDP、value、Bellman、TD、actor–critic 与 on/off-policy。
-2. [数学与算法](math-algorithms.md)：policy gradient、PPO、GRPO、DPO 与 credit assignment。
-3. [轨迹与策略契约](trajectory-contract.md)：action mask、old log-prob、policy version、终止与异步 lag。
-4. [数据与环境](data-environments.md)：任务、工具、verifier 和可复现状态。
-5. [搜索、过程奖励与验证](search-verification.md)：best-of-$N$、树搜索、PRM 与 verifier 安全。
-6. [训练系统](training-systems.md)：rollout、训练、调度、版本与故障。
-7. [长时任务](long-horizon.md)：上下文、层级策略、恢复和跨 episode 学习。
-8. [评测与安全](evaluation-safety.md)：能力、成本、污染、奖励攻击和权限边界。
-9. [阅读清单](reading-list.md)：按问题组织原始论文与实现。
+1. [强化学习总览](../reinforcement-learning/index.md)：建立 MDP、value、policy optimization 与反馈制度的完整坐标。
+2. [从经典 RL 到语言 Agent](rl-foundations.md)：把单轮生成、多轮工具调用与部分可观测环境放在同一建模框架中。
+3. [算法决策](math-algorithms.md)：按数据分布、critic、信用粒度与异步程度选择训练方法。
+4. [轨迹与策略契约](trajectory-contract.md)：action mask、old log-prob、policy version、终止与异步 lag。
+5. [数据与环境](data-environments.md)：任务、工具、verifier 和可复现状态。
+6. [搜索、过程奖励与验证](search-verification.md)：best-of-$N$、树搜索、PRM 与 verifier 安全。
+7. [训练系统](training-systems.md)：rollout、训练、调度、版本与故障。
+8. [长时任务](long-horizon.md)：上下文、层级策略、恢复和跨 episode 学习。
+9. [评测与安全](evaluation-safety.md)：能力、成本、污染、奖励攻击和权限边界。
+10. [阅读清单](reading-list.md)：按问题组织原始论文与实现。
 
 基础后训练见[后训练与偏好学习](../training/post-training.md)，应用层 agent 见[工具与智能体](../applications/agents.md)。

@@ -28,6 +28,7 @@ REQUIRED = {
     "tensor-primitives.md": 6,
     "transformer-from-scratch.md": 5,
     "training-objectives.md": 10,
+    "reinforcement-learning.md": 9,
     "distributed-systems.md": 8,
     "inference-engine.md": 8,
     "retrieval-agents.md": 8,

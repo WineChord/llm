@@ -1,130 +1,104 @@
-# 奖励建模与偏好优化
+# 奖励、偏好与策略学习
 
-偏好学习处理的是“相对更好”，而不是天然存在的绝对奖励。数据、偏好模型、参考策略和 divergence 共同定义最终目标；方法名称不能替代这些假设。
+“让模型更好”不是一个可直接优化的标量。人类选择、原则评审、单样本好坏标签、单元测试和环境终态提供的是不同观察；reward model、偏好损失和强化学习再把这些观察变成更新信号。先固定反馈接口，才有理由选择 DPO、PPO 或其他算法。
 
-## Bradley–Terry 奖励模型
+本页保留为稳定入口。成对评分的统计细节见[奖励建模](reward-modeling.md)，固定数据上的策略学习见[离线偏好优化](offline-preference.md)，会持续改变采样分布的问题见[强化学习](../reinforcement-learning/index.md)。
 
-给定 prompt $x$ 与成对回答 $y_w\succ y_l$，标量奖励模型常假设
+## 五个彼此独立的轴
+
+| 轴 | 典型选择 | 它决定什么 |
+| --- | --- | --- |
+| 反馈来源 | 人类、AI、程序、环境 | 目标偏差与可扩展性 |
+| 监督形态 | 示范、pair、list、标量、过程标签、终态 | 可使用的损失 |
+| 数据制度 | 固定数据 / 持续采样 | 是否能探索新行为 |
+| 策略关系 | on-policy / off-policy | 是否需要分布校正 |
+| 正则锚点 | reference、constraint、无显式锚点 | 允许偏离多远 |
+
+[反馈制度](../reinforcement-learning/feedback-regimes.md)进一步说明：RLHF、RLAIF 与 RLVR 说的是反馈从哪里来；offline/online 说的是数据会不会刷新；on/off-policy 说的是数据由哪个策略产生。它们不能用一个缩写互相替代。
+
+## 从观察到目标
+
+### 示范回答
+
+若数据直接给出希望模型模仿的 $y^\star$，最自然的起点是 response-masked SFT：
+
+$$
+\mathcal L_{\mathrm{SFT}}
+=-\sum_t m_t\log\pi_\theta(y_t^\star\mid x,y_{<t}^\star).
+$$
+
+它把示范中的每个目标 token 都当作正例，却不知道未展示的其他回答是否也正确。高质量覆盖比复杂 optimizer 更重要。
+
+### 成对偏好
+
+若只知道 $y_w\succ y_l$，可以先学习标量 reward：
 
 $$
 P(y_w\succ y_l\mid x)
-=\sigma\left(r_\phi(x,y_w)-r_\phi(x,y_l)\right),
+=\sigma\!\left(r_\phi(x,y_w)-r_\phi(x,y_l)\right),
 $$
 
-并最小化
+也可以像 DPO 一样直接学习相对 reference 的 policy log-ratio。前者得到可用于在线采样的评分器，但要承担分布外校准问题；后者省去独立 reward model，却仍受固定 pair 的 support、标签噪声和 reference 约束。两条路线的完整推导分别见[奖励建模](reward-modeling.md)与[离线偏好优化](offline-preference.md)。
 
-$$
-\mathcal L_{\text{RM}}
-=-\log\sigma\left(r_w-r_l\right).
-$$
+### 可执行结果
 
-奖励只在差值上可辨识：给所有回答加同一常数不改变偏好概率。训练与评测应关注 pairwise accuracy、margin、校准和分布外行为，而不是奖励绝对值看起来多大。
+数学等价检查、编译测试、游戏终局或可查询环境状态能给出可重复反馈。这类信号通常比开放式 judge 更精确，却只覆盖 verifier 实际检查的性质。策略可能通过格式漏洞、测试盲区或环境副作用得分；[RLVR](../reinforcement-learning/rlvr.md)和 [Verifier 与奖励塑形](../reinforcement-learning/verifiers-reward-shaping.md)专门讨论这个边界。
 
-## 奖励模型的捷径
+### 过程反馈
 
-模型可能学习：
+step、span 或 turn 级标签缩短了信用路径，但标签粒度更细不等于更真实。过程评分器可能偏爱冗长格式，局部正确也不保证最终可达。[语言模型信用分配](../reinforcement-learning/credit-assignment.md)说明 outcome、process、critic 与 search value 怎样落到 token 或 action。
 
-- 长回答通常被偏好；
-- 某种标题、礼貌语或拒答模板；
-- 生成器身份与格式；
-- 引用数量而非引用支持性；
-- 代码块存在而非代码正确；
-- 过程更长而非推理更可靠。
+## 一个选择顺序
 
-需要构造长度匹配、风格扰动和单一错误的 hard negatives，并用可执行 verifier 与人工抽检分解评分器到底学到了什么。
+```text
+目标能否由确定性规则直接验证？
+  是 -> 先建立 verifier、隐藏测试与失败分类
+  否 -> 人类或模型反馈的语义能否稳定标注？
+          否 -> 先改任务定义、工具或评测
+          是 -> 固定数据是否覆盖希望学到的行为？
+                  是 -> SFT / 离线偏好作为基线
+                  否 -> 考虑在线采样，并承担分布漂移与探索成本
+```
 
-## KL 正则化的 RLHF
+在线 RL 最有说服力的场景，是新采样能够发现离线 support 外的有效行为，而且 reward 在当前策略分布上仍可信。它也可用于持续吸收新反馈、适应不断变化的采样分布，或让 reward 直接重加权当前策略产生的轨迹；这些收益都要与 rollout、分布校正和验证成本一起比较。[RLHF 数据闭环](../reinforcement-learning/rlhf-pipeline.md)把标注、reward model、rollout、策略更新与独立评测连接为可审计的数据循环。
 
-经典形式在提高期望奖励的同时限制策略偏离 reference：
+## Reference、old 与 behavior
 
-$$
-\max_\pi
-\mathbb E_{y\sim\pi(\cdot\mid x)}[r(x,y)]
--\beta D_{\mathrm{KL}}
-\left(\pi(\cdot\mid x)\,\|\,\pi_{\text{ref}}(\cdot\mid x)\right).
-$$
+在线更新常同时出现三个策略：
 
-reference 不是“旧权重备份”这么简单：它定义了偏离成本的坐标。tokenizer、模板和 support 不一致时，KL 失去清晰语义。[InstructGPT 深读](../landscape/works/instructgpt.md)给出 SFT、reward model 与 PPO 串联的代表性管线、最小 clipped objective 和公开证据边界。
+- $\pi_\theta$：正在更新的 learner；
+- $\pi_{\mathrm{old}}$：产生当前 rollout 的 behavior policy；
+- $\pi_{\mathrm{ref}}$：定义偏离成本的冻结 reference。
 
-## Direct Preference Optimization
+$\pi_{\mathrm{old}}$ 用于 importance ratio，$\pi_{\mathrm{ref}}$ 用于 KL anchor。权重一度相同不代表语义相同。模板、tokenizer、sampling processor 或 action mask 不一致时，旧 log-prob、reference log-prob 与真实采样概率也不再可比较。完整约束见[语言模型作为策略](../reinforcement-learning/language-model-policy.md)、[KL 正则化控制](../reinforcement-learning/kl-regularized-control.md)和[轨迹契约](../agentic-rl/trajectory-contract.md)。
 
-[DPO 深读](../landscape/works/dpo.md)将上述带 reverse-KL 正则的最优策略关系代回 Bradley–Terry 模型，得到分类式目标。定义
+## 常见的错误顺序
 
-$$
-\Delta_\theta
-=\log\pi_\theta(y_w\mid x)-\log\pi_\theta(y_l\mid x),
-$$
+- 先决定使用 DPO 或 PPO，再寻找能塞进目标的数据；
+- 用 reward model 的绝对分数解释偏好强度，而忽略可加常数与分布漂移；
+- 把“AI 产生反馈”误写成一种 optimizer；
+- 用 online rollout，却没有记录 behavior policy version 与采样概率；
+- 用程序 verifier，却不区分错误答案、超时、无效动作和基础设施故障；
+- 在同一 judge 上训练、筛选和报告最终效果；
+- 只看平均 reward，不检查长度、风格、覆盖、多样性与真实任务成功。
 
-$$
-\Delta_{\text{ref}}
-=\log\pi_{\text{ref}}(y_w\mid x)-\log\pi_{\text{ref}}(y_l\mid x),
-$$
+## 最小验证矩阵
 
-则
-
-$$
-\mathcal L_{\text{DPO}}
-=-\log\sigma\left(
-\beta(\Delta_\theta-\Delta_{\text{ref}})
-\right).
-$$
-
-DPO 不需要在线 rollout 或独立 reward model，工程更简单；它仍受偏好覆盖、reference、序列长度归一化、标签噪声与离线分布限制。
-
-## IPO、KTO 与目标选择
-
-[IPO](https://arxiv.org/abs/2310.12036)来自更一般的偏好优化框架，强调直接使用成对偏好并分析 DPO/RLHF 的近似；[KTO](https://arxiv.org/abs/2402.01306)则允许只使用 desirable/undesirable 的二元反馈，并引入相对 reference 的效用构造。
-
-它们解决的数据接口不同：
-
-| 数据条件 | 自然起点 | 仍需解决 |
+| 接口 | 必测退化 | 独立结果 |
 | --- | --- | --- |
-| 高质量成对偏好 | DPO / IPO 类 | pair 构造、reference、长度偏置 |
-| 只有单样本好坏标签 | KTO 类 | 类别不平衡、基准效用 |
-| 可在线采样且奖励可验证 | PPO / group-relative RL | rollout 成本、off-policy 与奖励攻击 |
-| 多步轨迹偏好 | trajectory preference 或过程监督 | 信用分配、环境版本与动作边界 |
+| Pair preference | 对调顺序、长度匹配、同分 pair | 人工一致性与分层胜率 |
+| Reward model | 常数平移、OOD 生成器、格式扰动 | 校准、margin 与真实任务 |
+| Offline preference | reference 更换、support 外 prompt | 新鲜人工或 verifier 评测 |
+| Online RL | policy lag、极端 ratio、reward 缺失 | 冻结任务集与成本 |
+| Verifier | 隐藏测试、对抗格式、环境故障 | 人工审计与第二评分器 |
+| Process feedback | step 边界变化、局部对全局反例 | 最终成功与错误恢复 |
 
-不存在对所有数据都最优的偏好损失；选择应由监督语义决定。
-
-## 序列 log-probability
-
-回答的 log-probability 是 token log-prob 之和：
-
-$$
-\log\pi(y\mid x)=\sum_{t=1}^{T}\log\pi(y_t\mid x,y_{<t}).
-$$
-
-因此长回答的数值绝对值更大。目标是否使用总和、均值或其他长度校正会改变偏好。mask 必须只覆盖策略真正选择的 token；prompt、padding 和环境 observation 不应混入 action probability。
-
-## Offline 与 online
-
-离线偏好优化只在已收集回答上学习，稳定且易复现，但无法直接探索新行为。在线 RL 根据当前策略采样，可以发现新解，也会让数据分布随训练变化，放大奖励模型分布外误差。
-
-从离线切换到在线前应验证：
-
-1. reward/verifier 对当前策略样本仍校准；
-2. rollout 能记录不可变 policy version 与旧 log-prob；
-3. 生成、训练与 reference 模板完全一致；
-4. reward 突增会触发轨迹审计；
-5. 成本、长度和安全回归不被单一奖励掩盖。
-
-## 评测
-
-至少分开报告：
-
-- 成对偏好胜率与人工一致性；
-- 事实性、任务成功和可执行验证；
-- 长度、风格、多样性与校准；
-- 对 reference 的 KL 或 log-ratio 分布；
-- chosen/rejected 来源分层结果；
-- 通用能力和安全边界回归；
-- judge 更换后的桥接评测。
-
-偏好数据契约见[偏好、过程与轨迹数据](../data/feedback-trajectories.md)，在线策略算法见[Agentic RL 数学与算法](../agentic-rl/math-algorithms.md)。
+对应的最小目标实现见[训练目标](../practice/training-objectives.md)和[手撕强化学习](../practice/reinforcement-learning.md)，实验中的 reward 上升是否代表真实能力见[实验诊断](../reinforcement-learning/evaluation-debugging.md)。
 
 ## Reference {#reference}
 
-- [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)
-- [Direct Preference Optimization](https://arxiv.org/abs/2305.18290)
-- [A General Theoretical Paradigm to Understand Learning from Human Preferences / IPO](https://arxiv.org/abs/2310.12036)
-- [KTO: Model Alignment as Prospect Theoretic Optimization](https://arxiv.org/abs/2402.01306)
+- Christiano et al., [Deep Reinforcement Learning from Human Preferences](https://arxiv.org/abs/1706.03741)
+- Ouyang et al., [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)
+- Bai et al., [Constitutional AI: Harmlessness from AI Feedback](https://arxiv.org/abs/2212.08073)
+- Rafailov et al., [Direct Preference Optimization](https://arxiv.org/abs/2305.18290)
+- Lightman et al., [Let's Verify Step by Step](https://arxiv.org/abs/2305.20050)

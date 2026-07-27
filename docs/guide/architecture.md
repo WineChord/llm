@@ -10,12 +10,12 @@
 | 数据 | 来源、谱系、过滤、混合、序列、反馈 | [数据工程](../data/index.md) |
 | 模型结构 | attention、位置、MLP、MoE、递推、记忆 | [模型结构](../architecture/index.md) |
 | 多模态 | encoder、投影、模态 token、生成与动作 | [多模态](../multimodal/index.md) |
-| 训练与对齐 | optimizer、SFT、蒸馏、PEFT、偏好、RL | [训练与对齐](../training/index.md) |
+| 训练与对齐 | optimizer、SFT、蒸馏、PEFT、checkpoint | [训练与对齐](../training/index.md) |
 | 系统 | dtype、kernel、通信、placement、checkpoint | [系统与基础设施](../systems/index.md) |
 | 推理与服务 | 解码、KV、缓存、调度、量化、集群 | [推理与服务](../inference/index.md) |
 | 检索与智能体 | 索引、证据、工具、记忆、规划、权限 | [检索、工具与智能体](../applications/index.md) |
 | 推理时计算 | 候选、搜索状态、验证器、预算 | [推理与推理时计算](../reasoning/index.md) |
-| Agentic RL | 环境、轨迹、behavior policy、reward、信用 | [Agentic RL](../agentic-rl/index.md) |
+| 强化学习 | 序贯决策、策略、价值、reward、环境与反馈 | [强化学习](../reinforcement-learning/index.md) |
 | 评测与可靠性 | estimand、分母、judge、威胁、SLO | [评测与可靠性](../evaluation/index.md) |
 | 谱系与证据 | 历史转折、关键工作、版本、来源、未知 | [技术谱系](../landscape/index.md) |
 
@@ -44,11 +44,11 @@
 
 ### 训练与推理
 
-[预训练](../training/pretraining.md)形成基础分布，[SFT](../training/supervised-finetuning.md)、[蒸馏](../training/distillation.md)、[离线偏好](../training/offline-preference.md)和[在线 RL](../training/online-rl.md)改变行为。部署侧由[解码](../inference/decoding.md)、[KV Cache](../inference/kv-cache.md)、[调度](../inference/scheduling-goodput.md)和[量化](../inference/quantization.md)决定可交付能力与成本。
+[预训练](../training/pretraining.md)形成基础分布，[SFT](../training/supervised-finetuning.md)提供示范，[蒸馏](../training/distillation.md)与 [PEFT](../training/peft.md)改变知识和适配成本；[强化学习](../reinforcement-learning/index.md)则在策略会改变采样分布、反馈可能延迟时讨论行为改进。部署侧由[解码](../inference/decoding.md)、[KV Cache](../inference/kv-cache.md)、[调度](../inference/scheduling-goodput.md)和[量化](../inference/quantization.md)决定可交付能力与成本。
 
 ### 知识、行动与反馈
 
-[RAG](../applications/rag.md)连接外部证据，[工具调用](../applications/tool-use.md)连接外部动作，[智能体运行时](../applications/agent-runtime.md)维护状态。[搜索与验证](../reasoning/search-verification.md)产生推理时反馈；需要参数更新时进入[推理后训练](../training/reasoning-posttraining.md)或 [Agentic RL](../agentic-rl/index.md)。
+[RAG](../applications/rag.md)连接外部证据，[工具调用](../applications/tool-use.md)连接外部动作，[智能体运行时](../applications/agent-runtime.md)维护状态。[搜索与验证](../reasoning/search-verification.md)产生推理时反馈；需要参数更新时进入[推理后训练](../training/reasoning-posttraining.md)，涉及环境转移与长时信用时继续进入 [Agentic RL](../agentic-rl/index.md)。
 
 ### 测量
 
@@ -99,7 +99,7 @@ evaluation and primary evidence
 - 一个概念保留一个主要解释页，其他页面只补充上下文并链接。
 - 旧的宽主题 URL 可保留为稳定总览，例如[参数高效训练与压缩](../training/peft-compression.md)与[后训练总览](../training/post-training.md)。
 - 架构机制与实现优化分开：attention 定义在模型结构，kernel 在系统，KV 生命周期在推理。
-- 离线偏好、在线 RL、推理时搜索和 Agentic RL 分开，因为数据分布、状态和目标不同。
+- 离线偏好、在线 RL、推理时搜索和 Agentic RL 在同一强化学习主线中保持独立页面，因为数据分布、状态和目标不同。
 - 模型发布与普遍规律分开；时效性事实进入谱系或证据卡。
 
 ## 交叉链接 {#cross-links}

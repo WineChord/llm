@@ -300,7 +300,7 @@ $$
 在普通 PPO rollout 中 $\mu=\pi_{\mathrm{old}}$。它可以为负，也不是一般意义上的 KL；只有采样确实来自 $\pi_{\mathrm{new}}$ 且对其动作分布取期望时，才对应
 $\operatorname{KL}(\pi_{\mathrm{new}}\Vert\pi_{\mathrm{ref}})$ 的 Monte Carlo 估计。
 
-## RLOO 与 GRPO advantage
+## RLOO 与 GRPO advantage {#rloo-grpo-advantage}
 
 [RLOO](https://arxiv.org/abs/2402.14740)用同一 prompt 的其他样本作为 leave-one-out baseline：
 

@@ -1,169 +1,147 @@
-# 强化学习基础
+# 从经典强化学习到语言 Agent
 
-Agentic RL 建立在经典强化学习对象上，但状态通常是长历史，动作可能是一段 token 或工具调用，环境又昂贵且部分可观测。先把 value、policy、采样分布和终止语义分清，才能理解 PPO、GRPO 与异步 rollout。
+语言 Agent 没有发明一套脱离经典强化学习的新数学。它改变的是问题尺度：state 由长历史近似，action 可以持续数千 token，environment 包含工具与外部系统，reward 又常在任务结束后才出现。本页只负责连接两端；MDP、Bellman、TD、policy gradient 与 PPO 的完整推导放在[强化学习](../reinforcement-learning/index.md)。
 
-## MDP 与 POMDP
+## 三种建模层次
 
-Markov Decision Process 可写为
+### Contextual bandit
 
-$$
-\mathcal M=(\mathcal S,\mathcal A,P,R,\gamma).
-$$
-
-策略 $\pi(a\mid s)$ 产生动作，环境按 $P(s'\mid s,a)$ 转移。回报为
+若每个 prompt 独立，模型生成完整 response 后立即得到 reward，且回答不影响未来任务，可近似为：
 
 $$
-G_t=\sum_{k=0}^{T-t}\gamma^kr_{t+k}.
+x\sim\mathcal D,\qquad
+y\sim\pi_\theta(\cdot\mid x),\qquad
+R=R(x,y).
 $$
 
-语言 agent 通常只能看到 observation $o_t$，真实环境状态 $s_t$ 不完全可见，因此策略依赖历史
+这里没有跨 turn transition。许多单轮 RLHF、DPO 与 response-level RLVR 在这个抽象下最清楚。
+
+### Token-level episodic MDP
+
+把生成前缀视为状态、下一个 token 视为 action：
 
 $$
-h_t=(o_0,a_0,\ldots,o_t).
+h_t=(x,y_{<t}),
+\qquad
+a_t=y_t.
 $$
 
-上下文窗口、结构化任务状态和外部 memory 都是在近似 belief state；摘要丢失信息会破坏近似 Markov 性。
+transition 是确定性的字符串追加，直到 EOS 或长度上限。该建模解释了 sequence log-prob 怎样拆成 token log-prob，却不意味着每个 token 都有独立 reward。完整动作尺度见[语言模型作为策略](../reinforcement-learning/language-model-policy.md)。
 
-## Value 与 Q
+### 多轮 POMDP / SMDP
 
-状态价值：
-
-$$
-V^\pi(s)
-=\mathbb E_\pi[G_t\mid s_t=s].
-$$
-
-动作价值：
+工具调用和外部操作会改变未来观察：
 
 $$
-Q^\pi(s,a)
-=\mathbb E_\pi[G_t\mid s_t=s,a_t=a].
+a_t\sim\pi_\theta(\cdot\mid h_t),
+\qquad
+s_{t+1}\sim P(\cdot\mid s_t,a_t),
+\qquad
+o_{t+1}\sim\Omega(\cdot\mid s_{t+1}).
 $$
 
-优势函数：
+模型只看到 $h_t$，真实文件、权限、网页或用户状态可能不可见，因此更接近 [POMDP](../reinforcement-learning/decision-processes.md)。一次 tool call 持续时间不同，又可用 [SMDP 与 option](../reinforcement-learning/models-planning-hierarchy.md)描述。
+
+## 六个对象怎样变化
+
+| 对象 | 经典抽象 | 语言 Agent 中的难点 |
+| --- | --- | --- |
+| State | $s_t$ | context 只是部分观察；外部状态会漂移 |
+| Action | $a_t$ | token、span、turn、tool call 或完整 episode |
+| Transition | $P(s'\mid s,a)$ | 工具、网络、文件和用户模拟器 |
+| Reward | $R_t$ | human/AI preference、verifier、成本与权限 |
+| Time | 固定 step | token、turn、wall-clock 与调用成本并存 |
+| Policy | $\pi(a\mid s)$ | tokenizer、模板、decoder 与权重共同定义 |
+
+任何算法选择之前，先把这六项写成可重放契约。
+
+## History 不是 state 的同义词
+
+完整 history 只有在包含所有影响未来的变量时才可能是 Markov state。现实系统经常缺少：
+
+- 工具内部状态；
+- 文件或数据库 revision；
+- 访问权限与预算；
+- 被截断的早期约束；
+- 并发 actor 的修改；
+- 用户后续行为。
+
+摘要、retrieval 与 memory 是 belief-state engineering。它们提高可用信息，不证明信息充分。[长时任务](long-horizon.md)讨论上下文压缩与恢复，[CompactionRL](../landscape/works/sao-compactionrl.md#compactionrl)则把 summary 本身作为可训练 action。
+
+## Observation 不参与 policy gradient
+
+轨迹可写成
 
 $$
-A^\pi(s,a)=Q^\pi(s,a)-V^\pi(s).
+\tau=(a_0,o_0,a_1,o_1,\ldots).
 $$
 
-优势描述“这个动作相对当前状态的平均行为好多少”，比绝对回报更适合降低 policy-gradient 方差。
+只有 policy 实际采样的 $a_i$ 进入 action loss；$o_i$ 作为下一动作的条件。tool result 很长时，不能因为它占据很多 token，就让这些 token 产生 policy ratio 或梯度。
 
-## Bellman 方程
+精确字段、mask、old log-prob 与 version 见[轨迹与策略契约](trajectory-contract.md)。
 
-对固定策略，
+## Reward 来源不决定 optimizer
 
-$$
-V^\pi(s)
-=\mathbb E_{a\sim\pi,s'\sim P}
-\left[r(s,a)+\gamma V^\pi(s')\right].
-$$
+[反馈制度](../reinforcement-learning/feedback-regimes.md)把几个常被混淆的轴分开：
 
-最优动作价值满足
+- RLHF、RLAIF、RLVR 描述反馈来源；
+- online/offline 描述数据是否持续刷新；
+- on/off-policy 描述数据与目标策略关系；
+- PPO、RLOO、GRPO 描述更新或 baseline。
 
-$$
-Q^*(s,a)
-=\mathbb E_{s'}
-\left[
-r(s,a)+\gamma\max_{a'}Q^*(s',a')
-\right].
-$$
+一个 coding Agent 可以使用程序 verifier reward、learned critic、PPO update 与异步 rollout；“RLVR”只覆盖其中 reward 的来源。
 
-动态规划需要已知环境模型或能枚举转移；大多数语言环境只能通过 rollout 采样。
+## 长时信用
 
-## Monte Carlo 与 TD
+终局成功要传回早期决策。可选接口包括：
 
-Monte Carlo 用 episode 完整回报 $G_t$ 监督 value，无 bootstrap 偏差但方差高、必须等终局。TD(0) 使用
+- episode Monte Carlo return；
+- turn/span reward；
+- critic + TD/GAE；
+- process verifier；
+- 层级 option；
+- 搜索产生的 state value；
+- 跨压缩 segment 修正。
 
-$$
-\delta_t=r_t+\gamma V(s_{t+1})-V(s_t),
-$$
+更细的 reward 不一定更准确。一个有偏 PRM 会把错误监督传播到更多 token。完整比较见[语言模型信用分配](../reinforcement-learning/credit-assignment.md)。
 
-在轨迹未结束时即可更新，但 target 依赖当前 value 估计。TD($\lambda$)与 GAE 用指数权重混合多步 target，在偏差和方差间折中。
+## 探索与安全
 
-长时 agent 的最终奖励延迟很长，纯 MC 方差大；错误的 step reward 或 critic 又会把偏差传播到所有早期动作。过程 verifier 的质量因此是算法的一部分。
+语言模型通过 temperature、多采样、任务 curriculum、工具选择和环境状态探索。探索强度不能只看 entropy：
 
-## Value-based 与 policy-based
+- 高 temperature 可能只改变措辞；
+- 同组 reward 全同意味着没有有效行为差异；
+- 高风险 action 不能靠负 reward 事后纠正；
+- verifier coverage 决定“新行为”是否可评价；
+- sandbox 与权限 guard 必须先于执行。
 
-Q-learning 用
+[探索与最大熵](../reinforcement-learning/exploration-entropy.md)给出经典基础，[Agent 安全](../applications/agent-security.md)给出运行时边界。
 
-$$
-y_t=r_t+\gamma\max_{a'}Q_{\bar\theta}(s_{t+1},a')
-$$
+## 终止、截断与故障
 
-构造 bootstrap target，适合离散、可枚举动作。语言模型词表虽离散，但完整 action span 的组合空间巨大，工具参数也有结构约束；直接对所有完整动作估计 Q 通常不现实。
+| 状态 | 是否 bootstrap | 是否作为策略结果 |
+| --- | --- | --- |
+| 成功 / 明确失败 | 通常否 | 是 |
+| 时间、token 或调用预算截断 | 依任务而定 | 未完成但可归因 |
+| 非法动作 | 按环境契约 | 是 |
+| Environment / verifier / infrastructure error | 不应自动记零 reward | 通常单列 |
 
-Policy gradient 直接优化参数化策略：
+将 timeout 全部当 terminal 会低估长任务 value，也会鼓励过早结束。公式与例子见[序贯决策](../reinforcement-learning/decision-processes.md)和[多步回报](../reinforcement-learning/multistep-traces.md)。
 
-$$
-\nabla_\theta J
-=\mathbb E
-\left[
-\nabla_\theta\log\pi_\theta(a_t\mid h_t)
-\hat A_t
-\right].
-$$
+## 阅读路线
 
-它自然支持巨大动作空间，却依赖 on-policy 样本且方差高。
-
-## Actor–Critic
-
-actor 是 $\pi_\theta$，critic 是 $V_\phi$ 或 $Q_\phi$。critic 提供 advantage，actor 更新策略。二者互相影响：
-
-- critic 欠拟合，advantage 方差大；
-- critic 过拟合或分布外，产生系统偏差；
-- actor 更新太快，critic target 持续漂移；
-- rollout 过旧，二者都在 off-policy 数据上学习。
-
-PPO 用 clipped probability ratio 限制 actor 单次更新；GAE 常用于构造 advantage。完整推导见[数学与算法](math-algorithms.md)。
-
-## On-policy、off-policy 与 replay
-
-数据由 behavior policy $\mu$ 产生，目标是更新 $\pi$。若 $\mu\ne\pi$，直接使用 on-policy estimator 会有偏差。单步 importance ratio 为
-
-$$
-\rho_t=\frac{\pi(a_t\mid h_t)}{\mu(a_t\mid h_t)}.
-$$
-
-长序列比率乘积方差会迅速增大，因此工程上常用 clipping、截断校正、限制 policy lag 或只消费新鲜轨迹。经典 replay buffer 可提高样本利用率，但对快速变化的语言策略并非免费收益。
-
-## 探索
-
-离散控制可用 $\epsilon$-greedy；语言策略通常用温度、top-$p$、多样化 prompt、不同 seed 或层级任务采样。探索要同时考虑：
-
-- 生成是否真正多样；
-- verifier 能否区分新策略；
-- 环境动作是否安全；
-- 失败成本与预算；
-- 采样分布是否仍可计算 log-prob。
-
-过强探索产生大量无效轨迹，过弱探索则让组内奖励相同、没有相对学习信号。
-
-## 终止
-
-对 value target，必须区分：
-
-- `terminated`：到达环境终态，bootstrap 值通常为零；
-- `truncated`：因时间或预算截断，环境本可继续，可能仍需 bootstrap；
-- `infrastructure_error`：不是策略结果，应单独处理。
-
-把所有 timeout 当作零回报会训练策略回避耗时任务，也会低估截断状态价值。
-
-## 映射到语言 agent
-
-| RL 对象 | 语言/工具系统中的实例 |
-| --- | --- |
-| state/history | prompt、消息、任务 ledger、环境状态 |
-| action | token、整条消息、tool call、代码或终止 |
-| transition | 工具执行、文件变化、网页响应 |
-| reward | verifier、偏好模型、成本与权限惩罚 |
-| episode | 从任务 reset 到成功、失败或截断 |
-| behavior policy | 生成轨迹的精确 checkpoint 与解码策略 |
-
-动作粒度决定 log-prob、credit assignment 和 replay 语义。下一步读[轨迹与策略契约](trajectory-contract.md)，再进入[数学与算法](math-algorithms.md)。
+| 想解决的问题 | 先读 | 再读 |
+| --- | --- | --- |
+| MDP、value、TD 不熟 | [强化学习总览](../reinforcement-learning/index.md) | [Bellman](../reinforcement-learning/values-bellman.md)、[MC/TD](../reinforcement-learning/prediction-control.md) |
+| PPO 与 critic | [Policy Gradient](../reinforcement-learning/policy-gradient.md) | [Actor–Critic](../reinforcement-learning/actor-critic.md)、[TRPO/PPO](../reinforcement-learning/trust-region-ppo.md) |
+| RLOO / GRPO | [无 critic baseline](../reinforcement-learning/critic-free-baselines.md) | [在线 RL](../training/online-rl.md) |
+| 异步 rollout | [Off-policy 校正](../reinforcement-learning/off-policy-correction.md) | [训练系统](training-systems.md) |
+| 多轮工具任务 | 本页 | [轨迹契约](trajectory-contract.md)、[数据与环境](data-environments.md) |
+| 长上下文与终局 reward | [信用分配](../reinforcement-learning/credit-assignment.md) | [长时任务](long-horizon.md) |
 
 ## Reference {#reference}
 
-- [Reinforcement Learning: An Introduction, Second Edition](https://mitpress.mit.edu/9780262039246/reinforcement-learning/)
-- [Generalized Advantage Estimation](https://arxiv.org/abs/1506.02438)
-- [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
-- [IMPALA: Scalable Distributed Deep-RL with Importance Weighted Actor-Learner Architectures](https://arxiv.org/abs/1802.01561)
+- Sutton and Barto, [Reinforcement Learning: An Introduction, Second Edition](https://mitpress.mit.edu/9780262039246/reinforcement-learning/)
+- Kaelbling, Littman, and Cassandra, [Planning and Acting in Partially Observable Stochastic Domains](https://doi.org/10.1016/S0004-3702(98)00023-X)
+- Sutton, Precup, and Singh, [Between MDPs and Semi-MDPs: A Framework for Temporal Abstraction](https://doi.org/10.1016/S0004-3702(99)00052-1)
+- Ouyang et al., [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)

@@ -218,11 +218,6 @@ nav:
           - 优化与稳定性: training/optimization.md
           - 优化器家族: training/optimizer-families.md
           - 后训练总览: training/post-training.md
-          - 奖励建模与偏好优化: training/reward-preference.md
-          - 奖励建模: training/reward-modeling.md
-          - 离线偏好优化: training/offline-preference.md
-          - 在线强化学习: training/online-rl.md
-          - 推理后训练: training/reasoning-posttraining.md
           - 知识蒸馏: training/distillation.md
           - 参数高效微调: training/peft.md
           - 参数高效与压缩: training/peft-compression.md
@@ -270,17 +265,52 @@ nav:
           - 记忆与规划: applications/memory-planning.md
           - Agent 安全: applications/agent-security.md
           - Coding Agent: applications/coding-agents.md
-  - Agentic RL:
-      - 总览: agentic-rl/index.md
-      - 强化学习基础: agentic-rl/rl-foundations.md
-      - 数学与算法: agentic-rl/math-algorithms.md
-      - 轨迹与策略契约: agentic-rl/trajectory-contract.md
-      - 数据与环境: agentic-rl/data-environments.md
-      - 搜索、过程奖励与验证: agentic-rl/search-verification.md
-      - 训练系统: agentic-rl/training-systems.md
-      - 长时任务: agentic-rl/long-horizon.md
-      - 评测与安全: agentic-rl/evaluation-safety.md
-      - 阅读清单: agentic-rl/reading-list.md
+  - 强化学习:
+      - 总览: reinforcement-learning/index.md
+      - 历史与脉络: reinforcement-learning/history.md
+      - 序贯决策基础:
+          - MDP、POMDP 与回报: reinforcement-learning/decision-processes.md
+          - 价值函数与 Bellman 递推: reinforcement-learning/values-bellman.md
+          - Monte Carlo、TD 与控制: reinforcement-learning/prediction-control.md
+          - 多步回报、资格迹与 GAE: reinforcement-learning/multistep-traces.md
+          - 函数逼近与致命三元组: reinforcement-learning/function-approximation.md
+          - 探索与最大熵: reinforcement-learning/exploration-entropy.md
+          - 模型、规划与层级决策: reinforcement-learning/models-planning-hierarchy.md
+          - 模仿学习与 Offline RL: reinforcement-learning/offline-imitation.md
+          - 约束与多智能体 RL: reinforcement-learning/constraints-multiagent.md
+      - 策略优化:
+          - Policy Gradient: reinforcement-learning/policy-gradient.md
+          - Actor–Critic: reinforcement-learning/actor-critic.md
+          - Trust Region、TRPO 与 PPO: reinforcement-learning/trust-region-ppo.md
+          - Off-policy 校正: reinforcement-learning/off-policy-correction.md
+      - 强化学习与语言模型:
+          - 语言模型作为策略: reinforcement-learning/language-model-policy.md
+          - KL 正则化控制: reinforcement-learning/kl-regularized-control.md
+          - 反馈制度: reinforcement-learning/feedback-regimes.md
+          - RLHF 数据闭环: reinforcement-learning/rlhf-pipeline.md
+          - 奖励、偏好与策略学习: training/reward-preference.md
+          - 奖励建模: training/reward-modeling.md
+          - 离线偏好优化: training/offline-preference.md
+          - 无 critic 的 Baseline: reinforcement-learning/critic-free-baselines.md
+          - 在线 RL: training/online-rl.md
+          - RLVR: reinforcement-learning/rlvr.md
+          - Verifier 与奖励塑形: reinforcement-learning/verifiers-reward-shaping.md
+          - 推理后训练: training/reasoning-posttraining.md
+          - 语言模型信用分配: reinforcement-learning/credit-assignment.md
+          - 实验诊断: reinforcement-learning/evaluation-debugging.md
+      - Agentic RL:
+          - 总览: agentic-rl/index.md
+          - 从经典 RL 到语言 Agent: agentic-rl/rl-foundations.md
+          - 算法决策: agentic-rl/math-algorithms.md
+          - 轨迹与策略契约: agentic-rl/trajectory-contract.md
+          - 数据与环境: agentic-rl/data-environments.md
+          - 搜索、过程奖励与验证: agentic-rl/search-verification.md
+          - 训练系统: agentic-rl/training-systems.md
+          - 长时任务: agentic-rl/long-horizon.md
+          - 评测与安全: agentic-rl/evaluation-safety.md
+      - 实现与索引:
+          - 手撕强化学习: practice/reinforcement-learning.md
+          - 阅读清单: agentic-rl/reading-list.md
   - 评测与可靠性:
       - 总览: evaluation/index.md
       - Benchmark Registry: evaluation/benchmark-registry.md

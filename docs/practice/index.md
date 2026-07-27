@@ -45,6 +45,7 @@
 | 模型数学 | [张量原语](tensor-primitives.md)、[Decoder-only Transformer](transformer-from-scratch.md) |
 | 替代结构 | [递推与记忆](sequence-models.md)、[多模态原语](multimodal.md) |
 | 学习目标 | [训练目标](training-objectives.md) |
+| 序贯决策与策略优化 | [强化学习](reinforcement-learning.md) |
 | 集群语义 | [分布式与容错](distributed-systems.md) |
 | 服务状态 | [推理引擎](inference-engine.md) |
 | 外部系统 | [检索与智能体](retrieval-agents.md) |

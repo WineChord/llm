@@ -107,6 +107,7 @@ REQUIRED_PAGES = (
     "agentic-rl/trajectory-contract.md",
     "agentic-rl/search-verification.md",
     "agentic-rl/training-systems.md",
+    "reinforcement-learning/index.md",
     "evaluation/benchmark-registry.md",
     "evaluation/language-model-evaluation.md",
     "evaluation/statistical-inference.md",
@@ -125,6 +126,7 @@ REQUIRED_PAGES = (
     "practice/tokenizers.md",
     "practice/sequence-models.md",
     "practice/training-objectives.md",
+    "practice/reinforcement-learning.md",
     "practice/distributed-systems.md",
     "practice/inference-engine.md",
     "practice/test-time-compute.md",
@@ -171,6 +173,31 @@ WORK_PAGES = (
     "landscape/works/rag.md",
     "landscape/works/react-toolformer.md",
     "landscape/works/helm-arena.md",
+)
+RL_PAGES = (
+    "reinforcement-learning/history.md",
+    "reinforcement-learning/decision-processes.md",
+    "reinforcement-learning/values-bellman.md",
+    "reinforcement-learning/prediction-control.md",
+    "reinforcement-learning/multistep-traces.md",
+    "reinforcement-learning/function-approximation.md",
+    "reinforcement-learning/exploration-entropy.md",
+    "reinforcement-learning/models-planning-hierarchy.md",
+    "reinforcement-learning/offline-imitation.md",
+    "reinforcement-learning/constraints-multiagent.md",
+    "reinforcement-learning/policy-gradient.md",
+    "reinforcement-learning/actor-critic.md",
+    "reinforcement-learning/trust-region-ppo.md",
+    "reinforcement-learning/off-policy-correction.md",
+    "reinforcement-learning/language-model-policy.md",
+    "reinforcement-learning/kl-regularized-control.md",
+    "reinforcement-learning/feedback-regimes.md",
+    "reinforcement-learning/rlhf-pipeline.md",
+    "reinforcement-learning/critic-free-baselines.md",
+    "reinforcement-learning/rlvr.md",
+    "reinforcement-learning/verifiers-reward-shaping.md",
+    "reinforcement-learning/credit-assignment.md",
+    "reinforcement-learning/evaluation-debugging.md",
 )
 REFERENCE_HEADING = "## Reference {#reference}"
 REFERENCE_EXEMPT_PAGES = {
@@ -227,7 +254,7 @@ def unfenced_lines(text: str) -> list[str]:
     return visible
 
 
-for relative in (*REQUIRED_PAGES, *LINEAGE_PAGES, *WORK_PAGES):
+for relative in (*REQUIRED_PAGES, *LINEAGE_PAGES, *WORK_PAGES, *RL_PAGES):
     if not (ROOT / "docs" / relative).is_file():
         errors.append(f"docs/{relative}: 缺少知识架构核心页面")
 
@@ -256,6 +283,18 @@ for relative in WORK_PAGES:
         errors.append(f"docs/{relative}: 缺少带断言的可执行 reference")
     if len(re.findall(r"\]\((?!https?://)[^)]+\.md(?:#[^)]+)?\)", text)) < 2:
         errors.append(f"docs/{relative}: 关键工作缺少前后谱系与机制链接")
+
+for relative in RL_PAGES:
+    path = ROOT / "docs" / relative
+    if not path.is_file():
+        continue
+    text = path.read_text(encoding="utf-8")
+    if len(text) < 3000:
+        errors.append(f"docs/{relative}: 强化学习机制展开不足")
+    if len(re.findall(r"\]\(https://", text)) < 2:
+        errors.append(f"docs/{relative}: 强化学习机制缺少足够的一手来源")
+    if len(re.findall(r"\]\((?!https?://)[^)]+\.md(?:#[^)]+)?\)", text)) < 2:
+        errors.append(f"docs/{relative}: 强化学习机制缺少上下游链接")
 
 for path in FILES:
     text = path.read_text(encoding="utf-8")

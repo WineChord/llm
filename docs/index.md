@@ -18,12 +18,12 @@
 | [数据](data/index.md) | 来源、去重、混合、合成数据与训练序列 |
 | [模型结构](architecture/index.md) | Transformer、位置、注意力、MoE、递推与记忆 |
 | [多模态](multimodal/index.md) | 视觉、文档、GUI、音频、视频与生成 |
-| [训练与对齐](training/index.md) | 预训练、SFT、蒸馏、PEFT、偏好与在线 RL |
+| [训练与对齐](training/index.md) | 预训练、SFT、蒸馏、PEFT 与优化稳定性 |
 | [系统](systems/index.md) | 数值、GPU、kernel、并行、MoE 与容错 |
 | [推理与服务](inference/index.md) | 解码、KV、量化、调度、缓存与 P/D 分离 |
 | [检索与智能体](applications/index.md) | 索引、重排、证据生成、工具、记忆与运行时 |
 | [推理时计算](reasoning/index.md) | 采样、搜索、验证与预算分配 |
-| [Agentic RL](agentic-rl/index.md) | 环境、轨迹、信用分配、异步训练与长时任务 |
+| [强化学习](reinforcement-learning/index.md) | 序贯决策、策略优化、语言模型反馈与 Agentic RL |
 | [评测与可靠性](evaluation/index.md) | 协议、统计、校准、事实性、安全与生产门禁 |
 | [技术谱系](landscape/index.md) | 历史转折、关键工作、实现传承与证据边界 |
 

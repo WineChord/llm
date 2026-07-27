@@ -17,6 +17,7 @@ PRACTICE_PAGES = (
     "tensor-primitives.md",
     "transformer-from-scratch.md",
     "training-objectives.md",
+    "reinforcement-learning.md",
     "distributed-systems.md",
     "inference-engine.md",
     "retrieval-agents.md",
