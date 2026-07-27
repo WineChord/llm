@@ -52,6 +52,10 @@ $A^\pi(s,a)=Q^\pi(s,a)-V^\pi(s)$，表示动作相对该状态下策略平均水
 
 实际产生 rollout 的分布；它由 checkpoint、推理引擎和 sampling processor 共同定义，未必等于训练侧 old policy。
 
+**[Batch invariance](landscape/works/tilelang-mega-moe.md#batch-invariant-attention)**
+
+同一 token 在 batch 顺序、切分或并行布局改变时仍得到逐位一致结果的性质；它比固定配置下重复运行的 determinism 更强。
+
 **[CISPO](reinforcement-learning/ratio-clipping-gating.md#cispo)**
 
 Clipped IS-weight Policy Optimization，把裁剪后的 importance ratio 作为 detached policy-gradient 系数；越界后权重饱和而非梯度归零。
@@ -63,6 +67,10 @@ Decoupled Clip and Dynamic sAmpling Policy Optimization，组合 Clip-Higher、�
 **[DIS](reinforcement-learning/ratio-clipping-gating.md#dis)**
 
 Direct Double-Sided Importance Sampling，SAO 中以 current/rollout direct ratio 做双侧接受门的分布校正组件。
+
+**[DSec](landscape/works/tilelang-mega-moe.md#dsec)**
+
+面向长程 Agent rollout 的可恢复 sandbox：把环境状态、overlay 文件系统和可重放 I/O 一起纳入 checkpoint，而不只保存模型 token。
 
 **[Bellman equation](reinforcement-learning/values-bellman.md)**
 
@@ -103,6 +111,10 @@ Byte Pair Encoding，迭代合并高频相邻符号的子词算法。
 **Context window**
 
 一次模型计算允许读取的 token 范围；声明长度不等于所有位置都能被可靠利用。
+
+**[CSA](landscape/works/deepseek-compressed-attention.md#token-compressor)**
+
+Compressed Sparse Attention，先把历史 token 压成重叠 block representation，再由轻量 indexer 为每个 query 选择少量压缩项。
 
 **[Contextual bandit](reinforcement-learning/decision-processes.md)**
 
@@ -218,6 +230,10 @@ Group Sequence Policy Optimization，使用长度归一化的 sequence ratio，�
 
 输出缺乏可靠依据、与事实或给定证据冲突的现象；边界必须按任务定义。
 
+**[HCA](landscape/works/deepseek-compressed-attention.md)**
+
+Heavily Compressed Attention，以更高时间压缩率保存全局历史寻址，并与短滑窗局部路径互补。
+
 **[Importance ratio](reinforcement-learning/training-inference-discrepancy.md)**
 
 两个分布对同一动作概率的比值；必须说明分子、分母、token/sequence 粒度与 sampling processor。
@@ -269,6 +285,14 @@ Low-Rank Adaptation，用低秩增量更新冻结权重的参数高效微调方�
 **[Markov property](reinforcement-learning/decision-processes.md)**
 
 给定当前状态后，未来转移不再依赖更早历史。语言 Agent 的 context 通常只是对隐藏环境状态的部分观察。
+
+**[MegaMoE](landscape/works/tilelang-mega-moe.md#wave-pipeline)**
+
+把 expert activation 切成 wave，让 pull、两段 GEMM 与回传在细粒度流水中重叠的 MoE 执行路径。
+
+**[mHC](landscape/works/manifold-hyper-connections.md#birkhoff-polytope)**
+
+Manifold-Constrained Hyper-Connections，用多路 residual stream 扩展层间表示，并把动态混合矩阵约束在 Birkhoff polytope 上。
 
 **[LatentMoE](landscape/works/kimi-k3.md#latent-path)**
 
@@ -325,6 +349,10 @@ Multi-Query Attention，多个 query head 共享同一组 K/V。
 **Online RL**
 
 用当前或近期策略持续采样，再依据奖励或验证信号更新策略的训练方式。
+
+**[On-Policy Distillation, OPD](landscape/works/on-policy-distillation.md#reverse-kl)**
+
+让学生从自身策略访问前缀，再由教师在这些状态上提供分布监督；轨迹是否 on-policy、KL 方向和词表估计器是彼此独立的设计轴。
 
 **[PagedAttention](inference/runtime.md)**
 
@@ -483,6 +511,10 @@ Truncated Importance Sampling，对同一 checkpoint 的训练分布与 rollout 
 **[Test-time compute](reasoning/test-time-compute.md)**
 
 在权重固定后，通过更长生成、并行采样、搜索、验证或工具交互增加单题计算。
+
+**[TileLang](landscape/works/tilelang-mega-moe.md#host-codegen)**
+
+以 tile-level 程序表达高性能算子的 DSL 与编译栈；性能不仅取决于设备 kernel，也取决于 host code generation、静态分析与浮点语义。
 
 **Token share**
 

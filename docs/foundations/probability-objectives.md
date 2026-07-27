@@ -83,7 +83,7 @@ $$
 
 ### 最小语义实现 {#token-normalized-cross-entropy}
 
-下面的 `token_ce` 接收 `[..., V]` logits、同前缀 shape 的标签与 loss mask，返回按**有效 token 数**归一化的标量损失。函数先用布尔 mask 选择有效行，再计算 `logsumexp` 与 gather；因此无效位置可以带 `label=-100`，其 logits 即使是 NaN 也不会进入目标。
+下面的 `token_ce` 接收 `[..., V]` logits、同前缀 shape 的标签与 loss mask，返回按 **有效 token 数** 归一化的标量损失。函数先用布尔 mask 选择有效行，再计算 `logsumexp` 与 gather；因此无效位置可以带 `label=-100`，其 logits 即使是 NaN 也不会进入目标。
 
 ```python
 import torch

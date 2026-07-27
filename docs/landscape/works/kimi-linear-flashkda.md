@@ -140,7 +140,7 @@ S_t
 +\beta_tk_tv_t^\top.
 $$
 
-顺序很重要：prediction 必须从**已经衰减**的状态读取。KDA 因而既有 GLA 的 channel-wise lifetime，
+顺序很重要：prediction 必须从 **已经衰减** 的状态读取。KDA 因而既有 GLA 的 channel-wise lifetime，
 又保留 Gated DeltaNet 的 erase-and-write 几何。
 
 ## KDA 是一个受约束的 DPLR transition
@@ -373,7 +373,7 @@ $d_k,d_v$ 后，通信量约为 $\mathrm{CP}\times H\times d_k\times(d_k+d_v)$�
 与 gradient 信息有损、通信随 CP degree 增长。论文级 affine 等价与当前实现的低精度/反向近似必须
 分开验证。
 
-K3 还描述了**单 GPU 内**的 automatic context-parallel planner：先并行求各 segment transition，
+K3 还描述了 **单 GPU 内** 的 automatic context-parallel planner：先并行求各 segment transition，
 再在设备内合并 exact initial states。它没有跨设备通信，不应与上述 KCP 混为一谈。
 
 ## 应该怎样验证这条路线

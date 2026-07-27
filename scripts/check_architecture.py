@@ -165,6 +165,7 @@ REQUIRED_CLUSTERS = {
         "landscape/lineages/evaluation.md",
         "landscape/kimi-timeline.md",
         "landscape/kimi-k3-reference-map.md",
+        "landscape/deepseek-v4-reference-map.md",
     },
     "deep-reads": {
         "landscape/works/lstm.md",
@@ -187,6 +188,11 @@ REQUIRED_CLUSTERS = {
         "landscape/works/latentmoe-quantile-balancing.md",
         "landscape/works/kimi-k3.md",
         "landscape/works/moonep.md",
+        "landscape/works/deepseek-v4.md",
+        "landscape/works/deepseek-compressed-attention.md",
+        "landscape/works/manifold-hyper-connections.md",
+        "landscape/works/on-policy-distillation.md",
+        "landscape/works/tilelang-mega-moe.md",
         "landscape/works/megatron-zero.md",
         "landscape/works/flashattention.md",
         "landscape/works/vllm-pagedattention.md",
@@ -267,6 +273,48 @@ REQUIRED_EDGES = {
     "multimodal/kimi.md": {
         "landscape/works/kimi-k3.md",
         "landscape/kimi-timeline.md",
+    },
+    "landscape/works/deepseek-v4.md": {
+        "architecture/attention-variants.md",
+        "architecture/long-context.md",
+        "architecture/moe.md",
+        "training/distillation.md",
+        "inference/quantization.md",
+        "systems/moe-systems.md",
+        "evaluation/agent-tool-evaluation.md",
+        "landscape/works/deepseek-compressed-attention.md",
+        "landscape/works/manifold-hyper-connections.md",
+        "landscape/works/on-policy-distillation.md",
+        "landscape/works/tilelang-mega-moe.md",
+        "landscape/deepseek-v4-reference-map.md",
+    },
+    "landscape/works/deepseek-compressed-attention.md": {
+        "landscape/works/deepseek-v4.md",
+        "architecture/attention-variants.md",
+        "architecture/long-context.md",
+        "inference/kv-cache.md",
+    },
+    "landscape/works/manifold-hyper-connections.md": {
+        "landscape/works/deepseek-v4.md",
+        "architecture/decoder-block.md",
+        "training/optimizer-families.md",
+        "systems/model-parallelism.md",
+    },
+    "landscape/works/on-policy-distillation.md": {
+        "landscape/works/deepseek-v4.md",
+        "landscape/works/kimi-k3.md",
+    },
+    "landscape/works/tilelang-mega-moe.md": {
+        "landscape/works/deepseek-v4.md",
+        "landscape/works/deepseek-compressed-attention.md",
+        "landscape/works/manifold-hyper-connections.md",
+        "systems/gpu-execution.md",
+        "systems/moe-systems.md",
+        "agentic-rl/training-systems.md",
+    },
+    "landscape/deepseek-timeline.md": {
+        "landscape/works/deepseek-v4.md",
+        "landscape/deepseek-v4-reference-map.md",
     },
 }
 

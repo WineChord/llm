@@ -91,7 +91,7 @@ LSH 只负责召回候选，最终仍应使用精确相似度、长度比和结�
 
 ### 最小语义实现 {#shingle-jaccard-confirmation}
 
-下面的实现接收两段文本，返回 shingle Jaccard 分数与阈值判断。它对应的是 LSH 召回之后的**精确候选确认**：规范化、token 边界、$k$ 和阈值都显式可见，空文本也有确定语义。
+下面的实现接收两段文本，返回 shingle Jaccard 分数与阈值判断。它对应的是 LSH 召回之后的 **精确候选确认**：规范化、token 边界、$k$ 和阈值都显式可见，空文本也有确定语义。
 
 ```python
 import re

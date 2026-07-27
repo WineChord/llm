@@ -204,7 +204,7 @@ b^{(t+1)}
 -\operatorname{mean}\left(\tilde b^{(t+1)}\right)\mathbf 1.
 $$
 
-去均值不改变 top-$k$；新 bias 只在**下一次**训练 step 生效，不能用当前 batch 推导后再回头路由同一
+去均值不改变 top-$k$；新 bias 只在 **下一次** 训练 step 生效，不能用当前 batch 推导后再回头路由同一
 batch。推理冻结最终 bias，也不再计算 quantile。
 
 下面采用“第 $q+1$ 大 margin”的离散定义，避免把不同库的 quantile interpolation 约定藏起来。
@@ -275,6 +275,19 @@ local tokens
 
 应监控每专家 token 数、路由概率、drop rate、容量利用率、专家输出范数、跨节点流量和最慢专家时延，而不只看总 loss。
 
+### DeepSeek-V4 的路由改动
+
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#model-ledger)延续 DeepSeekMoE 的细粒度 routed experts 与 shared expert，但在 V3 配方上改了四处：
+
+- affinity 从 $\operatorname{Sigmoid}(z)$改成 $\sqrt{\operatorname{Softplus}(z)}$；
+- 保留 auxiliary-loss-free bias balancing，同时加入很小的 sequence-wise balance loss，防止单条长序列内部极端失衡；
+- 取消 routing target node 数约束，把节点放置交给重新设计的并行系统；
+- 最前三个 MoE layer 按 input token ID 做固定 hash routing，以确定性路由替代早期 dense FFN。
+
+Flash 与 Pro 都使用 1 个 shared expert、256 / 384 个 routed experts、top-6；expert hidden 分别为 2048 / 3072。Hash 层仍是 MoE 计算，只是 expert ID 不由可学习 router 决定；它降低早期路由不稳定，不代表这些层会自动得到语义专家分工。
+
+报告没有给出这些改动各自的规模消融，也没有公开 sequence loss 的完整归约细节。系统侧的 wave dispatch、pull-based activation 与通信阈值见[MegaMoE](../landscape/works/tilelang-mega-moe.md#wave-pipeline)。
+
 ## 推理
 
 MoE decode 的激活 FLOPs 可以较低，但全部专家权重仍需驻留、分片或按需加载。小 batch 下每个专家收到的 token 很少，GEMM 利用率下降；大 batch 又增加 KV 和尾延迟。量化、专家缓存与 speculative routing 都要在真实路由分布上评测。
@@ -305,3 +318,5 @@ quality, throughput, tail latency and memory
 - [Switch Transformers](https://arxiv.org/abs/2101.03961)
 - [DeepSeek-V3](https://arxiv.org/abs/2412.19437)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [Hash Layers for Large Sparse Models](https://proceedings.neurips.cc/paper/2021/hash/92bf5e6240737e0326ea59846a83e076-Abstract.html)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

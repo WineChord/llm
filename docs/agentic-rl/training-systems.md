@@ -69,6 +69,14 @@ agent 轨迹长度重尾：简单任务几步结束，困难任务可能运行�
 
 [SAO](../landscape/works/sao-compactionrl.md#sao)进一步把 prompt 内的多 rollout 等待视为异步 barrier：单条轨迹完成后即可进入训练队列，但 learner 仍须保存真实 behavior log-probability、限制 policy lag，并审计 DIS 丢弃了哪些 token。
 
+## Token WAL 与抢占恢复
+
+百万 token trajectory 若在中途抢占后从头重采，长样本经历故障的概率更高，训练数据会产生 length-dependent selection bias；固定 seed 也只有在 batch-invariant、deterministic kernel 下才可能重放相同 token。
+
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#rollout-resilience)为每个已提交 token 写 write-ahead log（WAL），抢占时同时保存外部 KV。正常恢复从最后一个 committed token 继续；KV 遭遇致命丢失时，才从已持久化 token 做 prefill 重建。提交边界必须发生在把 token 或工具动作暴露给环境之前，否则非幂等副作用可能执行成功却没有日志。
+
+V4 还把超长 trajectory 分成轻 metadata 与重 token fields：全局 shuffle、packing 和 dynamic minibatch 只搬 metadata，worker 临执行时再从 shared memory 取 token、mask、log-prob 等大字段，并在 minibatch 后释放。完整状态机见[V4 系统闭环](../landscape/works/tilelang-mega-moe.md#rollout-wal)。
+
 ## 可暂停的微虚拟机
 
 长时工具轨迹不仅要保存 token，还要保存进程、文件、网络模拟器和外部应用状态。[AgentENV](https://github.com/kvcache-ai/AgentENV)使用 Firecracker microVM、dirty-page 增量 checkpoint 与 pause/resume/fork，为这类环境提供了一个公开实现入口；Firecracker 的隔离和启动机制可从其 [NSDI 论文](https://www.usenix.org/conference/nsdi20/presentation/agache)核对。
@@ -146,3 +154,4 @@ behavior version、old log-prob 与异步 batch 字段见[轨迹与策略契约]
 - [AgentENV](https://github.com/kvcache-ai/AgentENV)
 - [Firecracker: Lightweight Virtualization for Serverless Applications](https://www.usenix.org/conference/nsdi20/presentation/agache)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

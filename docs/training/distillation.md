@@ -158,6 +158,24 @@ assert not reward.requires_grad
 
 [Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)把这种 Multi-Teacher On-Policy Distillation（MOPD）用于三类领域与 low/high/max 三档 effort，共九个 teacher，并把 token reward 接入 RL。其 $R_{\max}$、teacher routing 细节和完整优化目标未公开，不能从报告补造；报告还指出 top-$k$ logit 蒸馏在该设置中没有显示清晰增益，这不是对其他模型和预算的普遍否定。机制在整条后训练流水线中的位置见 [Kimi K3](../landscape/works/kimi-k3.md)。
 
+#### DeepSeek-V4：全词表、多教师 OPD {#deepseek-v4-full-vocabulary-opd}
+
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#on-policy-distillation)同样先训练多个 domain specialist，再由学生从自身 policy 采样；区别在于它不把 sampled-token log-ratio 当作 RL advantage，而在每个已访问前缀显式计算
+
+$$
+\mathcal L_{\mathrm{OPD}}
+=\sum_i w_i
+D_{\mathrm{KL}}\!\left(
+\pi_\theta(\cdot\mid s_t)
+\middle\|
+\pi_{E_i}(\cdot\mid s_t)
+\right).
+$$
+
+全词表目标以更高计算和通信换取更低方差。为了避免同时物化十余个 $T\times |V|$ teacher logits，V4 只缓存 teacher last hidden state，按 teacher 对样本排序，再逐个装入输出 head、重建 logits 并流式累计 KL；teacher 主体权重存于集中式存储并按需做 ZeRO-like sharding。
+
+因此“是否 on-policy”“KL 方向”“全词表还是 sampled-token estimator”“一个还是多个 teacher”是四个独立开关。完整推导、几何混合解释与可执行实现见[On-Policy Distillation 深读](../landscape/works/on-policy-distillation.md)。
+
 ### 推理与过程蒸馏
 
 可将 teacher 或搜索产生的答案、步骤、验证结果转成：
@@ -208,3 +226,4 @@ teacher 在目标域不可靠、teacher 查询成本超过直接标注、两者�
 - [Minitron](https://arxiv.org/abs/2407.14679)
 - [On-Policy Distillation](https://thinkingmachines.ai/blog/on-policy-distillation/)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

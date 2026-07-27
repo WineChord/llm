@@ -167,6 +167,24 @@ $$
 
 [Kimi Linear](https://github.com/MoonshotAI/Kimi-Linear)公开了 Kimi Delta Attention（KDA）及其算法实现；[FlashKDA](https://github.com/MoonshotAI/FlashKDA)则是面向 CUTLASS 的官方 kernel 入口。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露 K3 在 69 个 KDA 层中使用 gate 下界 $g_{\min}=-5$，并保留 24 个 Gated MLA 层。这个下界和层数是模型语义，不能在 kernel 调优时更改；通用实现应把 recurrent/chunkwise 输出、梯度和极长序列数值漂移分别对齐。架构与系统如何配合见 [Kimi K3](../landscape/works/kimi-k3.md)。
 
+## 压缩稀疏 Attention 的多段 Kernel
+
+[DeepSeek-V4 CSA](../landscape/works/deepseek-compressed-attention.md)不是一个可由普通 FlashAttention 参数化完成的 kernel。一次 query 至少经过：
+
+```text
+token compression
+→ compressed indexer key
+→ FP4 multi-head score
+→ BF16 top-k selection
+→ gather compressed KV + local SWA
+→ shared-KV MQA
+→ grouped output projection
+```
+
+压缩器逐 channel 对两个相邻块共 $2m$ 个候选做 softmax；indexer 用多头 ReLU dot-product 的加权和排序；core attention 才使用被选中的 entry。任一阶段的 layout 改变都会传递到下一阶段，单独优化 score GEMM 可能被 top-$k$、gather 或 ragged MQA 吞掉。
+
+V4 还要求 batch invariance：同一序列在不同 batch 组合中保持相同输出。短 attention 由单 SM 完成全序列，较长尾部才走多 SM，并固定 accumulation 语义；sparse backward 则让每个 SM 先写独立 buffer，再按确定顺序归约。代价是额外 buffer 与部分 shape 下放弃最快 split-K。完整系统取舍见[V4 系统闭环](../landscape/works/tilelang-mega-moe.md#batch-invariant-attention)。
+
 ## Prefill 与 decode 是两种 kernel
 
 prefill 通常有较大的 $S_q$，可形成较饱满的 GEMM tile；decode 常有 $S_q=1$，需要读取长 KV：
@@ -289,3 +307,5 @@ kernel 层结论应回到[性能成本模型](performance-model.md)核对 Amdahl
 - [Kimi Linear](https://github.com/MoonshotAI/Kimi-Linear)
 - [FlashKDA](https://github.com/MoonshotAI/FlashKDA)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)
+- [DeepGEMM](https://github.com/deepseek-ai/DeepGEMM)

@@ -194,7 +194,7 @@ Cyber evaluation 同时涉及能力、潜在危害与部署防护，至少应把
 3. 真实软件候选漏洞的人工复核；
 4. 模型级拒答、产品 guard 与执行权限。
 
-这些层不能互相替代。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)报告其内部环境中 K3 完成 14/36 个 exploit，GLM-5.2 为 8/36；K3 的成功项中 10 个属于 user-space。团队还报告人工复核后约 $70\%$ 的候选为真实问题，并在 6 个项目中确认 16 个新问题。报告没有公开足够环境、候选全集和复核协议，因此这些数字应标记为**开发团队自报、不可独立重建**，不能据此推断通用网络安全水平。工作页中的逐项边界见 [Kimi K3](../landscape/works/kimi-k3.md)。
+这些层不能互相替代。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)报告其内部环境中 K3 完成 14/36 个 exploit，GLM-5.2 为 8/36；K3 的成功项中 10 个属于 user-space。团队还报告人工复核后约 $70\%$ 的候选为真实问题，并在 6 个项目中确认 16 个新问题。报告没有公开足够环境、候选全集和复核协议，因此这些数字应标记为 **开发团队自报、不可独立重建**，不能据此推断通用网络安全水平。工作页中的逐项边界见 [Kimi K3](../landscape/works/kimi-k3.md)。
 
 [UK AISI/CAISI 的独立初步评估](https://www.aisi.gov.uk/blog/preliminary-assessment-of-kimi-k3s-cyber-capabilities)提供了另一层证据：K3 在其 ExploitBench 上为 $32\%$，GLM-5.2 为 $24\%$；在 ACE 的 41 项中为 $0$；32-step 网络任务平均得分为 17，GLM-5.2 为 11，文中对照的领先美国模型为 28.5；在 10 个更现实任务中完成 1 个。评估还观察到既有 safeguards 没有阻止部分 offensive action。每个数字都绑定该机构当时的 harness、访问方式、攻击预算与日期，不能与内部 36 题直接合并。
 

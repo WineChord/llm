@@ -46,7 +46,7 @@ $$
 
 第一条保证每个 expert 的 token 守恒；第二条让每个 rank 恰好执行 $SK$ 条真实 routed record。若 $r$ 不是 expert $e$ 的 home rank 且 $x_{e,r}>0$，该 rank 就需要访问或预取 $e$ 的权重副本。
 
-这里的 redundant expert 是**同一组权重的执行副本**，不是 router 多出一个新选项：
+这里的 redundant expert 是 **同一组权重的执行副本**，不是 router 多出一个新选项：
 
 - token 的 top-$K$ global expert ID 不变；
 - route weight 与 combine 位置不变；

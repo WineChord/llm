@@ -38,7 +38,7 @@ $$
 
 ### 规范化后的 round-trip {#unicode-normalized-roundtrip}
 
-`encode_normalized` 先按冻结的 Unicode form 规范化，再输出 UTF-8 byte；`decode_utf8` 恢复的是**规范化后的文本**。第二个断言单独验证不经过 normalizer 的 byte codec 对空白、emoji 和换行逐字可逆。
+`encode_normalized` 先按冻结的 Unicode form 规范化，再输出 UTF-8 byte；`decode_utf8` 恢复的是 **规范化后的文本**。第二个断言单独验证不经过 normalizer 的 byte codec 对空白、emoji 和换行逐字可逆。
 
 ```python
 import unicodedata
@@ -89,7 +89,7 @@ $$
 
 ### 最小语义实现 {#bpe-merge-rank}
 
-`bpe_encode` 的输入是**已经完成规范化和预切分**的一段基础符号，以及训练阶段冻结的 `pair -> rank` 表；输出是按 rank 反复合并后的符号序列。关键点是每轮选择最小 rank，并从左到右一次性合并该 pair，而不是重新统计待编码文本的频次。
+`bpe_encode` 的输入是 **已经完成规范化和预切分** 的一段基础符号，以及训练阶段冻结的 `pair -> rank` 表；输出是按 rank 反复合并后的符号序列。关键点是每轮选择最小 rank，并从左到右一次性合并该 pair，而不是重新统计待编码文本的频次。
 
 ```python
 import math

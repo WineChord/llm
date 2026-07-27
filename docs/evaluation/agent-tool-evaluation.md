@@ -191,6 +191,19 @@ Agent 会读取网页、邮件、文档、代码注释、图像文字和工具�
 
 [AgentDojo](https://arxiv.org/abs/2406.13352) 提供了工具 Agent 间接注入的动态环境。评测要同时测 benign task success、attack success 和防御引入的 utility loss。
 
+## DeepSeek-V4 的协议拆解
+
+[DeepSeek-V4 报告](../landscape/works/deepseek-v4.md#evaluation-protocol)把 reasoning、长上下文、tool agent、内部工作任务和员工问卷放在一起展示；比较时必须保留各自 harness：
+
+- Codeforces 使用 2025-05 至 11 月的 14 场 Div.1、114 题；每题先生成 32 个候选，再随机无放回取 10 个并排序，以人类同失败数的 median penalty 计算 contest rank，最终对随机序列求期望 rating；
+- reasoning 三档 context budget 为 Non-think 8K、High 128K、Max 384K，不能把 effort 增益解释成纯 checkpoint 差异；
+- code / search agent 最多 500 step、512K context；BrowseComp 采用 discard-all context policy；
+- Terminal-Bench 表格给的是原始 2.0 分数，正文另提 Verified subset 约 72，两者不是同一分母；
+- K2.6 / GLM 的空值包含 API busy，GPT-5.4 的部分长上下文空值来自 API failure，不能记作 0 分；
+- 内部 30 个 white-collar task、约 200→30 个工程任务和 85 人员工问卷适合做组织内产品信号，不具备公开 benchmark 的独立复现性。
+
+长上下文同样有两种口径：表格中的 MRCR 1M 聚合分数与 Figure 9 的 8-needle 1M 单点曲线不同。完整图表、分母和证据边界见[V4 总深读](../landscape/works/deepseek-v4.md#report-index)，103 项 benchmark / method 来源见[V4 引用图谱](../landscape/deepseek-v4-reference-map.md)。
+
 ## 正确性与失效
 
 - **最终文本代替环境状态**：虚假完成。
@@ -236,3 +249,4 @@ effect/cluster CI and known environment limits
 - [AgentBench](https://arxiv.org/abs/2308.03688)
 - [BFCL](https://gorilla.cs.berkeley.edu/leaderboard)
 - [AgentDojo](https://arxiv.org/abs/2406.13352)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

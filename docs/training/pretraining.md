@@ -167,6 +167,21 @@ base context
 
 极长样本的瓶颈常先出现在数据而不是窗口配置。长文档需要 exact/fuzzy dedup、结构完整性与跨段连贯性过滤；视频还要在帧级或片段级做感知去重。自然长样本不足时，可以合成“证据分散在多个远距离位置、答案必须联合这些证据”的任务，但应单列其 token share，并用自然长文档 holdout 验证，防止模型只学会合成模板。每次升级还要做短上下文回归，区分“会处理更长输入”和“只是把短能力迁移到更贵的序列”。
 
+### DeepSeek-V4 的 4K → 1M 课程
+
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#pretraining)公开了两种规模的主体配方：
+
+| 字段 | Flash | Pro |
+| --- | ---: | ---: |
+| 训练 token | 32T | 33T |
+| 最大 global batch | 75.5M token | 94.4M token |
+| peak → final LR | $2.7\times10^{-4}\to2.7\times10^{-5}$ | $2.0\times10^{-4}\to2.0\times10^{-5}$ |
+| dense 起始阶段 | 前 1T token | 更长，但未给精确量 |
+
+两者都按 4K→16K→64K→1M 延长序列，在 64K 阶段引入 sparse attention，并先 warm up Lightning Indexer。AdamW 使用 $\beta=(0.9,0.95)$、$\epsilon=10^{-20}$、weight decay 0.1；Muon momentum 0.95、weight decay 0.1、RMS rescale 0.18。MTP loss 权重从 0.3 在 decay 阶段降到 0.1。
+
+数据侧公开的是类别与处理原则：web 过滤自动生成/模板文本，强化 math、code、multilingual、学术长文与 agentic mid-training，沿用 FIM、source-aware packing、token splitting 和 sample-level attention mask。报告没有披露来源配比、去重率、各长度阶段 token 数或污染审计，所以这些类别不能还原成可复现的数据混合。
+
 ## Checkpoint 与恢复
 
 严格 resume 至少保存：
@@ -224,3 +239,4 @@ $$
 - [OLMo: Accelerating the Science of Language Models](https://arxiv.org/abs/2402.00838)
 - [Tensor Programs V: Tuning Large Neural Networks via Zero-Shot Hyperparameter Transfer](https://arxiv.org/abs/2203.03466)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

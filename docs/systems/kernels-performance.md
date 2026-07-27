@@ -91,6 +91,17 @@ CUDA Graph 可复用一组稳定 kernel launch，降低 CPU 调度开销；它�
 
 编译器生成 kernel 能做算子融合和布局优化，但 graph break、动态控制流和版本变化会造成重新编译。报告性能时说明 warmup 与 compile time 是否计入。
 
+## TileLang：把 host tax 与静态证明纳入编译
+
+[TileLang](https://github.com/tile-ai/tilelang)以 tile-level DSL 表达数据移动、layout 与计算。[DeepSeek-V4](../landscape/works/deepseek-v4.md#mega-moe)强调的增量不只在 device kernel：
+
+- 由 IR 生成 host-side shape/layout validation 与 launch code，并通过 TVM-FFI 连接 runtime；报告把原本几十到数百微秒的动态检查降到低于 $1\,\mu s$；
+- 把 layout、越界、barrier 和 hazard 约束转成 Z3 QF_NIA，允许数秒编译换取运行前验证；
+- fast math 显式 opt-in，并提供 IEEE-style intrinsic、rounding 与 layout annotation，使数值路径可审计；
+- 同一 DSL 覆盖压缩 attention、mHC、Muon、MegaMoE 与 OPD KL 等异形 kernel。
+
+SMT 只能证明被编码的约束，不能替代端到端数值 reference；host codegen 的收益也只在短 kernel / decode 中可能占显著比例。完整背景见[MegaMoE、TileLang 与 DSec](../landscape/works/tilelang-mega-moe.md#host-codegen)。
+
 ## 正确性阶梯
 
 1. 高精度标量或框架 reference；
@@ -124,3 +135,6 @@ profiler trace and critical path
 - [CUDA C++ Programming Guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/)
 - [FlashAttention](https://arxiv.org/abs/2205.14135)
 - [FlashAttention-2](https://arxiv.org/abs/2307.08691)
+- [TileLang: Bridge Programmability and Performance in Modern Neural Kernels](https://iclr.cc/virtual/2026/poster/10010186)
+- [Z3: An Efficient SMT Solver](https://doi.org/10.1007/978-3-540-78800-3_24)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

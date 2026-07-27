@@ -175,6 +175,27 @@ buffer、head layout 与增量 cache。混合架构的整体信息流见
 [Kimi K3](../landscape/works/kimi-k3.md)，KDA 的递推真值见
 [状态空间与线性注意力](state-space-linear-attention.md#kda-recurrence)。
 
+## 从 DSA 到 CSA / HCA：先压缩时间轴，再决定怎样访问
+
+[DeepSeek-V3.2](https://arxiv.org/abs/2512.02556)的 DSA 用 Lightning Indexer 为 query 选择少量历史 KV；历史本身仍按 token 增长。[DeepSeek-V4](../landscape/works/deepseek-v4.md#csa-hca)再加入两种时间压缩路径：
+
+| 路径 | 压缩步幅 | 长历史访问 | 局部补偿 |
+| --- | ---: | --- | --- |
+| CSA | $m=4$ | 压缩项上做 indexer top-$k$ | SWA 128 |
+| HCA | $m'=128$ | 对全部重压缩项做 dense MQA | SWA 128 |
+
+CSA 的每个输出从相邻两块共 $2m$ 个候选做逐 channel softmax 加权，但相邻输出共享其中一块，所以输出长度仍约为 $T/m$。Lightning Indexer 先以多头 ReLU dot-product 评分，只把已完整闭合、因果可见的 compressed entries 交给 core attention。HCA 则不重叠压缩，也没有 top-$k$：它用更强的 $128\times$ 时间压缩换取便宜的全局 dense 通道。
+
+两者都让一个 compressed entry 同时充当共享 key 与 value，query heads 仍可不同；还共同使用：
+
+- query 与 compressed KV 的逐 head RMSNorm；
+- head 尾 64 维 partial RoPE，以及输出上的负位置旋转；
+- learnable attention sink，让某个 head 可以把总注意力质量压到 1 以下；
+- grouped low-rank output projection，避免 $H_qd_h\to d$ 的直接大投影；
+- 未压缩 SWA，覆盖当前未闭合块和局部细节。
+
+因此它既不是 MLA 的单纯低秩 channel compression，也不是固定状态的 linear attention。公式、因果边界与最小实现见[CSA / HCA 深读](../landscape/works/deepseek-compressed-attention.md)；heterogeneous cache 见[V4 系统闭环](../landscape/works/tilelang-mega-moe.md#hybrid-kv-layout)。
+
 ## Mask 与增量位置
 
 attention 实现至少同时处理：
@@ -209,3 +230,5 @@ attention 实现至少同时处理：
 - [DeepSeek-V2](https://arxiv.org/abs/2405.04434)
 - [Kimi Linear: An Expressive, Efficient Attention Architecture](https://arxiv.org/abs/2510.26692)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [DeepSeek-V3.2: Pushing the Frontier of Open Large Language Models](https://arxiv.org/abs/2512.02556)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

@@ -1,6 +1,6 @@
 # 文献
 
-主题页保留与具体主张相邻的来源，并在页末以 `Reference` 汇集本页书目；本页只提供贯穿全站的原始论文、官方实现与规范入口。[技术谱系](landscape/index.md)按问题演进组织阅读路径，并为关键工作提供论文、实现、公式与代码相互对照的深读页。书目格式见[阅读方法](guide/method.md#page-reference)。技术事实最后核验于 2026-07-27，持续演进的软件应同时记录版本或 commit。
+主题页保留与具体主张相邻的来源，并在页末以 `Reference` 汇集本页书目；本页只提供贯穿全站的原始论文、官方实现与规范入口。[技术谱系](landscape/index.md)按问题演进组织阅读路径，并为关键工作提供论文、实现、公式与代码相互对照的深读页。书目格式见[阅读方法](guide/method.md#page-reference)。技术事实最后核验于 2026-07-28，持续演进的软件应同时记录版本或 commit。
 
 ## 基础、数据与缩放
 
@@ -51,6 +51,18 @@
 - Dao & Gu, [Transformers are SSMs](https://arxiv.org/abs/2405.21060)
 - Peng et al., [RWKV: Reinventing RNNs for the Transformer Era](https://arxiv.org/abs/2305.13048)
 - Sun et al., [Retentive Network](https://arxiv.org/abs/2307.08621)
+
+## DeepSeek 家族与 V4
+
+[DeepSeek 演化](landscape/deepseek-timeline.md)区分架构、训练、推理、权重与产品节点；[DeepSeek-V4 总深读](landscape/works/deepseek-v4.md)连接 mHC、CSA / HCA、Muon、MegaMoE、长上下文后训练和评测协议。公式与实现分别进入[压缩注意力](landscape/works/deepseek-compressed-attention.md)、[mHC](landscape/works/manifold-hyper-connections.md)、[On-Policy Distillation](landscape/works/on-policy-distillation.md)和[系统闭环](landscape/works/tilelang-mega-moe.md)；[103 项引用图谱](landscape/deepseek-v4-reference-map.md)保留完整的一跳文献角色。
+
+- DeepSeek-AI et al., [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)
+- DeepSeek-AI, [DeepSeek-V4 official model collection](https://huggingface.co/collections/deepseek-ai/deepseek-v4)
+- DeepSeek-AI, [DeepSeek-V4-Pro model card and inference implementation](https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro)
+- DeepSeek-AI, [DeepSeek-V4-Flash model card and inference implementation](https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash)
+- DeepSeek-AI et al., [mHC: Manifold-Constrained Hyper-Connections](https://arxiv.org/abs/2512.24880)
+- Thinking Machines Lab, [On-Policy Distillation](https://thinkingmachines.ai/blog/on-policy-distillation/)
+- DeepSeek-AI, [DeepGEMM and MegaMoE](https://github.com/deepseek-ai/DeepGEMM)
 
 ## Kimi 家族与 K3
 

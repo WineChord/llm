@@ -129,6 +129,26 @@ assert not torch.allclose(correct, local_mean_average)
 
 应画出依赖 DAG，并比较 exposed communication，而不是把 collective 总时长直接从 step time 中相减。
 
+## 非逐元素优化器的分片边界 {#matrix-wise-optimizer-sharding}
+
+ZeRO 的经典内存分析默认优化器状态可以按元素切分；Muon 一类需要对完整二维更新矩阵做全局归一化、矩阵乘法或正交化的优化器打破了这个前提。若把矩阵 $G\in\mathbb R^{m\times n}$ 沿元素任意切到多个 rank，再让每个 rank 独立计算
+
+$$
+G\left(G^\top G\right)
+$$
+
+或 Newton–Schulz 迭代，得到的不是完整矩阵上的同一算子，除非每一步额外重建全局 Gram 量或完整矩阵。分片单位因此必须跟随算子语义，而不能只追求字节均匀。
+
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#muon)采用的折中是把每个逻辑矩阵完整分配给一个 data-parallel rank，再以 knapsack 近似平衡状态容量；报告中的 dense 路径把每个 rank 限制在至多五个矩阵，padding 通常低于 10%。对 MoE 参数，系统按 down、up、gate projection 跨层拼接相同角色的矩阵，但不切断任一逻辑矩阵；相同 shape 才组成 batch。梯度同步使用 all-to-all 搬运 shard，再在拥有该矩阵的 rank 上以 FP32 求和，避免低精度 ring/tree reduction 改变结果。
+
+这不是“Muon 必须这样实现”的定理，而是三种成本的明确交换：
+
+- **完整矩阵归属** 保住优化器算子的数学语义；
+- **负载装箱与有限冗余** 避免单个大矩阵制造严重的 rank imbalance；
+- **all-to-all + rank-local reduction** 减少低精度归约误差，却改变通信拓扑与峰值 buffer。
+
+设计新的 matrix-wise optimizer 时，应先写出它跨哪些轴做 reduction，再决定可合法切分的边界；只有 element-wise 状态才天然适合沿任意参数 shard 更新。
+
 ## Checkpoint 与 reshard
 
 分片训练的 checkpoint 必须保存全局 shape、shard offset、参数名、dtype、优化器分组与并行拓扑。恢复到不同 world size 时需要 reshard；若只按旧 rank 文件编号读取，可能静默错位。
@@ -150,3 +170,4 @@ assert not torch.allclose(correct, local_mean_average)
 - [Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism](https://arxiv.org/abs/1909.08053)
 - [PyTorch FSDP: Experiences on Scaling Fully Sharded Data Parallel](https://arxiv.org/abs/2304.11277)
 - [NVIDIA NCCL user guide](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

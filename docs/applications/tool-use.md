@@ -216,6 +216,19 @@ $\varnothing$ 表示无需调用。仅报告“工具名准确率”会忽略过
 
 这些协议持续演进；本页链接核验于 2026-07-27，实施时应绑定具体版本。协议可描述“怎样交换”，身份、租户、数据分类、审批和业务终态仍由部署系统负责。
 
+## DeepSeek-V4 的模型侧协议
+
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#post-training-interface)在模型模板中引入 `|DSML|` 特殊 token，并用 XML 表示 tool call。目标是减少通用文本转义造成的参数错误；它仍需外层 parser、schema validation 与权限检查，不能因为 XML 可解析就直接执行。
+
+对 reasoning history，V4 区分两条 context policy：
+
+- 真正的 tool-call conversation 跨 user message 保留全部 reasoning，使长程任务可以延续内部状态；
+- 普通对话在新 user message 到达时丢弃旧 reasoning，避免无收益的 context 膨胀。
+
+如果框架把 tool result 伪装成普通 user message，这个分支可能不会触发；报告继续建议此类 scaffold 使用 non-think。这里的消息 role 与特殊 token 是模型输入语义的一部分，不应由前端随意改写。
+
+Quick Instruction 按场景在已有 KV 后追加专用 token，分别生成 search action、title、query、authority、domain 与 URL-read decision；其中 query、authority、domain 等互不依赖的任务可以并行预测，title 则要在首轮 assistant response 之后生成。它复用主模型已经形成的上下文状态，避免另一个小模型重复读取相同输入；输出仍应被视为路由建议而非权限裁决。
+
 ## 最小权限
 
 工具服务不要复用模型平台的全局高权限凭据。每次调用应携带：
@@ -248,3 +261,5 @@ schema 校验与安全 dispatch 的紧凑实现见[手撕：检索与智能体](
 - [Model Context Protocol tools specification](https://modelcontextprotocol.io/specification/2025-11-25/server/tools)
 - [Model Context Protocol schema 2025-11-25](https://modelcontextprotocol.io/specification/2025-11-25/schema)
 - [Agent2Agent specification](https://a2a-protocol.org/latest/specification/)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)
+- [DeepSeek-V4 官方消息编码实现](https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/tree/main/encoding)

@@ -181,6 +181,20 @@ assert refs == {7: 1, 9: 1}
 
 量化格式、scale 粒度和真实 kernel 路径见[量化](quantization.md)；前缀复用、缓存键和多层缓存见[缓存复用](cache-reuse.md)。
 
+## DeepSeek-V4 的异构 Cache
+
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#heterogeneous-kv)的 CSA / HCA 让“每层一组同构 KV page”不再成立。同一请求同时包含：
+
+- 最近 128 token 的 SWA KV；
+- 尚未凑满 $m=4$ 或 $m'=128$ 的未压缩 tail；
+- 已闭合的 CSA / HCA compressed entries；
+- 与 CSA 压缩块对齐、供 Lightning Indexer 评分的 compressed indexer keys；
+- partial RoPE 的 BF16 坐标和其余 FP8 坐标。
+
+报告把 SWA 与 tail 放进 state cache，把完整 compressed entries 放进 classical block cache，并按 $\operatorname{lcm}(m,m')$对齐物理块。query 对 CSA 先经过 indexer 间接寻址，对 HCA 则遍历全部重压缩项；普通 PagedAttention 的同形 layer、固定 token/block 关系和直接 KV 寻址假设都需要扩展。
+
+因果完成条件是 cache schema 的一部分：当前未闭合压缩块不能提前发布成全局 entry，局部 token 由 SWA 路径承接。完整 layout 与磁盘恢复见[V4 系统闭环](../landscape/works/tilelang-mega-moe.md#hybrid-kv-layout)。
+
 ## 正确性契约
 
 cache descriptor 至少绑定：
@@ -231,3 +245,5 @@ block table、引用计数、copy-on-write 与调度预算的可审计实现见[
 - [StreamingLLM](https://arxiv.org/abs/2309.17453)
 - [H2O: Heavy-Hitter Oracle for Efficient Generative Inference of Large Language Models](https://arxiv.org/abs/2306.14048)
 - [PyramidKV](https://arxiv.org/abs/2406.02069)
+- [Jenga: Effective Memory Management for Serving LLM with Heterogeneity](https://doi.org/10.1145/3731569.3764823)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

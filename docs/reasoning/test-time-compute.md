@@ -164,6 +164,25 @@ $$
 
 温度过低会重复同一错误；过高会增加无效或不可解析候选。应以正确候选覆盖率和错误相关性选择采样参数，而不是最大化表面差异。
 
+## Effort 是复合干预，不只是 token 上限 {#effort-as-intervention}
+
+产品接口常把推理时计算压成 `low`、`high`、`max` 一类 effort 档位，但档位可能同时改变 context cap、system instruction、thinking envelope、采样次数、工具预算与停止规则。它不是一个跨模型天然可比的物理量。
+
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#post-training-interface)公开了一个可拆解的例子：Non-think 直接进入答案，Think High 使用常规 thinking envelope，Think Max 还增加强调穷尽路径、边界与反例的 system instruction；评测时三档 context cap 分别为 8K、128K、384K。因而 High $\rightarrow$ Max 的差异至少混合了 **预算** 与 **elicitation**，不能把分数增量全部归因于更多 token。
+
+报告中的结果也说明 effort 不保证逐项单调：Flash 的 MMLU-Pro 在 Max 略低于 High，Pro 的 MCPAtlas Public 也略低于 High；HLE、竞赛代码、Apex 与 BrowseComp 则明显受益。合理的评测应把每个档位写成一份完整 intervention card：
+
+| 项目 | 至少记录 |
+| --- | --- |
+| 生成预算 | context cap、最大输出、平均实际 token、截断率 |
+| 提示干预 | system prompt、输出 envelope、工具说明 |
+| 横向扩展 | samples、并发宽度、selection/verifier |
+| 工具资源 | 调用上限、超时、搜索或执行环境 |
+| 停止策略 | 正常终止、预算终止、early stop |
+| 代价 | 延迟、accelerator time、价格、失败重试 |
+
+只有固定其余变量、单独改变一项时，才能估计该项的边际收益。若比较的是发布档位，就应诚实地把它当作端到端策略，而不是纯粹的“思考长度实验”。
+
 ## 成本模型
 
 对并行采样，token 成本近似
@@ -233,3 +252,4 @@ $$
 - [Chain-of-Thought Prompting](https://arxiv.org/abs/2201.11903)
 - [Self-Consistency Improves Chain of Thought Reasoning](https://arxiv.org/abs/2203.11171)
 - [Scaling LLM Test-Time Compute Optimally](https://arxiv.org/abs/2408.03314)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

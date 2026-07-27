@@ -105,8 +105,8 @@ $$
 
 两组术语也不能合并：
 
-- **online/offline**描述训练期间是否从当前策略或环境获取新数据；
-- **on-policy/off-policy**描述梯度 estimator 的目标策略与数据行为策略是否一致。
+- **online/offline** 描述训练期间是否从当前策略或环境获取新数据；
+- **on-policy/off-policy** 描述梯度 estimator 的目标策略与数据行为策略是否一致。
 
 周期式 PPO 使用刚采样 rollout 时接近 on-policy；对同一数据做多个 epoch 后已经产生偏移。持续在线系统不断采样，却可能因为队列和 learner 更新而消费 off-policy 数据。Online DPO 会重新生成 preference pair，但每轮优化仍可在固定 pair 上进行。
 

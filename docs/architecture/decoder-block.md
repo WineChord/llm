@@ -196,6 +196,34 @@ assert RMSNorm(16)(x16).dtype == x16.dtype
 
 这些技巧不是可随意叠加的“稳定性插件”。更换残差拓扑会改变函数类、优化条件和并行实现，应在等计算预算下做消融。
 
+## Hyper-Connections 与 mHC：把 residual width 变成独立维度
+
+普通 residual stream 只有一条状态。Hyper-Connections 将其扩成
+
+$$
+X_l\in\mathbb R^{n_{\mathrm{hc}}\times d},
+\qquad
+X_{l+1}=B_lX_l+C_l\mathcal F_l(A_lX_l),
+$$
+
+其中 $A_l$从多条 residual 中读出一个 $d$-维 layer input，$C_l$把 layer output 写回多条流，$B_l$负责跨层搬运原状态。它在不改变内部 attention / MLP hidden width 的情况下增加了 depth mixing 自由度，但任意 $B_l$ 连乘可能放大或抵消信号。
+
+[mHC](../landscape/works/manifold-hyper-connections.md)把 $B_l$投影到 Birkhoff polytope：
+
+$$
+B_l\mathbf1=\mathbf1,\qquad
+\mathbf1^\mathsf TB_l=\mathbf1^\mathsf T,\qquad
+B_l\ge0.
+$$
+
+双随机矩阵的谱范数不超过 1，且集合对乘法封闭；$A_l=\sigma(\widetilde A_l)$、$C_l=2\sigma(\widetilde C_l)$也保持非负有界。[DeepSeek-V4](../landscape/works/deepseek-v4.md#mhc)取 $n_{\mathrm{hc}}=4$，用 20 次 Sinkhorn row/column normalization 得到 $B_l$，并通过融合、选择性重算与修改的 pipeline 把报告中的 wall-time 增量控制在 6.7%。这是特定系统测量，不等于所有实现只增加 6.7%。
+
+mHC 与 K3 的 Attention Residuals 都改变 layer 之间的信息流，但前者只混合固定宽度的当前 residual state，后者对更早 layer/block 表示做内容寻址，状态与系统接口不同。
+
+## V4 的分段 SwiGLU clamp
+
+V4 没有使用 SiTU-GLU，而是对 SwiGLU 的两条 pre-activation 分别做分段线性裁剪：linear branch 限制到 $[-10,10]$，gate branch 只设置上界 10。它在正常区间保持原函数，越界后产生 hard saturation；与平滑 tanh cap 的梯度性质不同。报告只给出这项经验稳定措施，没有给出为何与 anticipatory routing 共同阻止 loss spike 的完整理论。
+
 ## Dropout 与训练—推理差异
 
 attention probability、MLP、residual 或 embedding 都可能使用 dropout。现代大规模预训练有时将其设为零，但这取决于数据规模和配方。推理必须关闭 dropout；activation checkpointing 的重算则必须恢复相同随机状态，否则反向对应的是另一条计算图。
@@ -232,3 +260,6 @@ attention 细节见[注意力家族](attention-variants.md)，完整主干见[Tr
 - [Root Mean Square Layer Normalization](https://arxiv.org/abs/1910.07467)
 - [GLU Variants Improve Transformer](https://arxiv.org/abs/2002.05202)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [Hyper-Connections](https://openreview.net/forum?id=9FqARW7dwB)
+- [mHC: Manifold-Constrained Hyper-Connections](https://arxiv.org/abs/2512.24880)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

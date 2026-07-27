@@ -126,9 +126,21 @@ KV 可以驻留于 GPU、CPU、节点间内存或持久存储。层级越远，�
 
 复用长度必须取二者都完整可用的最长共同边界，不能因为 KV 命中更长就让 KDA 从不一致状态继续。KDA state 通常远大于单个 hash metadata，却不必在每个 token 保存；可以只在 hash endpoint、turn boundary 或其他稀疏边界做 snapshot，再从最近 snapshot replay 剩余 token。
 
-[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露了一套统一 paged pool：物理 block 可在 1024–6144 token 间选择，细粒度 hash 可取 512 token，并对 KDA state 使用稀疏 snapshot。具体数字是其服务配置；可迁移的是把**查找粒度、物理分配粒度和状态快照粒度解耦**。完整设计见 [Kimi K3](../landscape/works/kimi-k3.md)。
+[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露了一套统一 paged pool：物理 block 可在 1024–6144 token 间选择，细粒度 hash 可取 512 token，并对 KDA state 使用稀疏 snapshot。具体数字是其服务配置；可迁移的是把 **查找粒度、物理分配粒度和状态快照粒度解耦**。完整设计见 [Kimi K3](../landscape/works/kimi-k3.md)。
 
 联合查找应分两阶段：先在目录中定位最长兼容 hash chain，再确认每个模型层组的数据实际存在且 checksum/版本一致。发布与失效也必须跨组原子化：共享前缀续写前 copy-on-write，任何 MLA page 或 KDA snapshot 失效时，对应 joint entry 一并失效，避免部分命中进入 decode。
+
+### V4：压缩块持久化与 SWA 恢复
+
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#on-disk-kv)的联合状态不是 recurrent state，而是 CSA/HCA compressed entries、Lightning Indexer 状态、未完成压缩 tail 与 SWA KV。只有完整闭合的压缩块可以直接持久化；tail 取决于后续 token，恢复时必须从原始 token 重建。
+
+SWA 有三种空间—恢复策略：
+
+1. 每层窗口全量保存，恢复快但磁盘量最大；
+2. 每隔 $p$ 个 token 保存一次最近窗口的 checkpoint，命中后从最近 checkpoint 重算尾部；
+3. 完全不保存，为恢复各层末尾窗口，最多重算 prefix 最后 $n_{\mathrm{win}}L$ 个 token。
+
+第三种方案的 $n_{\mathrm{win}}L$ 是报告给出的最坏重算 token 上界，不是每层各自重放同一段后再简单相加的实现处方。报告估计全量 SWA KV 约为 compressed cache 的 8 倍，因此磁盘最省方案可能有意义；真实选择仍取决于命中率、存储带宽、prefill 余量与 p99 恢复延迟。具体 cache layout 见[V4 系统闭环](../landscape/works/tilelang-mega-moe.md#on-disk-kv)。
 
 ## 路由、放置与逐出
 
@@ -218,3 +230,4 @@ $$
 - [Preble](https://arxiv.org/abs/2407.00023)
 - [Kimi Linear](https://github.com/MoonshotAI/Kimi-Linear)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

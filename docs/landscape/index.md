@@ -41,6 +41,17 @@ K3 是观察这种汇流的一个切面：
 - [K3 引用图谱](kimi-k3-reference-map.md)逐项解释技术报告 150 项文献在论证链中的角色，并区分直接来源、技术前身、并行工作、benchmark 与比较基线；
 - [Kimi 多模态分支](../multimodal/kimi.md)单独梳理 Kimi-VL、K2.5、MoonViT-V2 与 Kimi-Audio，避免把家族经验误写成同一 checkpoint 的能力。
 
+### 百万 token 怎样变成端到端能力 {#deepseek-v4-system}
+
+[DeepSeek 演化](deepseek-timeline.md)从 DeepSeekMoE、MLA、无辅助损失路由和 Multi-Token Prediction 走到 V3、R1、V3.2 与 V4。V4 的关键变化并不是把 context length 单独调大，而是让表示压缩、残差拓扑、优化器、kernel、缓存、后训练和故障恢复共同适配长轨迹：
+
+- [DeepSeek-V4 总深读](works/deepseek-v4.md)把 15 幅图、14 张正式表、29 个编号公式、Algorithm 1 与附录 A–B 还原为一条可检查的因果链；
+- [CSA 与 HCA](works/deepseek-compressed-attention.md)解释时间压缩、Lightning Indexer、shared-KV MQA、inverse RoPE 与局部窗口如何共同保持因果性；
+- [mHC](works/manifold-hyper-connections.md)从 Hyper-Connections 走到 Birkhoff polytope 与 Sinkhorn projection，区分局部矩阵约束和完整网络稳定性；
+- [On-Policy Distillation](works/on-policy-distillation.md)分开轨迹分布、KL 方向、词表估计器和多教师调度；
+- [TileLang、MegaMoE 与 DSec](works/tilelang-mega-moe.md)沿 wave pipeline、batch invariance、异构 cache、token WAL 和 sandbox 恢复连接训练与部署；
+- [V4 引用图谱](deepseek-v4-reference-map.md)逐项标注 103 项正文引用在家族前身、方法来源、系统实现和 benchmark 中承担的角色。
+
 ### 当稠密 attention 不再是唯一答案
 
 [容量与激活计算怎样分开](lineages/conditional-compute.md)追踪 sparse gating 如何把参数容量与每 token 计算部分解耦，又把瓶颈转移到负载、overflow 与 all-to-all。[从显式寻址到有限状态](lineages/linear-time-sequence-models.md)区分 kernelized attention、fast weights、S4 与 selective SSM，解释它们在哪些代数结构上汇合、又在哪里保持不同。

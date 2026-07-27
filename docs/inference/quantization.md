@@ -168,6 +168,18 @@ high-precision exceptions and fallback counters
 
 低精度路径仍可能因硬件、kernel 或 graph shape 回退。若 rollout 与 learner 的实际 fallback 比例不同，就应把差异视为 behavior-policy mismatch，而不是普通数值噪声。K3 的完整后训练与部署组合见 [Kimi K3](../landscape/works/kimi-k3.md)。
 
+### DeepSeek-V4：expert 与 indexer 两条 FP4 路径
+
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#fp4-qat)把 MXFP4 QAT 同时用于：
+
+- MoE expert weights：FP32 master weight 先量化为 FP4，再解量化成 FP8 复用既有训练 kernel；
+- CSA Lightning Indexer 的 Q/K：cache、载入和 score matmul 都走 FP4；
+- index score 从 FP32 降到 BF16：报告称 top-$k$ selector 加速 $2\times$，KV 选择 recall 为 99.7%。
+
+作者称在当前权重满足 scale-ratio 条件时，FP4 子块 scale 可以被 FP8 E4M3 更大的指数范围完整吸收，因此 FP4→FP8 dequantization 无额外信息损失。这个“lossless”只指给定 scale 布局下的格式转换，不表示 FP32→FP4 量化无损；报告也没有公开那个 scale-ratio 阈值。
+
+backward 对 forward 中的 FP8 模拟权重求梯度，并以 STE 传回 FP32 master；rollout 与在线服务则直接用 native FP4，使 behavior path 看见实际部署误差。teacher 与 reference model 也进入同一 QAT 边界，避免 full-vocabulary OPD 比较的是另一套数值策略。
+
 ## KV Cache 量化
 
 KV 量化降低长上下文的容量和 decode 读取量，但误差会在每一层、每个后续 token 中被反复使用。key 与 value 的统计性质可能不同：
@@ -280,3 +292,5 @@ expected kernel and supported hardware
 - [MXFP8](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/features/low_precision_training/mxfp8/mxfp8.html)
 - [NVFP4](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/features/low_precision_training/nvfp4/nvfp4.html)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [OCP Microscaling Formats](https://arxiv.org/abs/2310.10537)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

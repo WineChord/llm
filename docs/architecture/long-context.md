@@ -96,6 +96,21 @@ perceptual hashing、规则与 classifier 质量过滤、文件结构校验，�
 
 局部滑动窗口把每个 token 的可见范围限制为 $w$，计算和缓存可接近 $O(Tw)$，但远距离信息必须通过层间传播、全局 token 或外部记忆保留。某些流式 attention 在丢弃早期 token 后明显退化，保留少量初始 sink token 可以稳定分布；这是一种缓存策略，不等于模型能完整记住被淘汰内容。
 
+## DeepSeek-V4：压缩历史、稀疏读取与局部窗口
+
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#csa-hca)把 1M context 分给三种互补路径：CSA 以 $4\times$ 时间压缩后做 query-dependent top-$k$；HCA 以 $128\times$ 时间压缩后做 dense global attention；SWA 保留最近 128 token 的未压缩细节。完整机制见[CSA / HCA](../landscape/works/deepseek-compressed-attention.md)。
+
+训练长度按 $4\text{K}\rightarrow16\text{K}\rightarrow64\text{K}\rightarrow1\text{M}$扩展；sparse attention 到 64K 阶段才引入，并先单独 warm up indexer。Flash 在前 1T token 保持 dense attention，Pro 的 dense 阶段更长但报告没有给出精确 token 数。这个顺序避免从第一步就同时学习语言、压缩器和稀疏选择，但也意味着“总训练 token”不能直接告诉我们模型实际见过多少 1M 样本。
+
+报告的长上下文证据必须按协议拆开：
+
+- MRCR / CorpusQA 测量多 needle retrieval 与 corpus-level analysis；
+- 聚合表中的 1M 分数与 Figure 9 的 8-needle 单点不是同一统计口径；
+- “context window=1M”只证明接口容量，远距离定位、组合推理和长输出仍要分别验证；
+- on-disk prefix cache 和 SWA 重放影响服务成本，不属于模型质量分数。
+
+V4 的 learnable sink 不是把某个真实 token 固定成 sink：每个 head 在 softmax 分母中加入独立可学习 logit，使总 token attention mass 可以小于 1，模型因而能近似选择“不从历史读取”。它和 SWA、partial RoPE 一起构成注意力语义，不能只从最大 context 配置推断。
+
 ## 系统代价
 
 标准 attention 的 score 计算为 $O(T^2d)$，KV Cache 则随 $T$ 线性增长。训练时可用 IO-aware kernel 避免物化完整 score 矩阵，但不会消除所有二次 FLOPs。跨设备长序列还需要交换 K/V block 或在线 softmax 统计；[Ring Attention](https://arxiv.org/abs/2310.01889)展示了将 block 通信与计算重叠的一条路线。
@@ -149,3 +164,5 @@ known failure regions
 - [Ring Attention](https://arxiv.org/abs/2310.01889)
 - [Kimi Linear: An Expressive, Efficient Attention Architecture](https://arxiv.org/abs/2510.26692)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)
+- [DeepSeek-V4 官方模型卡](https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro)

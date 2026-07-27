@@ -149,6 +149,22 @@ torch.testing.assert_close(per_head_polar(scaled.reshape(6, 8), 3), update, atol
 后独立正交化会改变算法。K3 的优化器与混合主干关系见
 [Kimi K3](../landscape/works/kimi-k3.md)。
 
+### DeepSeek-V4：Hybrid Newton–Schulz 与矩阵所有权 {#deepseek-v4-muon}
+
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#muon)也把 Muon 用于大多数二维 hidden weights，但它不是 K3 Per-Head Muon 的复刻。对归一化动量矩阵 $M_0=M/\lVert M\rVert_F$，V4 使用
+
+$$
+M_k=aM_{k-1}
++b(M_{k-1}M_{k-1}^{\mathsf T})M_{k-1}
++c(M_{k-1}M_{k-1}^{\mathsf T})^2M_{k-1}.
+$$
+
+十次迭代分两段：前八步取 $(a,b,c)=(3.4445,-4.7750,2.0315)$快速把奇异值推近 1，最后两步取 $(2,-1.5,0.5)$稳定到 polar factor 附近。embedding、prediction head、RMSNorm，以及 mHC 的 static bias / gate 仍归 AdamW；所以参数路由仍是算法的一部分。
+
+V4 还把 ZeRO 分片边界对齐到完整逻辑矩阵：用 knapsack 把矩阵分配给 rank，MoE 的 up、gate、down 分别组织，但不在一次正交化内部任意切开。梯度经 stochastic BF16 all-to-all 到 owner，再在本地 FP32 累加。详见[V4 系统闭环](../landscape/works/tilelang-mega-moe.md)。
+
+V4 的 query 与 compressed KV 逐 head RMSNorm，因而没有沿用 scalable Muon 中的 QK-Clip。这个选择只说明该架构已有另一条 logit 范围控制路径，不能推广成 Muon 普遍不需要 QK-Clip。
+
 ## 更新尺度
 
 观察相对更新量比只看梯度范数更直接：
@@ -216,3 +232,4 @@ resume conversion rules
 - [Muon: An Optimizer for Hidden Layers in Neural Networks](https://kellerjordan.github.io/posts/muon/)
 - [Muon is Scalable for LLM Training](https://arxiv.org/abs/2502.16982)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

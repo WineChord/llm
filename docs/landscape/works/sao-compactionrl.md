@@ -5,7 +5,7 @@
 - **SAO** 让单条 rollout 完成后即可进入异步训练队列，并用 critic、token 级行为概率与严格双侧筛选控制方差和策略漂移；
 - **CompactionRL** 在固定工作窗口内生成摘要、重建上下文，并让执行 token 与摘要 token 共同接受最终任务奖励。
 
-它们不是同一个算法的两个名字，也不是“彻底淘汰 GRPO”的结论。更准确的理解是：当 prompt 内成组采样成为同步屏障，或者一次任务被压缩成数量不定的训练段时，**critic-based、token-level、single-rollout PPO** 提供了一种更自然的接口。
+它们不是同一个算法的两个名字，也不是“彻底淘汰 GRPO”的结论。更准确的理解是：当 prompt 内成组采样成为同步屏障，或者一次任务被压缩成数量不定的训练段时， **critic-based、token-level、single-rollout PPO** 提供了一种更自然的接口。
 
 ## 先把两个瓶颈分开
 
@@ -22,7 +22,7 @@ $$
 | 时间轴 | rollout 时长重尾，快样本等待慢样本 | 同步屏障、数据变旧、learner 与 behavior policy 分离 | 尽早消费完成的轨迹，同时限制 off-policy |
 | 空间轴 | prompt、工具输出与推理不断占用上下文 | 超出窗口；压缩后一个任务变成可变数量的 segment | 在固定峰值窗口内继续任务，同时保持跨段信用 |
 
-SAO 主要改变“**轨迹何时可训练**”；CompactionRL 主要改变“**轨迹以什么状态表示继续、怎样跨段训练**”。一个系统可以同时需要二者。
+SAO 主要改变“ **轨迹何时可训练** ”；CompactionRL 主要改变“ **轨迹以什么状态表示继续、怎样跨段训练** ”。一个系统可以同时需要二者。
 
 ## 为什么成组优势在这里不顺手
 
@@ -305,7 +305,7 @@ $$
 \right).
 $$
 
-它消除了“先对每个 segment 求均值、再对 segment 求均值”带来的 segment-count bias。需要注意，它赋予的是**每个可训练 token 等权**，不是每条 rollout 等权；token 更多的 rollout 在 batch 总和中仍会贡献更多项。若目标是 rollout-balanced optimization，还需要额外的 per-rollout weighting，不能从这条公式自动得到。
+它消除了“先对每个 segment 求均值、再对 segment 求均值”带来的 segment-count bias。需要注意，它赋予的是 **每个可训练 token 等权**，不是每条 rollout 等权；token 更多的 rollout 在 batch 总和中仍会贡献更多项。若目标是 rollout-balanced optimization，还需要额外的 per-rollout weighting，不能从这条公式自动得到。
 
 ### Cross-trajectory GAE 修复的是什么
 

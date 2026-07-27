@@ -185,6 +185,11 @@ nav:
               - FlashAttention: landscape/works/flashattention.md
               - vLLM 与 PagedAttention: landscape/works/vllm-pagedattention.md
           - 模型、训练与系统共设计:
+              - DeepSeek-V4: landscape/works/deepseek-v4.md
+              - CSA 与 HCA: landscape/works/deepseek-compressed-attention.md
+              - Manifold-Constrained Hyper-Connections: landscape/works/manifold-hyper-connections.md
+              - On-Policy Distillation: landscape/works/on-policy-distillation.md
+              - TileLang、MegaMoE 与 DSec: landscape/works/tilelang-mega-moe.md
               - Kimi Linear 与 FlashKDA: landscape/works/kimi-linear-flashkda.md
               - Attention Residuals: landscape/works/attention-residuals.md
               - Stable LatentMoE 与 Quantile Balancing: landscape/works/latentmoe-quantile-balancing.md
@@ -201,6 +206,7 @@ nav:
       - 口径与家族:
           - 训练 token 口径: landscape/training-tokens.md
           - DeepSeek 演化案例: landscape/deepseek-timeline.md
+          - V4 引用图谱: landscape/deepseek-v4-reference-map.md
           - Kimi 演化案例: landscape/kimi-timeline.md
           - K3 引用图谱: landscape/kimi-k3-reference-map.md
   - 多模态:

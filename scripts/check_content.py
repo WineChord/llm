@@ -59,6 +59,12 @@ REQUIRED_PAGES = (
     "landscape/training-tokens.md",
     "landscape/kimi-timeline.md",
     "landscape/kimi-k3-reference-map.md",
+    "landscape/deepseek-v4-reference-map.md",
+    "landscape/works/deepseek-v4.md",
+    "landscape/works/deepseek-compressed-attention.md",
+    "landscape/works/manifold-hyper-connections.md",
+    "landscape/works/on-policy-distillation.md",
+    "landscape/works/tilelang-mega-moe.md",
     "multimodal/native-generation.md",
     "multimodal/vision-language.md",
     "multimodal/document-gui-grounding.md",
@@ -154,6 +160,7 @@ LINEAGE_PAGES = (
     "landscape/lineages/inference-serving.md",
     "landscape/lineages/retrieval-agents.md",
     "landscape/lineages/evaluation.md",
+    "landscape/deepseek-v4-reference-map.md",
 )
 WORK_PAGES = (
     "landscape/works/lstm.md",
@@ -176,6 +183,11 @@ WORK_PAGES = (
     "landscape/works/latentmoe-quantile-balancing.md",
     "landscape/works/kimi-k3.md",
     "landscape/works/moonep.md",
+    "landscape/works/deepseek-v4.md",
+    "landscape/works/deepseek-compressed-attention.md",
+    "landscape/works/manifold-hyper-connections.md",
+    "landscape/works/on-policy-distillation.md",
+    "landscape/works/tilelang-mega-moe.md",
     "landscape/works/megatron-zero.md",
     "landscape/works/flashattention.md",
     "landscape/works/vllm-pagedattention.md",
@@ -305,6 +317,89 @@ if k3_work.is_file():
             errors.append(
                 "docs/landscape/works/kimi-k3.md: "
                 f"缺少报告完整性索引：{marker}"
+            )
+
+v4_map = ROOT / "docs/landscape/deepseek-v4-reference-map.md"
+if v4_map.is_file():
+    v4_ids = [
+        int(value)
+        for value in NUMBERED_REFERENCE.findall(
+            v4_map.read_text(encoding="utf-8")
+        )
+    ]
+    expected_v4_ids = set(range(1, 104))
+    missing_v4_ids = sorted(expected_v4_ids - set(v4_ids))
+    duplicate_v4_ids = sorted({
+        value for value in v4_ids if v4_ids.count(value) > 1
+    })
+    unexpected_v4_ids = sorted(set(v4_ids) - expected_v4_ids)
+    if (
+        len(v4_ids) != 103
+        or missing_v4_ids
+        or duplicate_v4_ids
+        or unexpected_v4_ids
+    ):
+        errors.append(
+            "docs/landscape/deepseek-v4-reference-map.md: "
+            "DeepSeek-V4 bibliography 必须覆盖 1–103 且各出现一次；"
+            f"当前 {len(v4_ids)} 项，缺失 {missing_v4_ids}，"
+            f"重复 {duplicate_v4_ids}，越界 {unexpected_v4_ids}"
+        )
+
+v4_work = ROOT / "docs/landscape/works/deepseek-v4.md"
+if v4_work.is_file():
+    v4_text = v4_work.read_text(encoding="utf-8")
+    for marker in (
+        "报告的 15 幅图",
+        "14 张正式表",
+        "29 个编号公式",
+        "Algorithm 1",
+        "附录 A–B",
+    ):
+        if marker not in v4_text:
+            errors.append(
+                "docs/landscape/works/deepseek-v4.md: "
+                f"缺少报告完整性索引：{marker}"
+            )
+    v4_inventory = (
+        (
+            "Figure",
+            "### Figures 1–15",
+            "### Tables 1–14",
+            re.compile(r"(?m)^\|\s*(\d+)\s*\|"),
+            list(range(1, 16)),
+        ),
+        (
+            "Table",
+            "### Tables 1–14",
+            "### Equations (1)–(29)",
+            re.compile(r"(?m)^\|\s*(\d+)\s*\|"),
+            list(range(1, 15)),
+        ),
+        (
+            "Equation",
+            "### Equations (1)–(29)",
+            "### Algorithm 1 与 Appendices A–B",
+            re.compile(r"(?m)^\|\s*\((\d+)\)\s*\|"),
+            list(range(1, 30)),
+        ),
+    )
+    for label, start, end, row_pattern, expected in v4_inventory:
+        section = re.search(
+            rf"{re.escape(start)}(?P<body>.*?)(?={re.escape(end)})",
+            v4_text,
+            re.DOTALL,
+        )
+        actual = (
+            [int(value) for value in row_pattern.findall(section.group("body"))]
+            if section
+            else []
+        )
+        if actual != expected:
+            errors.append(
+                "docs/landscape/works/deepseek-v4.md: "
+                f"{label} 索引必须按顺序完整覆盖 "
+                f"{expected[0]}–{expected[-1]}；当前 {actual}"
             )
 
 for relative in LINEAGE_PAGES:

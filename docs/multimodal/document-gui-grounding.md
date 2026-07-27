@@ -84,7 +84,7 @@ $$
 
 ### 最小语义实现 {#box-coordinate-roundtrip}
 
-`transform_box` 实现上式：先把原图 `xyxy` 坐标按 $s_x,s_y$ 缩放，再减去**缩放后画布**中的 crop offset；`invert_box` 执行严格逆变换。输入输出均使用连续像素坐标，量化应放在完整几何链之后。
+`transform_box` 实现上式：先把原图 `xyxy` 坐标按 $s_x,s_y$ 缩放，再减去 **缩放后画布** 中的 crop offset；`invert_box` 执行严格逆变换。输入输出均使用连续像素坐标，量化应放在完整几何链之后。
 
 ```python
 import torch

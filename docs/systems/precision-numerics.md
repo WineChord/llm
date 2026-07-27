@@ -209,6 +209,14 @@ $$
 
 平方和应在足够精度中累加；$\epsilon$ 的位置和大小属于算子语义，不能在融合时悄然改变。
 
+## Batch invariance：固定同一请求的归约路径
+
+deterministic 表示固定 shape 和执行图重复运行一致；batch invariant 还要求同一请求放进不同 batch、不同位置后得到同一 token 分布。动态 GEMM 算法、split-K、atomic arrival order 与 sparse gather 都可能让后者失败。
+
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#batch-invariance)在 attention、GEMM、sparse backward、MoE 与 mHC 上分别固定 accumulation order：短 attention 由单 SM 归约，跨 SM 路径保持同一合并语义；DeepGEMM 避免 cuBLAS 随 shape 换算法；每个 SM / rank 写隔离 buffer 后再按固定次序归约。
+
+这项约束服务于 rollout 恢复与可比较 log-prob，但会增加 buffer、限制 autotuning，并可能放弃某些 shape 下更快的 split-K。验证应把同一序列随机插入不同 batch size、顺序和并发组合，逐层比较 logits；只在固定 batch 重跑不足以覆盖它。
+
 ## 数值正确性契约
 
 每个低精度算子或训练配置至少记录：
@@ -257,3 +265,5 @@ Google 对 [bfloat16](https://docs.cloud.google.com/tpu/docs/bfloat16) 的说明
 - [NVFP4](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/features/low_precision_training/nvfp4/nvfp4.html)
 - [bfloat16](https://docs.cloud.google.com/tpu/docs/bfloat16)
 - [CUDA Programming Guide](https://docs.nvidia.com/cuda/cuda-programming-guide/index.html)
+- [DeepGEMM](https://github.com/deepseek-ai/DeepGEMM)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

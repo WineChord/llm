@@ -490,6 +490,10 @@ def compare_generated_site(
             )
         if re.search(r"\\(?:[A-Za-z]+|[\[\]()])", parser.visible_text):
             errors.append(f"{relative}: generated page leaks raw TeX into prose")
+        if re.search(r"\*\*[^*\n]+\*\*", parser.visible_text):
+            errors.append(
+                f"{relative}: generated page leaks raw Markdown emphasis"
+            )
     return total
 
 
@@ -702,6 +706,9 @@ def browser_audit(
                                   clone.textContent
                                 )
                               : false;
+                            const rawMarkdown = clone
+                              ? /\\*\\*[^*\\n]+\\*\\*/.test(clone.textContent)
+                              : false;
                             const invalid = wrappers.filter((element) =>
                               element.querySelectorAll(
                                 ':scope > mjx-container'
@@ -805,6 +812,7 @@ def browser_audit(
                               badOverflow,
                               brokenImages,
                               raw,
+                              rawMarkdown,
                               article: !!article,
                               documentOverflow,
                               overflowingElements,
@@ -841,6 +849,11 @@ def browser_audit(
                             )
                         if stats["raw"]:
                             errors.append(f"{route}: visible prose leaks raw TeX")
+                        if stats["rawMarkdown"]:
+                            errors.append(
+                                f"{route}: visible prose leaks raw Markdown "
+                                "emphasis"
+                            )
                         if stats["badOverflow"]:
                             errors.append(
                                 f"{route}: {stats['badOverflow']} formulas "

@@ -134,6 +134,17 @@ $$
 
 长推理轨迹、代码和短对话即使样本数相同，贡献的 token 数也完全不同。若 loss 先按样本平均，权重又会变化。因此同时报告样本占比、有效 token 占比和 loss 归一化方式。
 
+## Source-aware packing 与 sample-level mask
+
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#pretraining)沿用 source-aware packing，并为 packed sample 保留 sample-level attention mask。其目的不是只减少 padding：
+
+- 同源、相近长度文档更容易形成少截断的 pack；
+- segment mask 阻止后一个样本读取前一个无关样本；
+- position、FIM 边界和 loss mask 仍按各自样本定义；
+- 训练框架可以批处理长短不一的来源，而不把拼接边界当成自然连续文本。
+
+若实现只拼 `input_ids`、没有 segment-aware causal mask，后续样本会获得本不该存在的跨文档上下文；若只在 loss 上 mask，attention 泄漏仍然发生。百万 token 阶段还应记录一个 pack 中各来源、真实文档边界、压缩/稀疏 attention 的可见块和有效目标 token。
+
 ## 最小可重放记录
 
 每个数据版本应能重建：
@@ -162,3 +173,5 @@ source mixture and random seed
 - [Transformers: Causal language modeling](https://huggingface.co/docs/transformers/main/en/tasks/language_modeling)
 - [PyTorch CrossEntropyLoss documentation](https://docs.pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html)
 - [FlashAttention official implementation](https://github.com/Dao-AILab/flash-attention)
+- [Fewer Truncations Improve Language Modeling](https://arxiv.org/abs/2404.10830)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

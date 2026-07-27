@@ -2,6 +2,9 @@
 
 ## 2026-07-28
 
+- 新增 [DeepSeek-V4 总深读](landscape/works/deepseek-v4.md)：从模型账本进入 mHC、CSA / HCA、Muon、预训练稳定性、全词表 On-Policy Distillation、FP4 QAT、百万 token rollout 和分层评测，并为报告的 15 幅图、14 张正式表、29 个编号公式、Algorithm 1 与附录 A–B 建立逐项阅读索引。
+- 拆分 [CSA / HCA](landscape/works/deepseek-compressed-attention.md)、[mHC](landscape/works/manifold-hyper-connections.md)、[On-Policy Distillation](landscape/works/on-policy-distillation.md)和[TileLang、MegaMoE 与 DSec](landscape/works/tilelang-mega-moe.md)四篇机制深读；公式旁保留可执行语义核，较长实现折叠，系统收益与公开证据边界分开记录。
+- 建立 [V4 的 103 项引用图谱](landscape/deepseek-v4-reference-map.md)，并将可复用机制接回注意力、长上下文、MoE、优化器、蒸馏、量化、KV Cache、Agentic RL 和评测主干；导航、术语、稳定深链与完整性门禁同步更新。
 - 新增 [Kimi K3 工作深读](landscape/works/kimi-k3.md)：贯通 KDA / Gated MLA、Attention Residuals、Stable LatentMoE、原生视觉、Per-Head Muon、渐进长上下文、九路 RL 与 MOPD、3T 训练、百万 token Agentic RL、混合缓存、公开与内部评测、许可证和未公开边界；报告中的图、表、28 个编号公式及附录 A–F 均进入可检查的阅读索引。
 - 将 [Kimi Linear 与 FlashKDA](landscape/works/kimi-linear-flashkda.md)、[Attention Residuals](landscape/works/attention-residuals.md)、[Stable LatentMoE 与 Quantile Balancing](landscape/works/latentmoe-quantile-balancing.md)及 [MoonEP](landscape/works/moonep.md)拆成独立深读，分别固定递推/并行、深度寻址、窄路由/分位数更新和动态 expert placement 的公式、代码与系统边界。
 - 建立 [Kimi 技术谱系](landscape/kimi-timeline.md)与 [K3 的 150 项引用图谱](landscape/kimi-k3-reference-map.md)，把 paper、weights、code、API、license 和发布日期分开记录，并为每项官方引用标明它在论证链中的角色。

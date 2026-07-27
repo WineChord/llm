@@ -196,7 +196,7 @@ $$
 
 ### Delta-rule 语义核 {#delta-fast-weight}
 
-`delta_fast_weight` 接收 `keys:[T,D_k]`、`values:[T,D_v]` 和逐步写入率，返回每次**写入前**的读取结果与终态。状态只写预测残差；对正交 key、$\beta=1$，两条关联可被精确写入而不互相覆盖。
+`delta_fast_weight` 接收 `keys:[T,D_k]`、`values:[T,D_v]` 和逐步写入率，返回每次 **写入前** 的读取结果与终态。状态只写预测残差；对正交 key、$\beta=1$，两条关联可被精确写入而不互相覆盖。
 
 ```python
 import torch

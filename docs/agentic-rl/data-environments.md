@@ -71,6 +71,21 @@ seed domain
 
 K3 报告描述了一组可跨模拟天、数千次工具调用和百万级上下文推进的持久助理环境。这些量级是团队报告的工程实例，不等于公开 benchmark；真正可复用的是环境状态机、确定性事件源和跨 checkpoint 的终态验证。
 
+### DSec：按任务选择隔离基底
+
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#dsec)披露的 DSec 以 Rust Apiserver、Edge、Watcher 和 [3FS](https://github.com/deepseek-ai/3FS)协调四类执行环境：
+
+| 基底 | 适合 | 主要边界 |
+| --- | --- | --- |
+| Function Call / 预热容器 | 受控轻任务 | 最快，但自由度与隔离最低 |
+| Docker + EROFS | 常规 Linux 工具链 | 容器边界、只读镜像按需取块 |
+| Firecracker microVM | 多租户高风险执行 | 更强隔离与 snapshot 成本 |
+| QEMU full VM | 完整 OS / 特殊内核 | 兼容性强，资源成本最高 |
+
+镜像 metadata 可本地驻留，数据块从 3FS 按需获取；microVM 通过 OverlayBD 共享远端只读 base layer，只把 copy-on-write 增量留在本地。chainable snapshot 让后续环境基于已有状态继续。
+
+DSec 用全序 trajectory log 记录状态变更与结果。所谓 deterministic replay 不是假设外部命令每次都产生同一输出，而是在重放时复用已提交结果，避免重复执行非幂等动作；同一日志还支持 client fast-forward 和细粒度 provenance。报告给出数十万并发与毫秒级恢复的内部系统描述，但没有公开完整实现、故障注入或安全审计结果。系统链见[MegaMoE、TileLang 与 DSec](../landscape/works/tilelang-mega-moe.md#dsec)。
+
 ## 工具契约
 
 动作空间最好是结构化 schema，而不是从自然语言中猜测命令：
@@ -176,3 +191,8 @@ token/action mask、旧策略概率和终止字段见[轨迹与策略契约](tra
 - [Datasheets for Datasets](https://arxiv.org/abs/1803.09010)
 - [AgentENV](https://github.com/kvcache-ai/AgentENV)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [Fire-Flyer File System (3FS)](https://github.com/deepseek-ai/3FS)
+- [Firecracker: Lightweight Virtualization for Serverless Applications](https://www.usenix.org/conference/nsdi20/presentation/agache)
+- [EROFS: A Compression-friendly Readonly File System](https://www.usenix.org/conference/atc19/presentation/gao)
+- [DADI / OverlayBD](https://www.usenix.org/conference/atc20/presentation/li-huiba)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)

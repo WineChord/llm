@@ -137,6 +137,12 @@ torch.testing.assert_close(mc @ x + bc, mb @ (ma @ x + ba) + bb)
 
 [Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)把这一路线称为 KDA Context Parallelism（KCP）。其收益依赖局部 state 计算、固定大小 summary 通信和 scan 是否能重叠；只有递推确实可写成结合的 segment summary 时才成立，不能套到任意 attention。具体部署见 [Kimi K3](../landscape/works/kimi-k3.md)，KDA 算法入口见 [Kimi Linear](https://github.com/MoonshotAI/Kimi-Linear)。
 
+### 压缩 Attention 的 context parallel
+
+[DeepSeek-V4 CSA/HCA](../landscape/works/deepseek-compressed-attention.md#hybrid-kv-layout)按固定 token block 生成 compressed entries，block 可能跨 context rank。V4 的协议先把每个 rank 尾部 $m$ 个元素作为 halo 传给下一 rank，本地生成固定数量、带 padding 的压缩项，再 all-gather，最后按全局因果可见性 fused select-and-pad。
+
+padding 不是任意对齐：query 只能访问已经完整闭合的压缩块；当前未完成块由 SWA 路径处理。如果各 rank 独立从本地起点分块，压缩边界、position bias 和 top-$k$ 候选都会随 CP degree 改变，模型语义不再保持。训练框架与 cache layout 见[V4 系统闭环](../landscape/works/tilelang-mega-moe.md)。
+
 ## Expert Parallel
 
 MoE 将专家放在不同 rank，token 经 all-to-all dispatch 到目标专家，再 combine 回原顺序。通信发生在 token 表示上，而 TP 通信发生在层内部分结果上。两者组合时需要决定：
@@ -198,3 +204,4 @@ collective 语义见[集合通信与分片](collectives-sharding.md)，算子效
 - [Ring Attention](https://arxiv.org/abs/2310.01889)
 - [Kimi Linear](https://github.com/MoonshotAI/Kimi-Linear)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
+- [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)
