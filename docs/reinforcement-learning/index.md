@@ -120,3 +120,5 @@
 ## 历史入口
 
 [强化学习的演进](history.md)不按模型榜单排列，而是追踪几个反复出现的矛盾：长期回报怎样递推、采样估计怎样控制方差、函数逼近怎样稳定、策略更新怎样限制分布漂移，以及人类或程序反馈怎样成为可学习目标。
+
+从家族案例继续，可分别观察 [DeepSeek](../landscape/families/deepseek.md) 的 GRPO、RLVR 与蒸馏闭环，[Kimi](../landscape/families/kimi.md) 的长轨迹、partial rollout 与多教师路线，以及 [GLM](../landscape/families/glm.md) 的 reasoning / agentic RL、异步系统与跨阶段蒸馏。

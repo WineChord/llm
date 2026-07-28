@@ -52,8 +52,10 @@ ALLOWED_MEDIA_LINKS = {"asset", "source"}
 ALLOWED_COORDINATE_SPACES = {
     "rendered-page-points-top-left",
     "pdf-points-bottom-left",
+    "source-pixels-top-left",
 }
 ALLOWED_VERSION_KINDS = {"git_commit", "arxiv_version", "release_tag", "sha256_only"}
+ALLOWED_ARTIFACT_KINDS = {"pdf", "standalone_raster"}
 VOID_HTML_TAGS = {
     "area",
     "base",
@@ -123,6 +125,7 @@ class SourceRecord:
     manifest_path: Path
     source_id: str
     title: str
+    artifact_kind: str
     artifact_url: str
     artifact_sha256: str
     version_kind: str
@@ -334,6 +337,23 @@ def expect_box(
     return tuple(float(item) for item in value)  # type: ignore[return-value]
 
 
+def expect_int_box(
+    value: Any,
+    label: str,
+    errors: list[str],
+) -> tuple[float, float, float, float]:
+    if (
+        not isinstance(value, list)
+        or len(value) != 4
+        or not all(
+            isinstance(item, int) and not isinstance(item, bool) for item in value
+        )
+    ):
+        errors.append(f"{label}: 必须是四个整数")
+        return (0.0, 0.0, 0.0, 0.0)
+    return tuple(float(item) for item in value)  # type: ignore[return-value]
+
+
 def https_url(value: Any, label: str, errors: list[str]) -> str:
     result = expect_string(value, label, errors)
     if not result:
@@ -409,9 +429,7 @@ def png_info(path: Path) -> PngInfo:
         if kind == "IHDR":
             if length != 13:
                 raise ValueError("PNG IHDR 长度无效")
-            width, height, bit_depth, color_type = struct.unpack(
-                ">IIBB", payload[:10]
-            )
+            width, height, bit_depth, color_type = struct.unpack(">IIBB", payload[:10])
         if kind == "IEND":
             saw_iend = True
             if end != len(data):
@@ -515,7 +533,10 @@ def validate_notice(
         errors.append(f"{label}: notice 未包含声明的版权或署名")
     actual_sha = digest(notice)
     if require_sha:
-        if source.license_sha256 is None or SHA256.fullmatch(source.license_sha256) is None:
+        if (
+            source.license_sha256 is None
+            or SHA256.fullmatch(source.license_sha256) is None
+        ):
             errors.append(f"{label}: schema v2 必须提供 notice_sha256")
         elif actual_sha != source.license_sha256:
             errors.append(f"{notice.relative_to(ROOT)}: notice SHA-256 不匹配")
@@ -529,9 +550,13 @@ def parse_v1(
     label = str(manifest_path.relative_to(ROOT))
     source = expect_dict(manifest.get("source"), f"{label}: source", errors)
     render = expect_dict(manifest.get("render"), f"{label}: render", errors)
-    source_id = expect_string(manifest_path.parent.name, f"{label}: source id", errors, pattern=SLUG)
+    source_id = expect_string(
+        manifest_path.parent.name, f"{label}: source id", errors, pattern=SLUG
+    )
     title = expect_string(source.get("title"), f"{label}: source.title", errors)
-    revision = expect_string(source.get("revision"), f"{label}: source.revision", errors)
+    revision = expect_string(
+        source.get("revision"), f"{label}: source.revision", errors
+    )
     artifact_url = https_url(source.get("pdf_url"), f"{label}: source.pdf_url", errors)
     artifact_sha = expect_string(
         source.get("pdf_sha256"),
@@ -586,6 +611,7 @@ def parse_v1(
         manifest_path=manifest_path,
         source_id=source_id,
         title=title,
+        artifact_kind="pdf",
         artifact_url=artifact_url,
         artifact_sha256=artifact_sha,
         version_kind=version_kind,
@@ -609,7 +635,9 @@ def parse_v1(
     for index, raw in enumerate(figures):
         item_label = f"{label}: figures[{index}]"
         item = expect_dict(raw, item_label, errors)
-        asset_id = expect_string(item.get("id"), f"{item_label}.id", errors, pattern=SLUG)
+        asset_id = expect_string(
+            item.get("id"), f"{item_label}.id", errors, pattern=SLUG
+        )
         file_name = expect_string(
             item.get("file"), f"{item_label}.file", errors, pattern=PNG_NAME
         )
@@ -694,7 +722,9 @@ def parse_v2(
     source = expect_dict(manifest.get("source"), f"{label}: source", errors)
     render = expect_dict(manifest.get("render"), f"{label}: render", errors)
     version = expect_dict(source.get("version"), f"{label}: source.version", errors)
-    license_data = expect_dict(source.get("license"), f"{label}: source.license", errors)
+    license_data = expect_dict(
+        source.get("license"), f"{label}: source.license", errors
+    )
     expect_keys(
         source,
         f"{label}: source",
@@ -708,7 +738,7 @@ def parse_v2(
             "page_count",
             "license",
         },
-        optional={"canonical_url"},
+        optional={"canonical_url", "artifact_kind"},
     )
     expect_keys(
         version,
@@ -742,6 +772,13 @@ def parse_v2(
     if source_id and source_id != manifest_path.parent.name:
         errors.append(f"{label}: source.id 必须与 manifest 所在目录名一致")
     title = expect_string(source.get("title"), f"{label}: source.title", errors)
+    artifact_kind = expect_string(
+        source.get("artifact_kind", "pdf"),
+        f"{label}: source.artifact_kind",
+        errors,
+    )
+    if artifact_kind not in ALLOWED_ARTIFACT_KINDS:
+        errors.append(f"{label}: source.artifact_kind 不受支持")
     canonical_url = source.get("canonical_url")
     if canonical_url is not None:
         https_url(canonical_url, f"{label}: source.canonical_url", errors)
@@ -793,7 +830,13 @@ def parse_v2(
         errors,
         pattern=SHA256,
     )
-    dpi = expect_int(render.get("dpi"), f"{label}: render.dpi", errors, minimum=144)
+    minimum_dpi = 72 if artifact_kind == "standalone_raster" else 144
+    dpi = expect_int(
+        render.get("dpi"),
+        f"{label}: render.dpi",
+        errors,
+        minimum=minimum_dpi,
+    )
     if dpi > 600:
         errors.append(f"{label}: render.dpi 不得超过 600")
     coordinate_space = expect_string(
@@ -817,8 +860,23 @@ def parse_v2(
     renderer = expect_string(
         render.get("renderer"), f"{label}: render.renderer", errors
     )
-    if renderer != "pdftocairo":
-        errors.append(f"{label}: schema v2 当前要求 renderer=pdftocairo")
+    if artifact_kind == "standalone_raster":
+        if page_count != 1:
+            errors.append(f"{label}: standalone_raster 的 page_count 必须为 1")
+        if renderer != "imagemagick":
+            errors.append(f"{label}: standalone_raster 要求 renderer=imagemagick")
+        if coordinate_space != "source-pixels-top-left":
+            errors.append(
+                f"{label}: standalone_raster 要求 "
+                "coordinate_space=source-pixels-top-left"
+            )
+        if dpi != 72:
+            errors.append(f"{label}: standalone_raster 要求 dpi=72")
+    else:
+        if renderer != "pdftocairo":
+            errors.append(f"{label}: PDF 来源要求 renderer=pdftocairo")
+        if coordinate_space == "source-pixels-top-left":
+            errors.append(f"{label}: PDF 来源不得使用 source-pixels-top-left")
     if colorspace.casefold() != "srgb":
         errors.append(f"{label}: schema v2 当前仅支持 sRGB")
     if image_format.casefold() != "png":
@@ -830,6 +888,7 @@ def parse_v2(
         manifest_path=manifest_path,
         source_id=source_id,
         title=title,
+        artifact_kind=artifact_kind,
         artifact_url=artifact_url,
         artifact_sha256=artifact_sha,
         version_kind=version_kind,
@@ -863,15 +922,20 @@ def parse_v2(
                 "kind",
                 "source_label",
                 "page",
-                "page_box_points",
                 "rotation",
-                "crop_box_points",
                 "pixel_size",
                 "sha256",
                 "placements",
-            },
+            }
+            | (
+                {"source_size_pixels", "source_crop_box_pixels"}
+                if artifact_kind == "standalone_raster"
+                else {"page_box_points", "crop_box_points"}
+            ),
         )
-        asset_id = expect_string(item.get("id"), f"{item_label}.id", errors, pattern=SLUG)
+        asset_id = expect_string(
+            item.get("id"), f"{item_label}.id", errors, pattern=SLUG
+        )
         file_name = expect_string(
             item.get("file"), f"{item_label}.file", errors, pattern=PNG_NAME
         )
@@ -892,15 +956,34 @@ def parse_v2(
         page = expect_int(item.get("page"), f"{item_label}.page", errors, minimum=1)
         if record.page_count is not None and page > record.page_count:
             errors.append(f"{item_label}.page: 超过 source.page_count")
-        page_box = expect_pair(
-            item.get("page_box_points"), f"{item_label}.page_box_points", errors
-        )
+        if artifact_kind == "standalone_raster":
+            page_size = expect_int_pair(
+                item.get("source_size_pixels"),
+                f"{item_label}.source_size_pixels",
+                errors,
+            )
+            page_box = (float(page_size[0]), float(page_size[1]))
+        else:
+            page_box = expect_pair(
+                item.get("page_box_points"),
+                f"{item_label}.page_box_points",
+                errors,
+            )
         rotation = expect_int(item.get("rotation", 0), f"{item_label}.rotation", errors)
         if rotation not in {0, 90, 180, 270}:
             errors.append(f"{item_label}.rotation: 必须是 0/90/180/270")
-        crop = expect_box(
-            item.get("crop_box_points"), f"{item_label}.crop_box_points", errors
-        )
+        if artifact_kind == "standalone_raster":
+            crop = expect_int_box(
+                item.get("source_crop_box_pixels"),
+                f"{item_label}.source_crop_box_pixels",
+                errors,
+            )
+        else:
+            crop = expect_box(
+                item.get("crop_box_points"),
+                f"{item_label}.crop_box_points",
+                errors,
+            )
         pixel_size = expect_int_pair(
             item.get("pixel_size"), f"{item_label}.pixel_size", errors
         )
@@ -932,9 +1015,7 @@ def parse_v2(
                 allowed_root=DOCS_ROOT,
             )
             page_relative = (
-                page_path.relative_to(ROOT).as_posix()
-                if page_path is not None
-                else ""
+                page_path.relative_to(ROOT).as_posix() if page_path is not None else ""
             )
             anchor = expect_string(
                 placement_data.get("anchor"),
@@ -993,7 +1074,12 @@ def parse_manifest(path: Path, errors: list[str]) -> Optional[SourceRecord]:
             path.read_text(encoding="utf-8"),
             object_pairs_hook=duplicate_safe_object,
         )
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError, DuplicateKeyError) as exc:
+    except (
+        OSError,
+        UnicodeDecodeError,
+        json.JSONDecodeError,
+        DuplicateKeyError,
+    ) as exc:
         errors.append(f"{label}: manifest 无法读取：{exc}")
         return None
     if not isinstance(manifest, dict):
@@ -1030,8 +1116,7 @@ def validate_asset(asset: AssetRecord, errors: list[str]) -> None:
         )
     if info.bit_depth != 8 or info.color_type != 2:
         errors.append(
-            f"{asset.file_path.relative_to(ROOT)}: "
-            "论文裁图必须是 8-bit opaque RGB PNG"
+            f"{asset.file_path.relative_to(ROOT)}: 论文裁图必须是 8-bit opaque RGB PNG"
         )
     forbidden = sorted(set(info.chunks) & FORBIDDEN_METADATA_CHUNKS)
     unknown = sorted(set(info.chunks) - ALLOWED_PNG_CHUNKS)
@@ -1053,22 +1138,26 @@ def validate_asset(asset: AssetRecord, errors: list[str]) -> None:
         errors.append(f"{item_label}: crop box 超出页面或为空")
         return
     ratio = (x1 - x0) * (y1 - y0) / (page_width * page_height)
-    maximum = (
-        V1_MAX_PAGE_AREA_RATIO
-        if source.schema_version == 1
-        else V2_MAX_PAGE_AREA_RATIO
-    )
-    if ratio >= maximum:
-        errors.append(f"{item_label}: 裁取面积接近整页 ({ratio:.1%})")
+    if source.artifact_kind != "standalone_raster":
+        maximum = (
+            V1_MAX_PAGE_AREA_RATIO
+            if source.schema_version == 1
+            else V2_MAX_PAGE_AREA_RATIO
+        )
+        if ratio >= maximum:
+            errors.append(f"{item_label}: 裁取面积接近整页 ({ratio:.1%})")
     expected_width = round((x1 - x0) * source.dpi / 72)
     expected_height = round((y1 - y0) * source.dpi / 72)
-    if (
-        abs(expected_width - info.width) > 1
-        or abs(expected_height - info.height) > 1
-    ):
+    if abs(expected_width - info.width) > 1 or abs(expected_height - info.height) > 1:
         errors.append(
             f"{asset.file_path.relative_to(ROOT)}: 像素尺寸与 crop/DPI 不一致"
         )
+
+
+def source_link_for(asset: AssetRecord) -> str:
+    if asset.source.artifact_kind == "standalone_raster":
+        return asset.source.artifact_url
+    return f"{asset.source.artifact_url}#page={asset.page}"
 
 
 def validate_source_block(
@@ -1121,7 +1210,7 @@ def validate_source_block(
             errors.append(
                 f"{relative}: #{placement.anchor} 缺少图片属性 {name}={value}"
             )
-    source_link = f"{source.artifact_url}#page={asset.page}"
+    source_link = source_link_for(asset)
     required_media = asset.file_name if placement.media_link == "asset" else source_link
     if block.body.count(required_media) < 2:
         errors.append(
@@ -1143,7 +1232,7 @@ def validate_source_block(
     if re.search(r"\$|\\[\[(]", caption_html):
         errors.append(f"{relative}: #{placement.anchor} 图注含未解析数学分隔符")
     if source_link not in caption_html:
-        errors.append(f"{relative}: #{placement.anchor} 缺少固定 PDF 页链接")
+        errors.append(f"{relative}: #{placement.anchor} 缺少固定来源链接")
     if source.license_url not in caption_html:
         errors.append(f"{relative}: #{placement.anchor} 缺少许可证链接")
     if not any(variant in caption_text for variant in credit_variants(source.credit)):
@@ -1229,13 +1318,11 @@ def validate_generated_site(
 ) -> None:
     cache: dict[Path, list[HtmlFigure]] = {}
     for asset in assets:
-        source_link = f"{asset.source.artifact_url}#page={asset.page}"
+        source_link = source_link_for(asset)
         for placement in asset.placements:
             html_path = site_path_for_doc(site_dir, placement.page_relative)
             if not html_path.is_file():
-                errors.append(
-                    f"{placement.page_relative}: 生成站点缺少对应 index.html"
-                )
+                errors.append(f"{placement.page_relative}: 生成站点缺少对应 index.html")
                 continue
             if html_path not in cache:
                 figures: list[HtmlFigure] = []
@@ -1342,7 +1429,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             assets.append(asset)
             key = (source.source_id, asset.asset_id)
             if key in asset_keys:
-                errors.append(f"paper asset id 重复：{source.source_id}/{asset.asset_id}")
+                errors.append(
+                    f"paper asset id 重复：{source.source_id}/{asset.asset_id}"
+                )
             asset_keys.add(key)
             if asset.file_path is not None:
                 registered_assets.add(asset.file_path.resolve())
@@ -1381,8 +1470,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     )
     if unregistered:
         errors.append(
-            "docs/assets/papers/: 存在未登记图片："
-            + "、".join(map(str, unregistered))
+            "docs/assets/papers/: 存在未登记图片：" + "、".join(map(str, unregistered))
         )
     extra_blocks = sorted(
         (

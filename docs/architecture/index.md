@@ -88,3 +88,5 @@ $$
 8. 哪些结果只有作者报告，哪些已有开放实现或复现。
 
 最小代码从[张量原语](../practice/tensor-primitives.md)、[完整 Transformer](../practice/transformer-from-scratch.md)与[递推记忆](../practice/sequence-models.md)进入。
+
+具体结构怎样与整套模型共同演进，可对照 [DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md)与 [GLM](../landscape/families/glm.md) 的家族地图；模型名只提供案例，定义与比较口径仍以本章为准。

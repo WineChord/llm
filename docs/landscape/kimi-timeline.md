@@ -1,5 +1,7 @@
 # Kimi 技术谱系：从长推理到三万亿级开放权重
 
+先用[Kimi 家族总览](families/kimi.md)区分 checkpoint、机制研究、训练与推理系统、Agent 工具和评测产物；本页沿时间解释这些分支为何出现、在哪里汇合。
+
 Kimi 家族不是一条只按参数量递增的直线。[Kimi k1.5](works/kimi-k1-5.md)把长上下文强化学习推到前台，[Kimi-VL](../multimodal/kimi-vl.md)建立视觉分支，[Kimi K2](works/kimi-k2.md)把稀疏模型与 agentic post-training 结合，[Kimi Linear](works/kimi-linear-flashkda.md)改写长序列的信息通路，[Kimi K2.5](works/kimi-k2-5.md)让视觉、thinking 与 agent 共同训练，[Attention Residuals](works/attention-residuals.md)又把寻址能力从 token 轴延伸到 depth 轴。[Kimi K3](works/kimi-k3.md)才把这些路线汇合成同一个 2.8T 级系统。
 
 这条历史必须同时记录六种对象：

@@ -1,0 +1,54 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "glm-v-multidomain-rl",
+    "title": "GLM-V multidomain reinforcement-learning comparison",
+    "canonical_url": "https://github.com/zai-org/GLM-V/blob/726dac56ddde6d33f72bd62967322e15f61a8471/resources/rl.jpeg",
+    "artifact_kind": "standalone_raster",
+    "artifact_url": "https://raw.githubusercontent.com/zai-org/GLM-V/726dac56ddde6d33f72bd62967322e15f61a8471/resources/rl.jpeg",
+    "artifact_sha256": "15737d0c9c7d3f0a6bfcd9fd6eb75656903bedd1f88697d5cf4cd0332362cd1d",
+    "version": {
+      "kind": "git_commit",
+      "value": "726dac56ddde6d33f72bd62967322e15f61a8471"
+    },
+    "page_count": 1,
+    "license": {
+      "name": "Apache License 2.0",
+      "url": "https://github.com/zai-org/GLM-V/blob/726dac56ddde6d33f72bd62967322e15f61a8471/LICENSE",
+      "credit": "Copyright 2026 Z.AI Co., Ltd",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "086c6e7f5082b4640dfb03a892f32504f24afd247c702c38a3aae8c3474c54f0"
+    }
+  },
+  "render": {
+    "renderer": "imagemagick",
+    "renderer_version": "7.1.2-27 Q16-HDRI",
+    "dpi": 72,
+    "coordinate_space": "source-pixels-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "glmv-rl-multidomain",
+      "file": "glmv-rl-multidomain.png",
+      "kind": "figure",
+      "source_label": "standalone figure",
+      "page": 1,
+      "source_size_pixels": [1880, 817],
+      "rotation": 0,
+      "source_crop_box_pixels": [0, 0, 1880, 817],
+      "pixel_size": [1880, 817],
+      "sha256": "8d74ef264d8f1d5a70d49c25b1da6fd469fc23487db00650ce84aa660e28f63c",
+      "placements": [
+        {
+          "page": "docs/multimodal/glm.md",
+          "anchor": "glmv-rl-multidomain-figure",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

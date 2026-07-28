@@ -91,3 +91,5 @@ $$
 - 注入、越权、数据泄露和重复执行等安全失败。
 
 [评测与可靠性](../evaluation/index.md)给出协议设计，[手撕：检索与智能体](../practice/retrieval-agents.md)提供核心实现。
+
+工具协议、coding/research scaffold、环境训练与基础模型能力怎样分层，可对照 [DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md)和 [GLM](../landscape/families/glm.md) 的模型与 Agent 公开物；产品功能不能直接倒写成 checkpoint 架构。

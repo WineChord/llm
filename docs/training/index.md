@@ -109,3 +109,5 @@ reward 来源与 optimizer 的关系见[反馈制度](../reinforcement-learning/
 4. 目标能力、通用能力、校准、安全和成本的独立切片；
 5. 数据、teacher、reference、reward、verifier 与 judge 的版本隔离；
 6. 失败样本、退化 slice 和未决假设，而不只保存汇总分数。
+
+从公开配方观察阶段怎样重新组合，可沿 [DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md)与 [GLM](../landscape/families/glm.md) 家族进入；各页会把 checkpoint、报告和未知训练细节分开。

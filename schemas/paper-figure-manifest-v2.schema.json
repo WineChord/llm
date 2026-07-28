@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://www.wineandchord.com/llm/schemas/paper-figure-manifest-v2.schema.json",
   "title": "Paper figure manifest",
-  "description": "Immutable source, reproducible crop, and page-placement metadata for paper figures.",
+  "description": "Immutable PDF or official standalone-raster source, reproducible crop, and page-placement metadata for technical figures.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -74,6 +74,40 @@
         },
         {
           "type": "number"
+        }
+      ]
+    },
+    "pixelPair": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        }
+      ]
+    },
+    "pixelCropBox": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "prefixItems": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer"
         }
       ]
     },
@@ -150,6 +184,13 @@
           "type": "string",
           "minLength": 1
         },
+        "artifact_kind": {
+          "enum": [
+            "pdf",
+            "standalone_raster"
+          ],
+          "default": "pdf"
+        },
         "canonical_url": {
           "$ref": "#/$defs/httpsUrl"
         },
@@ -184,7 +225,10 @@
       ],
       "properties": {
         "renderer": {
-          "const": "pdftocairo"
+          "enum": [
+            "pdftocairo",
+            "imagemagick"
+          ]
         },
         "renderer_version": {
           "type": "string",
@@ -192,13 +236,14 @@
         },
         "dpi": {
           "type": "integer",
-          "minimum": 144,
+          "minimum": 72,
           "maximum": 600
         },
         "coordinate_space": {
           "enum": [
             "rendered-page-points-top-left",
-            "pdf-points-bottom-left"
+            "pdf-points-bottom-left",
+            "source-pixels-top-left"
           ]
         },
         "colorspace": {
@@ -254,12 +299,24 @@
         "kind",
         "source_label",
         "page",
-        "page_box_points",
         "rotation",
-        "crop_box_points",
         "pixel_size",
         "sha256",
         "placements"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "page_box_points",
+            "crop_box_points"
+          ]
+        },
+        {
+          "required": [
+            "source_size_pixels",
+            "source_crop_box_pixels"
+          ]
+        }
       ],
       "properties": {
         "id": {
@@ -300,6 +357,12 @@
         },
         "crop_box_points": {
           "$ref": "#/$defs/cropBox"
+        },
+        "source_size_pixels": {
+          "$ref": "#/$defs/pixelPair"
+        },
+        "source_crop_box_pixels": {
+          "$ref": "#/$defs/pixelCropBox"
         },
         "pixel_size": {
           "type": "array",

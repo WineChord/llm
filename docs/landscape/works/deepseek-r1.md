@@ -1,6 +1,6 @@
 # DeepSeek-R1：可验证奖励、冷启动与蒸馏闭环
 
-[DeepSeek-R1](https://arxiv.org/abs/2501.12948) 把 reasoning post-training 的多条路线集中到一套公开流程中：在强 base model 上执行可验证奖励 RL，观察长推理行为，再用少量 cold-start 数据改善可读性，通过 rejection sampling 扩充监督数据，最后进行第二阶段 RL 与模型蒸馏。
+[DeepSeek-R1](https://arxiv.org/abs/2501.12948) 把 reasoning post-training 的多条路线集中到一套公开流程中：在强 base model 上执行可验证奖励 RL，观察长推理行为，再用少量 cold-start 数据改善可读性，通过 rejection sampling 扩充监督数据，最后进行第二阶段 RL 与模型蒸馏。它在通用主干、数学与证明分支中的位置见[DeepSeek 家族总览](../families/deepseek.md)。
 
 它不应被压缩成“GRPO 训练出了推理”。GRPO 属于 policy optimizer；accuracy、format 和后续偏好信号属于 reward；长 rollout、采样数和输出上限属于训练与推理预算。
 

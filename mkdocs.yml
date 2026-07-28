@@ -210,18 +210,27 @@ nav:
               - Kimi-VL: multimodal/kimi-vl.md
               - Kimi 多模态家族: multimodal/kimi.md
               - DeepSeek 多模态家族: multimodal/deepseek.md
+              - GLM 多模态家族: multimodal/glm.md
           - 检索、行动与评测:
               - RAG: landscape/works/rag.md
               - ReAct 与 Toolformer: landscape/works/react-toolformer.md
               - HELM、MT-Bench 与 Arena: landscape/works/helm-arena.md
-      - 口径与家族:
-          - 训练 token 口径: landscape/training-tokens.md
-          - DeepSeek 演化案例: landscape/deepseek-timeline.md
-          - V4 引用图谱: landscape/deepseek-v4-reference-map.md
-          - Kimi 演化案例: landscape/kimi-timeline.md
-          - K3 引用图谱: landscape/kimi-k3-reference-map.md
-          - GLM 演化案例: landscape/glm-timeline.md
-          - GLM-5 引用图谱: landscape/glm-5-reference-map.md
+      - 模型家族:
+          - 阅读模型家族: landscape/families/index.md
+          - DeepSeek:
+              - 家族总览: landscape/families/deepseek.md
+              - 演化时间线: landscape/deepseek-timeline.md
+              - V4 引用图谱: landscape/deepseek-v4-reference-map.md
+          - Kimi:
+              - 家族总览: landscape/families/kimi.md
+              - 技术谱系: landscape/kimi-timeline.md
+              - K3 引用图谱: landscape/kimi-k3-reference-map.md
+          - GLM:
+              - 家族总览: landscape/families/glm.md
+              - 演化时间线: landscape/glm-timeline.md
+              - GLM-5 引用图谱: landscape/glm-5-reference-map.md
+      - 证据口径:
+          - 训练 token: landscape/training-tokens.md
   - 多模态与生成:
       - 总览: multimodal/index.md
       - 历史与全景:

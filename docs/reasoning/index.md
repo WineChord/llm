@@ -55,3 +55,5 @@ $$
 - 相同预算下的基线。
 
 “思考更久”不是实现规范。可比较的对象是明确的计算图、预算和停止条件。
+
+[DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md)与 [GLM](../landscape/families/glm.md) 家族包含不同的 reasoning checkpoint、搜索/验证路线与服务模式；比较时必须先分开训练后的策略能力、测试时预算、外部 verifier 和工具系统。

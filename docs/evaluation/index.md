@@ -141,3 +141,5 @@ effect estimate, confidence interval and multiplicity handling
 contamination and threat-model audit
 raw-record location and known limitations
 ```
+
+[DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md)与 [GLM](../landscape/families/glm.md) 家族页把模型、API、harness、工具预算与作者报告值分列，适合作为版本化评测的具体案例；跨家族结论仍须回到同一报告卡重跑。

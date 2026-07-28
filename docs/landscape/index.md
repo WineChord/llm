@@ -2,7 +2,7 @@
 
 一个领域真正变得可理解，不是在所有论文旁边标上年份，而是看见问题怎样移动：固定窗口解决了可估计性，却截断历史；循环状态延长记忆，却把一切压进有限向量；attention 打开全局寻址，又把代价转成平方关系和 KV 状态。后来的工作不是凭空出现，它们总在接住前一代留下的某个矛盾。
 
-这里把知识库中的稳定机制与具体工作连接起来。谱系页讲“为什么下一步会发生”，工作深读讲“一项工作到底改变了什么”，模型结构、训练、系统和评测页则保留完整定义与实现边界。
+这里把知识库中的稳定机制与具体工作连接起来。谱系页讲“为什么下一步会发生”，工作深读讲“一项工作到底改变了什么”，模型结构、训练、系统和评测页则保留完整定义与实现边界。持续演进的具体系列另由[模型家族](families/index.md)分开版本与公开产物。
 
 ## 不是一条单线年表
 
@@ -29,7 +29,7 @@
 
 ### GLM：从统一目标到 Agentic Engineering
 
-[GLM 演化](glm-timeline.md)从 2021 年的 General Language Model 出发，经过 GLM-130B、ChatGLM、GLM-4 的 All Tools 与 GLM-4.5 的 Agentic MoE，走到 GLM-5 / 5.2。它不是简单的模型尺寸年表，而是四条逐渐汇合的支线：双向与自回归的统一预训练、开放双语模型、工具与推理后训练、面向长程 Agent 的训练—推理系统。
+[GLM 家族总览](families/glm.md)先区分语言主干、代码、视觉、语音、生成与 Agent 等公开分支；[GLM 演化](glm-timeline.md)再从 2021 年的 General Language Model 出发，经过 GLM-130B、ChatGLM、GLM-4 的 All Tools 与 GLM-4.5 的 Agentic MoE，走到 GLM-5 / 5.2。它不是简单的模型尺寸年表，而是四条逐渐汇合的支线：双向与自回归的统一预训练、开放双语模型、工具与推理后训练、面向长程 Agent 的训练—推理系统。
 
 - [GLM-5 总深读](works/glm-5.md)逐项覆盖 40 页报告的 13 幅图、13 张表、5 个编号公式、4 段 listing 与附录，并保留正文和配置之间的冲突；
 - [GLM-5 架构](works/glm-5-architecture.md)连接 MoE、MLA-256、Muon Split、Shared MTP 与 DSA；
@@ -40,7 +40,7 @@
 
 ### 当一条模型家族汇合多条技术路线
 
-[Kimi 技术谱系](kimi-timeline.md)没有把同名模型排成发布列表，而是沿长推理、稀疏宽度、线性状态、深度寻址、原生视觉和 agent system 六条支线解释 K1.5、Kimi-VL、K2、Kimi Linear、K2.5、Attention Residuals 与 K3 怎样前后衔接。页面同时区分 paper、weights、code、API、license 与 release date，避免把“公开报告”“开放权重”和“完整系统可复现”写成同一件事。
+[Kimi 家族总览](families/kimi.md)先清点 checkpoint、机制研究、训练与推理系统、Agent runtime 和评测产物；[Kimi 技术谱系](kimi-timeline.md)再沿长推理、稀疏宽度、线性状态、深度寻址、原生视觉和 agent system 六条支线解释 K1.5、Kimi-VL、K2、Kimi Linear、K2.5、Attention Residuals 与 K3 怎样前后衔接。页面同时区分 paper、weights、code、API、license 与 release date，避免把“公开报告”“开放权重”和“完整系统可复现”写成同一件事。
 
 K3 是观察这种汇流的一个切面：
 
@@ -55,7 +55,7 @@ K3 是观察这种汇流的一个切面：
 
 ### 百万 token 怎样变成端到端能力 {#deepseek-v4-system}
 
-[DeepSeek 演化](deepseek-timeline.md)从 DeepSeekMoE、MLA、无辅助损失路由和 Multi-Token Prediction 走到 V3、R1、V3.2 与 V4。V4 的关键变化并不是把 context length 单独调大，而是让表示压缩、残差拓扑、优化器、kernel、缓存、后训练和故障恢复共同适配长轨迹：
+[DeepSeek 家族总览](families/deepseek.md)先分开通用语言、代码、数学与证明、多模态、OCR、架构研究和开放系统组件；[DeepSeek 演化](deepseek-timeline.md)再从 DeepSeekMoE、MLA、无辅助损失路由和 Multi-Token Prediction 走到 V3、R1、V3.2 与 V4。V4 的关键变化并不是把 context length 单独调大，而是让表示压缩、残差拓扑、优化器、kernel、缓存、后训练和故障恢复共同适配长轨迹：
 
 - [DeepSeek-V4 总深读](works/deepseek-v4.md)把 15 幅图、14 张正式表、29 个编号公式、Algorithm 1 与附录 A–B 还原为一条可检查的因果链；
 - [CSA 与 HCA](works/deepseek-compressed-attention.md)解释时间压缩、Lightning Indexer、shared-KV MQA、inverse RoPE 与局部窗口如何共同保持因果性；
@@ -142,7 +142,7 @@ API / product
 license
 ```
 
-同名产品也可能更换 checkpoint；一篇论文则可能在权重发布后继续修订。训练规模的可比口径见[训练 token](training-tokens.md)，怎样拆分一条复杂家族可参考[DeepSeek 演化案例](deepseek-timeline.md)。
+同名产品也可能更换 checkpoint；一篇论文则可能在权重发布后继续修订。训练规模的可比口径见[训练 token](training-tokens.md)，完整的对象拆分与阅读顺序见[模型家族](families/index.md)。
 
 ## 三种阅读路径
 

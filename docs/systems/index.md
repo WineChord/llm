@@ -89,3 +89,5 @@ $$
 - 优化后的实现必须与慢 reference、backward 和真实 shape 对齐。
 
 学习时先走[性能模型](performance-model.md)→[并行总览](parallelism.md)→[Kernel](kernels-performance.md)→[检查点](checkpointing.md)；排错时从[调试手册](../practice/debugging.md)进入首个分叉点。
+
+开放系统组件与模型版本的对应关系可从 [DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md)与 [GLM](../landscape/families/glm.md) 家族页反查；组织名或仓库名本身不证明某个组件已经进入生产 checkpoint。

@@ -1,6 +1,6 @@
 # Kimi K2：1T MoE、MuonClip 与 Agentic 训练系统
 
-[Kimi K2](https://arxiv.org/abs/2507.20534)处在 Kimi 技术谱系的转折点。它继承
+[Kimi K2](https://arxiv.org/abs/2507.20534)处在 Kimi 技术谱系的转折点；它与专门模型、机制论文、系统组件和 Agent 工具的关系见[Kimi 家族总览](../families/kimi.md)。它继承
 [Kimi k1.5](kimi-k1-5.md)的长推理 RL，却把主要问题从“怎样生成更长的 reasoning”推进到“怎样训练
 一个 1T 级稀疏模型，并让它在真实工具环境中持续行动”。因此报告的主线不是单个 benchmark，而是三个
 闭环：

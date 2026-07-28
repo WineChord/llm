@@ -70,3 +70,5 @@ $$
 6. 进入[模型结构](../architecture/index.md)，再连接数据、训练、系统与评测。
 
 每个概念至少经过公式、最小实现、失败样例和评测协议四层。全站覆盖关系见[覆盖地图](../guide/coverage.md)。
+
+抽象对象怎样在真实配方中彼此约束，可从[模型家族](../landscape/families/index.md)进入：DeepSeek、Kimi 与 GLM 的发布账本分别把目标、表示、上下文、规模和系统接口接回本节，同时保留 checkpoint、代码、API 与产品之间的证据边界。

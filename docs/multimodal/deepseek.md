@@ -9,9 +9,9 @@ DeepSeek 的 VL、VL2、Janus 与 OCR 系列不是同一模型的简单迭代，
 | DeepSeek-VL | 通用视觉语言理解 | vision encoder + adapter + language model | [论文](https://arxiv.org/abs/2403.05525) |
 | DeepSeek-VL2 | 动态分辨率、多图理解 | dynamic tiling + MoE language backbone | [论文](https://arxiv.org/abs/2412.10302) |
 | Janus / Janus-Pro | 理解与图像生成统一 | 解耦视觉编码 + 统一 autoregressive Transformer | [Janus](https://arxiv.org/abs/2410.13848)、[Janus-Pro](https://arxiv.org/abs/2501.17811) |
-| DeepSeek-OCR | 文档与文字的视觉压缩 | 高分辨率视觉编码 + token 压缩 | [官方仓库](https://github.com/deepseek-ai/DeepSeek-OCR) |
+| DeepSeek-OCR / OCR 2 | 文档视觉压缩与语义阅读顺序 | 高分辨率 DeepEncoder；DeepEncoder V2 在进入语言解码器前重排视觉 token | [OCR](https://arxiv.org/abs/2510.18234)、[OCR 2](https://arxiv.org/abs/2601.20552) |
 
-这四条路线的发布对象也不同。VL/VL2 主要研究视觉语言理解，Janus 把理解与图像生成放进统一自回归主干，OCR 则把高分辨率文档压成可供语言模型读取的视觉表示。它们共享部分研究动机，不应把后一条路线的能力或训练配方倒写进前一模型。
+这四条路线的发布对象也不同。VL/VL2 主要研究视觉语言理解，Janus 把理解与图像生成放进统一自回归主干，OCR 先把高分辨率文档压成可供语言模型读取的视觉表示，OCR 2 再改变这些视觉 token 的阅读顺序。它们共享部分研究动机，不应把后一条路线的能力或训练配方倒写进前一模型。
 
 ## VL：先对齐，再联合训练
 
@@ -91,6 +91,27 @@ $$
 
 压缩率还必须绑定输入分辨率和下游协议。相同视觉 token 数处理一张单栏扫描件与一张密集表格，信息损失并不相同；如果 benchmark 只问页面主题，可能掩盖字符级和结构级错误。文档与 GUI 的坐标、阅读顺序和结构化评测见[文档、图表、GUI 与 Grounding](document-gui-grounding.md)。
 
+### OCR 2：压缩以后，顺序本身仍是模型选择
+
+传统视觉语言模型通常按二维 raster scan 把 patch 展平：先从左到右，再从上到下。对单栏正文，这近似阅读顺序；对多栏排版、图表、公式和浮动注释，它可能把语义上相邻的元素拆开，也可能让语言解码器先看到结论、后看到前提。
+
+[DeepSeek-OCR 2](https://arxiv.org/abs/2601.20552)提出的 DeepEncoder V2 在进入语言解码器前，根据图像语义动态重排视觉 token。它把文档理解写成两段一维因果流：
+
+$$
+I\xrightarrow{\text{visual causal encoder}}
+\tilde z_{1:M}
+\xrightarrow{\text{causal language decoder}}
+y_{1:T}.
+$$
+
+第一段决定“先看哪里”，第二段决定“怎样解释已经看到的内容”。这与简单加入二维位置编码不同：位置编码告诉模型 token 来自哪里，重排则直接改变 causal prefix 中已经可见的证据。因而复现时至少要验证：
+
+- 重排是否保持坐标、区域与原图之间的可逆映射；
+- 同一页面在不同裁切或分辨率下能否保持稳定阅读顺序；
+- 表格行列、公式编号和跨栏引用是否因重排改善，而不是只提高平均 OCR 分数；
+- 并行编码收益是否被自回归式顺序决策抵消；
+- OCR 2 的结果不能倒推为通用 VL、Janus 或语言主干已经采用同一视觉因果流。
+
 ## 把选择落到计算与错误类型
 
 | 问题 | VL/VL2 | Janus | OCR 路线 |
@@ -100,7 +121,7 @@ $$
 | 成本核心 | 高分辨率 prefill | 长图像序列生成 | 压缩率与结构恢复 |
 | 关键失效 | 细节遗漏、语言先验 | 模态干扰、生成一致性 | 阅读顺序、表格与公式 |
 
-还应在相同硬件上报告 image preprocessing、vision encoder、projector 与 LLM prefill 的分段时延；否则“视觉 token 更少”不一定转化成更低端到端延迟。原理见[多模态融合与训练](architecture-training.md)、[原生多模态与生成](native-generation.md)和[多模态评测](../evaluation/multimodal-evaluation.md)，家族主干见[DeepSeek 演化案例](../landscape/deepseek-timeline.md)。
+还应在相同硬件上报告 image preprocessing、vision encoder、projector 与 LLM prefill 的分段时延；否则“视觉 token 更少”不一定转化成更低端到端延迟。原理见[多模态融合与训练](architecture-training.md)、[原生多模态与生成](native-generation.md)和[多模态评测](../evaluation/multimodal-evaluation.md)，完整分支见[DeepSeek 家族总览](../landscape/families/deepseek.md)，主干继承关系见[演化时间线](../landscape/deepseek-timeline.md)。
 
 ## Reference {#reference}
 
@@ -108,4 +129,6 @@ $$
 - [DeepSeek-VL2: Mixture-of-Experts Vision-Language Models](https://arxiv.org/abs/2412.10302)
 - [Janus](https://arxiv.org/abs/2410.13848)
 - [Janus-Pro](https://arxiv.org/abs/2501.17811)
-- [deepseek-ai/DeepSeek-OCR](https://github.com/deepseek-ai/DeepSeek-OCR)
+- [DeepSeek-OCR: Contexts Optical Compression](https://arxiv.org/abs/2510.18234)
+- [DeepSeek-OCR 2: Visual Causal Flow](https://arxiv.org/abs/2601.20552)
+- [deepseek-ai/DeepSeek-OCR-2 model and code](https://github.com/deepseek-ai/DeepSeek-OCR-2)

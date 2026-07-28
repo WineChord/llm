@@ -2,6 +2,8 @@
 
 ## 2026-07-28
 
+- 建立[模型家族](landscape/families/index.md)入口与可审计发布账本，分别展开 [DeepSeek](landscape/families/deepseek.md)、[Kimi](landscape/families/kimi.md)和 [GLM](landscape/families/glm.md) 的主干、专门模型、研究方法、系统组件、Agent 工具、评测工件、API / 产品与许可证边界；三条时间线、工作深读和 canonical 主题同步形成双向阅读路径。
+- 扩展家族的多模态支线：[DeepSeek](multimodal/deepseek.md)补入 OCR-2 的语义阅读顺序，[Kimi](multimodal/kimi.md)继续连接 Kimi-VL、K2.5 与 K3，[GLM](multimodal/glm.md)则从 VisualGLM、CogVLM 与 GLM-V 贯通 OCR、GUI、端侧、语音、图像和视频生成。
 - 重构[多模态与生成](multimodal/index.md)主线：从[历史脉络](multimodal/history.md)、[信号与 Token 化](multimodal/foundations/signals-tokenization.md)、[对齐与融合](multimodal/foundations/alignment-fusion.md)、[时空位置与 Mask](multimodal/foundations/position-time-masks.md)推进到[视觉表示与 Grounding](multimodal/vision/representation-grounding.md)，把模态差异、序列接口、训练数据和系统约束放回同一条因果链。
 - 展开生成模型的完整路径：[自回归与 GAN](multimodal/image-generation/history-autoregressive-gan.md)、[Autoencoder 与视觉 Tokenizer](multimodal/image-generation/autoencoders-tokenizers.md)、[Diffusion 与 Score](multimodal/image-generation/diffusion-score.md)、[Latent Diffusion、DiT 与 Flow](multimodal/image-generation/latent-dit-flow.md)及[控制、编辑与评测](multimodal/image-generation/control-editing-evaluation.md)分别固定历史动机、统一公式、可执行语义核和工程失效模式。
 - 新增[音频理解](multimodal/audio/representations-understanding.md)、[音频生成与流式交互](multimodal/audio/generation-streaming.md)、[视频理解与长程记忆](multimodal/video/understanding-long-context.md)、[视频生成](multimodal/video/generation.md)和[Any-to-Any 系统](multimodal/omni/any-to-any.md)，贯通 waveform、codec、同步、时序压缩、生成采样与实时协议。

@@ -23,6 +23,31 @@ REQUIRED_DEEP_LINKS = {
     "/reinforcement-learning/trust-region-ppo/": {"trpo"},
     "/reinforcement-learning/critic-free-baselines/": {"rloo"},
     "/landscape/works/sao-compactionrl/": {"sao", "compactionrl"},
+    "/landscape/families/deepseek/": {
+        "family-map",
+        "release-ledger",
+        "site-map",
+        "known-gaps",
+        "reference",
+    },
+    "/landscape/families/kimi/": {
+        "family-map",
+        "release-ledger",
+        "site-map",
+        "known-gaps",
+        "reference",
+    },
+    "/landscape/families/glm/": {
+        "family-map",
+        "release-ledger",
+        "site-map",
+        "known-gaps",
+        "reference",
+    },
+    "/multimodal/glm/": {
+        "mechanism-ledger",
+        "reference",
+    },
     "/landscape/works/kimi-k3/": {
         "kda-recurrence",
         "kda-chunkwise",

@@ -1,6 +1,6 @@
 # Kimi K2.5：原生多模态、联合 RL 与 Agent Swarm
 
-[Kimi K2.5](https://arxiv.org/abs/2602.02276)把两条此前相对独立的路线接到一起：一条从
+[Kimi K2.5](https://arxiv.org/abs/2602.02276)在[Kimi 家族](../families/kimi.md)中把两条此前相对独立的路线接到一起：一条从
 [Kimi-VL](../../multimodal/kimi-vl.md)出发，研究视觉 token 怎样与语言共同预训练和强化学习；另一条
 从 [Kimi K2](kimi-k2.md)出发，研究长程 agent 怎样在工具世界中行动。连接点不是“给 agent 多看一张
 图”，而是让 text、vision、reasoning、tool use 与 parallel orchestration 共享训练主干和 outcome。

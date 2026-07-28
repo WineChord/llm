@@ -106,6 +106,6 @@ $$
 
 ## 案例与概念
 
-[Kimi-VL 深读](kimi-vl.md)从原生分辨率、视觉—语言桥、MoE decoder 与长视觉上下文展开一个具体模型；[Kimi 家族案例](kimi.md)和[DeepSeek 案例](deepseek.md)则用于观察技术路线怎样跨版本组合通用机制。概念结论仍以本节各主题页和一手论文为准，厂商时间线不承担通用分类。
+[Kimi-VL 深读](kimi-vl.md)从原生分辨率、视觉—语言桥、MoE decoder 与长视觉上下文展开一个具体模型；[Kimi 多模态分支](kimi.md)、[DeepSeek 多模态案例](deepseek.md)与 [GLM 多模态分支](glm.md)用于观察技术路线怎样跨版本组合通用机制。完整模型边界分别见 [Kimi](../landscape/families/kimi.md)、[DeepSeek](../landscape/families/deepseek.md)和 [GLM](../landscape/families/glm.md) 家族总览；概念结论仍以本节各主题页和一手论文为准。
 
 紧凑的 patchify、对比损失、resampler、坐标、模态 mask、RVQ 与时空 attention 练习见[多模态手撕实现](../practice/multimodal.md)。

@@ -106,3 +106,5 @@ $$
 ## 推荐顺序
 
 先读[解码](decoding.md)→[KV Cache](kv-cache.md)→[运行时](runtime.md)→[调度](serving.md)，再按瓶颈进入量化、推测解码或 P/D 分离。用[性能模型](../systems/performance-model.md)算成本，用[推理可靠性](benchmarking-reliability.md)验证端到端结果。
+
+MLA、稀疏/线性注意力、混合缓存、MTP draft 与 P/D 系统在真实模型中的组合方式，可对照 [DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md)和 [GLM](../landscape/families/glm.md)；服务 alias、公开权重与论文配置必须分别固定。

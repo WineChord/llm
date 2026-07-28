@@ -5,7 +5,8 @@ test-time compute 重新变成训练信号。[Kimi k1.5](https://arxiv.org/abs/2
 在解码时外挂一棵显式搜索树，而是把搜索、回溯与纠错写进一条最长 128K token 的自回归轨迹，再让
 强化学习直接优化最终结果。
 
-这条路线随后成为 Kimi 技术谱系的训练主干：partial rollout 被
+这条路线随后成为 Kimi 技术谱系的训练主干；完整分支与公开产物先见
+[Kimi 家族总览](../families/kimi.md)。partial rollout 被
 [Kimi K2](kimi-k2.md)继承到长程 agent rollout，[Kimi K2.5](kimi-k2-5.md)进一步把单轨迹优化扩展到
 并行 orchestrator，[Kimi K3](kimi-k3.md)则把可恢复 rollout、外置状态和百万 token context 放进更大的
 系统闭环。本页先把 k1.5 自身讲清楚：它真正缩放的是什么，策略目标与长度控制怎样配合，partial

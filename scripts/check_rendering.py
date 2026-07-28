@@ -818,6 +818,12 @@ def browser_audit(
                 + `(image=${imageBackground}, link=${mediaBackground})`
               );
             }
+            if (deepLink && figure.id) {
+              figure.scrollIntoView({
+                block: 'start',
+                inline: 'nearest',
+              });
+            }
             const figureRect = figure.getBoundingClientRect();
             const article = document.querySelector(
               'article.md-content__inner'

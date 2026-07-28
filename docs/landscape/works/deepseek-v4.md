@@ -11,7 +11,7 @@ DeepSeek-V4 给出的答案由四层共同构成：
 
 所以，百万 token 不是配置文件中的一个上限。CSA/HCA 决定每层保留什么，KV 管理决定这些状态怎样复用，训练课程决定模型是否学会使用远距离信息，rollout 与沙箱决定长轨迹能否完成，评测协议才决定“1M”究竟测到了检索、推理还是工具使用。
 
-本页重建整份报告的因果链。[压缩注意力专题](deepseek-compressed-attention.md)、[mHC 专题](manifold-hyper-connections.md)、[On-Policy Distillation 专题](on-policy-distillation.md)和[TileLang 与 MegaMoE 专题](tilelang-mega-moe.md)继续展开可复用机制；[DeepSeek-V4 引用图谱](../deepseek-v4-reference-map.md)逐项梳理报告正文真正使用的 103 项来源。相关机制也分别进入[长上下文](../../architecture/long-context.md)、[注意力变体](../../architecture/attention-variants.md)、[Mixture of Experts](../../architecture/moe.md)、[预训练](../../training/pretraining.md)、[蒸馏](../../training/distillation.md)、[量化](../../inference/quantization.md)、[MoE 系统](../../systems/moe-systems.md)与[Agent 评测](../../evaluation/agent-tool-evaluation.md)等主干页面。
+本页重建整份报告的因果链。[DeepSeek 家族总览](../families/deepseek.md)负责它与通用、代码、数学、多模态及开放系统分支的边界；[压缩注意力专题](deepseek-compressed-attention.md)、[mHC 专题](manifold-hyper-connections.md)、[On-Policy Distillation 专题](on-policy-distillation.md)和[TileLang 与 MegaMoE 专题](tilelang-mega-moe.md)继续展开可复用机制；[DeepSeek-V4 引用图谱](../deepseek-v4-reference-map.md)逐项梳理报告正文真正使用的 103 项来源。相关机制也分别进入[长上下文](../../architecture/long-context.md)、[注意力变体](../../architecture/attention-variants.md)、[Mixture of Experts](../../architecture/moe.md)、[预训练](../../training/pretraining.md)、[蒸馏](../../training/distillation.md)、[量化](../../inference/quantization.md)、[MoE 系统](../../systems/moe-systems.md)与[Agent 评测](../../evaluation/agent-tool-evaluation.md)等主干页面。
 
 ## 一张地图：四条约束怎样闭合 {#causal-chain}
 

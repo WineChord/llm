@@ -2,7 +2,7 @@
 
 Kimi 家族的多模态路线并不是“语言模型后来接上一个视觉 encoder”。[Kimi-VL](kimi-vl.md)先独立探索视觉语言 MoE，[Kimi K2.5](../landscape/works/kimi-k2-5.md)再把视觉 token、thinking、工具使用与 Agent Swarm 放进同一训练系统，[Kimi K3](../landscape/works/kimi-k3.md)则让 MoonViT-V2 从 next-token prediction 开始与 3T 级 hybrid backbone 联合训练。音频仍由 Kimi-Audio 形成另一条分支。
 
-本页只讨论家族与模态之间的关系。完整发布日期、权重、代码、API 与许可证见[Kimi 技术谱系](../landscape/kimi-timeline.md)；K3 的 150 项引用及其归因边界见[引用图谱](../landscape/kimi-k3-reference-map.md)；K3 架构、训练、系统和评测的逐层解释见[工作深读](../landscape/works/kimi-k3.md)。
+本页只讨论家族与模态之间的关系。完整分支与公开产物见[Kimi 家族总览](../landscape/families/kimi.md)，关键继承与发布日期见[Kimi 技术谱系](../landscape/kimi-timeline.md)；K3 的 150 项引用及其归因边界见[引用图谱](../landscape/kimi-k3-reference-map.md)；K3 架构、训练、系统和评测的逐层解释见[工作深读](../landscape/works/kimi-k3.md)。
 
 ## 家族分叉而不是版本替换
 
@@ -24,7 +24,7 @@ Kimi-VL、K2.5 和 K3 有继承关系，却不是同一个 checkpoint 的连续�
 | --- | --- | --- | --- |
 | [Kimi-VL](kimi-vl.md) | 图像、视频、长文档与语言 | 轻量激活的视觉语言 MoE、视觉 reasoning 与长上下文 | 它的 vision encoder 不是 K3 MoonViT-V2 的同义词 |
 | [Kimi K2.5](../landscape/works/kimi-k2-5.md) | text + vision 的原生联合模型 | continual pretraining、zero-vision SFT、joint text-vision RL、Agent Swarm | swarm 是 agent system，不是视觉 encoder 架构 |
-| [Kimi K3](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf) | text、image、video 输入进入同一 agentic model | MoonViT-V2、1M context、KDA / MLA / AttnRes / MoE 联合训练 | 报告公开了设计与权重，没有公开完整视觉数据配方 |
+| [Kimi K3](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf) | 报告与服务接口覆盖 text、image、video；开放模型卡与本地示例可确认 text、image | MoonViT-V2、1M context、KDA / MLA / AttnRes / MoE 联合训练 | 服务端视频处理不能外推为开放 checkpoint 已公开原始视频的本地 processor 路径；完整视觉数据配方也未公开 |
 | [Kimi-Audio](https://github.com/MoonshotAI/Kimi-Audio) | speech、通用音频、音频生成与对话 | audio tokenizer / encoder、理解与生成闭环 | 它是并行分支，不是 K3 已披露的输入模态 |
 
 K2 本身在这里主要扮演 shared language / MoE foundation：它提供大规模稀疏 backbone、MuonClip 与 agentic post-training 经验。Kimi Linear 和 Attention Residuals 则分别把 sequence 与 depth 信息流接入 K3。它们对多模态的重要性不是“专门看图”，而是决定视觉 token 进入 backbone 后怎样跨长序列、跨层和跨 expert 流动。

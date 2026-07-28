@@ -1,0 +1,54 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "glm-ocr-throughput",
+    "title": "GLM-OCR image and PDF throughput table",
+    "canonical_url": "https://github.com/zai-org/GLM-OCR/blob/cef4d0ea120d1741f5cefe8985eee45f6c8eff1d/resources/speed.png",
+    "artifact_kind": "standalone_raster",
+    "artifact_url": "https://raw.githubusercontent.com/zai-org/GLM-OCR/cef4d0ea120d1741f5cefe8985eee45f6c8eff1d/resources/speed.png",
+    "artifact_sha256": "5c1f328691f21df0816bfae8a21c5e6ce8bd73fced426363ab2ac4400e126781",
+    "version": {
+      "kind": "git_commit",
+      "value": "cef4d0ea120d1741f5cefe8985eee45f6c8eff1d"
+    },
+    "page_count": 1,
+    "license": {
+      "name": "Apache License 2.0",
+      "url": "https://github.com/zai-org/GLM-OCR/blob/cef4d0ea120d1741f5cefe8985eee45f6c8eff1d/LICENSE",
+      "credit": "Copyright 2026 Zhipu AI",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "7cfe2db2477ee1e98b57ea1d8655aa8c39416022bab61aa4303e09af05495797"
+    }
+  },
+  "render": {
+    "renderer": "imagemagick",
+    "renderer_version": "7.1.2-27 Q16-HDRI",
+    "dpi": 72,
+    "coordinate_space": "source-pixels-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "glmocr-throughput",
+      "file": "glmocr-throughput.png",
+      "kind": "table",
+      "source_label": "standalone table",
+      "page": 1,
+      "source_size_pixels": [1758, 903],
+      "rotation": 0,
+      "source_crop_box_pixels": [0, 0, 1758, 903],
+      "pixel_size": [1758, 903],
+      "sha256": "bf1c549f5810d274bad4414b710a06d317a21447575b357d7bd6f913c9d9e0e6",
+      "placements": [
+        {
+          "page": "docs/multimodal/glm.md",
+          "anchor": "glmocr-throughput-figure",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

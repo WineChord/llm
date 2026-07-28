@@ -1,0 +1,54 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "glm-image-single-stream-dit",
+    "title": "GLM-Image single-stream diffusion-transformer diagram",
+    "canonical_url": "https://github.com/zai-org/GLM-Image/blob/69b87db2874f8b556417c03eedf2b8a1484f62e0/resources/architecture_2.jpeg",
+    "artifact_kind": "standalone_raster",
+    "artifact_url": "https://raw.githubusercontent.com/zai-org/GLM-Image/69b87db2874f8b556417c03eedf2b8a1484f62e0/resources/architecture_2.jpeg",
+    "artifact_sha256": "c34cc998712451404264d1b02ab48485fe7eec001eb22a00a10eb1cc0affc3d2",
+    "version": {
+      "kind": "git_commit",
+      "value": "69b87db2874f8b556417c03eedf2b8a1484f62e0"
+    },
+    "page_count": 1,
+    "license": {
+      "name": "Apache License 2.0",
+      "url": "https://github.com/zai-org/GLM-Image/blob/69b87db2874f8b556417c03eedf2b8a1484f62e0/LICENSE",
+      "credit": "Copyright 2026 Zhipu AI",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "7cfe2db2477ee1e98b57ea1d8655aa8c39416022bab61aa4303e09af05495797"
+    }
+  },
+  "render": {
+    "renderer": "imagemagick",
+    "renderer_version": "7.1.2-27 Q16-HDRI",
+    "dpi": 72,
+    "coordinate_space": "source-pixels-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "glm-image-single-stream-dit",
+      "file": "glm-image-single-stream-dit.png",
+      "kind": "diagram",
+      "source_label": "standalone diagram",
+      "page": 1,
+      "source_size_pixels": [1278, 527],
+      "rotation": 0,
+      "source_crop_box_pixels": [0, 0, 1278, 527],
+      "pixel_size": [1278, 527],
+      "sha256": "6401c2aae1a5d64a4ba934351b8b55188f824c361cacd8da2136e507e5253c82",
+      "placements": [
+        {
+          "page": "docs/multimodal/glm.md",
+          "anchor": "glm-image-single-stream-dit-figure",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

@@ -13,9 +13,7 @@
 - 以技术谱系连接重要问题、代表工作、论文实现与后续分叉，并提供关键工作深读。
 - 从数据工程、预训练、后训练到分布式训练、推理服务与硬件效率。
 - 覆盖长上下文、MoE、多模态生成、AI Infra、检索增强、Coding Agent、Agentic RL、评测与生产可靠性。
-- 以 [DeepSeek-V4](docs/landscape/works/deepseek-v4.md) 等系统深读连接架构公式、训练目标、kernel、状态恢复、评测协议与完整引用图谱。
-- 以 [GLM-5](docs/landscape/works/glm-5.md) 贯通稀疏注意力、预训练课程、异步 Agentic RL、可执行环境、异构部署与逐项证据审计。
-- 以 [Kimi 技术谱系](docs/landscape/kimi-timeline.md)连接 k1.5、Kimi-VL、K2、Kimi Linear、K2.5 与 K3，并将原报告图表嵌回对应的模型、训练和系统机制。
+- 以[模型家族](docs/landscape/families/index.md)分开版本、论文、权重、代码、API、产品与许可证，再把 DeepSeek、Kimi、GLM 的具体工作接回通用机制。
 - 在机制正文中直接给出可执行语义核与关键断言，并用实践页组织组合实验和完整测试。
 - 区分稳定原理、工程经验、实验结果与时效性事实，优先引用论文和官方资料。
 

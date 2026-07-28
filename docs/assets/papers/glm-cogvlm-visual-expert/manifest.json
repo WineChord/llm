@@ -1,0 +1,54 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "glm-cogvlm-visual-expert",
+    "title": "CogVLM visual-expert architecture diagram",
+    "canonical_url": "https://github.com/zai-org/CogVLM/blob/f7283b2c8d26cd7f932d9a5f7f5f9307f568195d/assets/method.png",
+    "artifact_kind": "standalone_raster",
+    "artifact_url": "https://raw.githubusercontent.com/zai-org/CogVLM/f7283b2c8d26cd7f932d9a5f7f5f9307f568195d/assets/method.png",
+    "artifact_sha256": "27aad543f87c14515dd329a6a393ad1767094d0ab3a4742e72ea7db6f232cfcf",
+    "version": {
+      "kind": "git_commit",
+      "value": "f7283b2c8d26cd7f932d9a5f7f5f9307f568195d"
+    },
+    "page_count": 1,
+    "license": {
+      "name": "Apache License 2.0",
+      "url": "https://github.com/zai-org/CogVLM/blob/f7283b2c8d26cd7f932d9a5f7f5f9307f568195d/LICENSE",
+      "credit": "Copyright 2024 CogVLM team @ Zhipu AI",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "30717405e6335e4284c08c6ab68af57e7ff2a4be6b0954fead7ca98c5339e60b"
+    }
+  },
+  "render": {
+    "renderer": "imagemagick",
+    "renderer_version": "7.1.2-27 Q16-HDRI",
+    "dpi": 72,
+    "coordinate_space": "source-pixels-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "cogvlm-visual-expert",
+      "file": "cogvlm-visual-expert.png",
+      "kind": "diagram",
+      "source_label": "Figure 3",
+      "page": 1,
+      "source_size_pixels": [1378, 824],
+      "rotation": 0,
+      "source_crop_box_pixels": [0, 0, 1378, 824],
+      "pixel_size": [1378, 824],
+      "sha256": "73d3a8471ad0312703e273ce91c953a4adfdfd0f1c5d864dd448eb1d22873a10",
+      "placements": [
+        {
+          "page": "docs/multimodal/glm.md",
+          "anchor": "cogvlm-visual-expert-figure",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}
