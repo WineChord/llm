@@ -107,7 +107,13 @@ perceptual hashing、规则与 classifier 质量过滤、文件结构校验，�
 
 [DeepSeek-V4](../landscape/works/deepseek-v4.md#csa-hca) 把 1M context 分给三种互补路径：CSA 以 $4\times$ 时间压缩后做 query-dependent top-$k$；HCA 以 $128\times$ 时间压缩后做 dense global attention；SWA 保留最近 128 token 的未压缩细节。完整机制见 [CSA / HCA](../landscape/works/deepseek-compressed-attention.md)。
 
-训练长度按 $4\text{K}\rightarrow16\text{K}\rightarrow64\text{K}\rightarrow1\text{M}$扩展；sparse attention 到 64K 阶段才引入，并先单独 warm up indexer。Flash 在前 1T token 保持 dense attention，Pro 的 dense 阶段更长但报告没有给出精确 token 数。这个顺序避免从第一步就同时学习语言、压缩器和稀疏选择，但也意味着“总训练 token”不能直接告诉我们模型实际见过多少 1M 样本。
+训练长度按下列阶梯逐段扩展：
+
+$$
+4\text{K}\rightarrow16\text{K}\rightarrow64\text{K}\rightarrow1\text{M}.
+$$
+
+sparse attention 到 64K 阶段才引入，并先单独 warm up indexer。Flash 在前 1T token 保持 dense attention，Pro 的 dense 阶段更长但报告没有给出精确 token 数。这个顺序避免从第一步就同时学习语言、压缩器和稀疏选择，但也意味着“总训练 token”不能直接告诉我们模型实际见过多少 1M 样本。
 
 报告的长上下文证据必须按协议拆开：
 

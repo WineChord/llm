@@ -242,7 +242,13 @@ $$
 \Delta W=\operatorname{concat}_h\!\left[\operatorname{NS}(M_h)\right],
 $$
 
-而不是 $\operatorname{NS}(\operatorname{concat}_hM_h)$。两者一般不相等。复现时必须固定 head layout、transpose、normalization、迭代次数以及 Q/K/V 是否分别处理。GLM-5 报告没有公开所有优化器超参数与消融，因此只能复现运算边界，不能据此还原完整训练配方。架构动机见 [GLM-5 架构](../landscape/works/glm-5-architecture.md#muon-split)。
+而不是
+
+$$
+\operatorname{NS}\!\left(\operatorname{concat}_h M_h\right).
+$$
+
+两者一般不相等。复现时必须固定 head layout、transpose、normalization、迭代次数以及 Q/K/V 是否分别处理。GLM-5 报告没有公开所有优化器超参数与消融，因此只能复现运算边界，不能据此还原完整训练配方。架构动机见 [GLM-5 架构](../landscape/works/glm-5-architecture.md#muon-split)。
 
 ## Reference {#reference}
 

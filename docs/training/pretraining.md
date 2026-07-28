@@ -163,7 +163,13 @@ base context
   -> extreme context during cooldown
 ```
 
-每一阶段都要冻结最大长度、长度直方图、长样本来源、总训练 token、global batch、位置机制与评测协议。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露了一条 $8\text{K}\rightarrow64\text{K}\rightarrow256\text{K}\rightarrow1\text{M}$ 的实例：前两段在主预训练中完成，后两段放到 cooldown。这个具体阶梯属于其模型、NoPE/KDA 架构和数据配方；可迁移的是逐段延长、逐段验收，而不是四个数字本身。完整实例与证据边界见 [Kimi K3](../landscape/works/kimi-k3.md)。
+每一阶段都要冻结最大长度、长度直方图、长样本来源、总训练 token、global batch、位置机制与评测协议。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露了如下实例：
+
+$$
+8\text{K}\rightarrow64\text{K}\rightarrow256\text{K}\rightarrow1\text{M}.
+$$
+
+前两段在主预训练中完成，后两段放到 cooldown。这个具体阶梯属于其模型、NoPE/KDA 架构和数据配方；可迁移的是逐段延长、逐段验收，而不是四个数字本身。完整实例与证据边界见 [Kimi K3](../landscape/works/kimi-k3.md)。
 
 极长样本的瓶颈常先出现在数据而不是窗口配置。长文档需要 exact/fuzzy dedup、结构完整性与跨段连贯性过滤；视频还要在帧级或片段级做感知去重。自然长样本不足时，可以合成“证据分散在多个远距离位置、答案必须联合这些证据”的任务，但应单列其 token share，并用自然长文档 holdout 验证，防止模型只学会合成模板。每次升级还要做短上下文回归，区分“会处理更长输入”和“只是把短能力迁移到更贵的序列”。
 

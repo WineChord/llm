@@ -323,7 +323,17 @@ r_t^{\mathrm{direct}}
 =\exp(\log\pi_\theta(a_t\mid s_t)-\log\pi_{\mathrm{rollout}}(a_t\mid s_t)).
 $$
 
-只在 $1-\epsilon_\ell<r_t^{\mathrm{direct}}<1+\epsilon_h$ 时保留该 token 的梯度，区间外设为零。它是 hard masking，不是把 ratio 截到 PPO 边界。系统同时用最旧 rollout revision 与当前 revision 的距离删除过期轨迹，因此 token mismatch 和 trajectory staleness 是两层不同过滤。
+只在
+
+$$
+1-\epsilon_\ell
+<
+r_t^{\mathrm{direct}}
+<
+1+\epsilon_h
+$$
+
+时保留该 token 的梯度，区间外设为零。它是 hard masking，不是把 ratio 截到 PPO 边界。系统同时用最旧 rollout revision 与当前 revision 的距离删除过期轨迹，因此 token mismatch 和 trajectory staleness 是两层不同过滤。
 
 这套方法接受一个明确近似：action ratio 修正已经访问的 $s_t$，却无法恢复当前策略本会访问而旧策略没有访问的状态。报告还在推理权重刷新后重置 optimizer，但没有给出该选择的单独消融。公式、stop-gradient 歧义与数据接受率审计见 [slime 与异步 Agentic RL](../landscape/works/slime-async-agentic-rl.md#direct-is)。
 

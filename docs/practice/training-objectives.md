@@ -74,7 +74,11 @@ torch.testing.assert_close(p, ref)
 
 ## LoRA
 
-[LoRA](https://arxiv.org/abs/2106.09685) 对冻结线性层 $W\in\mathbb R^{d_{\text{out}}\times d_{\text{in}}}$ 注入低秩增量：
+[LoRA](https://arxiv.org/abs/2106.09685) 对如下冻结线性层注入低秩增量：
+
+$$
+W\in\mathbb R^{d_{\text{out}}\times d_{\text{in}}}.
+$$
 
 $$
 \Delta W=\frac{\alpha}{r}BA,\qquad

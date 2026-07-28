@@ -108,7 +108,14 @@ y_t^{\mathrm{SMDP}}
 \left[Q_{\bar\theta}(s_{t+k},o')\right].
 $$
 
-做最优控制时，可把期望替换为 $\max_{o'\in\mathcal O(s_{t+k})}Q_{\bar\theta}(s_{t+k},o')$；若 option 在 terminal 结束，$d_{t+k}=1$，不再 bootstrap。这里的 $\gamma^k$ 假设 $\gamma$ 是按同一种 primitive time unit 定义的折扣。
+做最优控制时，可把期望替换为
+
+$$
+\max_{o'\in\mathcal O(s_{t+k})}
+Q_{\bar\theta}(s_{t+k},o').
+$$
+
+若 option 在 terminal 结束，$d_{t+k}=1$，不再 bootstrap。这里的 $\gamma^k$ 假设 $\gamma$ 是按同一种 primitive time unit 定义的折扣。
 
 wall-clock duration $\Delta t$ 不是天然的 primitive step。若目标确实按连续时间贴现，应先定义时间尺度，例如
 

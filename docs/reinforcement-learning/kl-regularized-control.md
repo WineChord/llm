@@ -84,7 +84,13 @@ $$
 {\pi_{\mathrm{old}}^{\mathrm{train}}(a_t\mid h_t)}
 $$
 
-刻画 learner 在同一批样本上的 current–old update。同步且数值契约完全一致时，$\mu^{\mathrm{rollout}}=\pi_{\mathrm{old}}^{\mathrm{train}}$；异步队列、不同推理 kernel、量化、路由或采样处理器都可能破坏这个等式。此时 current 相对真实 behavior 的 direct ratio 是
+刻画 learner 在同一批样本上的 current–old update。同步且数值契约完全一致时，
+
+$$
+\mu^{\mathrm{rollout}}=\pi_{\mathrm{old}}^{\mathrm{train}}.
+$$
+
+异步队列、不同推理 kernel、量化、路由或采样处理器都可能破坏这个等式。此时 current 相对真实 behavior 的 direct ratio 是
 
 $$
 d_t

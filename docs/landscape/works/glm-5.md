@@ -587,8 +587,13 @@ TITO 的价值是数据契约，不是传输格式偏好。只要 trainer 优化
 
 ### Direct double-sided importance sampling {#direct-is}
 
-异步 trajectory 可能横跨多个历史 checkpoint，完整维护
-$\pi_{\theta_{\mathrm{old}}^{(1)}},\ldots,\pi_{\theta_{\mathrm{old}}^{(N)}}$
+异步 trajectory 可能横跨多个历史 checkpoint。完整维护
+
+$$
+\pi_{\theta_{\mathrm{old}}^{(1)}},\ldots,
+\pi_{\theta_{\mathrm{old}}^{(N)}}
+$$
+
 代价很高。GLM-5 直接把 rollout 时记录的概率当 behavior proxy：
 
 $$

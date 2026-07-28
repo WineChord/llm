@@ -281,7 +281,14 @@ SAPO 的“sequence coherence”来自小步更新且序列内 log-ratio 方差�
 
 ## TIS 与 IcePop：校正的是 engine ratio {#tis-icepop}
 
-TIS 处理 $\kappa=\pi_{\mathrm{old}}^{\mathrm{train}}/\mu_{\mathrm{old}}^{\mathrm{rollout}}$：
+TIS 处理 engine-mismatch ratio：
+
+$$
+\kappa
+=
+\frac{\pi_{\mathrm{old}}^{\mathrm{train}}}
+{\mu_{\mathrm{old}}^{\mathrm{rollout}}}.
+$$
 
 $$
 \widetilde\kappa=\min(\kappa,C).

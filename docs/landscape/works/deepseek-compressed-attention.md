@@ -131,8 +131,13 @@ packed sequence：不同样本不能共享一个压缩窗口，尾部不足 $m$ 
 ## Lightning Indexer：公式 (13)–(17) {#lightning-indexer}
 
 压缩到 $n/m$ 后，CSA 没有直接对全部 entry 做 core attention，而是沿用 DSA 的
-query-dependent sparse selection。indexer key 使用相同的压缩结构得到
-$K^{I\mathrm{Comp}}\in\mathbb R^{(n/m)\times c^I}$；query 则先经过低秩通道：
+query-dependent sparse selection。indexer key 使用相同的压缩结构：
+
+$$
+K^{I\mathrm{Comp}}\in\mathbb R^{(n/m)\times c^I}.
+$$
+
+query 则先经过低秩通道：
 
 $$
 \mathbf c_t^Q=\mathbf h_tW^{DQ}, \tag{13}

@@ -77,7 +77,13 @@ $$
 
 它为梯度提供更直接的残差路径，深层训练通常更稳定。LayerNorm 同时中心化并缩放，RMSNorm 只按均方根缩放；二者的差别需要结合完整初始化与优化配方评估。
 
-原论文实际使用 post-norm，即 $\operatorname{Norm}(x+\operatorname{Sublayer}(x))$。pre-norm 改变了梯度路径，也改变最终 norm、初始化和残差尺度的配方，不能只移动一行代码后继续加载同一 checkpoint。更完整的 block、GQA 与增量一致性测试见 [Decoder Block](decoder-block.md)。
+原论文实际使用 post-norm：
+
+$$
+\operatorname{Norm}\!\left(x+\operatorname{Sublayer}(x)\right).
+$$
+
+pre-norm 改变了梯度路径，也改变最终 norm、初始化和残差尺度的配方，不能只移动一行代码后继续加载同一 checkpoint。更完整的 block、GQA 与增量一致性测试见 [Decoder Block](decoder-block.md)。
 
 ## 复杂度
 

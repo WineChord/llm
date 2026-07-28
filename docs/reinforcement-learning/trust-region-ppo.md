@@ -106,7 +106,15 @@ r_t
 {\pi_{\text{old}}(a_t\mid h_t)}.
 $$
 
-对齐目标中的 KL 则相对 $\pi_{\text{ref}}$。同步、同精度、无解码变换时，old training policy 可以近似真实 behavior；使用不同推理引擎、量化、top-$p$、grammar 或异步队列后，$\mu^{\mathrm{rollout}}\ne\pi_{\text{old}}^{\mathrm{train}}$。此时还要处理
+对齐目标中的 KL 则相对 $\pi_{\text{ref}}$。同步、同精度、无解码变换时，old training policy 可以近似真实 behavior；使用不同推理引擎、量化、top-$p$、grammar 或异步队列后，
+
+$$
+\mu^{\mathrm{rollout}}
+\ne
+\pi_{\text{old}}^{\mathrm{train}}.
+$$
+
+此时还要处理
 
 $$
 \frac{\pi_{\text{old}}^{\mathrm{train}}}{\mu^{\mathrm{rollout}}},

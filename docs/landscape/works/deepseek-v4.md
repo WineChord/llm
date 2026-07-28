@@ -581,9 +581,13 @@ $$
 
 训练轨迹由当前学生采样，所以 state distribution 跟着学生演化；reverse KL 又让学生在自己的状态上靠近适用教师。它避免简单 weight merging 的参数冲突，也不同于把所有领域 prompt 混入一轮统一 RL。
 
-常见近似只在已采到 token 上用
-$\operatorname{sg}[\log \pi_E(y_t)-\log\pi_\theta(y_t)]$
-当 advantage，这个 Monte Carlo estimator 便宜但方差大。V4 计算整个 vocabulary 的 teacher/student reverse KL，以更稠密的监督换稳定性。公式、几何混合解释和可运行实现见 [On-Policy Distillation](on-policy-distillation.md)。
+常见近似只在已采到 token 上使用
+
+$$
+\operatorname{sg}\!\left[\log \pi_E(y_t)-\log\pi_\theta(y_t)\right]
+$$
+
+作为 advantage。这个 Monte Carlo estimator 便宜但方差大。V4 计算整个 vocabulary 的 teacher/student reverse KL，以更稠密的监督换稳定性。公式、几何混合解释和可运行实现见 [On-Policy Distillation](on-policy-distillation.md)。
 
 ### 为什么 full vocabulary 首先是存储调度问题
 
