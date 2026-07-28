@@ -1,104 +1,253 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source": {
+    "id": "kimi-k3",
     "title": "Kimi K3 Technical Report",
-    "revision": "521359a5cae5e79d02e5a2102c2cea9ce3b9b79a",
-    "pdf_url": "https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf",
-    "pdf_sha256": "38621eb5be601a5dcd5c795fc10b692d124430014ff9eb035b0ce38c72ec2eaf",
-    "page_size_points": [
-      612,
-      792
-    ],
-    "license_name": "Kimi K3 License",
-    "license_url": "https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE",
-    "license_file": "LICENSE.txt",
-    "copyright": "Copyright (c) 2026 Moonshot AI"
+    "canonical_url": "https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf",
+    "artifact_url": "https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf",
+    "artifact_sha256": "38621eb5be601a5dcd5c795fc10b692d124430014ff9eb035b0ce38c72ec2eaf",
+    "version": {
+      "kind": "git_commit",
+      "value": "521359a5cae5e79d02e5a2102c2cea9ce3b9b79a"
+    },
+    "page_count": 47,
+    "license": {
+      "name": "Kimi K3 License",
+      "url": "https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE",
+      "credit": "Copyright (c) 2026 Moonshot AI",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "f45c677fa7f42405512b67f9b18b4ccd6927c6787492867763d80368631b7c54"
+    }
   },
   "render": {
+    "renderer": "pdftocairo",
+    "renderer_version": "26.07.0",
     "dpi": 300,
+    "coordinate_space": "rendered-page-points-top-left",
     "colorspace": "sRGB",
-    "format": "PNG"
+    "format": "PNG",
+    "metadata_policy": "strip"
   },
-  "figures": [
+  "assets": [
     {
       "id": "k3-figure-02",
       "file": "figure-02-architecture.png",
-      "figure": 2,
+      "kind": "diagram",
+      "source_label": "Figure 2",
       "page": 3,
-      "crop_points": [
-        70,
-        50,
-        542,
-        438
-      ],
-      "pixel_width": 1967,
-      "pixel_height": 1617,
-      "sha256": "4a728b7574f4461a7e4924eb890f386a5bb503582d1619f5ece63d6cf52f3b1f",
-      "used_by": "docs/landscape/works/kimi-k3.md"
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [70, 50, 542, 438],
+      "pixel_size": [1967, 1617],
+      "sha256": "b1704d175a34fd108d04826086cde430aee3562bf30ecb56675f671db5209a67",
+      "placements": [
+        {
+          "page": "docs/landscape/works/kimi-k3.md",
+          "anchor": "k3-figure-02",
+          "role": "portrait",
+          "media_link": "asset"
+        }
+      ]
     },
     {
       "id": "k3-figure-03",
       "file": "figure-03-bounded-decay.png",
-      "figure": 3,
+      "kind": "figure",
+      "source_label": "Figure 3",
       "page": 5,
-      "crop_points": [
-        70,
-        58,
-        542,
-        222
-      ],
-      "pixel_width": 1967,
-      "pixel_height": 683,
-      "sha256": "ecc43beefbf2620dd448e30b88531040208bd6ff36bf547849f20c2fb745fe06",
-      "used_by": "docs/landscape/works/kimi-linear-flashkda.md"
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [70, 58, 542, 222],
+      "pixel_size": [1967, 683],
+      "sha256": "d7381f451a9f10b12568e6bbfca918164039d7ad45da1cdd0117e66bbfd9265b",
+      "placements": [
+        {
+          "page": "docs/landscape/works/kimi-linear-flashkda.md",
+          "anchor": "k3-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "k3-figure-04",
+      "file": "figure-04-situ-glu.png",
+      "kind": "figure",
+      "source_label": "Figure 4",
+      "page": 7,
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [70, 52, 542, 183],
+      "pixel_size": [1967, 546],
+      "sha256": "2b4c0b91a52be548def934653b0fee6c08c11a737d9f37c591cb43c7228acdff",
+      "placements": [
+        {
+          "page": "docs/landscape/works/latentmoe-quantile-balancing.md",
+          "anchor": "k3-figure-04",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
     },
     {
       "id": "k3-figure-05",
       "file": "figure-05-quantile-balancing.png",
-      "figure": 5,
+      "kind": "figure",
+      "source_label": "Figure 5",
       "page": 8,
-      "crop_points": [
-        72,
-        55,
-        540,
-        210
-      ],
-      "pixel_width": 1950,
-      "pixel_height": 646,
-      "sha256": "a022fa36bea9f87d489051b87761f3be41ca764db6cf50b17e46facec302d7df",
-      "used_by": "docs/landscape/works/latentmoe-quantile-balancing.md"
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [72, 55, 540, 210],
+      "pixel_size": [1950, 646],
+      "sha256": "8b443f0346b8499ee4638f9be68e53e6cac3a3c10dac09c4e502dd8d397df4b5",
+      "placements": [
+        {
+          "page": "docs/landscape/works/latentmoe-quantile-balancing.md",
+          "anchor": "k3-figure-05",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "k3-figure-06",
+      "file": "figure-06-vision-gradients.png",
+      "kind": "figure",
+      "source_label": "Figure 6",
+      "page": 9,
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [103, 508, 519, 676],
+      "pixel_size": [1733, 700],
+      "sha256": "d575d32ae4385a1a755ab9c1657588c30150401042fb092d804b3063f0c60266",
+      "placements": [
+        {
+          "page": "docs/multimodal/kimi.md",
+          "anchor": "k3-figure-06",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "k3-figure-07",
+      "file": "figure-07-scaling.png",
+      "kind": "figure",
+      "source_label": "Figure 7",
+      "page": 11,
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [188, 55, 436, 266],
+      "pixel_size": [1033, 879],
+      "sha256": "4d04b4291071bb0e71d2a36fd0ebc11120c55cb065f18e93f649916baf9e2bde",
+      "placements": [
+        {
+          "page": "docs/landscape/works/kimi-k3.md",
+          "anchor": "k3-figure-07",
+          "role": "portrait",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "k3-figure-08",
+      "file": "figure-08-rl-scaling.png",
+      "kind": "figure",
+      "source_label": "Figure 8",
+      "page": 13,
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [115, 43, 492, 225],
+      "pixel_size": [1571, 758],
+      "sha256": "e9ad12aed33745f62f23ebb7923babf04a15efbc90e9af5cdcb8f591b589d5cf",
+      "placements": [
+        {
+          "page": "docs/landscape/works/kimi-k3.md",
+          "anchor": "k3-figure-08",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
     },
     {
       "id": "k3-figure-09",
       "file": "figure-09-task-synthesis.png",
-      "figure": 9,
+      "kind": "diagram",
+      "source_label": "Figure 9",
       "page": 15,
-      "crop_points": [
-        115,
-        185,
-        505,
-        440
-      ],
-      "pixel_width": 1625,
-      "pixel_height": 1063,
-      "sha256": "e60d8e09f1d0e223d0a8ba118b757b76f3d07e88a206354b80b223386d2eb223",
-      "used_by": "docs/landscape/works/kimi-k3.md"
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [115, 185, 505, 440],
+      "pixel_size": [1625, 1062],
+      "sha256": "5548d1ec04ca841808868e3029051e85d786a2a759dc48443b560d3ee4dd07a2",
+      "placements": [
+        {
+          "page": "docs/landscape/works/kimi-k3.md",
+          "anchor": "k3-figure-09",
+          "role": "portrait",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "k3-figure-11",
+      "file": "figure-11-training-pipeline.png",
+      "kind": "diagram",
+      "source_label": "Figure 11",
+      "page": 19,
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [77, 43, 541, 187],
+      "pixel_size": [1933, 600],
+      "sha256": "e5eeffb8d788c9f4a166e75e9dd371dffe36be2cbf27a544fc9b9bd7331b27a4",
+      "placements": [
+        {
+          "page": "docs/landscape/works/kimi-k3.md",
+          "anchor": "k3-figure-11",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
     },
     {
       "id": "k3-figure-12",
       "file": "figure-12-prefix-cache.png",
-      "figure": 12,
+      "kind": "diagram",
+      "source_label": "Figure 12",
       "page": 23,
-      "crop_points": [
-        125,
-        332,
-        490,
-        458
-      ],
-      "pixel_width": 1521,
-      "pixel_height": 525,
-      "sha256": "2bef14bdfaaa164d7de2a2aa6984b461dcdfca25541db4e34bb841b269312943",
-      "used_by": "docs/inference/cache-reuse.md"
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [125, 332, 490, 458],
+      "pixel_size": [1521, 525],
+      "sha256": "a9422780facd8359211b1c9ebb7e3c5a45d15b358322609cedda9818153499a8",
+      "placements": [
+        {
+          "page": "docs/inference/cache-reuse.md",
+          "anchor": "k3-figure-12",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "k3-figure-16",
+      "file": "figure-16-xtml.png",
+      "kind": "diagram",
+      "source_label": "Figure 16",
+      "page": 46,
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [56, 44, 548, 227],
+      "pixel_size": [2050, 762],
+      "sha256": "c6dcd1ed17be30d54cf918588915fafcb2a19cf3c0808ae9ac5727261a893cd4",
+      "placements": [
+        {
+          "page": "docs/landscape/works/kimi-k3.md",
+          "anchor": "k3-figure-16",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
     }
   ]
 }

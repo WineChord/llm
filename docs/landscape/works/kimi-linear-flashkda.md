@@ -207,6 +207,11 @@ L2 normalization，$v$ 经过 ShortConv 与 Swish；逐通道 decay 由 low-rank
 recurrent output 再经过 head-wise RMSNorm 和低秩 sigmoid output gate。全局 MLA 使用 NoPE，
 把顺序与 recency 的主要责任交给 KDA。
 
+<figure class="paper-figure paper-figure--portrait" id="kimi-linear-figure-03" data-paper-source="kimi-linear" data-paper-asset="kimi-linear-figure-03" markdown="1">
+[![Kimi Linear 以三组 KDA 层接一组 MLA 层构成混合主干，右侧分别展开稀疏 MoE 与 Kimi Delta Attention 的内部数据流](../../assets/papers/kimi-linear/figure-03-hybrid-architecture.png){ width="1492" height="1396" loading="lazy" decoding="async" }](../../assets/papers/kimi-linear/figure-03-hybrid-architecture.png)
+<figcaption><strong>Figure 3 说明 3:1 不是一个只存在于配置表里的比例，而是两种记忆接口的周期性交接。</strong>KDA 层以固定状态承担大部分序列混合，MLA 层周期性恢复全局 token-to-token 寻址；两者之后都进入稀疏 MoE。右下角同时画出 decay、delta correction 与 output gate，正好对应正文中的递推公式。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-Linear/8c1d85eb6b5f8fcefb15758691b0ce50b0827ce3/tech_report.pdf#page=6">Kimi Linear: An Expressive, Efficient Attention Architecture, Figure 3, p. 6</a>；Copyright (c) 2025 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-Linear/blob/8c1d85eb6b5f8fcefb15758691b0ce50b0827ce3/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+
 论文的 matched 1.4T-token 实验比较了 KDA hybrid、full MLA 与 hybrid GDN；公开
 [Kimi-Linear 仓库](https://github.com/MoonshotAI/Kimi-Linear)另发布 48B total / 3B activated 的
 Base 与 Instruct checkpoints，并说明 release checkpoints 训练到 5.7T tokens。两个数字对应不同
@@ -244,7 +249,7 @@ $$
 于是 16-token tile 的累计 log-decay 位于 $(-80,0)$，倒数小于 $e^{80}$，在 BF16 的指数范围内。
 diagonal 和 off-diagonal causal tiles 因而都能使用 dense Tensor Core GEMM。
 
-<figure class="paper-figure paper-figure--wide" id="k3-figure-03" markdown="1">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-03" data-paper-source="kimi-k3" data-paper-asset="k3-figure-03" markdown="1">
 [![左侧对比无下界与负五下界的 log-decay，右侧展示下界使 diagonal tile 从逐位置对特判转入统一的 Tensor Core 路径](../../assets/papers/kimi-k3/figure-03-bounded-decay.png){ width="1967" height="683" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-03-bounded-decay.png)
 <figcaption><strong>左图看函数值域，右图看执行路径。</strong>关键不是把 Softplus 换成 Sigmoid 这一表面形式，而是有限下界把 16-token tile 的 reciprocal scaling 留在 BF16 指数范围内，使 diagonal tile 不再需要逐 position-pair 特判。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=5">Kimi K3 Technical Report, Figure 3, p. 5</a>；© 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
 </figure>

@@ -2,7 +2,9 @@
 
 ## 2026-07-28
 
-- 为 [Kimi K3 总览](landscape/works/kimi-k3.md#k3-figure-02)、[KDA 数值边界](landscape/works/kimi-linear-flashkda.md#k3-figure-03)、[Quantile Balancing](landscape/works/latentmoe-quantile-balancing.md#k3-figure-05)和[混合缓存](inference/cache-reuse.md#k3-figure-12)加入五幅精确裁取的原报告机制图；图像按叙事节点分布，保留高清查看、替代文本、固定版本来源、版权与许可证，并由独立门禁校验裁剪范围、像素、摘要和使用位置。
+- 新增 [Kimi k1.5](landscape/works/kimi-k1-5.md)、[Kimi K2](landscape/works/kimi-k2.md)、[Kimi K2.5](landscape/works/kimi-k2-5.md)与[Kimi-VL](multimodal/kimi-vl.md)四篇深读：从长程 partial rollout 进入 MuonClip、稀疏缩放、工具数据、checkpoint engine、早融合、联合多模态 RL、Agent Swarm、原生分辨率视觉塔与四阶段训练，并与[Kimi 技术谱系](landscape/kimi-timeline.md)双向连接。
+- 将 k1.5、K2、Kimi-VL、K2.5、Kimi Linear 与 K3 六份固定版本报告中的 20 幅机制图放回最需要证据的段落；每幅图保留独立解读、高清查看、替代文本、页码、版权和许可证。新的 manifest v2 与离线生成器校验源 PDF 摘要、裁剪框、像素、PNG 元数据、正文 placement 和生成后语义结构。
+- 补强[语言建模](foundations/language-modeling.md)、[缩放规律](foundations/scaling.md)、[Transformer](architecture/transformer.md)、[优化稳定性](training/optimization.md)、[分布式训练](systems/parallelism.md)、[音频与视频](multimodal/audio-video.md)等基础页，并重写 LSTM、Seq2Seq、BERT、T5、Scaling Laws、ReAct / Toolformer 等关键工作中的因果脉络、实现边界与证据范围。
 - 新增 [GLM-5 总深读](landscape/works/glm-5.md)：完整清点 40 页报告的 13 幅图、13 张表、5 个编号公式、4 段代码清单与附录 A–B；按原文、官方配置和后续 GLM-5.2 资料分开记录 80/78 层冲突、恒零组目标、引文元数据问题及内部评测边界。
 - 拆分 [GLM-5 架构](landscape/works/glm-5-architecture.md)、[IndexCache 与 IndexShare](landscape/works/indexcache.md)、[slime 与异步 Agentic RL](landscape/works/slime-async-agentic-rl.md)和 [GLM Agentic Engineering](landscape/works/glm-agentic-engineering.md)，把 MLA-256、Muon Split、Shared MTP、DSA、TITO、direct IS、环境扩展、上下文管理和异构部署接回 canonical 主干。
 - 建立 [GLM 演化](landscape/glm-timeline.md)与 [GLM-5 的 63 项正文引用图谱](landscape/glm-5-reference-map.md)，分开 full report 与 GLM-5.1/5.2 的后续增量，并修正 GLM-5 base model 训练总量为 28.5T。

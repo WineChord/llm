@@ -19,6 +19,10 @@ $$
 
 反转是有效技巧，却没有改变信息瓶颈。源句无论多长，都只能通过固定维度 $c$ 进入 decoder；细节之间还会竞争同一状态容量。
 
+原论文的反转实验给出了这个优化效应的具体尺度：在其设置中，测试 perplexity 从 5.8 降至 4.7，单模型 beam-12 BLEU 从 25.9 提升到 30.6 左右。它支持“缩短部分最小时间滞后有助于训练”，不支持源序列反转是通用语言建模规则；语言对、词序和 encoder 接口改变后，结论需要重新测量。
+
+训练时 decoder 读取真实上一目标词，推理时则读取自己的预测。beam search 只近似寻找高概率序列，还受长度、EOS 和词表影响。固定向量瓶颈与 exposure mismatch 是两类问题：attention 主要改前者，不自动消除后者。
+
 ## Alignment 变成可微读取
 
 Bahdanau attention 保留所有 encoder states $h_1,\ldots,h_{T_x}$。decoder 第 $t$ 步根据上一状态 $s_{t-1}$ 计算 additive score：
@@ -35,6 +39,8 @@ c_t=\sum_j\alpha_{tj}h_j.
 $$
 
 context 从固定 $c$ 变为每一步不同的 $c_t$。模型可在生成目标词时回到最相关的源位置，而不必让最终 encoder state 无损保存一切。soft alignment 没有逐词标签，它由翻译 loss 共同学习。
+
+原模型的 encoder 是双向 RNN，因此 annotation $h_j$ 已经融合源位置左右上下文；decoder 则在目标时间上递归。于是 $c_t$ 不是对原 token embedding 的简单加权，而是对上下文化 annotation 的读取。这个差别解释了为什么 attention heatmap 可以看似对齐词语，却不能直接解释每个 feature 的来源。
 
 ## 带 padding mask 的最小 additive attention
 
@@ -67,11 +73,15 @@ assert memory.grad is not None and torch.count_nonzero(memory.grad[~valid]) == 0
 
 mask 后的 padding 不获得权重或梯度，固定了可变长度 batch 的关键语义。完整 NMT 还需要双向 encoder、teacher forcing、decoder recurrence、词表投影和 beam search；这些工程不应遮住“按 decoder 状态读取源端记忆”的核心。
 
-## Attention 不是无损解释
+还要处理全 padding row：有限最小值经过 softmax 可能产生均匀概率，`-inf` 则可能产生 NaN。数据管线应保证每个样本至少一个有效 memory position，或在 attention 中显式返回零 context 和 invalid 状态。
+
+## Alignment 图能看什么，不能看什么
 
 $\alpha_{tj}$ 可以画成 alignment heatmap，也经常呈现合理的词序对应。但它首先是生成计算中的权重，不是自动可靠的语言学标注或因果解释。多个位置可能共同提供信息，后续层也会重新混合表示；仅凭一张 attention 图不能证明模型为什么作出最终决定。
 
-## Transformer 继承并改写了什么
+更合适的用途是诊断：检查 padding 泄漏、生成停滞、长句末端是否被忽略，以及词序变化后权重是否合理移动。若要把它当作语言学对齐，应与人工对齐和替代性干预共同验证。
+
+## 从一次 cross-read 到每层 self-read
 
 Bahdanau attention 已经包含 query、memory 与 weighted read 的核心。Transformer 做了三次推广：
 

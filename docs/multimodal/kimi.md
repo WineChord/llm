@@ -1,6 +1,6 @@
 # Kimi 家族的多模态分支
 
-Kimi 家族的多模态路线并不是“语言模型后来接上一个视觉 encoder”。Kimi-VL 先独立探索视觉语言 MoE，K2.5 再把视觉 token、thinking、工具使用与 Agent Swarm 放进同一训练系统，K3 则让 MoonViT-V2 从 next-token prediction 开始与 3T 级 hybrid backbone 联合训练。音频仍由 Kimi-Audio 形成另一条分支。
+Kimi 家族的多模态路线并不是“语言模型后来接上一个视觉 encoder”。[Kimi-VL](kimi-vl.md)先独立探索视觉语言 MoE，[Kimi K2.5](../landscape/works/kimi-k2-5.md)再把视觉 token、thinking、工具使用与 Agent Swarm 放进同一训练系统，[Kimi K3](../landscape/works/kimi-k3.md)则让 MoonViT-V2 从 next-token prediction 开始与 3T 级 hybrid backbone 联合训练。音频仍由 Kimi-Audio 形成另一条分支。
 
 本页只讨论家族与模态之间的关系。完整发布日期、权重、代码、API 与许可证见[Kimi 技术谱系](../landscape/kimi-timeline.md)；K3 的 150 项引用及其归因边界见[引用图谱](../landscape/kimi-k3-reference-map.md)；K3 架构、训练、系统和评测的逐层解释见[工作深读](../landscape/works/kimi-k3.md)。
 
@@ -22,8 +22,8 @@ Kimi-VL、K2.5 和 K3 有继承关系，却不是同一个 checkpoint 的连续�
 
 | 节点 | 多模态对象 | 训练或结构焦点 | 不应混淆的边界 |
 | --- | --- | --- | --- |
-| [Kimi-VL](https://arxiv.org/abs/2504.07491) | 图像、视频、长文档与语言 | 轻量激活的视觉语言 MoE、视觉 reasoning 与长上下文 | 它的 vision encoder 不是 K3 MoonViT-V2 的同义词 |
-| [Kimi K2.5](https://arxiv.org/abs/2602.02276) | text + vision 的原生联合模型 | continual pretraining、zero-vision SFT、joint text-vision RL、Agent Swarm | swarm 是 agent system，不是视觉 encoder 架构 |
+| [Kimi-VL](kimi-vl.md) | 图像、视频、长文档与语言 | 轻量激活的视觉语言 MoE、视觉 reasoning 与长上下文 | 它的 vision encoder 不是 K3 MoonViT-V2 的同义词 |
+| [Kimi K2.5](../landscape/works/kimi-k2-5.md) | text + vision 的原生联合模型 | continual pretraining、zero-vision SFT、joint text-vision RL、Agent Swarm | swarm 是 agent system，不是视觉 encoder 架构 |
 | [Kimi K3](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf) | text、image、video 输入进入同一 agentic model | MoonViT-V2、1M context、KDA / MLA / AttnRes / MoE 联合训练 | 报告公开了设计与权重，没有公开完整视觉数据配方 |
 | [Kimi-Audio](https://github.com/MoonshotAI/Kimi-Audio) | speech、通用音频、音频生成与对话 | audio tokenizer / encoder、理解与生成闭环 | 它是并行分支，不是 K3 已披露的输入模态 |
 
@@ -31,7 +31,7 @@ K2 本身在这里主要扮演 shared language / MoE foundation：它提供大�
 
 ## Kimi-VL：先解决视觉语言桥与长视觉上下文
 
-Kimi-VL 使用视觉 encoder、projector 与 MoE language decoder，把图像和视频表示映射到语言 token 所在的 embedding space。它的重要性不只在 benchmark 数字，而在于把四类负载放进同一模型：
+[Kimi-VL 深读](kimi-vl.md)从原生分辨率、MoonViT、projector、MoE language decoder、四阶段训练与 128K 激活逐层展开。这里先保留它对家族关系最重要的一点：图像和视频表示被映射到语言 token 所在的 embedding space，并让四类负载进入同一模型：
 
 - 高分辨率图像带来大量局部 patch；
 - 多图与长文档要求跨页、跨图建立关系；
@@ -94,6 +94,11 @@ K3 报告称 MoonViT-V2 约 401M 参数，从 next-token prediction 目标开始
 ### 从头 NTP 训练能支持什么结论
 
 报告的消融显示，作者配方内从随机初始化开始的 vision encoder 优于先做视觉预训练再接语言模型的方案。最窄结论是：在其数据、backbone、优化器和预算下，end-to-end next-token objective 能形成更匹配语言主干的视觉表示。
+
+<figure class="paper-figure paper-figure--wide" id="k3-figure-06" data-paper-source="kimi-k3" data-paper-asset="k3-figure-06" markdown="1">
+[![Kimi K3 视觉塔在完整训练轨迹与第 14k 到 16k 步局部区间的梯度范数；从头训练的 MoonViT-V2 曲线整体低于 SigLIP 初始化的 MoonViT-3D，并出现更少的大幅尖峰](../assets/papers/kimi-k3/figure-06-vision-gradients.png){ width="1733" height="700" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-06-vision-gradients.png)
+<figcaption><strong>这里的证据是联合训练稳定性，而不是一条普适初始化定律。</strong>蓝线在完整轨迹上出现更多高梯度尖峰，局部放大后两条分布的基线差异也仍然可见；它支持作者配方中的从头 NTP 选择，却没有隔离数据、优化器或 backbone 的独立贡献。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=9">Kimi K3 Technical Report, Figure 6, p. 9</a>；© 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
 
 它不能推出：
 

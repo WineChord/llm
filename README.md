@@ -15,6 +15,7 @@
 - 覆盖长上下文、MoE、多模态生成、AI Infra、检索增强、Coding Agent、Agentic RL、评测与生产可靠性。
 - 以 [DeepSeek-V4](docs/landscape/works/deepseek-v4.md) 等系统深读连接架构公式、训练目标、kernel、状态恢复、评测协议与完整引用图谱。
 - 以 [GLM-5](docs/landscape/works/glm-5.md) 贯通稀疏注意力、预训练课程、异步 Agentic RL、可执行环境、异构部署与逐项证据审计。
+- 以 [Kimi 技术谱系](docs/landscape/kimi-timeline.md)连接 k1.5、Kimi-VL、K2、Kimi Linear、K2.5 与 K3，并将原报告图表嵌回对应的模型、训练和系统机制。
 - 在机制正文中直接给出可执行语义核与关键断言，并用实践页组织组合实验和完整测试。
 - 区分稳定原理、工程经验、实验结果与时效性事实，优先引用论文和官方资料。
 
@@ -32,9 +33,11 @@ python scripts/check_snippets.py
 python scripts/check_code_integration.py
 python scripts/check_rendering.py
 mkdocs build --strict
+python scripts/check_paper_figures.py --site-dir site
 python scripts/check_links.py --site-dir site
 python scripts/check_code_integration.py --site-dir site
-python scripts/check_rendering.py --site-dir site --browser
+python scripts/check_rendering.py --site-dir site --browser \
+  --visual-artifacts-dir visual-audit
 mkdocs serve
 ```
 
@@ -42,6 +45,24 @@ mkdocs serve
 
 安装 PyTorch 后，可额外运行 `python scripts/run_reference_snippets.py`，
 逐页执行正文语义核、组合实验、关键工作 reference 与断言。
+
+## 论文图表
+
+`docs/assets/papers/` 中的裁图由 manifest 绑定到固定版本的源文件、
+页码、裁剪框、像素尺寸、摘要和许可证。现有 schema v1 继续受支持；
+新增来源使用
+[`schemas/paper-figure-manifest-v2.schema.json`](schemas/paper-figure-manifest-v2.schema.json)，
+并可在持有本地 PDF 时离线复现：
+
+```bash
+python scripts/render_paper_figures.py \
+  --manifest docs/assets/papers/<source>/manifest.json \
+  --pdf /absolute/path/to/report.pdf
+```
+
+生成器不会下载论文；本地 PDF 的 SHA-256 必须先与 manifest 一致。
+`--output-dir` 可输出独立副本，`--write-assets` 才会替换登记文件，
+`--asset` 可将范围收窄到单个图表。
 
 ## 目录
 

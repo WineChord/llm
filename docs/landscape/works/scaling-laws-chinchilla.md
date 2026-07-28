@@ -36,6 +36,8 @@ assert torch.allclose(alpha, torch.tensor(true_alpha, dtype=alpha.dtype), atol=1
 
 论文也指出 loss 最终会受非零数据熵限制而趋平，但没有把 $L_\infty$ 加入这些单轴拟合。若后续研究采用 $L_\infty+A X^{-\alpha}$，应把它明确标成扩展模型，并拟合或独立估计 $L_\infty$。真实实验也不能只看一条无噪声曲线：参数相关、训练未收敛、早停和小模型异常都会影响指数；应报告 bootstrap 或 profile likelihood 区间，并保留 holdout 运行检验外推。
 
+单轴曲线还有 identifiability 边界：改变 $N$ 时若学习率、batch、训练 token 或宽深比也改变，观测到的斜率会混入优化和架构效应。论文得到的是特定模型族、数据和训练协议下的规律，不是只凭最终 checkpoint 元数据即可恢复的自然常数。
+
 ## Kaplan 结论为何鼓励更大模型
 
 Kaplan 等人的实验与建模认为，在其设置下参数扩展带来的收益较强，compute-efficient training 倾向训练更大模型但不到完全收敛。这一结果与 GPT-3 式规模扩张相互强化：模型参数被视为优先投入方向。
@@ -67,6 +69,18 @@ assert torch.allclose(6 * n[i] * d[i], torch.tensor(compute, dtype=n.dtype))
 
 这个最优点完全由示例系数决定。论文中的“约 20 token/parameter”是拟合与实验范围的摘要，不应硬编码进所有训练计划。
 
+Chinchilla 使用三种互相校验的方法：在固定 compute 的 isoFLOP 曲线上寻找最优参数量、拟合参数/数据联合 loss 曲面、以及直接拟合 compute-optimal 参数与 token 的幂律。方法一致比某一个点估计更重要；若最优点总落在实验网格边缘，就只能说明搜索范围不够。
+
+在 $C\approx6ND$ 和上述联合模型下，内部最优的 scaling exponent 由 $\alpha,\beta$ 共同决定：
+
+$$
+N_\star\propto C^{\frac{\beta}{\alpha+\beta}},
+\qquad
+D_\star\propto C^{\frac{\alpha}{\alpha+\beta}}.
+$$
+
+只有二者相近时，参数与数据才近似同步增长。数据质量、重复率或架构改变，会通过新的拟合系数和指数移动这个比例。
+
 ## 70B / 1.4T 说明什么
 
 Chinchilla 模型用约 70B 参数和 1.4T token，在报告的任务中与显著更大但训练 token 较少的模型竞争。它支持“许多当时模型在固定训练算力下数据不足”的判断，不支持以下外推：
@@ -77,7 +91,9 @@ Chinchilla 模型用约 70B 参数和 1.4T token，在报告的任务中与显�
 - 后训练、多模态 token 与预训练文本 token 完全同质；
 - 生命周期推理成本不会改变最优点。
 
-## 为什么今天仍需重做曲线
+下游任务还会给出不同于 validation loss 的排序。某些能力指标具有阈值、parser 或高方差，不能直接假设服从同一平滑幂律。稳妥做法是用 loss 规划主要训练网格，再把关键下游、校准和安全切片作为独立响应变量。
+
+## 每次配方变化都在移动曲面
 
 现代配方改变了测量条件：更好的数据过滤、重复训练、长上下文阶段、MoE、低精度和多 token prediction 都会移动 loss 曲面。小规模 proxy 的 tokenizer、depth/width ratio 与优化器若不同，也可能不能外推到目标模型。
 
@@ -90,9 +106,11 @@ Chinchilla 模型用约 70B 参数和 1.4T token，在报告的任务中与显�
 5. 置信区间和外推距离；
 6. 对失败或异常运行不做选择性删除。
 
+如果目标是部署而非一次训练，还要把量化后质量、推理请求量、延迟 SLO 与能耗放入约束。compute-optimal checkpoint 可能不是 latency-optimal checkpoint，更不是总成本最低的模型家族。通用预算口径见[缩放与计算](../../foundations/scaling.md)，实验网格、置信区间与 stop rule 见[缩放实验设计](../../training/scaling-experiment-design.md)。
+
 ## Reference {#reference}
 
 - [Scaling Laws 论文](https://arxiv.org/abs/2001.08361)；
 - [Chinchilla 论文](https://arxiv.org/abs/2203.15556)与 [DeepMind 官方说明](https://deepmind.google/blog/an-empirical-analysis-of-compute-optimal-large-language-model-training/)。
 
-Chinchilla 没有公开一套可完整重建论文训练运行的官方训练仓库；第三方拟合脚本不应被写成官方实现。实验方法见[缩放实验设计](../../training/scaling-experiment-design.md)，训练数字口径见[训练 token](../training-tokens.md)，更长的因果脉络见[从规模规律到上下文内适应](../lineages/scaling-and-context.md)。
+Chinchilla 没有公开一套可完整重建论文训练运行的官方训练仓库；第三方拟合脚本不应被写成官方实现。训练数字口径见[训练 token](../training-tokens.md)，更长的因果脉络见[从规模规律到上下文内适应](../lineages/scaling-and-context.md)。

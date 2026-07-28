@@ -33,6 +33,6 @@
 
 [DeepSeek-V4](landscape/works/deepseek-v4.md)从 mHC、CSA / HCA、Muon 一直追到 MegaMoE、异构 KV、全词表 OPD 与可恢复 rollout；四篇[机制深读](landscape/index.md#deepseek-v4-system)和[103 项引用图谱](landscape/deepseek-v4-reference-map.md)把公式、代码、系统接口与评测口径逐层拆开。
 
-[Kimi K3](landscape/works/kimi-k3.md)则沿架构、预训练、后训练、Agentic RL、3T 训练、百万 token 推理与评测协议展开；[Kimi 演化](landscape/kimi-timeline.md)和[K3 引用图谱](landscape/kimi-k3-reference-map.md)分别补足时间脉络与 150 项一手来源。
+[Kimi K3](landscape/works/kimi-k3.md)则沿架构、预训练、后训练、Agentic RL、3T 训练、百万 token 推理与评测协议展开；[Kimi k1.5](landscape/works/kimi-k1-5.md)、[Kimi K2](landscape/works/kimi-k2.md)、[Kimi K2.5](landscape/works/kimi-k2-5.md)与[Kimi-VL](multimodal/kimi-vl.md)补齐前序转折，[Kimi 演化](landscape/kimi-timeline.md)和[K3 引用图谱](landscape/kimi-k3-reference-map.md)分别连接时间脉络与 150 项一手来源。
 
 [GLM-5](landscape/works/glm-5.md)把 744B MoE、MLA-256、DSA、Muon Split、Shared MTP、28.5T 数据课程、slime 异步 Agentic RL、可执行环境和异构芯片部署放进同一闭环；[架构深读](landscape/works/glm-5-architecture.md)、[Agentic Engineering](landscape/works/glm-agentic-engineering.md)、[GLM 演化](landscape/glm-timeline.md)与[引用图谱](landscape/glm-5-reference-map.md)分别固定机制、系统、版本和证据边界。

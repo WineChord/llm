@@ -1,0 +1,93 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "kimi-k2",
+    "title": "Kimi K2: Open Agentic Intelligence",
+    "canonical_url": "https://arxiv.org/abs/2507.20534",
+    "artifact_url": "https://raw.githubusercontent.com/MoonshotAI/Kimi-K2/1b4022bbb7187cf4011a8bdf0b4cd10e2daa26c4/tech_report.pdf",
+    "artifact_sha256": "0f0449ec4441377409e8232fc615c450795d03b97107676adbf5a0d6d4f64e4e",
+    "version": {
+      "kind": "git_commit",
+      "value": "1b4022bbb7187cf4011a8bdf0b4cd10e2daa26c4"
+    },
+    "page_count": 32,
+    "license": {
+      "name": "Modified MIT License",
+      "url": "https://github.com/MoonshotAI/Kimi-K2/blob/1b4022bbb7187cf4011a8bdf0b4cd10e2daa26c4/LICENSE",
+      "credit": "Copyright (c) 2025 Moonshot AI",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "b280da6f496d75e0c5beb79b03520d190fce67dfe12f75cf3aadad8670839d93"
+    }
+  },
+  "render": {
+    "renderer": "pdftocairo",
+    "renderer_version": "26.07.0",
+    "dpi": 300,
+    "coordinate_space": "rendered-page-points-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "k2-figure-02",
+      "file": "figure-02-muonclip.png",
+      "kind": "figure",
+      "source_label": "Figure 2",
+      "page": 4,
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [73, 318, 540, 442],
+      "pixel_size": [1946, 517],
+      "sha256": "706f723307c3a0b7dde495ba5030d0e93dad38076af5bf22162dad15127c72c8",
+      "placements": [
+        {
+          "page": "docs/landscape/works/kimi-k2.md",
+          "anchor": "k2-figure-02",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "k2-figure-08",
+      "file": "figure-08-tool-synthesis.png",
+      "kind": "diagram",
+      "source_label": "Figure 8",
+      "page": 10,
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [103, 69, 507, 190],
+      "pixel_size": [1683, 504],
+      "sha256": "a71e738efe908b18b1457a43c0d9dcdcb862573390ecedfd952793d675b8887e",
+      "placements": [
+        {
+          "page": "docs/landscape/works/kimi-k2.md",
+          "anchor": "k2-figure-08",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "k2-figure-13",
+      "file": "figure-13-engine-switching.png",
+      "kind": "diagram",
+      "source_label": "Figure 13",
+      "page": 32,
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [116, 150, 490, 459],
+      "pixel_size": [1558, 1288],
+      "sha256": "dbeab2f9bcf86f7144ed7f239efda7d258e2cbf00c1789c6e462ab4919300871",
+      "placements": [
+        {
+          "page": "docs/landscape/works/kimi-k2.md",
+          "anchor": "k2-figure-13",
+          "role": "portrait",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import json
 import re
 import shutil
 import subprocess
@@ -575,6 +576,7 @@ def chromedriver_binary(browser: str) -> Optional[str]:
 def browser_audit(
     site_dir: Path,
     explicit_chrome: Optional[str],
+    visual_artifacts_dir: Optional[Path],
     errors: list[str],
 ) -> tuple[int, str, int, int]:
     try:
@@ -612,6 +614,332 @@ def browser_audit(
     version = "unknown"
     visits = 0
     disclosure_interactions = 0
+    audit_records: list[dict[str, object]] = []
+
+    def wait_for_paint() -> None:
+        driver.execute_async_script(
+            """
+            const done = arguments[arguments.length - 1];
+            Promise.resolve(document.fonts ? document.fonts.ready : undefined)
+              .then(() => requestAnimationFrame(() =>
+                requestAnimationFrame(() => done(true))));
+            """
+        )
+
+    def set_color_scheme(scheme: str) -> None:
+        driver.execute_cdp_cmd(
+            "Emulation.setEmulatedMedia",
+            {
+                "media": "",
+                "features": [
+                    {
+                        "name": "prefers-color-scheme",
+                        "value": scheme,
+                    }
+                ],
+            },
+        )
+        wait_for_paint()
+
+    def audit_paper_figure(
+        index: int,
+        *,
+        deep_link: bool,
+    ) -> dict[str, object]:
+        driver.execute_async_script(
+            """
+            const index = arguments[0];
+            const deepLink = arguments[1];
+            const done = arguments[arguments.length - 1];
+            const figure = document.querySelectorAll(
+              'figure.paper-figure'
+            )[index];
+            if (!figure) {
+              done(false);
+              return;
+            }
+            const root = document.documentElement;
+            const previousScrollBehavior = root.style.scrollBehavior;
+            root.style.scrollBehavior = 'auto';
+            if (deepLink && figure.id) {
+                history.replaceState(
+                  null,
+                  '',
+                  location.pathname + location.search
+                );
+                location.hash = encodeURIComponent(figure.id);
+                figure.scrollIntoView({
+                  block: 'start',
+                  inline: 'nearest',
+                });
+            } else {
+              figure.scrollIntoView({
+                block: 'center',
+                inline: 'nearest',
+              });
+            }
+            requestAnimationFrame(() =>
+              requestAnimationFrame(() => {
+                root.style.scrollBehavior = previousScrollBehavior;
+                done(true);
+              }));
+            """,
+            index,
+            deep_link,
+        )
+        return driver.execute_script(
+            """
+            const index = arguments[0];
+            const deepLink = arguments[1];
+            const figures = [
+              ...document.querySelectorAll('figure.paper-figure')
+            ];
+            const figure = figures[index];
+            if (!figure) {
+              return {
+                id: '',
+                index,
+                issues: ['figure disappeared during audit'],
+              };
+            }
+            const issues = [];
+            const round = (value) => Math.round(value * 10) / 10;
+            const images = [...figure.querySelectorAll('img')];
+            const directImages = [
+              ...figure.querySelectorAll(
+                ':scope > p > a > img, '
+                + ':scope > .paper-figure__media > img'
+              )
+            ];
+            const mediaLinks = [
+              ...figure.querySelectorAll(
+                ':scope > p > a, '
+                + ':scope > a.paper-figure__media'
+              )
+            ];
+            const captions = [
+              ...figure.querySelectorAll(':scope > figcaption')
+            ];
+            const image = directImages[0] || images[0] || null;
+            const mediaLink = mediaLinks[0] || null;
+            const caption = captions[0] || null;
+            if (!figure.id) {
+              issues.push('missing stable id');
+            }
+            if (images.length !== 1 || directImages.length !== 1) {
+              issues.push(
+                `expected one direct image, found ${images.length}/`
+                + `${directImages.length}`
+              );
+            }
+            if (mediaLinks.length !== 1) {
+              issues.push(`expected one media link, found ${mediaLinks.length}`);
+            }
+            if (captions.length !== 1) {
+              issues.push(`expected one figcaption, found ${captions.length}`);
+            }
+            const sourceValue = figure.dataset.paperSource || '';
+            const assetValue = figure.dataset.paperAsset || '';
+            if (!!sourceValue !== !!assetValue) {
+              issues.push('paper source and asset data attributes are incomplete');
+            }
+            const httpsLinks = caption
+              ? [...caption.querySelectorAll(
+                  '.paper-figure__source a[href^="https://"]'
+                )]
+              : [];
+            if (httpsLinks.length < 2) {
+              issues.push(
+                `expected source and license links, found ${httpsLinks.length}`
+              );
+            }
+            const focusable = (element) =>
+              !!element
+              && element.matches('a[href]')
+              && element.tabIndex >= 0;
+            if (!focusable(mediaLink)) {
+              issues.push('media link is not keyboard focusable');
+            }
+            if (httpsLinks.some((link) => !focusable(link))) {
+              issues.push('source or license link is not keyboard focusable');
+            }
+            let naturalWidth = 0;
+            let naturalHeight = 0;
+            let clientWidth = 0;
+            let clientHeight = 0;
+            let density = null;
+            let imageBackground = null;
+            let mediaBackground = null;
+            if (!image) {
+              issues.push('missing image');
+            } else {
+              naturalWidth = image.naturalWidth;
+              naturalHeight = image.naturalHeight;
+              clientWidth = image.clientWidth;
+              clientHeight = image.clientHeight;
+              density = clientWidth > 0
+                ? round(naturalWidth / clientWidth)
+                : null;
+              if (!image.complete || naturalWidth === 0) {
+                issues.push('image did not load');
+              }
+              const altLength = (image.alt || '').trim().length;
+              if (altLength < 20 || altLength > 240) {
+                issues.push(`alt length is ${altLength}, expected 20..240`);
+              }
+              const imageStyle = getComputedStyle(image);
+              if (imageStyle.filter !== 'none') {
+                issues.push(`image filter is ${imageStyle.filter}`);
+              }
+              if (clientWidth <= 0 || clientHeight <= 0) {
+                issues.push('image has no rendered area');
+              } else if (naturalWidth / clientWidth < 1.5) {
+                issues.push(
+                  `image density ${density}x is below the 1.5x floor`
+                );
+              }
+              imageBackground = imageStyle.backgroundColor;
+            }
+            const white = (value) => {
+              const match = value && value.match(
+                /^rgba?\\((\\d+),\\s*(\\d+),\\s*(\\d+)/
+              );
+              return !!match
+                && Number(match[1]) >= 250
+                && Number(match[2]) >= 250
+                && Number(match[3]) >= 250;
+            };
+            if (mediaLink) {
+              mediaBackground = getComputedStyle(mediaLink).backgroundColor;
+            }
+            if (!white(imageBackground) || !white(mediaBackground)) {
+              issues.push(
+                `media background is not opaque white `
+                + `(image=${imageBackground}, link=${mediaBackground})`
+              );
+            }
+            const figureRect = figure.getBoundingClientRect();
+            const article = document.querySelector(
+              'article.md-content__inner'
+            );
+            const articleRect = article ? article.getBoundingClientRect() : null;
+            if (
+              articleRect
+              && (
+                figureRect.left < articleRect.left - 1
+                || figureRect.right > articleRect.right + 1
+              )
+            ) {
+              issues.push(
+                `figure leaves article bounds `
+                + `(${round(figureRect.left)}..${round(figureRect.right)} vs `
+                + `${round(articleRect.left)}..${round(articleRect.right)})`
+              );
+            }
+            if (figure.scrollWidth > figure.clientWidth + 1) {
+              issues.push(
+                `figure overflows horizontally `
+                + `(${figure.scrollWidth}>${figure.clientWidth})`
+              );
+            }
+            const captionRect = caption
+              ? caption.getBoundingClientRect()
+              : null;
+            if (!captionRect || captionRect.height <= 0) {
+              issues.push('figcaption is not visible');
+            }
+            let deepLinkTop = null;
+            let headerBottom = null;
+            if (deepLink && figure.id) {
+              const header = document.querySelector('.md-header');
+              headerBottom = header
+                ? round(header.getBoundingClientRect().bottom)
+                : 0;
+              deepLinkTop = round(figureRect.top);
+              if (
+                figureRect.top < headerBottom - 1
+                || figureRect.top >= window.innerHeight
+              ) {
+                issues.push(
+                  `deep link position ${deepLinkTop}px is outside visible `
+                  + `content below header ${headerBottom}px`
+                );
+              }
+            }
+            return {
+              id: figure.id || '',
+              index,
+              source: sourceValue || null,
+              asset: assetValue || null,
+              issues,
+              naturalSize: [naturalWidth, naturalHeight],
+              renderedSize: [clientWidth, clientHeight],
+              density,
+              figureWidth: round(figureRect.width),
+              figureScrollWidth: figure.scrollWidth,
+              deepLinkTop,
+              headerBottom,
+              imageBackground,
+              mediaBackground,
+              sourceLinks: httpsLinks.length,
+            };
+            """,
+            index,
+            deep_link,
+        )
+
+    def capture_figure_failure(
+        route: str,
+        width: int,
+        scheme: str,
+        index: int,
+        figure_id: str,
+    ) -> Optional[str]:
+        if visual_artifacts_dir is None:
+            return None
+        stem = re.sub(
+            r"[^a-zA-Z0-9._-]+",
+            "-",
+            route.strip("/") or "index",
+        ).strip("-")
+        anchor = re.sub(
+            r"[^a-zA-Z0-9._-]+",
+            "-",
+            figure_id or f"figure-{index}",
+        ).strip("-")
+        destination = (
+            visual_artifacts_dir
+            / "screenshots"
+            / f"{stem}-{width}-{scheme}-{anchor}.png"
+        )
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            elements = driver.find_elements(
+                "css selector",
+                "figure.paper-figure",
+            )
+            if index < len(elements):
+                elements[index].screenshot(str(destination))
+            else:
+                driver.save_screenshot(str(destination))
+            return destination.relative_to(visual_artifacts_dir).as_posix()
+        except Exception:
+            return None
+
+    def write_audit_report() -> None:
+        if visual_artifacts_dir is None:
+            return
+        visual_artifacts_dir.mkdir(parents=True, exist_ok=True)
+        report = {
+            "schema_version": 1,
+            "site_dir": str(site_dir),
+            "records": audit_records,
+        }
+        (visual_artifacts_dir / "report.json").write_text(
+            json.dumps(report, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
     with serve_directory(site_dir) as base_url:
         try:
             for viewport_index, (width, height, mobile) in enumerate(
@@ -625,6 +953,7 @@ def browser_audit(
                         driver.quit()
                     driver, wait = start_driver()
                 disclosure_checked = False
+                set_color_scheme("light")
                 driver.execute_cdp_cmd(
                     "Emulation.setDeviceMetricsOverride",
                     {
@@ -642,6 +971,17 @@ def browser_audit(
                         else "/" + relative.parent.as_posix() + "/"
                     )
                     visits += 1
+                    route_error_start = len(errors)
+                    route_record: dict[str, object] = {
+                        "route": route,
+                        "viewport": {
+                            "width": width,
+                            "height": height,
+                            "mobile": mobile,
+                        },
+                        "paper_figure_count": 0,
+                        "paper_figures": [],
+                    }
                     try:
                         wrappers = 0
                         for attempt in range(3):
@@ -772,44 +1112,6 @@ def browser_audit(
                                 'figure.paper-figure'
                               )
                             ];
-                            const invalidPaperFigures = paperFigures.filter(
-                              (figure) => {
-                                const image = figure.querySelector(
-                                  ':scope > p > a > img'
-                                );
-                                const imageLink = figure.querySelector(
-                                  ':scope > p > a'
-                                );
-                                const caption = figure.querySelector(
-                                  ':scope > figcaption'
-                                );
-                                const source = caption
-                                  ? caption.querySelector(
-                                      '.paper-figure__source a[href^="https://"]'
-                                    )
-                                  : null;
-                                if (
-                                  !figure.id
-                                  || !image
-                                  || !imageLink
-                                  || !caption
-                                  || !source
-                                  || !image.complete
-                                  || image.naturalWidth === 0
-                                  || (image.alt || '').trim().length < 24
-                                ) {
-                                  return true;
-                                }
-                                const imageStyle = getComputedStyle(image);
-                                const captionRect =
-                                  caption.getBoundingClientRect();
-                                return imageStyle.filter !== 'none'
-                                  || image.naturalWidth + 1 < image.clientWidth
-                                  || figure.scrollWidth
-                                    > figure.clientWidth + 1
-                                  || captionRect.height <= 0;
-                              }
-                            ).length;
                             const documentOverflow =
                               document.documentElement.scrollWidth
                               > document.documentElement.clientWidth + 1;
@@ -888,7 +1190,6 @@ def browser_audit(
                               badOverflow,
                               brokenImages,
                               paperFigures: paperFigures.length,
-                              invalidPaperFigures,
                               raw,
                               rawMarkdown,
                               article: !!article,
@@ -904,6 +1205,57 @@ def browser_audit(
                         if stats["version"]:
                             version = stats["version"]
                         rendered += stats["wrappers"]
+                        route_record["paper_figure_count"] = stats[
+                            "paperFigures"
+                        ]
+                        paper_results: list[dict[str, object]] = []
+                        if stats["paperFigures"]:
+                            for scheme in ("light", "dark"):
+                                set_color_scheme(scheme)
+                                for figure_index in range(
+                                    stats["paperFigures"]
+                                ):
+                                    result = audit_paper_figure(
+                                        figure_index,
+                                        deep_link=scheme == "light",
+                                    )
+                                    result["scheme"] = scheme
+                                    issues = result.get("issues", [])
+                                    if not isinstance(issues, list):
+                                        issues = ["audit returned invalid issues"]
+                                        result["issues"] = issues
+                                    if issues:
+                                        artifact = capture_figure_failure(
+                                            route,
+                                            width,
+                                            scheme,
+                                            figure_index,
+                                            str(result.get("id", "")),
+                                        )
+                                        if artifact:
+                                            result["screenshot"] = artifact
+                                        metrics = (
+                                            f"natural={result.get('naturalSize')}, "
+                                            f"rendered={result.get('renderedSize')}, "
+                                            f"density={result.get('density')}, "
+                                            f"figure={result.get('figureWidth')}/"
+                                            f"{result.get('figureScrollWidth')}, "
+                                            f"deep-link={result.get('deepLinkTop')}/"
+                                            f"{result.get('headerBottom')}"
+                                        )
+                                        errors.append(
+                                            f"{route}#"
+                                            f"{result.get('id') or figure_index}: "
+                                            f"paper figure failed at {width}px/"
+                                            f"{scheme}: "
+                                            + "; ".join(
+                                                str(issue) for issue in issues
+                                            )
+                                            + f" [{metrics}]"
+                                        )
+                                    paper_results.append(result)
+                            set_color_scheme("light")
+                        route_record["paper_figures"] = paper_results
                         if (
                             stats["wrappers"]
                             and stats["version"] != EXPECTED_MATHJAX_VERSION
@@ -940,11 +1292,6 @@ def browser_audit(
                         if stats["brokenImages"]:
                             errors.append(
                                 f"{route}: {stats['brokenImages']} broken images"
-                            )
-                        if stats["invalidPaperFigures"]:
-                            errors.append(
-                                f"{route}: {stats['invalidPaperFigures']} "
-                                "invalid paper figures"
                             )
                         if stats["invalidDisclosures"]:
                             errors.append(
@@ -1074,13 +1421,33 @@ def browser_audit(
                                 + "; ".join(severe)
                             )
                     except Exception as exc:
-                        errors.append(
+                        message = (
                             f"{route}: browser audit failed at {width}px "
                             f"after three attempts: {type(exc).__name__}: {exc}"
                         )
+                        errors.append(message)
+                        route_record["exception"] = message
+                        artifact = capture_figure_failure(
+                            route,
+                            width,
+                            "exception",
+                            0,
+                            "browser-audit",
+                        )
+                        if artifact:
+                            route_record["screenshot"] = artifact
+                    finally:
+                        route_errors = errors[route_error_start:]
+                        route_record["status"] = (
+                            "failed" if route_errors else "passed"
+                        )
+                        if route_errors:
+                            route_record["errors"] = route_errors
+                        audit_records.append(route_record)
             driver.execute_cdp_cmd("Emulation.clearDeviceMetricsOverride", {})
         finally:
             driver.quit()
+            write_audit_report()
     return rendered, version, visits, disclosure_interactions
 
 
@@ -1127,6 +1494,11 @@ def parse_args(argv: Optional[Sequence[str]]) -> argparse.Namespace:
     parser.add_argument(
         "--chrome-binary",
         help="explicit Chrome or Chromium executable for --browser",
+    )
+    parser.add_argument(
+        "--visual-artifacts-dir",
+        type=Path,
+        help="write browser audit JSON and failure screenshots to this directory",
     )
     parser.add_argument(
         "--fix-legacy-delimiters",
@@ -1185,12 +1557,19 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if args.browser:
         if site_dir is None:
             site_dir = root / "site"
+        visual_artifacts_dir = args.visual_artifacts_dir
+        if (
+            visual_artifacts_dir is not None
+            and not visual_artifacts_dir.is_absolute()
+        ):
+            visual_artifacts_dir = root / visual_artifacts_dir
         if not site_dir.is_dir():
             errors.append(f"browser site directory does not exist: {site_dir}")
         else:
             rendered, version, visits, disclosure_interactions = browser_audit(
                 site_dir,
                 args.chrome_binary,
+                visual_artifacts_dir,
                 errors,
             )
             print(

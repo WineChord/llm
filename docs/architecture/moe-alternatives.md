@@ -23,6 +23,13 @@ Dense Transformer 同时沿两个方向增长：更多层和通道提高参数�
 
 因此“更高效”必须附带明确分母：训练 FLOPs、decode FLOPs、峰值显存、KV bytes、通信量、端到端吞吐、延迟或质量约束。
 
+还要区分两种完全不同的稀疏：
+
+- <strong>参数稀疏</strong>决定一次前向激活多少权重，例如 top-$k$ expert；
+- <strong>关系稀疏</strong>决定一个 token 能读取多少历史位置，例如 sliding window。
+
+前者主要改变 channel mixing，后者主要改变 token mixing。将二者都写成“稀疏模型”会掩盖路由通信、状态容量和可见性语义的差别。
+
 ## 混合架构
 
 不同 token mixer 可以按层或分支组合。常见分工是：
@@ -41,7 +48,16 @@ Dense Transformer 同时沿两个方向增长：更多层和通道提高参数�
 5. runtime 是否真正支持相应 kernel 与 cache；
 6. 质量收益来自架构还是参数量、数据和训练预算差异。
 
-## 比较协议
+以每层状态为中心，可以把 hybrid decode 的接口写成
+
+$$
+(y_t,s_t^{\text{rec}},K_t,V_t)
+=F(x_t,s_{t-1}^{\text{rec}},K_{<t},V_{<t}),
+$$
+
+其中 recurrent state 是固定大小，attention KV 随可见历史增长。模型若每隔若干层保留 full attention，就同时拥有两类生命周期不同的状态：prefix 复用、beam fork、speculative rollback 和跨设备迁移都必须同时更新，不能只复制 KV。对应推理边界见[缓存复用](../inference/cache-reuse.md)和[推测解码](../inference/speculative-decoding.md)。
+
+## 先固定工作负载，再比较
 
 公平比较至少固定：
 
@@ -55,11 +71,23 @@ Dense Transformer 同时沿两个方向增长：更多层和通道提高参数�
 
 只比较渐近复杂度或单一 benchmark 容易把架构收益、工程成熟度和规模差异混在一起。
 
-## 证据边界
+不同目标通常导向不同选择：
+
+| 工作负载 | 首要问题 | 应优先测量 |
+| --- | --- | --- |
+| 短 prompt、高并发 decode | 权重与状态读取是否带宽受限 | TPOT、batch scaling、bytes/token |
+| 超长 prefill | token mixer 是否物化平方关系 | TTFT、峰值显存、有效 TFLOP/s |
+| 长程精确检索 | 有限状态是否丢失稀有细节 | needle/关联回忆及位置切片 |
+| 大容量知识与技能 | 参数容量能否低成本扩大 | 激活 FLOPs、expert load、all-to-all |
+| 高频更新知识 | 权重重训是否必要 | 检索召回、证据利用、更新延迟 |
+
+这张表不是模型排名。一个 hybrid 可以在长 prefill 上省计算，却因 kernel 不成熟在小 batch decode 更慢；也可能在平均 benchmark 持平，但在精确复制或状态重置时出现结构性失败。
+
+## 对“替代”的最低证据要求
 
 稳定正文优先描述可复现的计算图、复杂度和已公开实现。新模型在自有配方上的结果适合作为案例，不应直接推出“已取代 attention”或“能无限记忆”。涉及前沿方案时，应同时写出公开 checkpoint、kernel、独立复现、测试规模和未验证外推。
 
-系统层的 MoE 通信见[MoE 系统](../systems/moe-systems.md)，序列模型的最小递推与等价性实验见[序列模型手撕实现](../practice/sequence-models.md)。
+至少要同时存在：同数据同预算的训练比较、短长序列的端到端性能、状态重置与 chunk/step 等价测试、关键压力任务、公开实现和可检查 checkpoint。系统层的 MoE 通信见[MoE 系统](../systems/moe-systems.md)，序列模型的最小递推与等价性实验见[序列模型手撕实现](../practice/sequence-models.md)，历史路线见[线性注意力与状态空间谱系](../landscape/lineages/linear-time-sequence-models.md)。
 
 ## Reference {#reference}
 

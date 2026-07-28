@@ -1,0 +1,332 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.wineandchord.com/llm/schemas/paper-figure-manifest-v2.schema.json",
+  "title": "Paper figure manifest",
+  "description": "Immutable source, reproducible crop, and page-placement metadata for paper figures.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source",
+    "render",
+    "assets"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "render": {
+      "$ref": "#/$defs/render"
+    },
+    "assets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/asset"
+      }
+    }
+  },
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "httpsUrl": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "positivePair": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      ]
+    },
+    "cropBox": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ]
+    },
+    "version": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "value"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "git_commit",
+            "arxiv_version",
+            "release_tag",
+            "sha256_only"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "license": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "url",
+        "credit",
+        "notice_file",
+        "notice_sha256"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "credit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notice_file": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "notice_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "artifact_url",
+        "artifact_sha256",
+        "version",
+        "page_count",
+        "license"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "canonical_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "artifact_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "artifact_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "version": {
+          "$ref": "#/$defs/version"
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "license": {
+          "$ref": "#/$defs/license"
+        }
+      }
+    },
+    "render": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "renderer",
+        "dpi",
+        "coordinate_space",
+        "colorspace",
+        "format",
+        "metadata_policy"
+      ],
+      "properties": {
+        "renderer": {
+          "const": "pdftocairo"
+        },
+        "renderer_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dpi": {
+          "type": "integer",
+          "minimum": 144,
+          "maximum": 600
+        },
+        "coordinate_space": {
+          "enum": [
+            "rendered-page-points-top-left",
+            "pdf-points-bottom-left"
+          ]
+        },
+        "colorspace": {
+          "const": "sRGB"
+        },
+        "format": {
+          "const": "PNG"
+        },
+        "metadata_policy": {
+          "const": "strip"
+        }
+      }
+    },
+    "placement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "page",
+        "anchor"
+      ],
+      "properties": {
+        "page": {
+          "type": "string",
+          "pattern": "^docs/(?!.*(?:^|/)\\.\\.(?:/|$)).+\\.md$"
+        },
+        "anchor": {
+          "$ref": "#/$defs/slug"
+        },
+        "role": {
+          "enum": [
+            "normal",
+            "compact",
+            "portrait",
+            "wide"
+          ],
+          "default": "normal"
+        },
+        "media_link": {
+          "enum": [
+            "asset",
+            "source"
+          ],
+          "default": "asset"
+        }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "file",
+        "kind",
+        "source_label",
+        "page",
+        "page_box_points",
+        "rotation",
+        "crop_box_points",
+        "pixel_size",
+        "sha256",
+        "placements"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "file": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*\\.png$"
+        },
+        "kind": {
+          "enum": [
+            "figure",
+            "table",
+            "algorithm",
+            "listing",
+            "diagram",
+            "panel"
+          ]
+        },
+        "source_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page_box_points": {
+          "$ref": "#/$defs/positivePair"
+        },
+        "rotation": {
+          "enum": [
+            0,
+            90,
+            180,
+            270
+          ]
+        },
+        "crop_box_points": {
+          "$ref": "#/$defs/cropBox"
+        },
+        "pixel_size": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "prefixItems": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "integer",
+              "minimum": 1
+            }
+          ]
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "placements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/placement"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "kimi-k1-5",
+    "title": "Kimi k1.5: Scaling Reinforcement Learning with LLMs",
+    "canonical_url": "https://arxiv.org/abs/2501.12599v2",
+    "artifact_url": "https://raw.githubusercontent.com/MoonshotAI/Kimi-k1.5/cf9a8785730c7e59d788956e1e40dc9fc31ebf08/Kimi_k1.5.pdf",
+    "artifact_sha256": "6f4dc4efdc25e8ba89fd5ad3ad8f5dd7d905d48b17599bf2506c5e237d27fce9",
+    "version": {
+      "kind": "git_commit",
+      "value": "cf9a8785730c7e59d788956e1e40dc9fc31ebf08"
+    },
+    "page_count": 25,
+    "license": {
+      "name": "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International",
+      "url": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+      "credit": "Kimi Team",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "eb5cf7c7eff14eaf3cecbcf9159c0fb30b08a1168fcb734fd7f63a3fb8f6ed23"
+    }
+  },
+  "render": {
+    "renderer": "pdftocairo",
+    "renderer_version": "26.07.0",
+    "dpi": 300,
+    "coordinate_space": "rendered-page-points-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "k15-figure-03",
+      "file": "figure-03-rl-system-partial-rollout.png",
+      "kind": "diagram",
+      "source_label": "Figure 3",
+      "page": 8,
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [112, 524, 508, 718],
+      "pixel_size": [1650, 808],
+      "sha256": "4a9069613d0d9211ddb61caa3fddbad96a087056b0d3da4b296f901aa0dc5946",
+      "placements": [
+        {
+          "page": "docs/landscape/works/kimi-k1-5.md",
+          "anchor": "k15-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

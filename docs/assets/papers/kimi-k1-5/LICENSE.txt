@@ -1,0 +1,16 @@
+Kimi k1.5: Scaling Reinforcement Learning with LLMs
+
+Attribution: Kimi Team and the paper's co-authors
+Source: https://github.com/MoonshotAI/Kimi-k1.5/blob/cf9a8785730c7e59d788956e1e40dc9fc31ebf08/Kimi_k1.5.pdf
+Paper record: https://arxiv.org/abs/2501.12599v2
+License: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International
+License URL: https://creativecommons.org/licenses/by-nc-nd/4.0/
+
+The local PNG is a raster-format excerpt of Figure 3 on page 8. The complete
+figure is retained, including both panels, labels, legend, and original
+caption; only surrounding page text and whitespace are excluded. No
+endorsement by the authors is implied.
+
+The license permits non-commercial sharing with attribution and prohibits
+distribution of adaptations. See the canonical license URL above for the full
+terms. Other exceptions and limitations provided by law are unaffected.

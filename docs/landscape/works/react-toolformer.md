@@ -14,6 +14,10 @@ $$
 
 这让“是否调用”与语言建模收益绑定，而不需要为每个工具人工标注大量轨迹。边界也很清楚：训练时可用的工具、返回格式和分布决定了模型学到什么；损失降低不等同于真实任务正确，更不等同于调用安全。
 
+完整数据闭环包含五步：用少量 demonstrations 教会 API 语法、在普通文本的候选位置采样调用、执行 API、按后续 token loss 过滤、再在保留的调用与结果上继续语言模型训练。任何一步改变都会改变监督分布。尤其“隐藏结果”的 baseline 防止保留那些仅凭调用文本本身就降低 loss、实际返回值没有贡献的样本。
+
+Toolformer 的工具是论文预先定义的一组 API，调用结果可直接插入文本。它没有解决任意动态 schema、写操作、认证或工具发现；把其筛选目标迁移到有副作用的工具前，必须把环境成功与权限加入 verifier。
+
 ## ReAct：观察必须进入下一步推理
 
 [ReAct](https://arxiv.org/abs/2210.03629)把轨迹写成交错序列：
@@ -49,7 +53,9 @@ assert answer == "Paris" and [x["kind"] for x in trace] == ["question", "action"
 
 这个 reference 刻意把 policy 与 runtime 分开。模型只提出 typed action；runtime 决定工具白名单、参数解释和 step budget。真实系统还必须增加 schema validation、权限、幂等键、超时、重试、日志脱敏和副作用确认。
 
-## 两项工作怎样互补
+ReAct 论文同时研究知识问答/事实验证和交互环境。在前一类任务里，搜索 observation 帮助更新事实依据；在 ALFWorld、WebShop 等环境里，动作改变外部状态，错误行动未必可逆。共同点是 observation 进入下一决策，差别是环境转移是否有副作用。平均成功率之外，应分别记录无效动作、工具错误、超预算与环境终态。
+
+## 训练信号和运行时闭环并不在同一层
 
 | 层 | Toolformer | ReAct |
 | --- | --- | --- |
@@ -71,7 +77,9 @@ $$
 
 模型可见的 context 只是 $s_t$ 的投影。checkpoint、prompt 或 summarizer 都不应悄悄覆盖真实环境状态。
 
-## 后来的分叉
+当 context 需要压缩时，必须保留 action ID、observation provenance、未完成副作用和 budget；只总结自然语言 Thought 会让 runtime 丢失可恢复状态。工具返回应作为不可信 observation，而不是自动提升为下一轮指令。对应的 typed trajectory 见[轨迹与策略契约](../../agentic-rl/trajectory-contract.md)。
+
+## 从一次闭环走向可训练策略
 
 这两项工作之后，研究沿三条线继续：
 
@@ -80,6 +88,8 @@ $$
 - 通过 online RL 根据环境终态优化完整策略。
 
 它们分别对应[工具调用](../../applications/tool-use.md)、[搜索与验证](../../reasoning/search-verification.md)和[Agentic RL](../../agentic-rl/index.md)。完整前后关系见[从参数记忆到可行动系统](../lineages/retrieval-agents.md)，运行时边界见[Agent Runtime](../../applications/agent-runtime.md)。
+
+这条演进不意味着轨迹越长越好。每增加一步都增加错误、延迟和攻击面；只有 observation 能改变后续选择、且最终结果可以验证时，额外行动才可能带来净收益。评测应与无工具、固定检索和等预算 baseline 比较，而不是只展示成功案例。
 
 ## Reference {#reference}
 

@@ -25,6 +25,8 @@ $$
 
 必须保留一个历史边界：1997 原始结构并不包含今天惯用的 forget gate；[Learning to Forget](https://direct.mit.edu/neco/article/12/10/2451/6415/Learning-to-Forget-Continual-Prediction-with-LSTM)在 2000 年引入相应机制。现代方程适合教学和实现，但不应倒写为原论文逐项结构。
 
+原始工作的 constant error carousel 关注 cell 内自连接怎样保留误差信号，input/output gate 控制写入与读出；forget gate 后来让 cell 能主动清空不再相关的状态。这个顺序解释了为什么现代方程中 $f_t$ 看似理所当然，历史上却是对“持续输入流需要重置”的补丁。
+
 ## 加性路径怎样影响梯度
 
 忽略门值对旧状态的间接依赖，有
@@ -58,6 +60,18 @@ assert not torch.allclose(states[2:], reset)
 
 这段 reference 只隔离 cell state 的加性记忆，不实现依赖 $x_t,h_{t-1}$ 的门网络。第二个断言强调 state reset 属于数据契约：跨样本错误复用状态会造成隐式泄漏。
 
+近似式 $\prod_t f_t$ 也不是完整梯度。门本身依赖 $h_{t-1}$，cell 还通过输出门回到 recurrent path；加性通道提供一条较短的导数路径，却不能保证模型一定把所需内容写进去。若 forget gate 长期饱和在 0，记忆仍会迅速消失；长期接近 1 又可能让过期状态累积。
+
+## 训练窗口与状态寿命不是一回事
+
+truncated backpropagation through time（TBPTT）只在有限窗口内反传梯度，forward state 却可以跨窗口继续传递。由此出现三种长度：
+
+1. 输入序列实际持续的时间；
+2. state 在 detach/reset 前保留的时间；
+3. gradient 能穿过的 unroll 长度。
+
+三者若在训练和部署间不一致，模型会在推理时遇到未训练过的 state 分布。stateful batch 还必须保证同一 batch slot 的下一个 chunk 来自同一序列；shuffle 后沿用旧 state 会把两个样本隐式拼接。
+
 ## LSTM 解决了什么，又留下什么
 
 LSTM 显著缓解长程梯度问题，却没有消除：
@@ -66,6 +80,8 @@ LSTM 显著缓解长程梯度问题，却没有消除：
 - 固定维度 state 仍是信息瓶颈；
 - 长程精确寻址需要模型把内容编码进状态，而不是直接访问某个历史位置；
 - 门饱和、初始化和 truncation 仍影响有效记忆长度。
+
+因此“能处理任意长度输入”只是接口性质，不是有效记忆保证。应按依赖距离测试复制、延迟回忆与状态重置，并同时记录 sequence length 和 TBPTT window；只在平均自然语言 loss 上比较，很难看出模型到底保留了多远。
 
 Seq2seq 把 encoder 最终状态用作整句摘要后，这个瓶颈变得尤为明显；[Bahdanau attention](seq2seq-and-neural-alignment.md)通过保留所有 encoder states 让 decoder 动态寻址。Transformer 随后进一步移除 recurrence，但以 $T^2$ 关系和 KV cache 换取全局访问。
 

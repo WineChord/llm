@@ -45,12 +45,13 @@
 K3 是观察这种汇流的一个切面：
 
 - [Kimi Linear 与 FlashKDA](works/kimi-linear-flashkda.md)沿 fast weights、DeltaNet、KDA、chunkwise kernel 与 KCP 追踪有限状态如何落到 GPU；
+- [Kimi k1.5](works/kimi-k1-5.md)、[Kimi K2](works/kimi-k2.md)与[Kimi K2.5](works/kimi-k2-5.md)分别展开长程 RL、1T MoE / MuonClip，以及原生多模态与 Agent Swarm 的三次转折；
 - [Attention Residuals](works/attention-residuals.md)从 PreNorm dilution 推到 Full/Block AttnRes、online softmax 与 pipeline cache；
 - [Stable LatentMoE 与 Quantile Balancing](works/latentmoe-quantile-balancing.md)区分原始 LatentMoE 与 K3 的数值、激活和路由增量；
 - [K3 工作深读](works/kimi-k3.md)把模型结构、预训练、长上下文、post-training、系统和评测还原成相互制约的闭环；
 - [MoonEP](works/moonep.md)解释动态冗余 expert 如何在不改变路由语义时固定 rank 负载；
 - [K3 引用图谱](kimi-k3-reference-map.md)逐项解释技术报告 150 项文献在论证链中的角色，并区分直接来源、技术前身、并行工作、benchmark 与比较基线；
-- [Kimi 多模态分支](../multimodal/kimi.md)单独梳理 Kimi-VL、K2.5、MoonViT-V2 与 Kimi-Audio，避免把家族经验误写成同一 checkpoint 的能力。
+- [Kimi-VL 深读](../multimodal/kimi-vl.md)解释原生分辨率视觉塔、稀疏语言主干与长视觉上下文；[Kimi 多模态分支](../multimodal/kimi.md)再梳理它与 K2.5、MoonViT-V2、Kimi-Audio 的关系，避免把家族经验误写成同一 checkpoint 的能力。
 
 ### 百万 token 怎样变成端到端能力 {#deepseek-v4-system}
 

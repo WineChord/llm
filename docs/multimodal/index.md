@@ -91,6 +91,6 @@ $$
 
 ## 案例与概念
 
-[Kimi 案例](kimi.md)和[DeepSeek 案例](deepseek.md)用于观察具体模型家族怎样组合通用机制。概念结论仍以本节各主题页和一手论文为准，厂商时间线不承担通用分类。
+[Kimi-VL 深读](kimi-vl.md)从原生分辨率、视觉—语言桥、MoE decoder 与长视觉上下文展开一个具体模型；[Kimi 家族案例](kimi.md)和[DeepSeek 案例](deepseek.md)则用于观察技术路线怎样跨版本组合通用机制。概念结论仍以本节各主题页和一手论文为准，厂商时间线不承担通用分类。
 
 紧凑的 patchify、对比损失、resampler、坐标、模态 mask、RVQ 与时空 attention 练习见[多模态手撕实现](../practice/multimodal.md)。

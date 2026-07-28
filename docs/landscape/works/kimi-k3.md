@@ -8,9 +8,9 @@
 
 这三条结构线又被一套共同设计的训练与系统接住：原生视觉、Per-Head Muon、逐级长上下文训练，SFT → 多领域多 effort RL → Multi-Teacher On-Policy Distillation（MOPD），以及面向 3T 稀疏训练、百万 token rollout 和混合递推缓存的基础设施。[官方技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)的真正价值，正是第一次把这些层面放进同一份系统叙事。
 
-本页先重建整份报告的因果链；[Kimi 技术谱系](../kimi-timeline.md)解释各代工作怎样汇流，[150 项引用图谱](../kimi-k3-reference-map.md)逐项区分直接来源、技术前身、并行工作、benchmark 与比较对象。各个可复用机制分别进入[线性注意力](../../architecture/state-space-linear-attention.md)、[注意力与位置](../../architecture/attention-position.md)、[Mixture of Experts](../../architecture/moe.md)、[长上下文](../../architecture/long-context.md)、[Agentic RL 训练系统](../../agentic-rl/training-systems.md)和[推理缓存](../../inference/cache-reuse.md)等主干页面。
+本页先重建整份报告的因果链；[Kimi 技术谱系](../kimi-timeline.md)解释各代工作怎样汇流，[Kimi k1.5](kimi-k1-5.md)、[Kimi K2](kimi-k2.md)、[Kimi K2.5](kimi-k2-5.md)与[Kimi-VL](../../multimodal/kimi-vl.md)分别展开长程 RL、稀疏预训练、原生多模态 agent 与视觉主干，[150 项引用图谱](../kimi-k3-reference-map.md)再逐项区分直接来源、技术前身、并行工作、benchmark 与比较对象。各个可复用机制分别进入[线性注意力](../../architecture/state-space-linear-attention.md)、[注意力与位置](../../architecture/attention-position.md)、[Mixture of Experts](../../architecture/moe.md)、[长上下文](../../architecture/long-context.md)、[Agentic RL 训练系统](../../agentic-rl/training-systems.md)和[推理缓存](../../inference/cache-reuse.md)等主干页面。
 
-<figure class="paper-figure paper-figure--portrait" id="k3-figure-02" markdown="1">
+<figure class="paper-figure paper-figure--portrait" id="k3-figure-02" data-paper-source="kimi-k3" data-paper-asset="k3-figure-02" markdown="1">
 [![Kimi K3 的整体结构由 token、channel 与 depth 三条信息流组成：KDA 和 MLA 处理 token，Stable LatentMoE 处理 channel，Attention Residuals 连接不同深度](../../assets/papers/kimi-k3/figure-02-architecture.png){ width="1967" height="1617" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-02-architecture.png)
 <figcaption><strong>三条信息流在同一个模型接口处合流。</strong>沿右侧主干自下而上看，视觉输入先进入共享 embedding；每个结构单元以三层 KDA 接一层 Gated MLA，再由 Stable LatentMoE 完成 channel mixing。红色支路不沿 token 展开，而是在不同深度的 block representation 之间重新分配权重。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=3">Kimi K3 Technical Report, Figure 2, p. 3</a>；© 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
 </figure>
@@ -559,6 +559,13 @@ Muon 的矩阵更新、Newton–Schulz 近似与向量参数分流见[优化器�
 
 K3 为新架构重新搜索 batch size、learning rate、tokens-per-parameter 与 model shape。作者在 held-out OOD validation 上拟合 scaling curve，并报告相对 K2 约 2.5× overall scaling efficiency。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--portrait" id="k3-figure-07" data-paper-source="kimi-k3" data-paper-asset="k3-figure-07" markdown="1">
+[![Kimi K2 与 Kimi K3 的验证损失对训练 FLOPs 的缩放曲线；两条虚线近似平行，K3 曲线向左下移动，图中以水平箭头标出约 2.5 倍 FLOPs 差异](../../assets/papers/kimi-k3/figure-07-scaling.png){ width="1033" height="879" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-07-scaling.png)
+<figcaption><strong>“2.5×”读的是同一 validation loss 上的横向 FLOPs 间距。</strong>它是 K2 与 K3 两套 family-level 拟合曲线之间的相对位移；纵轴不是 benchmark 分数，横轴也不是线上吞吐，因此不能把箭头拆给某一个模块或直接换算成服务成本。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=11">Kimi K3 Technical Report, Figure 7, p. 11</a>；© 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
+
 这个数字只支持“架构、数据、训练 recipe 的组合在该拟合口径下移动了 loss–FLOPs 曲线”，不能拆分成“KDA 单独带来 2.5×”或“同等线上成本快 2.5×”。报告没有公开拟合系数、置信区间、原始点或 component-wise attribution。
 
 同一实验还给出一个很有普适性的教训：cosine 与 Warmup Stable Decay（WSD）要分别搜索 peak LR 和 batch size。作者在各自最优超参数下观察到 cosine 更低的 final loss；用一套共享超参数比较 schedule，测到的可能只是超参数偏爱，而不是 schedule 本身。实验设计见[缩放与实验设计](../../training/scaling-experiment-design.md)。
@@ -607,6 +614,11 @@ $$
 则 task reward 被覆盖为 $-1$。general task 的 $T$ 只数 thinking token；agentic task 则数累计 output，包括 reasoning 与 tool-call argument。训练从较大 $\tau$ 的 max 开始，再逐步减小得到 high 和 low；每个 domain 的阈值仍有人在回路中调整。
 
 这种 hard budget curriculum 能形成可部署的 effort 档位，但会在阈值处产生不连续 reward，也可能把“更短”误当成“更高效”。报告没有给出各档 $\tau$、预算分布和质量–长度 Pareto curve。
+
+<figure class="paper-figure paper-figure--wide" id="k3-figure-08" data-paper-source="kimi-k3" data-paper-asset="k3-figure-08" markdown="1">
+[![Kimi K3 八类 Agentic RL 任务随 RL FLOPs 变化的分数与平均步骤曲线，覆盖编程体验、通用工具、Web 开发、搜索、专业工作、办公交付、图表理解与视觉谜题](../../assets/papers/kimi-k3/figure-08-rl-scaling.png){ width="1571" height="758" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-08-rl-scaling.png)
+<figcaption><strong>更多 RL 计算常伴随更高分数，也常伴随更长轨迹。</strong>八个 panel 的趋势并不完全同步：有些任务平滑增长，有些明显波动或延迟起效。蓝线与红线共同提醒我们，能力 scaling 不能脱离 assistant steps、环境难度与采样协议来读；这些曲线也没有提供单个算法组件的因果归因。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=13">Kimi K3 Technical Report, Figure 8, p. 13</a>；© 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
 
 ### partial rollout 不是 SAO
 
@@ -715,8 +727,8 @@ K3 把 agent harness 拆成可配置部件：tool schema、system instruction、
 5. 从公开来源检索任务材料；
 6. 生成需要这些能力组合才能完成的任务与 verifier。
 
-<figure class="paper-figure paper-figure--portrait" id="k3-figure-09" markdown="1">
-[![分层能力图谱先采样相关节点形成关键词，再检索公开材料，最后按目标类型合成可验证任务](../../assets/papers/kimi-k3/figure-09-task-synthesis.png){ width="1625" height="1063" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-09-task-synthesis.png)
+<figure class="paper-figure paper-figure--portrait" id="k3-figure-09" data-paper-source="kimi-k3" data-paper-asset="k3-figure-09" markdown="1">
+[![分层能力图谱先采样相关节点形成关键词，再检索公开材料，最后按目标类型合成可验证任务](../../assets/papers/kimi-k3/figure-09-task-synthesis.png){ width="1625" height="1062" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-09-task-synthesis.png)
 <figcaption><strong>图谱控制覆盖，材料提供语境，任务在两者汇合后才生成。</strong>左侧 DAG 决定“去哪里找”以及能力应细到什么粒度；中间关键词把抽象节点落到公开材料；右侧再按 coding、knowledge、vision 等目标合成实例。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=15">Kimi K3 Technical Report, Figure 9, p. 15</a>；© 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
 </figure>
 
@@ -849,6 +861,13 @@ forward 会根据当前 micro-batch 与 layer 的 router output 规划并预取 
 它使用单一 memory pool 和主 stream 约束生命周期，避免多个异步 allocator 各自高估可用空间。MoE dispatch activation 可重算并在 backward 重新做 routing transform；Block AttnRes 只增量传递 block cache；[Mooncake](https://github.com/kvcache-ai/Mooncake)用于把 activation 临时放到其他 PP rank。
 
 Pipeline ZeRO-2 把 gradient shard 转移到 CPU，并用双 GPU buffer 隐藏传输；Per-Head Muon 则以 P2P 拉取所需 matrix shard，避免对完整矩阵做全局 all-gather。视觉侧按每个样本的 patch 数动态组 context-parallel subgroup，并把 ViT forward/backward 尽量放进 LLM pipeline bubble。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-11" data-paper-source="kimi-k3" data-paper-asset="k3-figure-11" markdown="1">
+[![Kimi K3 预训练流水中前向、反向、专家并行通信、NCCL 梯度归约、本地与远程 activation offload 的重叠时序；不同 pipeline 阶段穿插 ViT、attention、MLP、shared expert 与 expert dispatch](../../assets/papers/kimi-k3/figure-11-training-pipeline.png){ width="1933" height="600" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-11-training-pipeline.png)
+<figcaption><strong>系统收益来自跨层次重叠，而不是某一个孤立 kernel。</strong>横向时间线上，蓝色前向、橙红色反向、EP dispatch、梯度归约与 activation 搬运被塞进不同 PP phase 的空隙；绿色 ViT 工作也进入语言模型 pipeline bubble。任何移植都要重新测目标拓扑上的关键路径，不能把图中的排布当成固定 schedule。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=19">Kimi K3 Technical Report, Figure 11, p. 19</a>；© 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
 
 这些选择都在做同一件事：把“必须同时驻留”的状态集合缩小，而不是只降低总字节。详见[集合通信与状态分片](../../systems/collectives-sharding.md)、[模型并行](../../systems/model-parallelism.md)与[检查点](../../systems/checkpointing.md)。
 
@@ -1288,6 +1307,11 @@ released tokenizer config 中，BOS / EOS / PAD 分别为 163584 / 163586 / 1638
 - global option 在 history 前声明，如 tools 与 thinking effort；
 - one-shot option 在 history 后、下一次生成前声明，如 tool choice 与 response format。
 - input option 插入历史中间，用于动态 tool declaration，补充或覆盖先前 global option。
+
+<figure class="paper-figure paper-figure--wide" id="k3-figure-16" data-paper-source="kimi-k3" data-paper-asset="k3-figure-16" markdown="1">
+[![XTML 的三部分结构：context 中 global 与 one-shot option 的作用域，assistant message 中 think、response 与 tools channel 的边界，以及 tools channel 中通过 index 配对的并行 typed calls](../../assets/papers/kimi-k3/figure-16-xtml.png){ width="2050" height="762" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-16-xtml.png)
+<figcaption><strong>序列格式同时编码作用域、channel 与调用配对。</strong>左图决定 option 在哪段上下文生效；中图把 reasoning、response 与 tool call 放进同一 assistant message；右图再用 index 和 typed argument 维持并行调用的一一对应。因而 tokenizer、parser、loss mask、服务端与客户端必须共享同一组 round-trip 测试。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=46">Kimi K3 Technical Report, Figure 16, p. 46</a>；© 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
 
 thinking-effort schema 预留 low、medium、high、max 四级；K3 当前公开接口支持其中 low、high、max，不能把 schema 的预留集合误写成 checkpoint 的有效取值。preserved thinking history 会把上一轮 reasoning channel 原样放回后续 context；这有利于连续推理与 cache reuse，却可能携带敏感内容、过期假设或不该跨权限边界保存的内部状态。部署方必须明确 API 是否返回、客户端是否持久化、日志是否脱敏、修改 tool/effort 后哪些 prefix cache 失效。
 

@@ -195,7 +195,10 @@ nav:
               - Manifold-Constrained Hyper-Connections: landscape/works/manifold-hyper-connections.md
               - On-Policy Distillation: landscape/works/on-policy-distillation.md
               - TileLang、MegaMoE 与 DSec: landscape/works/tilelang-mega-moe.md
+              - Kimi k1.5: landscape/works/kimi-k1-5.md
+              - Kimi K2: landscape/works/kimi-k2.md
               - Kimi Linear 与 FlashKDA: landscape/works/kimi-linear-flashkda.md
+              - Kimi K2.5: landscape/works/kimi-k2-5.md
               - Attention Residuals: landscape/works/attention-residuals.md
               - Stable LatentMoE 与 Quantile Balancing: landscape/works/latentmoe-quantile-balancing.md
               - Kimi K3: landscape/works/kimi-k3.md
@@ -232,7 +235,8 @@ nav:
           - 视频与世界模型: multimodal/video-world-models.md
           - 具身智能体: multimodal/embodied-agents.md
       - 模型案例:
-          - Kimi: multimodal/kimi.md
+          - Kimi-VL: multimodal/kimi-vl.md
+          - Kimi 家族: multimodal/kimi.md
           - DeepSeek: multimodal/deepseek.md
   - 训练与系统:
       - 训练与对齐:
