@@ -87,7 +87,7 @@ assert rejects(claims + [claims[0]])
 
 ### Retrieve while generating
 
-生成过程中判断是否需要检索并回到证据。[Self-RAG](https://arxiv.org/abs/2310.11511)研究了检索与自反思 token。动态检索能节省简单问题的成本，也把检索决策本身变成需要评测的模型行为。
+生成过程中判断是否需要检索并回到证据。[Self-RAG](https://arxiv.org/abs/2310.11511) 研究了检索与自反思 token。动态检索能节省简单问题的成本，也把检索决策本身变成需要评测的模型行为。
 
 无论路线如何，最终答案都应由结构化 claim 与 evidence ID 组装，而非事后随机把链接贴到段尾。
 

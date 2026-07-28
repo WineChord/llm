@@ -78,7 +78,7 @@ $$
 
 每次组合后都重新测量 step time、通信暴露、显存峰值、收敛一致性和故障恢复。
 
-每引入一个维度，都用固定 batch 与单卡高精度 reference 比较 loss、gradient 和更新；否则多维并行同时打开后，很难定位是 shard layout、collective、mask 还是随机数漂移。模型并行的算子级路径见[模型并行](model-parallelism.md)，collective 与 ZeRO 状态见[集合通信与状态分片](collectives-sharding.md)，pipeline checkpoint 与恢复见[Checkpoint、韧性与可观测性](checkpointing.md)。
+每引入一个维度，都用固定 batch 与单卡高精度 reference 比较 loss、gradient 和更新；否则多维并行同时打开后，很难定位是 shard layout、collective、mask 还是随机数漂移。模型并行的算子级路径见[模型并行](model-parallelism.md)，collective 与 ZeRO 状态见[集合通信与状态分片](collectives-sharding.md)，pipeline checkpoint 与恢复见 [Checkpoint、韧性与可观测性](checkpointing.md)。
 
 ## Reference {#reference}
 

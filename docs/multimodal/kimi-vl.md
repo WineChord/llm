@@ -1,9 +1,9 @@
 # Kimi-VL：原生分辨率、稀疏语言主干与长视觉上下文
 
-2025 年春，[Kimi-VL](https://arxiv.org/abs/2504.07491)把当时常被分开处理的四件事放进同一个公开模型：
+2025 年春，[Kimi-VL](https://arxiv.org/abs/2504.07491) 把当时常被分开处理的四件事放进同一个公开模型：
 native-resolution image、16B total / 2.8B activated 的 MoE language decoder、128K text-video context，
 以及经 long-CoT SFT 与 RL 激活的视觉推理。它既是一个独立的高效 VLM，也是
-[Kimi K2.5](../landscape/works/kimi-k2-5.md)与[Kimi K3](../landscape/works/kimi-k3.md)之前，Kimi
+[Kimi K2.5](../landscape/works/kimi-k2-5.md) 与 [Kimi K3](../landscape/works/kimi-k3.md) 之前，Kimi
 家族视觉路线最清楚的一次公开展开。
 
 这页关注的不是“能不能看图”，而是视觉信息怎样经过四个接口：
@@ -158,7 +158,7 @@ Kimi-VL 的语言侧来自 Moonlight：16B total、每 token 激活约 2.8B 的 
 - conditional FFN 让总容量大于每 token 的 activated compute；
 - 2×2 merge 先减少视觉 sequence length，再降低 attention 与 MoE token traffic。
 
-但 “A3B” 不是整模型显存只等于 3B dense：部署仍需持有或分片 16B language weights、400M vision
+但“A3B”不是整模型显存只等于 3B dense：部署仍需持有或分片 16B language weights、400M vision
 tower、router 与 KV cache；专家通信和长 context attention 也不会按 activated parameter 比例消失。
 
 ## 四阶段预训练：先建视觉词典，再共同写长上下文
@@ -262,7 +262,7 @@ instruction。system / user prompt 被 mask，只监督 assistant answer 与 spe
 Kimi-VL-Thinking 随后加入：
 
 1. 小而高质量的 multimodal long-CoT SFT，激活 planning、evaluation、reflection 与 exploration；
-2. 以 [Kimi k1.5](../landscape/works/kimi-k1-5.md)同类 KL-regularized online policy mirror descent
+2. 以 [Kimi k1.5](../landscape/works/kimi-k1-5.md) 同类 KL-regularized online policy mirror descent
    做 RL；
 3. length reward、curriculum sampling 与按实例成功率的 prioritized sampling。
 
@@ -340,7 +340,7 @@ Kimi-VL 的 limitation 很具体：
 
 三者共享 lineage，却不能互换 encoder 名称或训练结论。Kimi-VL 证明的是一套高效、开放的
 native-resolution VLM 配方；K2.5 把它放大并扩到视频 / parallel agents；K3 又改变了视觉初始化与
-backbone。沿完整分叉关系可回到[Kimi 多模态家族](kimi.md)与
+backbone。沿完整分叉关系可回到 [Kimi 多模态家族](kimi.md)与
 [Kimi 技术谱系](../landscape/kimi-timeline.md)。
 
 ## Reference {#reference}

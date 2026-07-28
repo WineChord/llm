@@ -57,7 +57,7 @@
 8. [训推分布与策略滞后](training-inference-discrepancy.md)：current、old、behavior、reference 与三种 ratio。
 9. [Ratio、Clipping 与 Gate](ratio-clipping-gating.md)：PPO、Clip-Higher、CISPO、GSPO、SAPO、TIS、IcePop 与 DIS。
 10. [在线 RL 与可验证奖励](../training/online-rl.md)：rollout、策略更新与异步数据闭环。
-11. [RLVR](rlvr.md)与 [Verifier、过程奖励](verifiers-reward-shaping.md)：可验证结果如何成为训练信号。
+11. [RLVR](rlvr.md) 与 [Verifier、过程奖励](verifiers-reward-shaping.md)：可验证结果如何成为训练信号。
 12. [推理后训练](../training/reasoning-posttraining.md)：搜索、验证、蒸馏与参数更新的闭环。
 13. [语言模型信用分配](credit-assignment.md)：sequence reward 怎样落到 token、turn 与 segment。
 14. [推理 RL 配方地图](reasoning-rl-recipes.md)：按反馈、采样、信用、分布、归约和系统六轴定位问题。
@@ -72,7 +72,7 @@
 
 ### Agentic RL
 
-[Agentic RL](../agentic-rl/index.md)把单轮生成扩展为有状态环境。这里需要同时维护：
+[Agentic RL](../agentic-rl/index.md) 把单轮生成扩展为有状态环境。这里需要同时维护：
 
 - [轨迹与策略契约](../agentic-rl/trajectory-contract.md)；
 - [数据、环境与 verifier](../agentic-rl/data-environments.md)；

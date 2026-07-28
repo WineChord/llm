@@ -22,7 +22,7 @@ Vision-Language-Action（VLA）模型通常组合：
 4. 离散或连续动作 head；
 5. 控制器与安全约束。
 
-[PaLM-E](https://arxiv.org/abs/2303.03378)把连续传感器表示注入语言模型，[RT-2](https://arxiv.org/abs/2307.15818)把机器人动作表示为可由视觉语言模型预测的 token。它们展示了把互联网语义知识迁移到动作模型的路线，不意味着语言能力会自动转化为精确控制。
+[PaLM-E](https://arxiv.org/abs/2303.03378) 把连续传感器表示注入语言模型，[RT-2](https://arxiv.org/abs/2307.15818) 把机器人动作表示为可由视觉语言模型预测的 token。它们展示了把互联网语义知识迁移到动作模型的路线，不意味着语言能力会自动转化为精确控制。
 
 ## 动作表示
 
@@ -199,7 +199,7 @@ $$
 
 ## 继续深入
 
-本页保留从 VLM 到动作的稳定概览。完整控制栈见[具身智能总览](../embodied/index.md)，动作 token、chunk、diffusion/flow policy 见[状态、动作与策略](../embodied/state-action-policies.md)，数据与 VLA 谱系见[VLA、数据与跨本体学习](../embodied/vla-data-lineage.md)，真实运行和物理边界见[规划、闭环评测与安全](../embodied/planning-evaluation-safety.md)。
+本页保留从 VLM 到动作的稳定概览。完整控制栈见[具身智能总览](../embodied/index.md)，动作 token、chunk、diffusion/flow policy 见[状态、动作与策略](../embodied/state-action-policies.md)，数据与 VLA 谱系见 [VLA、数据与跨本体学习](../embodied/vla-data-lineage.md)，真实运行和物理边界见[规划、闭环评测与安全](../embodied/planning-evaluation-safety.md)。
 
 ## Reference {#reference}
 

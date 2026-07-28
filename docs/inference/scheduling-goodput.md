@@ -61,11 +61,11 @@ $$
 =\frac{\sum_i I_i}{\Delta t}.
 $$
 
-若请求有不同等级，可以同时报告按请求、按输出 token 和按权重的 goodput，避免大量短请求掩盖长请求饥饿。[Goodput-oriented LLM serving analysis](https://arxiv.org/abs/2410.14257)进一步讨论了传统吞吐指标的局限。
+若请求有不同等级，可以同时报告按请求、按输出 token 和按权重的 goodput，避免大量短请求掩盖长请求饥饿。[Goodput-oriented LLM serving analysis](https://arxiv.org/abs/2410.14257) 进一步讨论了传统吞吐指标的局限。
 
 ## 每轮预算
 
-continuous batching 在模型迭代边界重组 batch。[Orca](https://www.usenix.org/conference/osdi22/presentation/yu)给出了迭代级调度和选择性 batching 的代表性设计。对某一轮，可以写成
+continuous batching 在模型迭代边界重组 batch。[Orca](https://www.usenix.org/conference/osdi22/presentation/yu) 给出了迭代级调度和选择性 batching 的代表性设计。对某一轮，可以写成
 
 $$
 N_{\mathrm{scheduled}}
@@ -99,7 +99,7 @@ $$
 P_i=\sum_{c=1}^{C_i}P_{i,c}.
 $$
 
-chunk 大时 prefill 效率高，chunk 小时 decode stall 更短，但 launch、调度和 partial-state 管理增加。[Sarathi-Serve](https://www.usenix.org/conference/osdi24/presentation/agrawal)研究了以 chunked prefill 构造 stall-free batching 的路线。
+chunk 大时 prefill 效率高，chunk 小时 decode stall 更短，但 launch、调度和 partial-state 管理增加。[Sarathi-Serve](https://www.usenix.org/conference/osdi24/presentation/agrawal) 研究了以 chunked prefill 构造 stall-free batching 的路线。
 
 选择 chunk 需要同时测：
 
@@ -110,7 +110,7 @@ chunk 大时 prefill 效率高，chunk 小时 decode stall 更短，但 launch�
 - decode TPOT；
 - prefix hit 后剩余未计算 token。
 
-若两阶段长期争夺资源且负载足够大，可进一步考虑[Prefill–Decode 分离](disaggregation.md)；分离会新增 KV 传输和全局 reservation，不是免费的调度修复。
+若两阶段长期争夺资源且负载足够大，可进一步考虑 [Prefill–Decode 分离](disaggregation.md)；分离会新增 KV 传输和全局 reservation，不是免费的调度修复。
 
 ## Admission Control
 
@@ -191,7 +191,7 @@ FIFO 简单，但长 prefill 会阻塞短交互；最短作业优先改善平均
 | KV byte-seconds | 反映长驻留成本 | 忽略计算与网络 |
 | 货币成本 | 适合配额 | 会随硬件和部署变化 |
 
-[Virtual Token Counter](https://arxiv.org/abs/2401.00588)提供了将 LLM 服务成本纳入公平调度的一种方法。任何策略都应再加最大等待时间或 ageing，避免低权重请求永久饥饿。
+[Virtual Token Counter](https://arxiv.org/abs/2401.00588) 提供了将 LLM 服务成本纳入公平调度的一种方法。任何策略都应再加最大等待时间或 ageing，避免低权重请求永久饥饿。
 
 ## Cache-aware Routing 与迁移
 
@@ -205,7 +205,7 @@ $$
 -T_{\mathrm{risk},j}.
 $$
 
-[Preble](https://arxiv.org/abs/2407.00023)研究了 prefix-aware distributed scheduling；[Llumnix](https://arxiv.org/abs/2406.03243)研究了请求迁移和负载重平衡。迁移只在剩余排队 / 执行收益超过 KV 传输、暂停和安装成本时值得：
+[Preble](https://arxiv.org/abs/2407.00023) 研究了 prefix-aware distributed scheduling；[Llumnix](https://arxiv.org/abs/2406.03243) 研究了请求迁移和负载重平衡。迁移只在剩余排队 / 执行收益超过 KV 传输、暂停和安装成本时值得：
 
 $$
 T_{\mathrm{migration}}

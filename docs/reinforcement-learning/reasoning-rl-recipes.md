@@ -13,7 +13,7 @@
   -> 系统能承受同步等待还是异步偏移
 ```
 
-本页负责方法选择与互相导航；完整推导分别进入 [GAE](advantage-estimation-gae.md)、[PPO](trust-region-ppo.md)、[GRPO](grpo.md)、[Ratio 与 Gate](ratio-clipping-gating.md)以及[训推分布](training-inference-discrepancy.md)。
+本页负责方法选择与互相导航；完整推导分别进入 [GAE](advantage-estimation-gae.md)、[PPO](trust-region-ppo.md)、[GRPO](grpo.md)、[Ratio 与 Gate](ratio-clipping-gating.md) 以及[训推分布](training-inference-discrepancy.md)。
 
 ## 第一轴：反馈决定可学的目标
 
@@ -27,7 +27,7 @@
 | 环境 return | 游戏、浏览、软件工程任务 | 延迟、部分可观测、基础设施失败 |
 | 人工或 AI 比较 | chosen/rejected response | 标注分布、judge bias、一致性 |
 
-RLVR 可以与 PPO、RLOO、GRPO 或 value-based actor–critic 组合；RLAIF 也可以产生 pair 或 scalar reward。反馈来源与 optimizer 正交，详见[反馈制度](feedback-regimes.md)和[Verifier 与奖励塑形](verifiers-reward-shaping.md)。
+RLVR 可以与 PPO、RLOO、GRPO 或 value-based actor–critic 组合；RLAIF 也可以产生 pair 或 scalar reward。反馈来源与 optimizer 正交，详见[反馈制度](feedback-regimes.md)和 [Verifier 与奖励塑形](verifiers-reward-shaping.md)。
 
 若 reward 自身不可靠，换 optimizer 只会更高效地利用漏洞。应先建立 held-out verifier、人工审查、错误分类和基础设施失败隔离。
 
@@ -182,7 +182,7 @@ trajectory 完成立即入队
 - accepted token fraction；
 - 相同 wall-clock 下的 held-out improvement。
 
-Agentic 细节见[训练系统](../agentic-rl/training-systems.md)和[SAO 深读](../landscape/works/sao-compactionrl.md#sao)。
+Agentic 细节见[训练系统](../agentic-rl/training-systems.md)和 [SAO 深读](../landscape/works/sao-compactionrl.md#sao)。
 
 ## 方法不是互斥选项
 
@@ -302,19 +302,19 @@ single long trajectory
 - held-out pass@1、pass@$k$、多样性与安全能力；
 - 多 seed 曲线和 failure runs。
 
-DAPO dynamic sampling、VAPO group sampling、PPO critic 与 GRPO 多候选使用不同预算形态。只固定 “训练 1000 steps” 并不公平。
+DAPO dynamic sampling、VAPO group sampling、PPO critic 与 GRPO 多候选使用不同预算形态。只固定“训练 1000 steps”并不公平。
 
 ## 推荐阅读顺序
 
 1. [语言模型作为策略](language-model-policy.md)与[反馈制度](feedback-regimes.md)：先固定动作、状态与 reward 来源；
-2. [Policy Gradient](policy-gradient.md)与 [Actor–Critic](actor-critic.md)：建立 sampled gradient、baseline 与 critic；
+2. [Policy Gradient](policy-gradient.md) 与 [Actor–Critic](actor-critic.md)：建立 sampled gradient、baseline 与 critic；
 3. [Advantage 与 GAE](advantage-estimation-gae.md)：长期信用与双边界；
 4. [Trust Region 与 TRPO](trust-region.md)、[PPO](trust-region-ppo.md)：局部更新与 clipped surrogate；
 5. [无 critic 的 baseline](critic-free-baselines.md)：REINFORCE、ReMax、RLOO；
 6. [GRPO](grpo.md)：组统计、std 与长度分母；
 7. [训推分布与策略滞后](training-inference-discrepancy.md)：四策略和三种 ratio；
 8. [Ratio、Clipping 与 Gate](ratio-clipping-gating.md)：CISPO、GSPO、SAPO、TIS、IcePop、DIS；
-9. [DAPO](../landscape/works/dapo.md)与 [VAPO](../landscape/works/vapo.md)：两套完整 recipe；
+9. [DAPO](../landscape/works/dapo.md) 与 [VAPO](../landscape/works/vapo.md)：两套完整 recipe；
 10. [推理策略优化谱系](../landscape/lineages/reasoning-policy-optimization.md)：把方法放回历史因果链。
 
 对应代码集中在[手撕 LLM 策略优化](../practice/llm-policy-optimization.md)，避免每个方法页维护一份逐渐漂移的 tensor 实现。

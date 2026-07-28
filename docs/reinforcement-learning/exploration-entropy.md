@@ -2,7 +2,7 @@
 
 探索不是“让 policy 更随机”这么简单。探索的目标是取得能改善未来决策的信息；随机性只是产生不同经历的一种手段；entropy regularization 则直接改变被优化的目标。三者相关，却不能互换。
 
-本页先从 bandit 的可辨认权衡出发，再进入序贯控制、maximum-entropy RL 与 SAC。状态、回报和终止语义可先参考[MDP、POMDP 与回报](decision-processes.md)。
+本页先从 bandit 的可辨认权衡出发，再进入序贯控制、maximum-entropy RL 与 SAC。状态、回报和终止语义可先参考 [MDP、POMDP 与回报](decision-processes.md)。
 
 ## 探索究竟在优化什么
 
@@ -118,7 +118,7 @@ $$
 \left[\log\pi_{\mathrm{ref}}(a\mid s)\right].
 $$
 
-第二项把策略拉向非均匀先验。因此语言模型中的[KL 正则化控制](kl-regularized-control.md)既包含熵，也包含 reference 的语法、知识和风格偏好，不能简写成“增加随机性”。
+第二项把策略拉向非均匀先验。因此语言模型中的 [KL 正则化控制](kl-regularized-control.md)既包含熵，也包含 reference 的语法、知识和风格偏好，不能简写成“增加随机性”。
 
 ## SAC：现代常用配方
 
@@ -225,7 +225,7 @@ $$
 - SAC 的连续动作、replay 和 soft Q 配方不能因 token vocabulary 是离散的就直接移植到完整 response 空间；
 - RLHF 的 reference KL 与 PPO old-policy ratio 各有不同作用，均不等同于 SAC entropy。
 
-若旧 rollout 被反复训练，还需结合[Off-policy 校正](off-policy-correction.md)检查 support、policy lag 与 ratio，而不是把更多随机采样当作分布校正。
+若旧 rollout 被反复训练，还需结合 [Off-policy 校正](off-policy-correction.md)检查 support、policy lag 与 ratio，而不是把更多随机采样当作分布校正。
 
 ## 历史脉络
 
@@ -233,12 +233,12 @@ Bandit 理论先把 exploration–exploitation 写成可分析的 regret 问题�
 
 ## 常见误区
 
-1. **高 entropy 就是有效探索。** policy 可能在同一狭小状态区域内随机。
-2. **entropy bonus 不改变任务。** $\alpha>0$ 优化的是 regularized objective，其最优策略一般不同。
-3. **reference KL 就是 entropy penalty。** 非均匀 reference 还贡献显式先验项。
-4. **所有 SAC 公式都可混用。** 显式 value network、现代 twin-Q target 和自动 temperature 属于不同版本合同。
-5. **`done` 可直接屏蔽 SAC bootstrap。** 真正 terminal 才屏蔽；time-limit truncation 通常仍 bootstrap。
-6. **语言模型动作离散，所以离散 SAC 可直接处理整段回答。** 完整序列动作空间呈指数增长，粒度和 soft value 定义必须重新建立。
+1. <strong>高 entropy 就是有效探索。</strong>policy 可能在同一狭小状态区域内随机。
+2. **entropy bonus 不改变任务。**$\alpha>0$ 优化的是 regularized objective，其最优策略一般不同。
+3. <strong>reference KL 就是 entropy penalty。</strong>非均匀 reference 还贡献显式先验项。
+4. <strong>所有 SAC 公式都可混用。</strong>显式 value network、现代 twin-Q target 和自动 temperature 属于不同版本合同。
+5. <strong>`done` 可直接屏蔽 SAC bootstrap。</strong>真正 terminal 才屏蔽；time-limit truncation 通常仍 bootstrap。
+6. <strong>语言模型动作离散，所以离散 SAC 可直接处理整段回答。</strong>完整序列动作空间呈指数增长，粒度和 soft value 定义必须重新建立。
 
 ## Reference {#reference}
 

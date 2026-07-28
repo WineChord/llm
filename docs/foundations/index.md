@@ -64,7 +64,7 @@ $$
 
 1. 从[语言建模](language-modeling.md)理解条件概率、训练和生成；
 2. 用[概率、损失与梯度](probability-objectives.md)推导 softmax、交叉熵和数值稳定；
-3. 手写 [Tokenizer](../practice/tokenizers.md)并检查 Unicode、special token 与 round-trip；
+3. 手写 [Tokenizer](../practice/tokenizers.md) 并检查 Unicode、special token 与 round-trip；
 4. 学习[上下文学习](in-context-learning.md)，区分 forward-pass adaptation 与参数更新；
 5. 用[缩放与计算](scaling.md)建立参数、token、FLOPs 与生命周期成本；
 6. 进入[模型结构](../architecture/index.md)，再连接数据、训练、系统与评测。

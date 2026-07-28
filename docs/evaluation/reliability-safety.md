@@ -2,7 +2,7 @@
 
 可靠性关注系统在正常输入、边界条件、分布漂移和部分故障下是否保持可预测；安全关注它是否跨越权限、隐私和风险边界。一个系统可以稳定地产生危险结果，也可以很安全却因过度拒绝而不可用，因此两者必须分别测量。
 
-本页保留为完整入口。事实与引用见[幻觉与事实性](hallucination.md)，概率与 abstention 见[校准与不确定性](calibration-uncertainty.md)，攻击协议见[安全评测](safety-evaluation.md)，工具副作用见[Agent 与工具评测](agent-tool-evaluation.md)。
+本页保留为完整入口。事实与引用见[幻觉与事实性](hallucination.md)，概率与 abstention 见[校准与不确定性](calibration-uncertainty.md)，攻击协议见[安全评测](safety-evaluation.md)，工具副作用见 [Agent 与工具评测](agent-tool-evaluation.md)。
 
 ## 评测协议
 

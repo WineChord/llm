@@ -73,7 +73,7 @@ K3 报告描述了一组可跨模拟天、数千次工具调用和百万级上�
 
 ### DSec：按任务选择隔离基底
 
-[DeepSeek-V4](../landscape/works/deepseek-v4.md#dsec)披露的 DSec 以 Rust Apiserver、Edge、Watcher 和 [3FS](https://github.com/deepseek-ai/3FS)协调四类执行环境：
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#dsec) 披露的 DSec 以 Rust Apiserver、Edge、Watcher 和 [3FS](https://github.com/deepseek-ai/3FS) 协调四类执行环境：
 
 | 基底 | 适合 | 主要边界 |
 | --- | --- | --- |
@@ -84,7 +84,7 @@ K3 报告描述了一组可跨模拟天、数千次工具调用和百万级上�
 
 镜像 metadata 可本地驻留，数据块从 3FS 按需获取；microVM 通过 OverlayBD 共享远端只读 base layer，只把 copy-on-write 增量留在本地。chainable snapshot 让后续环境基于已有状态继续。
 
-DSec 用全序 trajectory log 记录状态变更与结果。所谓 deterministic replay 不是假设外部命令每次都产生同一输出，而是在重放时复用已提交结果，避免重复执行非幂等动作；同一日志还支持 client fast-forward 和细粒度 provenance。报告给出数十万并发与毫秒级恢复的内部系统描述，但没有公开完整实现、故障注入或安全审计结果。系统链见[MegaMoE、TileLang 与 DSec](../landscape/works/tilelang-mega-moe.md#dsec)。
+DSec 用全序 trajectory log 记录状态变更与结果。所谓 deterministic replay 不是假设外部命令每次都产生同一输出，而是在重放时复用已提交结果，避免重复执行非幂等动作；同一日志还支持 client fast-forward 和细粒度 provenance。报告给出数十万并发与毫秒级恢复的内部系统描述，但没有公开完整实现、故障注入或安全审计结果。系统链见 [MegaMoE、TileLang 与 DSec](../landscape/works/tilelang-mega-moe.md#dsec)。
 
 ## 工具契约
 

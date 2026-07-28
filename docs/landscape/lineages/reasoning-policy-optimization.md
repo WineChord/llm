@@ -17,7 +17,7 @@ GRPO 主要改变 advantage；DAPO 同时改变 gate、sampling、reduction 与 
 
 ## 2015–2017：先解决“怎样迈一小步”
 
-[GAE](https://arxiv.org/abs/1506.02438)把多步 TD residual 指数加权，给 actor–critic 一条可调的 bias–variance 轴：
+[GAE](https://arxiv.org/abs/1506.02438) 把多步 TD residual 指数加权，给 actor–critic 一条可调的 bias–variance 轴：
 
 $$
 \widehat A_t
@@ -26,7 +26,7 @@ $$
 (\gamma\lambda)^\ell\delta_{t+\ell}.
 $$
 
-[TRPO](https://proceedings.mlr.press/v37/schulman15.html)则从 performance-difference 与 KL 邻域出发，限制新策略离 old policy 太远。[PPO](https://arxiv.org/abs/1707.06347)用 clipped first-order surrogate 换取 minibatch SGD 和更简单的分布式实现。
+[TRPO](https://proceedings.mlr.press/v37/schulman15.html) 则从 performance-difference 与 KL 邻域出发，限制新策略离 old policy 太远。[PPO](https://arxiv.org/abs/1707.06347) 用 clipped first-order surrogate 换取 minibatch SGD 和更简单的分布式实现。
 
 这三项工作形成后来 LLM RLHF 的经典骨架：
 
@@ -39,11 +39,11 @@ rollout under behavior policy
   -> optional reference KL
 ```
 
-其稳定性来自一组联合契约，而不是 clip 一项：old log-prob 必须冻结，critic target 要正确处理 terminal/truncation，同一 rollout 的复用 epoch 不能无限增加，KL、ratio tail 与 value drift 都要观察。完整机制分别见 [Advantage 与 GAE](../../reinforcement-learning/advantage-estimation-gae.md)、[Trust Region 与 TRPO](../../reinforcement-learning/trust-region.md)和[PPO](../../reinforcement-learning/trust-region-ppo.md)。
+其稳定性来自一组联合契约，而不是 clip 一项：old log-prob 必须冻结，critic target 要正确处理 terminal/truncation，同一 rollout 的复用 epoch 不能无限增加，KL、ratio tail 与 value drift 都要观察。完整机制分别见 [Advantage 与 GAE](../../reinforcement-learning/advantage-estimation-gae.md)、[Trust Region 与 TRPO](../../reinforcement-learning/trust-region.md) 和 [PPO](../../reinforcement-learning/trust-region-ppo.md)。
 
 ## 2017–2022：PPO 进入语言模型闭环
 
-人类偏好研究把 reward 从环境函数变成 learned model。[InstructGPT](../works/instructgpt.md)把 demonstrations、pairwise reward model、PPO 与 reference/pretraining constraint 组织成三阶段流程。
+人类偏好研究把 reward 从环境函数变成 learned model。[InstructGPT](../works/instructgpt.md) 把 demonstrations、pairwise reward model、PPO 与 reference/pretraining constraint 组织成三阶段流程。
 
 语言模型把经典 PPO 推到一个特殊场景：
 
@@ -57,7 +57,7 @@ rollout under behavior policy
 
 ## 2024：GRPO 把 baseline 搬到同题候选之间
 
-[DeepSeekMath](https://arxiv.org/abs/2402.03300)提出 GRPO：对同一个数学 prompt 采样 $G$ 个 response，用组均值和标准差构造优势，省去同规模 critic。
+[DeepSeekMath](https://arxiv.org/abs/2402.03300) 提出 GRPO：对同一个数学 prompt 采样 $G$ 个 response，用组均值和标准差构造优势，省去同规模 critic。
 
 $$
 \widehat A_i
@@ -75,13 +75,13 @@ $$
   -> group std 与 response length 进入权重
 ```
 
-与此同时，[Back to Basics](https://arxiv.org/abs/2402.14740)重新评估 REINFORCE、RLOO 与 PPO，提醒研究者：简单的 leave-one-out baseline 在某些 sequence-reward RLHF 设置中已经很强。无 critic 并不是 GRPO 的专属属性，组标准化也不是唯一选择。
+与此同时，[Back to Basics](https://arxiv.org/abs/2402.14740) 重新评估 REINFORCE、RLOO 与 PPO，提醒研究者：简单的 leave-one-out baseline 在某些 sequence-reward RLHF 设置中已经很强。无 critic 并不是 GRPO 的专属属性，组标准化也不是唯一选择。
 
-GRPO 随 [DeepSeek-R1](../works/deepseek-r1.md)进入更大的公众视野，但 R1 的能力来自规则 reward、cold start、在线 RL、rejection sampling、二次 SFT/RL 与 distillation 的多阶段组合。把这条路线缩写为“GRPO 产生 reasoning”，会把数据与训练闭环全部抹掉。
+GRPO 随 [DeepSeek-R1](../works/deepseek-r1.md) 进入更大的公众视野，但 R1 的能力来自规则 reward、cold start、在线 RL、rejection sampling、二次 SFT/RL 与 distillation 的多阶段组合。把这条路线缩写为“GRPO 产生 reasoning”，会把数据与训练闭环全部抹掉。
 
 ## 2025 年初：先审计看似无害的分母
 
-[Understanding R1-Zero-Like Training](https://arxiv.org/abs/2503.20783)提出 Dr. GRPO，指出原 GRPO 中两种权重：
+[Understanding R1-Zero-Like Training](https://arxiv.org/abs/2503.20783) 提出 Dr. GRPO，指出原 GRPO 中两种权重：
 
 1. group std 使不同 prompt 按 reward dispersion 重权；
 2. response token mean 使每个 token 的权重与 $1/|y_i|$ 成正比。
@@ -106,7 +106,7 @@ $$
 
 ## 2025 年春：DAPO 把失败模式变成开放配方
 
-[DAPO](../works/dapo.md)从 naive GRPO 的训练失败出发，引入四项联合改动：
+[DAPO](../works/dapo.md) 从 naive GRPO 的训练失败出发，引入四项联合改动：
 
 - asymmetric Clip-Higher；
 - 只保留 mixed group 的 dynamic sampling；
@@ -126,7 +126,7 @@ DAPO 的成功不能证明 dynamic sampling 本身是新 optimizer，也不能�
 
 ## 2025 年春：VAPO 没有继续“去 critic”
 
-[VAPO](../works/vapo.md)选择了另一条分支。它观察到 value-based PPO 在长 CoT 中的三个问题：
+[VAPO](../works/vapo.md) 选择了另一条分支。它观察到 value-based PPO 在长 CoT 中的三个问题：
 
 1. reward-model initialization 对 prefix value 有偏；
 2. 固定 $\lambda$ 让终局 reward 在长序列中过度衰减；
@@ -158,11 +158,11 @@ $$
 
 ### CISPO：clip weight，不把梯度清零
 
-[MiniMax-M1](https://arxiv.org/abs/2506.13585)中的 CISPO 将 clipped importance ratio detach 后乘在 $\log\pi$ 前。越界 token 的权重饱和，但梯度不归零。它与 PPO 的区别不在 clip 数值，而在 **clip 作用于 surrogate 还是 detached gradient coefficient**。
+[MiniMax-M1](https://arxiv.org/abs/2506.13585) 中的 CISPO 将 clipped importance ratio detach 后乘在 $\log\pi$ 前。越界 token 的权重饱和，但梯度不归零。它与 PPO 的区别不在 clip 数值，而在 **clip 作用于 surrogate 还是 detached gradient coefficient**。
 
 ### GSPO：整条 response 共用 ratio
 
-[GSPO](https://arxiv.org/abs/2507.18071)使用
+[GSPO](https://arxiv.org/abs/2507.18071) 使用
 
 $$
 s_i
@@ -176,7 +176,7 @@ $$
 
 ### SAPO：从硬门变成平滑门
 
-[SAPO](https://arxiv.org/abs/2511.20347)用 sigmoid surrogate 让远离 $\rho=1$ 的梯度平滑衰减，并为正负 advantage 采用不同温度。它不在阈值处突然归零，却仍要面对 engine mismatch、policy lag 和 reduction 选择。
+[SAPO](https://arxiv.org/abs/2511.20347) 用 sigmoid surrogate 让远离 $\rho=1$ 的梯度平滑衰减，并为正负 advantage 采用不同温度。它不在阈值处突然归零，却仍要面对 engine mismatch、policy lag 和 reduction 选择。
 
 这些方法的统一公式、梯度与边界见 [Ratio、Clipping 与 Gate](../../reinforcement-learning/ratio-clipping-gating.md)。
 
@@ -202,7 +202,7 @@ $$
 {\mu_{\mathrm{old}}^{\mathrm{rollout}}}.
 $$
 
-[On the Rollout-Training Mismatch](https://www.opt-ml.org/papers/2025/paper116.pdf)用 TIS 截断 $\kappa$；[Every Step Evolves](https://arxiv.org/abs/2510.18855)中的 IcePop 在可信区间内校正、区间外 mask；[R3](https://arxiv.org/abs/2510.11370)则为 MoE 记录并重放 rollout routing。
+[On the Rollout-Training Mismatch](https://www.opt-ml.org/papers/2025/paper116.pdf) 用 TIS 截断 $\kappa$；[Every Step Evolves](https://arxiv.org/abs/2510.18855) 中的 IcePop 在可信区间内校正、区间外 mask；[R3](https://arxiv.org/abs/2510.11370) 则为 MoE 记录并重放 rollout routing。
 
 它们修的是 engine distribution，不是 PPO trust region。把 TIS cap 当作另一个 PPO epsilon，会混合两条完全不同的分布缝隙。
 
@@ -216,7 +216,7 @@ $$
 - rollout 与 learner 的异步队列；
 - 超出 context window 的历史。
 
-[SAO 与 CompactionRL](../works/sao-compactionrl.md)分别沿时间、空间两条轴处理这些约束。
+[SAO 与 CompactionRL](../works/sao-compactionrl.md) 分别沿时间、空间两条轴处理这些约束。
 
 SAO 让每个 prompt 只采一条 trajectory，完成后立即进入异步 learner；critic 提供 token/step advantage，DIS 直接比较 current training policy 与 rollout behavior，并用双侧 gate 拒绝 mismatch tail。它用 critic 与分布治理换取不再等待同组候选。
 
@@ -246,7 +246,7 @@ distribution  on-policy / policy lag / engine mismatch
 system        synchronous barrier / asynchronous actor–learner
 ```
 
-因此 [PPO](../../reinforcement-learning/trust-region-ppo.md)常与 learned critic 和 GAE 组合，却不在定义上绑定某个 advantage estimator；[GRPO](../../reinforcement-learning/grpo.md)选择 group-relative advantage，通常仍使用 PPO-style update；[DAPO](../works/dapo.md)同时改 sampling、gate、reduction 与 overlong handling；[VAPO](../works/vapo.md)用 critic/GAE 构造 advantage，又吸收 DAPO 的 Clip-Higher 与 token loss。[CISPO、GSPO 与 SAPO](../../reinforcement-learning/ratio-clipping-gating.md)主要改变 update geometry，论文中常配 group advantage，但不是 GRPO 的算法子孙。
+因此 [PPO](../../reinforcement-learning/trust-region-ppo.md) 常与 learned critic 和 GAE 组合，却不在定义上绑定某个 advantage estimator；[GRPO](../../reinforcement-learning/grpo.md) 选择 group-relative advantage，通常仍使用 PPO-style update；[DAPO](../works/dapo.md) 同时改 sampling、gate、reduction 与 overlong handling；[VAPO](../works/vapo.md) 用 critic/GAE 构造 advantage，又吸收 DAPO 的 Clip-Higher 与 token loss。[CISPO、GSPO 与 SAPO](../../reinforcement-learning/ratio-clipping-gating.md) 主要改变 update geometry，论文中常配 group advantage，但不是 GRPO 的算法子孙。
 
 ## 怎样读下一篇新论文
 

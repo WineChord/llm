@@ -1,6 +1,6 @@
 # Ratio、Clipping 与 Gate：从 PPO 到 DIS
 
-LLM 强化学习近年的许多缩写，都在回答一个共同问题：**rollout 不是由当前训练分布即时采出时，哪些梯度还值得相信？** 但它们修改的 ratio、粒度和梯度几何并不相同。把所有方法都概括为“换一种 clip”，会同时丢失统计目标与系统动机。
+LLM 强化学习近年的许多缩写，都在回答一个共同问题：<strong>rollout 不是由当前训练分布即时采出时，哪些梯度还值得相信？</strong>但它们修改的 ratio、粒度和梯度几何并不相同。把所有方法都概括为“换一种 clip”，会同时丢失统计目标与系统动机。
 
 本页先固定三个坐标：
 
@@ -97,7 +97,7 @@ $$
 - 负 advantage 且 $\rho>1+\epsilon$ 时仍有梯度，因为还需要压低坏动作概率；
 - 只有沿“有利方向”越过对应边界后，该样本才停止提供额外收益。
 
-因此 PPO 不是把所有 ratio 数值夹进区间，也不是双侧丢样本。共享参数、其他 token 与 optimizer momentum 仍可能让某个已饱和 token 继续移动；PPO 也不保证全分布 KL 满足硬 trust region。完整推导见[PPO 与训练契约](trust-region-ppo.md)。
+因此 PPO 不是把所有 ratio 数值夹进区间，也不是双侧丢样本。共享参数、其他 token 与 optimizer momentum 仍可能让某个已饱和 token 继续移动；PPO 也不保证全分布 KL 满足硬 trust region。完整推导见 [PPO 与训练契约](trust-region-ppo.md)。
 
 下面直接对 `new_logp` 求导，因而同时检验 forward surrogate 与真正的梯度 gate。`advantage` 在进入 objective 前冻结；action mask 与 token/response reduction 属于外层 batch 契约。
 

@@ -84,7 +84,7 @@ discover -> design -> edit -> local_verify -> publish -> remote_verify
 
 ## 评测 Coding Agent
 
-[SWE-bench](https://arxiv.org/abs/2310.06770)把真实 issue 与仓库修复连接起来，但单一通过率仍不够。还应记录：
+[SWE-bench](https://arxiv.org/abs/2310.06770) 把真实 issue 与仓库修复连接起来，但单一通过率仍不够。还应记录：
 
 | 维度 | 问题 |
 | --- | --- |
@@ -102,13 +102,13 @@ discover -> design -> edit -> local_verify -> publish -> remote_verify
 - [OpenCode](https://github.com/anomalyco/opencode)：客户端与 provider 组合；
 - [Pi](https://github.com/badlogic/pi-mono)：轻量代理循环与可扩展工具。
 
-这些项目变化很快，具体命令与能力应以各自版本化文档为准。通用工具调用见[工具与智能体](agents.md)，强化学习视角见[Agentic RL](../agentic-rl/index.md)。
+这些项目变化很快，具体命令与能力应以各自版本化文档为准。通用工具调用见[工具与智能体](agents.md)，强化学习视角见 [Agentic RL](../agentic-rl/index.md)。
 
 ## 从 coding benchmark 到环境生产线 {#glm-agentic-engineering}
 
 GLM-5 的 Agentic Engineering 路线把 coding task 视为环境生产问题：从 issue–PR 对恢复仓库与依赖，用 F2P 测新增行为、P2P 防止回归，再记录工具、token、policy revision 与终止原因。报告称构建超过 10K 个九语言环境；另以 Harbor 合成 terminal tasks。
 
-它提示 Coding Agent 评测至少有三个分母：原始任务、可成功构建的环境、实际得到有效 verdict 的运行。只对第三个分母报 pass rate 会把环境腐烂和超时静默删除。详见 [GLM Agentic Engineering](../landscape/works/glm-agentic-engineering.md)与[数据与环境](../agentic-rl/data-environments.md#glm-environments)。
+它提示 Coding Agent 评测至少有三个分母：原始任务、可成功构建的环境、实际得到有效 verdict 的运行。只对第三个分母报 pass rate 会把环境腐烂和超时静默删除。详见 [GLM Agentic Engineering](../landscape/works/glm-agentic-engineering.md) 与[数据与环境](../agentic-rl/data-environments.md#glm-environments)。
 
 ## Reference {#reference}
 

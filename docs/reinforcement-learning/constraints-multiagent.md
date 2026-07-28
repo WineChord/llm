@@ -47,7 +47,7 @@ policy 最大化 $\mathcal L$，dual variable 增大被违反约束的价格。�
 - 未见状态上的 cost 会外推；
 - 平均约束可能掩盖 tail catastrophe。
 
-[Constrained Policy Optimization](https://proceedings.mlr.press/v70/achiam17a.html)研究 trust-region 下的约束改进，但理论假设和近似不应被直接外推到任意 LLM Agent。
+[Constrained Policy Optimization](https://proceedings.mlr.press/v70/achiam17a.html) 研究 trust-region 下的约束改进，但理论假设和近似不应被直接外推到任意 LLM Agent。
 
 ## Hard guard 与 learned constraint
 
@@ -66,7 +66,7 @@ RL 可优化获准动作内的效率和成功率；硬 guard 决定哪些动作�
 
 ## Risk-sensitive objective
 
-期望回报会平均掉少数灾难结果。设 $Z^\pi$ 是需要最小化的 episode loss，在置信水平 $\alpha\in(0,1)$ 下，[CVaR](https://doi.org/10.21314/JOR.2000.038)可写成
+期望回报会平均掉少数灾难结果。设 $Z^\pi$ 是需要最小化的 episode loss，在置信水平 $\alpha\in(0,1)$ 下，[CVaR](https://doi.org/10.21314/JOR.2000.038) 可写成
 
 $$
 \operatorname{CVaR}_\alpha(Z^\pi)
@@ -77,7 +77,7 @@ $$
 \right\}.
 $$
 
-它关注超过相应分位点后的平均 tail loss；若从 reward 出发，需要对 lower tail 或 loss $Z^\pi=-G^\pi$ 保持一致的符号约定。[CVaR MDP](https://proceedings.neurips.cc/paper/2015/hash/64223ccf70bbb65a3a4aceac37e21016-Abstract.html)把这种风险度量带入序贯决策，但有限样本下的尾部估计通常比均值更不稳定。其他选择包括：
+它关注超过相应分位点后的平均 tail loss；若从 reward 出发，需要对 lower tail 或 loss $Z^\pi=-G^\pi$ 保持一致的符号约定。[CVaR MDP](https://proceedings.neurips.cc/paper/2015/hash/64223ccf70bbb65a3a4aceac37e21016-Abstract.html) 把这种风险度量带入序贯决策，但有限样本下的尾部估计通常比均值更不稳定。其他选择包括：
 
 - chance constraint；
 - worst-case / distributionally robust objective；
@@ -88,7 +88,7 @@ $$
 
 ## Markov Game
 
-[Markov game](https://doi.org/10.1016/B978-1-55860-335-6.50027-1)把单智能体 MDP 扩展到多个策略共同作用的环境。$n$ 个 agent 的形式可写为
+[Markov game](https://doi.org/10.1016/B978-1-55860-335-6.50027-1) 把单智能体 MDP 扩展到多个策略共同作用的环境。$n$ 个 agent 的形式可写为
 
 $$
 \mathcal G=
@@ -122,7 +122,7 @@ $$
 
 执行时每个 actor 只用本地 observation。这样缓解非平稳和信用问题，但需要训练阶段可访问的全局信息，部署不能假装同样可见。
 
-[MADDPG](https://proceedings.neurips.cc/paper/2017/hash/68a9750337a418a86fe06c1991a1d64c-Abstract.html)是代表性实例，不是所有协作系统的默认解。
+[MADDPG](https://proceedings.neurips.cc/paper/2017/hash/68a9750337a418a86fe06c1991a1d64c-Abstract.html) 是代表性实例，不是所有协作系统的默认解。
 
 ## Multi-agent credit
 
@@ -138,7 +138,7 @@ $$
 
 ## Self-play 与 population
 
-[Self-play](https://www.nature.com/articles/nature24270)让 opponent 随训练共同演化，可产生自动 curriculum。它也可能：
+[Self-play](https://www.nature.com/articles/nature24270) 让 opponent 随训练共同演化，可产生自动 curriculum。它也可能：
 
 - 在封闭群体中形成 exploit；
 - 对历史 opponent 遗忘；
@@ -146,7 +146,7 @@ $$
 - 过拟合对手接口；
 - 将 evaluator 漏洞变成群体规范。
 
-[Policy-Space Response Oracles](https://proceedings.neurips.cc/paper_files/paper/2017/hash/3323fe11e9595c09af38fe67567a9394-Abstract.html)不只保留当前 opponent，而是维护策略集合，对混合策略训练近似 best response。这样的 population 不能保证自动收敛，却能显式暴露“只克制当前对手、被历史策略反制”的循环。保存 opponent population、matchmaking、版本、cross-play payoff matrix 与适用时的 exploitability 指标，比只报告当前 Elo 更有诊断力；在一般和博弈中，exploitability 也不能不加定义地照搬零和形式。
+[Policy-Space Response Oracles](https://proceedings.neurips.cc/paper_files/paper/2017/hash/3323fe11e9595c09af38fe67567a9394-Abstract.html) 不只保留当前 opponent，而是维护策略集合，对混合策略训练近似 best response。这样的 population 不能保证自动收敛，却能显式暴露“只克制当前对手、被历史策略反制”的循环。保存 opponent population、matchmaking、版本、cross-play payoff matrix 与适用时的 exploitability 指标，比只报告当前 Elo 更有诊断力；在一般和博弈中，exploitability 也不能不加定义地照搬零和形式。
 
 ## LLM 多智能体系统
 
@@ -184,7 +184,7 @@ $$
 7. self-play 对历史 population 与外部策略评测。
 8. 硬权限由 runtime enforcement 验证，不以 reward 曲线代替。
 
-Agent 权限与副作用见[Agent 安全](../applications/agent-security.md)，训练诱发风险见[Agentic RL 评测](../agentic-rl/evaluation-safety.md)，实验统计见[强化学习诊断](evaluation-debugging.md)。
+Agent 权限与副作用见 [Agent 安全](../applications/agent-security.md)，训练诱发风险见 [Agentic RL 评测](../agentic-rl/evaluation-safety.md)，实验统计见[强化学习诊断](evaluation-debugging.md)。
 
 ## Reference {#reference}
 

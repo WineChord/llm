@@ -36,7 +36,7 @@ $$
 
 ## SayCan：语言可取不等于环境可行
 
-[SayCan](https://arxiv.org/abs/2204.01691)把语言模型对 skill 的相关性与 value/affordance 结合。简化地写：
+[SayCan](https://arxiv.org/abs/2204.01691) 把语言模型对 skill 的相关性与 value/affordance 结合。简化地写：
 
 $$
 z^\star
@@ -266,14 +266,14 @@ $$
 - 把真实 near-miss 和 intervention 回灌评测；
 - adversarially 搜索 model exploitation。
 
-[SafeVLA](https://arxiv.org/abs/2503.03480)等工作研究 constrained/safe RL 与 VLA 的结合，但论文 benchmark 上的改进不等价于具体机器人部署认证。
+[SafeVLA](https://arxiv.org/abs/2503.03480) 等工作研究 constrained/safe RL 与 VLA 的结合，但论文 benchmark 上的改进不等价于具体机器人部署认证。
 
 ## 标准与治理不能被 benchmark 替代
 
 - ISO 10218-1/2 在 2025 年修订机器人与机器人系统安全要求；
 - ISO/TS 15066 涉及协作机器人；
 - ISO 13482 涉及 personal care robots；
-- [NIST AI RMF](https://www.nist.gov/itl/ai-risk-management-framework)提供 Map、Measure、Manage 等通用 AI 风险治理框架。
+- [NIST AI RMF](https://www.nist.gov/itl/ai-risk-management-framework) 提供 Map、Measure、Manage 等通用 AI 风险治理框架。
 
 这些标准适用范围、风险评估与合规责任需由具体产品和专业团队判断。语言安全集、仿真 collision rate 或模型卡都不能自行构成认证。
 
@@ -290,7 +290,7 @@ $$
 - 训练数据、权重、代码与论文图表许可证是否分别核对；
 - 产品预览、作者报告和本地复现是否清楚分层。
 
-动作与数据接口见[状态、动作与策略](state-action-policies.md)和[VLA 与数据谱系](vla-data-lineage.md)；世界模型的 rollout bias 与规划见[动力学、想象与规划](../world-models/dynamics-planning.md)。
+动作与数据接口见[状态、动作与策略](state-action-policies.md)和 [VLA 与数据谱系](vla-data-lineage.md)；世界模型的 rollout bias 与规划见[动力学、想象与规划](../world-models/dynamics-planning.md)。
 
 闭环策略、回报和终止语义的组合练习见[强化学习手撕实现](../practice/reinforcement-learning.md)。
 

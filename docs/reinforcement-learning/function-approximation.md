@@ -2,7 +2,7 @@
 
 表格方法为每个状态保存一个独立数值；函数逼近则让许多状态共享参数。共享使强化学习可以处理连续状态、图像和长文本，也意味着一次错误 bootstrap 会同时改变大片状态空间。规模来自泛化，失稳也来自泛化。
 
-本文聚焦 value approximation。策略参数化见[Policy Gradient](policy-gradient.md)，Bellman target 的来源见[价值函数与 Bellman 递推](values-bellman.md)。
+本文聚焦 value approximation。策略参数化见 [Policy Gradient](policy-gradient.md)，Bellman target 的来源见[价值函数与 Bellman 递推](values-bellman.md)。
 
 ## 从查表到投影
 
@@ -47,7 +47,7 @@ $$
 - replay buffer 混合多个历史策略；
 - 常数步长只在固定点附近形成稳态噪声，而非精确收敛。
 
-这也是为什么[Monte Carlo、TD 与控制](prediction-control.md)中的表格 Q-learning 收敛结论，不能仅把表换成神经网络后继续引用。
+这也是为什么 [Monte Carlo、TD 与控制](prediction-control.md)中的表格 Q-learning 收敛结论，不能仅把表换成神经网络后继续引用。
 
 ## 致命三元组
 
@@ -152,7 +152,7 @@ TD、$n$-step return 与 eligibility trace 的组合实现见[手撕：强化学
 5. terminal、truncated、invalid、infrastructure error 的占比；
 6. reward rescale 后 value 与 optimizer 超参数是否同步变化。
 
-对 off-policy ratio、support 和 policy lag 的系统处理见[Off-policy 校正](off-policy-correction.md)。
+对 off-policy ratio、support 和 policy lag 的系统处理见 [Off-policy 校正](off-policy-correction.md)。
 
 ## 语言模型桥梁
 
@@ -174,11 +174,11 @@ TD、$n$-step return 与 eligibility trace 的组合实现见[手撕：强化学
 
 ## 常见误区
 
-1. **用了神经网络才有 deadly triad。** Baird 反例本身就是线性的。
-2. **target network 让 target 固定，所以已经变成监督学习。** target 仍会周期更新，数据分布也随策略改变。
-3. **replay 总能稳定训练。** 它降低时间相关性，却增加 policy age 与 off-policy 程度。
-4. **TD loss 越小，value 越准。** 自举 target 可与错误 prediction 一起移动。
-5. **terminal 和 truncation 都应令 target 等于 reward。** truncation 通常要从 final observation bootstrap，只在 episode bookkeeping 上重置。
+1. <strong>用了神经网络才有 deadly triad。</strong>Baird 反例本身就是线性的。
+2. <strong>target network 让 target 固定，所以已经变成监督学习。</strong>target 仍会周期更新，数据分布也随策略改变。
+3. <strong>replay 总能稳定训练。</strong>它降低时间相关性，却增加 policy age 与 off-policy 程度。
+4. <strong>TD loss 越小，value 越准。</strong>自举 target 可与错误 prediction 一起移动。
+5. <strong>terminal 和 truncation 都应令 target 等于 reward。</strong>truncation 通常要从 final observation bootstrap，只在 episode bookkeeping 上重置。
 
 ## Reference {#reference}
 

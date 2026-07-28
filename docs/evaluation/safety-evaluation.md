@@ -147,7 +147,7 @@ frontier 只比较给定点，不估计统计不确定性，也不把攻击严�
 - 改变后续控制流；
 - 让合法用户任务失败。
 
-[AgentDojo](https://arxiv.org/abs/2406.13352) 用动态工具环境评估间接注入与防御。详细终态与副作用指标见[Agent 与工具评测](agent-tool-evaluation.md)。
+[AgentDojo](https://arxiv.org/abs/2406.13352) 用动态工具环境评估间接注入与防御。详细终态与副作用指标见 [Agent 与工具评测](agent-tool-evaluation.md)。
 
 ### Guard 与分类器
 
@@ -157,7 +157,7 @@ frontier 只比较给定点，不估计统计不确定性，也不把攻击严�
 
 ## 指令层级与系统边界
 
-[OpenAI Instruction Hierarchy](https://openai.com/index/the-instruction-hierarchy/) 和[Instruction Hierarchy Challenge](https://openai.com/index/instruction-hierarchy-challenge/) 提供了指令优先级训练与攻击评估的公开入口。[OpenAI Model Spec](https://openai.com/index/our-approach-to-the-model-spec/) 描述了公开行为规范，[Preparedness Framework](https://openai.com/index/updating-our-preparedness-framework/) 则是能力风险治理框架。
+[OpenAI Instruction Hierarchy](https://openai.com/index/the-instruction-hierarchy/) 和 [Instruction Hierarchy Challenge](https://openai.com/index/instruction-hierarchy-challenge/) 提供了指令优先级训练与攻击评估的公开入口。[OpenAI Model Spec](https://openai.com/index/our-approach-to-the-model-spec/) 描述了公开行为规范，[Preparedness Framework](https://openai.com/index/updating-our-preparedness-framework/) 则是能力风险治理框架。
 
 这些文档适合定义研究与治理概念，不能替代具体部署的本地 threat model、权限测试和独立验证。
 

@@ -1,14 +1,14 @@
 # Kimi k1.5：把长推理变成可扩展的强化学习
 
 2025 年初，推理模型的讨论大多围绕两个问题：怎样让模型在回答前“想得更久”，以及怎样把更长的
-test-time compute 重新变成训练信号。[Kimi k1.5](https://arxiv.org/abs/2501.12599)给出的答案并不是
+test-time compute 重新变成训练信号。[Kimi k1.5](https://arxiv.org/abs/2501.12599) 给出的答案并不是
 在解码时外挂一棵显式搜索树，而是把搜索、回溯与纠错写进一条最长 128K token 的自回归轨迹，再让
 强化学习直接优化最终结果。
 
 这条路线随后成为 Kimi 技术谱系的训练主干；完整分支与公开产物先见
 [Kimi 家族总览](../families/kimi.md)。partial rollout 被
-[Kimi K2](kimi-k2.md)继承到长程 agent rollout，[Kimi K2.5](kimi-k2-5.md)进一步把单轨迹优化扩展到
-并行 orchestrator，[Kimi K3](kimi-k3.md)则把可恢复 rollout、外置状态和百万 token context 放进更大的
+[Kimi K2](kimi-k2.md) 继承到长程 agent rollout，[Kimi K2.5](kimi-k2-5.md) 进一步把单轨迹优化扩展到
+并行 orchestrator，[Kimi K3](kimi-k3.md) 则把可恢复 rollout、外置状态和百万 token context 放进更大的
 系统闭环。本页先把 k1.5 自身讲清楚：它真正缩放的是什么，策略目标与长度控制怎样配合，partial
 rollout 又为何不只是“把生成截断”。
 
@@ -231,7 +231,7 @@ SLA。代码与数学 verifier 则通过隔离 sandbox 执行，支持不同 jud
 
 这套设计第一次把“长思考”明确变成调度问题：策略公式只告诉 learner 怎样更新，真正的上限还取决于
 生成吞吐、尾延迟、权重同步、sandbox 可靠性与可恢复状态。后续 K2 的
-[checkpoint engine](kimi-k2.md#checkpoint-engine)正是在 1T 模型规模上继续解决这个接口。
+[checkpoint engine](kimi-k2.md#checkpoint-engine) 正是在 1T 模型规模上继续解决这个接口。
 
 ## 多模态不是末端适配
 
@@ -241,11 +241,11 @@ tower 先单独训练，再解冻语言模型，视觉文本比例最终提高�
 
 长上下文阶段把最大长度从 4,096 逐步扩到 32,768 和 131,072，RoPE base 设为 $10^6$；报告给出的
 mixture 是 40% full-attention long data 与 60% 从 cooldown 数据均匀采样的 partial-attention data。
-这里的 “partial attention data” 是预训练数据/attention 配方，不是 RL 的 partial rollout。
+这里的“partial attention data”是预训练数据/attention 配方，不是 RL 的 partial rollout。
 
 post-training 同时包含 text 与 image reasoning。Vision RL 数据分为真实图像问题、程序化合成视觉
 推理和把文本/代码/结构化数据渲染成图像的任务。它把“同一知识换一种模态表示后仍应一致”变成训练
-约束，也为后来的 [Kimi-VL](../../multimodal/kimi-vl.md)提供了直接前史。
+约束，也为后来的 [Kimi-VL](../../multimodal/kimi-vl.md) 提供了直接前史。
 
 ## Long2short：把找到答案与压缩路径分成两步
 
@@ -287,9 +287,9 @@ post-training 同时包含 text 与 image reasoning。Vision RL 数据分为真�
 3. **长尾是系统语义问题**：partial rollout 必须保存 episode、policy 与 loss 边界，不能等同于截断。
 4. **能力与效率应分阶段优化**：long2short 把发现高质量轨迹和压缩 token budget 解耦。
 
-沿时间线继续阅读时，[Kimi K2](kimi-k2.md)把这套 RL 主干接到 1T MoE、工具数据与大规模引擎切换，
-[Kimi K2.5](kimi-k2-5.md)把 context 管理扩成 learned parallel orchestration，而
-[Kimi K3](kimi-k3.md)进一步把长轨迹训练与 hybrid recurrent model 的状态管理合并。
+沿时间线继续阅读时，[Kimi K2](kimi-k2.md) 把这套 RL 主干接到 1T MoE、工具数据与大规模引擎切换，
+[Kimi K2.5](kimi-k2-5.md) 把 context 管理扩成 learned parallel orchestration，而
+[Kimi K3](kimi-k3.md) 进一步把长轨迹训练与 hybrid recurrent model 的状态管理合并。
 
 ## Reference {#reference}
 

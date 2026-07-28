@@ -26,7 +26,7 @@ $$
 H_m=W_2\sigma(W_1Z_m).
 $$
 
-[LLaVA](https://arxiv.org/abs/2304.08485)展示了预训练视觉 encoder、projector 与语言模型对齐的一条简洁路线。Projector 不减少 $N_m$；高分辨率输入的成本会原样传给 LLM。
+[LLaVA](https://arxiv.org/abs/2304.08485) 展示了预训练视觉 encoder、projector 与语言模型对齐的一条简洁路线。Projector 不减少 $N_m$；高分辨率输入的成本会原样传给 LLM。
 
 ## Querying 与 resampling
 
@@ -40,7 +40,7 @@ H_m'
 \operatorname{Attn}(Q,K=Z_m,V=Z_m).
 $$
 
-无论原始 token 数 $N_m$ 多大，语言主干只接收 $N_q$ 个结果。[BLIP-2](https://arxiv.org/abs/2301.12597)的 Q-Former 和 [Perceiver IO](https://arxiv.org/abs/2107.14795)的 latent querying 提供了代表性设计。
+无论原始 token 数 $N_m$ 多大，语言主干只接收 $N_q$ 个结果。[BLIP-2](https://arxiv.org/abs/2301.12597) 的 Q-Former 和 [Perceiver IO](https://arxiv.org/abs/2107.14795) 的 latent querying 提供了代表性设计。
 
 固定压缩率有明确风险：全局语义可能保留，小文字、密集目标和稀有区域更容易被丢弃。应测性能随 $N_q$ 的曲线，而不是只报告一个配置。
 
@@ -106,7 +106,7 @@ V=Z_m
 \right).
 $$
 
-[Flamingo](https://arxiv.org/abs/2204.14198)使用 gated cross-attention 处理交错图文。Cross-attention 让文本 token 按需读取媒体，但改变主干结构，也增加每层媒体 K/V、checkpoint 转换和服务 runtime 的复杂度。
+[Flamingo](https://arxiv.org/abs/2204.14198) 使用 gated cross-attention 处理交错图文。Cross-attention 让文本 token 按需读取媒体，但改变主干结构，也增加每层媒体 K/V、checkpoint 转换和服务 runtime 的复杂度。
 
 Projector、Q-Former/Resampler 与深层 cross-attention 的资源约束不能只按参数量排序；[Flamingo、BLIP-2 与 LLaVA 深读](../landscape/works/visual-language-bridges.md)并排比较了三者的冻结策略、数据目标和注入位置。
 
@@ -144,7 +144,7 @@ $$
 这并不意味着 contrastive pre-training 普遍无用。报告中的受控 ablation 显示，在其联合训练配方下，
 从头训练的 MoonViT-V2 相比 SigLIP 初始化的 MoonViT-3D 有更低、更少尖峰的视觉塔 gradient norm，
 并在作者给出的视觉评测上达到相近结果；这是一套配方内的经验，迁移到更小数据、冻结主干或纯检索任务
-仍需重新比较。[Kimi-VL](https://arxiv.org/abs/2504.07491)则提供了早期 MoonViT 路线的公开背景。
+仍需重新比较。[Kimi-VL](https://arxiv.org/abs/2504.07491) 则提供了早期 MoonViT 路线的公开背景。
 
 MoonViT-V2 的公开结构参数是 27 层、401M 参数、patch size 14、12 个 attention heads，使用
 RMSNorm，并移除 linear 与 attention projection 的 bias。图像和视频完全共享 encoder 参数；视频
@@ -191,11 +191,11 @@ torch.testing.assert_close(grouped.flatten().sort().values, visual.flatten().sor
 
 从头联合训练还要分别记录 vision/LLM learning rate、初始化、loss mask、分辨率分布与 gradient norm；
 否则无法判断稳定性来自训练范式、视觉塔结构还是优化器。K3 的 native vision 如何与 NoPE、1M
-长度课程和共享主干组合，见[Kimi K3](../landscape/works/kimi-k3.md)。
+长度课程和共享主干组合，见 [Kimi K3](../landscape/works/kimi-k3.md)。
 
 ## 对齐目标
 
-[CLIP](https://arxiv.org/abs/2103.00020)对归一化图文表示使用批内对比：
+[CLIP](https://arxiv.org/abs/2103.00020) 对归一化图文表示使用批内对比：
 
 $$
 s_{ij}=\frac{u_i^\top v_j}{\tau}.
@@ -214,7 +214,7 @@ $$
 
 [CLIP 深读](../landscape/works/clip.md)从 batch 内负例、temperature 与 zero-shot classifier 还原这套目标，并区分原论文证据与后续视觉语言生成接口。
 
-[SigLIP](https://arxiv.org/abs/2303.15343)改为 pairwise sigmoid loss：
+[SigLIP](https://arxiv.org/abs/2303.15343) 改为 pairwise sigmoid loss：
 
 $$
 L
@@ -315,7 +315,7 @@ $$
 [R_tq^{(t)};R_hq^{(h)};R_wq^{(w)}].
 $$
 
-[Qwen2-VL](https://arxiv.org/abs/2409.12191)提供了 M-RoPE 与动态视觉 token 的公开设计。实现中应固定每个轴的通道切分、文本 token 的坐标推进和多媒体边界。
+[Qwen2-VL](https://arxiv.org/abs/2409.12191) 提供了 M-RoPE 与动态视觉 token 的公开设计。实现中应固定每个轴的通道切分、文本 token 的坐标推进和多媒体边界。
 
 ## 训练阶段
 
@@ -391,7 +391,7 @@ $\lambda$ 控制的是容量分配，不只是数值尺度。应监控每个目�
 
 ## 继续深入
 
-本页保留跨模态架构的稳定总览；更细的 canonical 契约分别位于[对齐、桥接与融合](foundations/alignment-fusion.md)、[空间、时间、位置与 Mask](foundations/position-time-masks.md)和[多模态数据、训练与系统](foundations/data-training-systems.md)。输入压缩与可逆性见[信号、表示与 Token 化](foundations/signals-tokenization.md)。
+本页保留跨模态架构的稳定总览；更细的 canonical 契约分别位于[对齐、桥接与融合](foundations/alignment-fusion.md)、[空间、时间、位置与 Mask](foundations/position-time-masks.md) 和[多模态数据、训练与系统](foundations/data-training-systems.md)。输入压缩与可逆性见[信号、表示与 Token 化](foundations/signals-tokenization.md)。
 
 ## Reference {#reference}
 

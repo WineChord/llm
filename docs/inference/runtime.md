@@ -2,7 +2,7 @@
 
 推理引擎把一组长度不同、动态到达的请求映射为 GPU batch。核心状态不是一个输入 tensor，而是请求生命周期、KV block、调度预算、采样器和流式输出的组合。
 
-[推理运行时与服务](../landscape/lineages/inference-serving.md)给出从 Orca 到 PagedAttention、chunked prefill 与 P/D 分离的因果链；[vLLM / PagedAttention](../landscape/works/vllm-pagedattention.md)进一步把逻辑 token、物理 block、block table 与 copy-on-write 落成可执行模型。
+[推理运行时与服务](../landscape/lineages/inference-serving.md)给出从 Orca 到 PagedAttention、chunked prefill 与 P/D 分离的因果链；[vLLM / PagedAttention](../landscape/works/vllm-pagedattention.md) 进一步把逻辑 token、物理 block、block table 与 copy-on-write 落成可执行模型。
 
 ## 请求状态机
 
@@ -131,7 +131,7 @@ finish reason and cancellation token
 
 ## Continuous batching
 
-静态 batch 等所有序列结束再换批，短请求会等待最长请求。continuous batching 在每个模型迭代边界移除已完成请求、加入新请求。[Orca](https://www.usenix.org/conference/osdi22/presentation/yu)给出了迭代级调度的代表性设计。
+静态 batch 等所有序列结束再换批，短请求会等待最长请求。continuous batching 在每个模型迭代边界移除已完成请求、加入新请求。[Orca](https://www.usenix.org/conference/osdi22/presentation/yu) 给出了迭代级调度的代表性设计。
 
 调度器每轮决定：
 
@@ -197,7 +197,7 @@ $$
 \text{physical block }b_j.
 $$
 
-block table 让一个请求的 KV 不必物理连续。[PagedAttention](https://arxiv.org/abs/2309.06180)进一步让 attention kernel 按映射读取 K/V。
+block table 让一个请求的 KV 不必物理连续。[PagedAttention](https://arxiv.org/abs/2309.06180) 进一步让 attention kernel 按映射读取 K/V。
 
 ### Block 大小
 
@@ -232,7 +232,7 @@ N_{\text{scheduled}}
 =N_{\text{decode}}+N_{\text{prefill chunk}}.
 $$
 
-[Sarathi-Serve](https://www.usenix.org/conference/osdi24/presentation/agrawal)展示了用 chunked prefill 控制 throughput–latency 权衡的路线。chunk 越大，prefill GEMM 越高效；越小，decode stall 越低但 launch 和重复调度更多。
+[Sarathi-Serve](https://www.usenix.org/conference/osdi24/presentation/agrawal) 展示了用 chunked prefill 控制 throughput–latency 权衡的路线。chunk 越大，prefill GEMM 越高效；越小，decode stall 越低但 launch 和重复调度更多。
 
 ## 抢占
 
@@ -283,7 +283,7 @@ tokenizer 和网络发送通常放在独立线程或进程，但状态顺序必�
 8. 取消、超时、OOM 与进程重启；
 9. 固定 seed 下的可接受重放边界。
 
-策略与过载控制见[调度与服务](serving.md)，跨集群阶段拆分见[Prefill–Decode 分离](disaggregation.md)。
+策略与过载控制见[调度与服务](serving.md)，跨集群阶段拆分见 [Prefill–Decode 分离](disaggregation.md)。
 
 ## Reference {#reference}
 

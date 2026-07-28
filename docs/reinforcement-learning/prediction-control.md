@@ -210,13 +210,13 @@ Q-learning 通常不是开放式语言生成的默认选择。虽然单个 token
 
 ## 常见误区
 
-1. **“MC 不 bootstrap，所以总是更准确。”** 单条 complete return 方差可能极高；是否更好取决于 horizon、reward 噪声与 value bias。
-2. **“TD target 是环境标签。”** 它含当前 value estimate；学习目标会随参数变化。
-3. **“SARSA 比 Q-learning 更保守，所以一定更差。”** SARSA 优化的是含探索的实际行为，在危险路径或探索代价存在时可能学到不同且更合适的策略。
-4. **“Q-learning 使用 off-policy target，所以任何离线数据都能训练。”** 仍需要支持集覆盖；函数逼近还可能在分布外动作上产生任意高估。
-5. **“Expected SARSA 就是 Q-learning。”** 只有 target policy 退化为 deterministic greedy 时，两者 target 才相同。
-6. **“所有 episode 边界都把 bootstrap 清零。”** 外部截断通常保留 continuation value，真正终止才清零。
-7. **“token 是离散动作，因此 DQN 自然适合语言模型。”** 可枚举一步动作不解决长序列组合优化、稀疏反馈和部分可观察性。
+1. <strong>“MC 不 bootstrap，所以总是更准确。”</strong>单条 complete return 方差可能极高；是否更好取决于 horizon、reward 噪声与 value bias。
+2. <strong>“TD target 是环境标签。”</strong>它含当前 value estimate；学习目标会随参数变化。
+3. <strong>“SARSA 比 Q-learning 更保守，所以一定更差。”</strong>SARSA 优化的是含探索的实际行为，在危险路径或探索代价存在时可能学到不同且更合适的策略。
+4. <strong>“Q-learning 使用 off-policy target，所以任何离线数据都能训练。”</strong>仍需要支持集覆盖；函数逼近还可能在分布外动作上产生任意高估。
+5. <strong>“Expected SARSA 就是 Q-learning。”</strong>只有 target policy 退化为 deterministic greedy 时，两者 target 才相同。
+6. <strong>“所有 episode 边界都把 bootstrap 清零。”</strong>外部截断通常保留 continuation value，真正终止才清零。
+7. <strong>“token 是离散动作，因此 DQN 自然适合语言模型。”</strong>可枚举一步动作不解决长序列组合优化、稀疏反馈和部分可观察性。
 
 ## Reference {#reference}
 

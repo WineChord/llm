@@ -34,7 +34,7 @@ $$
 
 ### OCR-free
 
-[Donut](https://arxiv.org/abs/2111.15664)直接从文档图像生成结构化序列；[Pix2Struct](https://arxiv.org/abs/2210.03347)通过截图解析预训练学习视觉语言结构。这类路线减少外部 OCR 依赖，但仍受视觉分辨率、输出语法和长页面 token 限制。
+[Donut](https://arxiv.org/abs/2111.15664) 直接从文档图像生成结构化序列；[Pix2Struct](https://arxiv.org/abs/2210.03347) 通过截图解析预训练学习视觉语言结构。这类路线减少外部 OCR 依赖，但仍受视觉分辨率、输出语法和长页面 token 限制。
 
 ### 融合像素与结构
 
@@ -68,7 +68,7 @@ $$
 \hat y=\frac{q_y}{K-1}H.
 $$
 
-归一化坐标便于跨分辨率共享词表，但量化误差对小按钮和小字影响更大。[Kosmos-2](https://arxiv.org/abs/2306.14824)展示了把文本 span 与位置 token 绑定的 grounded language modeling 路线。
+归一化坐标便于跨分辨率共享词表，但量化误差对小按钮和小字影响更大。[Kosmos-2](https://arxiv.org/abs/2306.14824) 展示了把文本 span 与位置 token 绑定的 grounded language modeling 路线。
 
 ## Resize、crop 与坐标链
 
@@ -133,7 +133,7 @@ $$
 - 点击点是否避开边缘与相邻危险控件；
 - 动作后页面状态是否符合预期。
 
-[SeeClick](https://arxiv.org/abs/2401.10935)研究了 GUI 视觉 grounding；[ScreenAI](https://arxiv.org/abs/2402.04615)及其[官方研究页](https://research.google/pubs/screenai-a-vision-language-model-for-ui-and-infographics-understanding/)覆盖 UI 与信息图理解。
+[SeeClick](https://arxiv.org/abs/2401.10935) 研究了 GUI 视觉 grounding；[ScreenAI](https://arxiv.org/abs/2402.04615) 及其[官方研究页](https://research.google/pubs/screenai-a-vision-language-model-for-ui-and-infographics-understanding/)覆盖 UI 与信息图理解。
 
 ## 阅读顺序与结构
 
@@ -151,7 +151,7 @@ $$
 - 元素间“左于、上于、包含、引用”关系图；
 - 原始页码与跨页连接。
 
-[Nougat](https://arxiv.org/abs/2308.13418)提供了科学文档到标记序列的公开路线，适合讨论公式、表格和阅读顺序，但生成的 markup 仍需语法与内容双重验证。
+[Nougat](https://arxiv.org/abs/2308.13418) 提供了科学文档到标记序列的公开路线，适合讨论公式、表格和阅读顺序，但生成的 markup 仍需语法与内容双重验证。
 
 ## 图表
 
@@ -234,7 +234,7 @@ $$
 
 ## 继续深入
 
-[视觉表示、感知与 Grounding](vision/representation-grounding.md)给出从全局语义到区域证据的共同底座；涉及深度、多视角和机器人坐标时继续读[空间智能与三维表示](vision/spatial-3d.md)。文档、图表和界面执行应保留各自输入协议，不能用同一个 VQA 总分代替。
+[视觉表示、感知与 Grounding](vision/representation-grounding.md) 给出从全局语义到区域证据的共同底座；涉及深度、多视角和机器人坐标时继续读[空间智能与三维表示](vision/spatial-3d.md)。文档、图表和界面执行应保留各自输入协议，不能用同一个 VQA 总分代替。
 
 ## Reference {#reference}
 

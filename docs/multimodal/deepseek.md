@@ -95,7 +95,7 @@ $$
 
 传统视觉语言模型通常按二维 raster scan 把 patch 展平：先从左到右，再从上到下。对单栏正文，这近似阅读顺序；对多栏排版、图表、公式和浮动注释，它可能把语义上相邻的元素拆开，也可能让语言解码器先看到结论、后看到前提。
 
-[DeepSeek-OCR 2](https://arxiv.org/abs/2601.20552)提出的 DeepEncoder V2 在进入语言解码器前，根据图像语义动态重排视觉 token。它把文档理解写成两段一维因果流：
+[DeepSeek-OCR 2](https://arxiv.org/abs/2601.20552) 提出的 DeepEncoder V2 在进入语言解码器前，根据图像语义动态重排视觉 token。它把文档理解写成两段一维因果流：
 
 $$
 I\xrightarrow{\text{visual causal encoder}}
@@ -121,7 +121,7 @@ $$
 | 成本核心 | 高分辨率 prefill | 长图像序列生成 | 压缩率与结构恢复 |
 | 关键失效 | 细节遗漏、语言先验 | 模态干扰、生成一致性 | 阅读顺序、表格与公式 |
 
-还应在相同硬件上报告 image preprocessing、vision encoder、projector 与 LLM prefill 的分段时延；否则“视觉 token 更少”不一定转化成更低端到端延迟。原理见[多模态融合与训练](architecture-training.md)、[原生多模态与生成](native-generation.md)和[多模态评测](../evaluation/multimodal-evaluation.md)，完整分支见[DeepSeek 家族总览](../landscape/families/deepseek.md)，主干继承关系见[演化时间线](../landscape/deepseek-timeline.md)。
+还应在相同硬件上报告 image preprocessing、vision encoder、projector 与 LLM prefill 的分段时延；否则“视觉 token 更少”不一定转化成更低端到端延迟。原理见[多模态融合与训练](architecture-training.md)、[原生多模态与生成](native-generation.md)和[多模态评测](../evaluation/multimodal-evaluation.md)，完整分支见 [DeepSeek 家族总览](../landscape/families/deepseek.md)，主干继承关系见[演化时间线](../landscape/deepseek-timeline.md)。
 
 ## Reference {#reference}
 

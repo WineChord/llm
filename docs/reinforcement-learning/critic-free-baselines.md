@@ -46,7 +46,7 @@ $$
 
 ## ReMax：用 greedy response 作基线
 
-[ReMax](https://arxiv.org/abs/2310.10505)对同一 prompt 同时生成 sampled response 与 greedy response：
+[ReMax](https://arxiv.org/abs/2310.10505) 对同一 prompt 同时生成 sampled response 与 greedy response：
 
 $$
 A=
@@ -85,11 +85,11 @@ $$
 
 每个样本的梯度都按 $(K-1)/K$ 缩小。固定 $K$ 时两者方向相同，但 self-including mean 不是 action-independent baseline，得到的是 RLOO estimator 的固定缩放，而不是原始 estimator 本身；跨实验比较还需统一 learning rate、group size 和 reduction。
 
-[Back to Basics](https://arxiv.org/abs/2402.14740)在其 RLHF 设置中系统比较了 REINFORCE-style 方法与 PPO；结论依赖模型、reward、数据和预算，不能推广成“critic 永远无用”。
+[Back to Basics](https://arxiv.org/abs/2402.14740) 在其 RLHF 设置中系统比较了 REINFORCE-style 方法与 PPO；结论依赖模型、reward、数据和预算，不能推广成“critic 永远无用”。
 
 ## GRPO：组内中心化与标准化
 
-[DeepSeekMath](https://arxiv.org/abs/2402.03300)中的常见形式为
+[DeepSeekMath](https://arxiv.org/abs/2402.03300) 中的常见形式为
 
 $$
 \widehat A_i
@@ -100,7 +100,7 @@ $$
 
 分子中的 $\bar R$ 包含当前 reward，但它与 RLOO 有上面的固定缩放关系；分母却是依赖整组 reward 的随机量，也依赖当前 action。于是 GRPO 标准化不能仅凭 baseline theorem 宣称对原始 expected-reward policy gradient 无偏：它会按组内 reward dispersion 重新加权 prompt，且这种权重随采样组变化。更准确的说法是 **group-relative normalized estimator**，而不是 action-independent baseline。
 
-本页保留 GRPO 与其他 baseline 的家族关系；原始 token objective、population/sample std、process supervision、response-length weighting、Dr. GRPO 与 dynamic sampling 的完整推导见[GRPO：组相对优势、PPO 更新与长度权重](grpo.md)。
+本页保留 GRPO 与其他 baseline 的家族关系；原始 token objective、population/sample std、process supervision、response-length weighting、Dr. GRPO 与 dynamic sampling 的完整推导见 [GRPO：组相对优势、PPO 更新与长度权重](grpo.md)。
 
 组标准差使不同 prompt 的 advantage 尺度更接近，也产生新的退化：
 
@@ -218,7 +218,7 @@ $$
 7. 环境/基础设施错误先排除，不把它们当普通零 reward。
 8. 与 SFT、rejection sampling 和 PPO 在相同预算下比较。
 
-可执行实现见[RLOO 与 GRPO 的组内信号](../practice/llm-policy-optimization.md#rloo-grpo)，与 learned critic 的比较见[Actor–Critic](actor-critic.md)。
+可执行实现见 [RLOO 与 GRPO 的组内信号](../practice/llm-policy-optimization.md#rloo-grpo)，与 learned critic 的比较见 [Actor–Critic](actor-critic.md)。
 
 ## Reference {#reference}
 

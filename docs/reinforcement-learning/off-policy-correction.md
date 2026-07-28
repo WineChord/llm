@@ -4,7 +4,7 @@ On-policy 推导假设轨迹来自正在优化的策略；真实系统却常把 
 
 Off-policy correction 试图修正这两个分布之间的差异，但不存在把任意旧轨迹“无损变新”的技巧。importance sampling 无偏却可能高方差；截断权重降低方差又引入偏差；分布支持已经丢失时，任何重加权都无法恢复未采到的动作。
 
-先读 [Policy Gradient](policy-gradient.md)理解 on-policy estimator，再读 [Actor–Critic](actor-critic.md)理解 value target。本页最后把经典 importance sampling、V-trace 与异步 LLM/Agentic RL 的版本契约连起来。
+先读 [Policy Gradient](policy-gradient.md) 理解 on-policy estimator，再读 [Actor–Critic](actor-critic.md) 理解 value target。本页最后把经典 importance sampling、V-trace 与异步 LLM/Agentic RL 的版本契约连起来。
 
 ## Behavior 与 target policy
 
@@ -217,7 +217,7 @@ $$
 
 ## 与 PPO、SAO 的边界
 
-[Trust Region 与 PPO](trust-region-ppo.md)通常假设一批轨迹由冻结的 $\pi_{\text{old}}$ 产生，再做有限次更新。异步系统打破的是“采完再学”的整齐边界：
+[Trust Region 与 PPO](trust-region-ppo.md) 通常假设一批轨迹由冻结的 $\pi_{\text{old}}$ 产生，再做有限次更新。异步系统打破的是“采完再学”的整齐边界：
 
 ```text
 worker samples under behavior v_b

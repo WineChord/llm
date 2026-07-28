@@ -58,7 +58,7 @@ raw = "A\t🙂\n"
 assert decode_utf8(list(raw.encode("utf-8"))) == raw
 ```
 
-这里没有处理非法 UTF-8、special token 或 offset mapping；生产接口必须把 normalizer form、Unicode 数据版本和错误策略写入 artifact，并让训练与服务加载同一份配置。更多视觉同形、兼容字符和关闭规范化的对照见[Tokenizer：Unicode 规范化](../practice/tokenizers.md#unicode)。
+这里没有处理非法 UTF-8、special token 或 offset mapping；生产接口必须把 normalizer form、Unicode 数据版本和错误策略写入 artifact，并让训练与服务加载同一份配置。更多视觉同形、兼容字符和关闭规范化的对照见 [Tokenizer：Unicode 规范化](../practice/tokenizers.md#unicode)。
 
 ## Byte Pair Encoding
 
@@ -119,7 +119,7 @@ assert bpe_encode("abab", ranks) == ["abab"]
 assert bpe_encode("aba", ranks) == ["ab", "a"]
 ```
 
-它是算法语义的参考，不是大词表上的高性能实现：生产 tokenizer 会用链表、堆或专用数据结构避免每轮全扫描，还必须在外层补齐 byte 映射、预切分边界、特殊 token 与序列化。训练器、编码器与 Viterbi 的完整对照见[Tokenizer 手撕实现：BPE 编码与解码](../practice/tokenizers.md#bpe)。
+它是算法语义的参考，不是大词表上的高性能实现：生产 tokenizer 会用链表、堆或专用数据结构避免每轮全扫描，还必须在外层补齐 byte 映射、预切分边界、特殊 token 与序列化。训练器、编码器与 Viterbi 的完整对照见 [Tokenizer 手撕实现：BPE 编码与解码](../practice/tokenizers.md#bpe)。
 
 ### Byte-level 训练与 codec {#byte-bpe-trainer-codec}
 
@@ -185,7 +185,7 @@ assert len(pieces) < len(sample.encode("utf-8")) and len(ranks) <= 16
 </div>
 </details>
 
-它是小语料上的 $O(T^2)$ reference，不实现 pre-tokenizer boundary、streaming 计数、最小频次、词表 ID 序列化和 offset mapping；真实训练器可以换数据结构，但 tie-break、merge rank 与 round-trip 必须相同。分开的训练与 codec 实验见[Tokenizer：Byte-level BPE 训练](../practice/tokenizers.md#byte-level-bpe)和[BPE 编码与解码](../practice/tokenizers.md#bpe)。
+它是小语料上的 $O(T^2)$ reference，不实现 pre-tokenizer boundary、streaming 计数、最小频次、词表 ID 序列化和 offset mapping；真实训练器可以换数据结构，但 tie-break、merge rank 与 round-trip 必须相同。分开的训练与 codec 实验见 [Tokenizer：Byte-level BPE 训练](../practice/tokenizers.md#byte-level-bpe)和 [BPE 编码与解码](../practice/tokenizers.md#bpe)。
 
 ## Unigram Language Model
 
@@ -236,7 +236,7 @@ assert tokens == ["北京", "大学"] and score == 2
 assert unigram_viterbi("🙂", {})[0] == ["🙂"]
 ```
 
-这段实现固定的是解码，不包含 Unigram 训练中的 EM 与词表剪枝。字符索引也只是教学口径；byte fallback、规范化和 special token 必须在进入这张图之前冻结。更完整的 round-trip 与未知字符实验见[Tokenizer 手撕实现](../practice/tokenizers.md#unigram-viterbi-reference)。
+这段实现固定的是解码，不包含 Unigram 训练中的 EM 与词表剪枝。字符索引也只是教学口径；byte fallback、规范化和 special token 必须在进入这张图之前冻结。更完整的 round-trip 与未知字符实验见 [Tokenizer 手撕实现](../practice/tokenizers.md#unigram-viterbi-reference)。
 
 ## 字节回退
 
@@ -327,7 +327,7 @@ Perplexity 依赖 tokenization，两个词表上的 token-level PPL 不能直接
 7. chat template；
 8. 序列化格式的校验值。
 
-训练和服务加载后，应比较这些对象的内容而不只比较文件名。完整的最小训练器与编码器练习见[Tokenizer 手撕实现](../practice/tokenizers.md)。
+训练和服务加载后，应比较这些对象的内容而不只比较文件名。完整的最小训练器与编码器练习见 [Tokenizer 手撕实现](../practice/tokenizers.md)。
 
 ## 常见失效
 

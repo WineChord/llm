@@ -121,7 +121,7 @@ Diffusion/flow 则在时空 latent 上联合生成。主要设计轴包括：
 - 整段生成或滑窗扩展；
 - 文本、首帧、关键帧与动作条件。
 
-[VideoPoet](https://arxiv.org/abs/2312.14125)探索统一 token 化的多模态视频生成，[Lumiere](https://arxiv.org/abs/2401.12945)使用 space-time diffusion，[CogVideoX](https://arxiv.org/abs/2408.06072)公开了面向文本到视频的 diffusion Transformer 路线。
+[VideoPoet](https://arxiv.org/abs/2312.14125) 探索统一 token 化的多模态视频生成，[Lumiere](https://arxiv.org/abs/2401.12945) 使用 space-time diffusion，[CogVideoX](https://arxiv.org/abs/2408.06072) 公开了面向文本到视频的 diffusion Transformer 路线。
 
 ## 长时一致性
 
@@ -146,11 +146,11 @@ $$
 
 其中 $z_t$ 是观测 latent，$a_t$ 是动作。若没有动作条件，模型学习的主要是观测序列规律，不能识别智能体行为对未来的因果影响。
 
-[Genie](https://arxiv.org/abs/2402.15391)研究从互联网视频学习可控制环境；它说明潜在动作和交互世界生成的一条路线，但从视频推断 latent action 仍受可识别性约束。
+[Genie](https://arxiv.org/abs/2402.15391) 研究从互联网视频学习可控制环境；它说明潜在动作和交互世界生成的一条路线，但从视频推断 latent action 仍受可识别性约束。
 
 ## JEPA 表示预测
 
-[V-JEPA](https://arxiv.org/abs/2404.08471)不直接重建像素，而在表示空间预测被遮挡的时空区域：
+[V-JEPA](https://arxiv.org/abs/2404.08471) 不直接重建像素，而在表示空间预测被遮挡的时空区域：
 
 $$
 L

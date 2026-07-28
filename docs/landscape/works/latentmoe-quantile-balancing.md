@@ -2,7 +2,7 @@
 
 稀疏 MoE 常用“每个 token 只激活少量参数”描述效率，但真实服务还要搬运 expert 权重，并在 expert-parallel ranks 间传输 routed token。专家池和 top-$k$ 继续增大时，FLOPs 可能仍可控，显存带宽与 all-to-all payload 却会先成为瓶颈。
 
-[LatentMoE](https://arxiv.org/abs/2601.18089)从这个系统约束出发，把 full model width 与 routed expert width 解耦；[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)随后把该结构扩展为 Stable LatentMoE，重点处理超大专家池下的内部激活和路由负载稳定性。两者是一条清晰的演进链，却不是同一项工作：
+[LatentMoE](https://arxiv.org/abs/2601.18089) 从这个系统约束出发，把 full model width 与 routed expert width 解耦；[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)随后把该结构扩展为 Stable LatentMoE，重点处理超大专家池下的内部激活和路由负载稳定性。两者是一条清晰的演进链，却不是同一项工作：
 
 | 层面 | 原始 LatentMoE | K3 Stable LatentMoE 的增量 |
 | --- | --- | --- |
@@ -47,7 +47,7 @@ routed expert 的输入、输出与跨 rank payload 都在 $\ell$ 维；shared e
 
 但 $\ell$ 不是越小越好。所有 specialist 共享 $W_\downarrow/W_\uparrow$ 形成的信息瓶颈；当 $\ell$ 低于任务相关的有效特征秩，扩大专家池也无法恢复被投影删除的信息。原论文因此把 latent width、expert 数和 top-$k$ 作为联合设计变量，而不是孤立地做低秩压缩。[NVIDIA LatentMoE 研究页](https://research.nvidia.com/labs/nemotron/LatentMoE/)进一步从低并发权重带宽和高吞吐 all-to-all 两种工作负载解释了这项选择。
 
-完整 MoE 参数与 dispatch 语义见[稀疏 MoE](../../architecture/moe.md)，expert parallel 的 permutation、通信与 GEMM 边界见[MoE 系统](../../systems/moe-systems.md)。
+完整 MoE 参数与 dispatch 语义见[稀疏 MoE](../../architecture/moe.md)，expert parallel 的 permutation、通信与 GEMM 边界见 [MoE 系统](../../systems/moe-systems.md)。
 
 ## K3 的 Stable 增量
 
@@ -374,9 +374,9 @@ LP 可以有多个同分最优 assignment；普通 `topk` 的 tie-breaking 可�
 
 ## 系统闭环
 
-QB 只让 global expert token count 更接近目标，不能保证每个 rank 的执行时间相等。[MoonEP](moonep.md)进一步在不改变 global expert identity 的前提下，用动态冗余 expert 固定 rank-level token load；两者分别作用于模型路由和执行 placement。latent payload、Quantile Balancing、MoonEP 与 grouped GEMM 的端到端关系见[MoE 系统](../../systems/moe-systems.md)。
+QB 只让 global expert token count 更接近目标，不能保证每个 rank 的执行时间相等。[MoonEP](moonep.md) 进一步在不改变 global expert identity 的前提下，用动态冗余 expert 固定 rank-level token load；两者分别作用于模型路由和执行 placement。latent payload、Quantile Balancing、MoonEP 与 grouped GEMM 的端到端关系见 [MoE 系统](../../systems/moe-systems.md)。
 
-同样，RMSNorm 与 SiTU-GLU 只约束 routed branch 内部数值，不能代替全模型 residual、optimizer、精度和 checkpoint 验证。SiTU-GLU 的 decoder 层位置与可执行实现见[Decoder Block](../../architecture/decoder-block.md#situ-glu)，K3 中三者如何与其他架构、训练和部署机制配合见[Kimi K3](kimi-k3.md)。
+同样，RMSNorm 与 SiTU-GLU 只约束 routed branch 内部数值，不能代替全模型 residual、optimizer、精度和 checkpoint 验证。SiTU-GLU 的 decoder 层位置与可执行实现见 [Decoder Block](../../architecture/decoder-block.md#situ-glu)，K3 中三者如何与其他架构、训练和部署机制配合见 [Kimi K3](kimi-k3.md)。
 
 ## 证据边界
 

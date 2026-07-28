@@ -31,7 +31,7 @@
 6. 初始化、学习率和 optimizer state；
 7. logits 是否已有 NaN/Inf。
 
-用[手撕 token CE](training-objectives.md)对一个 batch 计算 numerator、denominator 与逐 token loss。
+用[手撕 token CE](training-objectives.md) 对一个 batch 计算 numerator、denominator 与逐 token loss。
 
 ### 训练中 spike
 
@@ -125,7 +125,7 @@ $$
 - quantized cache scale 与 layout；
 - tokenizer、template 和 stop token。
 
-[完整 Transformer reference](transformer-from-scratch.md)包含 full 与 cached logits 对照。
+[完整 Transformer reference](transformer-from-scratch.md) 包含 full 与 cached logits 对照。
 
 ## 服务尾延迟
 
@@ -166,7 +166,7 @@ $$
 - prefix 命中长度是否与精确 token 一致；
 - P/D descriptor、checksum 与 install 是否原子。
 
-用[手撕 allocator](inference-engine.md)建立小规模状态机，再注入取消、共享、OOM 和 stale version。
+用[手撕 allocator](inference-engine.md) 建立小规模状态机，再注入取消、共享、OOM 和 stale version。
 
 ## RAG 错误
 

@@ -30,7 +30,7 @@ $$
 
 传统 request-level batching 把一组请求固定到同一 batch，直到全部结束。生成长度未知时，短请求必须等待最长请求，新请求也不能利用已经空出的 slot。batch 增大虽然提高 GEMM 利用率，却同时增加 head-of-line blocking。
 
-[Orca](https://www.usenix.org/conference/osdi22/presentation/yu)把调度粒度从整条请求降到模型 iteration：每轮结束后移除完成请求、加入新请求，并通过 selective batching 处理并非所有算子都能按相同方式动态合批的问题。对一轮调度，可写成
+[Orca](https://www.usenix.org/conference/osdi22/presentation/yu) 把调度粒度从整条请求降到模型 iteration：每轮结束后移除完成请求、加入新请求，并通过 selective batching 处理并非所有算子都能按相同方式动态合批的问题。对一轮调度，可写成
 
 $$
 \sum_i q_i\le K,
@@ -53,7 +53,7 @@ $$
 
 ## PagedAttention：把逻辑连续与物理连续分开
 
-[PagedAttention/vLLM](https://arxiv.org/abs/2309.06180)借鉴虚拟内存，把逻辑 token block 映射到固定大小的物理 KV block：
+[PagedAttention/vLLM](https://arxiv.org/abs/2309.06180) 借鉴虚拟内存，把逻辑 token block 映射到固定大小的物理 KV block：
 
 $$
 (\text{sequence},\text{logical block})
@@ -70,7 +70,7 @@ PagedAttention 不是单独的 attention 公式创新。它成立的系统条件
 4. cancel、preemption、beam 和 speculative 分支都更新所有权；
 5. 内存不足在 admission 阶段处理，而不是写 KV 时才崩溃。
 
-机制与紧凑 reference 见[vLLM 与 PagedAttention](../works/vllm-pagedattention.md)、[KV Cache](../../inference/kv-cache.md)和[推理引擎](../../practice/inference-engine.md)。
+机制与紧凑 reference 见 [vLLM 与 PagedAttention](../works/vllm-pagedattention.md)、[KV Cache](../../inference/kv-cache.md) 和[推理引擎](../../practice/inference-engine.md)。
 
 ## Prefix reuse：分页让细粒度共享更便宜
 
@@ -88,7 +88,7 @@ tenant and permission boundary
 
 字符串相同不保证 token 或模型状态相同。共享的非满尾块在任一分支续写前必须 copy-on-write，否则会修改其他请求的历史。
 
-[SGLang](https://arxiv.org/abs/2312.07104)中的 RadixAttention 用 radix tree 组织最长共享前缀。命中是否有价值取决于
+[SGLang](https://arxiv.org/abs/2312.07104) 中的 RadixAttention 用 radix tree 组织最长共享前缀。命中是否有价值取决于
 
 $$
 T_{\text{lookup}}+T_{\text{load}}+
@@ -100,7 +100,7 @@ $$
 
 ## Chunked prefill：在共置引擎里治理阶段干扰
 
-长 prefill 可以占据一次很长的 GPU iteration，使已在流式输出的 decode 请求出现 TPOT 尖峰。[Sarathi-Serve](https://www.usenix.org/conference/osdi24/presentation/agrawal)把 prefill 切成较均匀的 chunk，与 decode token 放进同一轮预算：
+长 prefill 可以占据一次很长的 GPU iteration，使已在流式输出的 decode 请求出现 TPOT 尖峰。[Sarathi-Serve](https://www.usenix.org/conference/osdi24/presentation/agrawal) 把 prefill 切成较均匀的 chunk，与 decode token 放进同一轮预算：
 
 $$
 N_{\text{scheduled}}
@@ -111,7 +111,7 @@ chunk 大，prefill GEMM 更高效但 decode stall 更长；chunk 小，调度�
 
 ## Speculative decoding：串行瓶颈转成并行验证
 
-标准 decode 要为每个新 token 串行执行 target model。Speculative decoding 让较快 draft 一次提出 $\gamma$ 个 token，再由 target 并行验证。[精确 speculative decoding](https://arxiv.org/abs/2211.17192)对 proposal $q$ 和 target $p$ 使用
+标准 decode 要为每个新 token 串行执行 target model。Speculative decoding 让较快 draft 一次提出 $\gamma$ 个 token，再由 target 并行验证。[精确 speculative decoding](https://arxiv.org/abs/2211.17192) 对 proposal $q$ 和 target $p$ 使用
 
 $$
 a(x)=\min\left(1,\frac{p(x)}{q(x)}\right)
@@ -123,7 +123,7 @@ $$
 
 ## Prefill–Decode 分离：让两阶段独立扩缩
 
-Chunked prefill 缓解共置干扰，但 prefill 和 decode 仍共享同一 GPU、并行度和容量计划。[Splitwise](https://arxiv.org/abs/2311.18677)与 [DistServe](https://www.usenix.org/conference/osdi24/presentation/zhong-yinmin)把两阶段放到不同 worker pool，使 TTFT 与 TPOT 可以分别规划。
+Chunked prefill 缓解共置干扰，但 prefill 和 decode 仍共享同一 GPU、并行度和容量计划。[Splitwise](https://arxiv.org/abs/2311.18677) 与 [DistServe](https://www.usenix.org/conference/osdi24/presentation/zhong-yinmin) 把两阶段放到不同 worker pool，使 TTFT 与 TPOT 可以分别规划。
 
 分离不是免费调度。prefill 完成后必须传输每层 prompt KV：
 
@@ -149,11 +149,11 @@ $$
 \lambda\mathbb E[O]<\mu_D.
 $$
 
-Prefix hit 会减少实际 prefill token 流量，speculative decoding 会改变每轮 target 工作量，所以最优 P:D 比例不是固定配置。数据路径、版本和失败恢复见[Prefill–Decode 分离](../../inference/disaggregation.md)。
+Prefix hit 会减少实际 prefill token 流量，speculative decoding 会改变每轮 target 工作量，所以最优 P:D 比例不是固定配置。数据路径、版本和失败恢复见 [Prefill–Decode 分离](../../inference/disaggregation.md)。
 
 ## 分布式 KV：状态跨出单机以后
 
-P/D 分离、跨副本迁移和长前缀复用都会让 KV 成为网络对象。[Mooncake](https://arxiv.org/abs/2407.00079)研究 KV-centric 的分离式服务架构，并利用 GPU 之外的 DRAM 与 SSD 扩展缓存层级。更大容量可以减少重复 prefill，却增加目录一致性、远端带宽、安装延迟、版本失效与权限隔离。
+P/D 分离、跨副本迁移和长前缀复用都会让 KV 成为网络对象。[Mooncake](https://arxiv.org/abs/2407.00079) 研究 KV-centric 的分离式服务架构，并利用 GPU 之外的 DRAM 与 SSD 扩展缓存层级。更大容量可以减少重复 prefill，却增加目录一致性、远端带宽、安装延迟、版本失效与权限隔离。
 
 目录命中不等于 KV 可用。只有目标 worker 完成 schema 校验、传输、checksum 和 block 安装后，请求才能进入 decode。远端副本还能改善故障恢复，但常态复制成本可能超过偶发重算，因此要与 workload 的复用率和故障率共同评估。
 
@@ -178,7 +178,7 @@ Admission 需要同时估计未来 KV 增长、prompt 工作量、输出长度�
 - KV 水位、block waste、eviction 与 transfer；
 - 取消、OOM、worker failure 和模型升级。
 
-具体协议见[调度与 Goodput](../../inference/scheduling-goodput.md)和[基准与可靠性](../../inference/benchmarking-reliability.md)。
+具体协议见[调度与 Goodput](../../inference/scheduling-goodput.md) 和[基准与可靠性](../../inference/benchmarking-reliability.md)。
 
 ## 机制怎样互相改写
 

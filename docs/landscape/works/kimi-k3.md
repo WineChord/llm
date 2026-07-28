@@ -1,6 +1,6 @@
 # Kimi K3：从三条信息流到完整系统
 
-[Kimi K3](https://github.com/MoonshotAI/Kimi-K3)不是把一个已有 Transformer 单纯放大到 2.8T 参数。它把模型结构重新组织成三条相互配合的信息流：
+[Kimi K3](https://github.com/MoonshotAI/Kimi-K3) 不是把一个已有 Transformer 单纯放大到 2.8T 参数。它把模型结构重新组织成三条相互配合的信息流：
 
 - token 之间，由 Kimi Delta Attention（KDA）承担大部分有限状态混合，周期性 Gated MLA 保留全局内容寻址；
 - layer 之间，由 Attention Residuals（AttnRes）把固定累加改成可学习的跨深度选择；
@@ -8,7 +8,7 @@
 
 这三条结构线又被一套共同设计的训练与系统接住：原生视觉、Per-Head Muon、逐级长上下文训练，SFT → 多领域多 effort RL → Multi-Teacher On-Policy Distillation（MOPD），以及面向 3T 稀疏训练、百万 token rollout 和混合递推缓存的基础设施。[官方技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)的真正价值，正是第一次把这些层面放进同一份系统叙事。
 
-本页先重建整份报告的因果链；[Kimi 家族总览](../families/kimi.md)区分 checkpoint、机制、系统与工具，[Kimi 技术谱系](../kimi-timeline.md)解释各代工作怎样汇流，[Kimi k1.5](kimi-k1-5.md)、[Kimi K2](kimi-k2.md)、[Kimi K2.5](kimi-k2-5.md)与[Kimi-VL](../../multimodal/kimi-vl.md)分别展开长程 RL、稀疏预训练、原生多模态 agent 与视觉主干，[150 项引用图谱](../kimi-k3-reference-map.md)再逐项区分直接来源、技术前身、并行工作、benchmark 与比较对象。各个可复用机制分别进入[线性注意力](../../architecture/state-space-linear-attention.md)、[注意力与位置](../../architecture/attention-position.md)、[Mixture of Experts](../../architecture/moe.md)、[长上下文](../../architecture/long-context.md)、[Agentic RL 训练系统](../../agentic-rl/training-systems.md)和[推理缓存](../../inference/cache-reuse.md)等主干页面。
+本页先重建整份报告的因果链；[Kimi 家族总览](../families/kimi.md)区分 checkpoint、机制、系统与工具，[Kimi 技术谱系](../kimi-timeline.md)解释各代工作怎样汇流，[Kimi k1.5](kimi-k1-5.md)、[Kimi K2](kimi-k2.md)、[Kimi K2.5](kimi-k2-5.md) 与 [Kimi-VL](../../multimodal/kimi-vl.md) 分别展开长程 RL、稀疏预训练、原生多模态 agent 与视觉主干，[150 项引用图谱](../kimi-k3-reference-map.md)再逐项区分直接来源、技术前身、并行工作、benchmark 与比较对象。各个可复用机制分别进入[线性注意力](../../architecture/state-space-linear-attention.md)、[注意力与位置](../../architecture/attention-position.md)、[Mixture of Experts](../../architecture/moe.md)、[长上下文](../../architecture/long-context.md)、[Agentic RL 训练系统](../../agentic-rl/training-systems.md)和[推理缓存](../../inference/cache-reuse.md)等主干页面。
 
 <figure class="paper-figure paper-figure--portrait" id="k3-figure-02" data-paper-source="kimi-k3" data-paper-asset="k3-figure-02" markdown="1">
 [![Kimi K3 的整体结构由 token、channel 与 depth 三条信息流组成：KDA 和 MLA 处理 token，Stable LatentMoE 处理 channel，Attention Residuals 连接不同深度](../../assets/papers/kimi-k3/figure-02-architecture.png){ width="1967" height="1617" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-02-architecture.png)
@@ -70,11 +70,11 @@
 | MTP | 1 layer | 1 layer | 报告口径不变 |
 | vision tower | 无 | 401M / 27 layers | 原生视觉路径 |
 
-“2.8T”是四舍五入后的家族标签，报告表格给出 2.78T；“104B”同理，对应 104.2B。报告中的 160K vocabulary 是近似口径，[公开 config](https://huggingface.co/moonshotai/Kimi-K3/blob/main/config.json)给出精确值 163,840。规格比较必须保留这类“报告展示值”和“checkpoint 机器值”的差别。
+“2.8T”是四舍五入后的家族标签，报告表格给出 2.78T；“104B”同理，对应 104.2B。报告中的 160K vocabulary 是近似口径，[公开 config](https://huggingface.co/moonshotai/Kimi-K3/blob/main/config.json) 给出精确值 163,840。规格比较必须保留这类“报告展示值”和“checkpoint 机器值”的差别。
 
-config 还把若干论文叙述落成机器契约：`attn_res_block_size=12`、`short_conv_kernel_size=4`、Q/ KV latent rank 分别为 1536 / 512、`rms_norm_eps=1e-5`、KDA lower bound 为 $-5$，并显式列出 69 个 KDA layer 与 24 个 full-attention layer。`mla_use_nope=true`才是 released checkpoint 不使用 MLA RoPE 的直接证据；同一 config 中为兼容实现保留某个 RoPE-shaped 字段，不能反向推翻这项开关。
+config 还把若干论文叙述落成机器契约：`attn_res_block_size=12`、`short_conv_kernel_size=4`、Q/ KV latent rank 分别为 1536 / 512、`rms_norm_eps=1e-5`、KDA lower bound 为 $-5$，并显式列出 69 个 KDA layer 与 24 个 full-attention layer。`mla_use_nope=true` 才是 released checkpoint 不使用 MLA RoPE 的直接证据；同一 config 中为兼容实现保留某个 RoPE-shaped 字段，不能反向推翻这项开关。
 
-权重使用[Kimi K3 License](https://github.com/MoonshotAI/Kimi-K3/blob/main/LICENSE)，不是 Apache-2.0 或 MIT。许可证允许广泛使用、修改、分发和商业部署，但为达到特定收入门槛的 Model-as-a-Service 业务设置了另行协议要求，也为超大规模商业产品设置了显著标识义务。因此更准确的表述是 **open-weight under the Kimi K3 License**；“权重可下载”不自动等价于 OSI 意义上的开源软件。
+权重使用 [Kimi K3 License](https://github.com/MoonshotAI/Kimi-K3/blob/main/LICENSE)，不是 Apache-2.0 或 MIT。许可证允许广泛使用、修改、分发和商业部署，但为达到特定收入门槛的 Model-as-a-Service 业务设置了另行协议要求，也为超大规模商业产品设置了显著标识义务。因此更准确的表述是 **open-weight under the Kimi K3 License**；“权重可下载”不自动等价于 OSI 意义上的开源软件。
 
 报告没有公开预训练总 token、各数据源比例、训练 FLOPs、GPU 数量与训练时长，也没有给出完整 learning rate、batch size、tokens-per-parameter 搜索结果。后训练同样没有披露 RL 的完整优化公式、partial-rollout 完成比例 $\lambda$、per-token regularizer、阶段 token 预算、九个 expert 的训练量和主要消融原始数值。这些未知量决定了目前可以理解设计，却还不能从报告独立复现整套 K3。
 
@@ -136,7 +136,7 @@ torch.testing.assert_close(out, value)
 
 ### 从投影到 Chunkwise 的完整接口 {#kda-chunkwise}
 
-报告式 (2)把单个 head 的输入链写成
+报告式 (2) 把单个 head 的输入链写成
 
 $$
 q_t^h,k_t^h
@@ -168,9 +168,9 @@ W_{\alpha}^{\uparrow}
 W_{\alpha}^{\downarrow}x_t+b_\alpha^h.
 $$
 
-ShortConv 提供局部顺序信号，Q/K 的 L2 normalization 约束 delta update 的几何尺度，低秩投影与 head-specific bias 则生成逐 key-channel 的 decay logit。$z_t^h$ 到 retention $\alpha_t^h$ 的映射由后面的式 (5)完成；不能把 projection chain 与 decay parameterization 合成一个未注明版本的 “KDA gate”。
+ShortConv 提供局部顺序信号，Q/K 的 L2 normalization 约束 delta update 的几何尺度，低秩投影与 head-specific bias 则生成逐 key-channel 的 decay logit。$z_t^h$ 到 retention $\alpha_t^h$ 的映射由后面的式 (5) 完成；不能把 projection chain 与 decay parameterization 合成一个未注明版本的“KDA gate”。
 
-对一个长度为 $C$ 的 chunk $c$，报告式 (3)定义
+对一个长度为 $C$ 的 chunk $c$，报告式 (3) 定义
 
 $$
 \gamma_{[c]}^{i\rightarrow j}
@@ -192,7 +192,7 @@ $$
 \widetilde V_{[c]}=U_{[c]}-W_{[c]}S_{[c]}.
 $$
 
-于是式 (4)为
+于是式 (4) 为
 
 $$
 A_{[c]}
@@ -220,7 +220,7 @@ $$
 
 ### 下界 log-decay 是一个 kernel 设计 {#bounded-decay}
 
-[Kimi Linear](https://arxiv.org/abs/2510.26692)使用无下界的负 Softplus log-decay。K3 改成
+[Kimi Linear](https://arxiv.org/abs/2510.26692) 使用无下界的负 Softplus log-decay。K3 改成
 
 $$
 g_t=g_{\min}\operatorname{Sigmoid}\!\left(e^Az_t\right),
@@ -255,7 +255,7 @@ assert math.exp(80) < torch.finfo(torch.bfloat16).max
 
 这解释了 KDA 中一个常见但危险的误读：`linear in sequence length` 只描述计算随 $T$ 的阶数，不代表状态很小、kernel 自动高效或任意长时都数值稳定。[下界与 diagonal tile 的对照图](kimi-linear-flashkda.md#k3-figure-03)把函数值域和执行路径放在同一视野中；KDA 从 fast weights、DeltaNet 到 Kimi Linear、FlashKDA 与 KCP 的完整演化也在该页展开，稳定机制定义见[状态空间与线性注意力](../../architecture/state-space-linear-attention.md)。
 
-K3 还把 Kimi Linear 的低秩 output gate 换成输入相关的 full-rank channel projection。若 $\widetilde o_t$ 是 recurrent output，报告式 (6)为
+K3 还把 Kimi Linear 的低秩 output gate 换成输入相关的 full-rank channel projection。若 $\widetilde o_t$ 是 recurrent output，报告式 (6) 为
 
 $$
 y_t
@@ -277,9 +277,9 @@ $$
 (KDA -> KDA -> KDA -> Gated MLA) × repeated blocks -> final Gated MLA
 ```
 
-[Multi-head Latent Attention](https://arxiv.org/abs/2405.04434)把每个 token 的 K/V 内容压入低维 latent cache，再恢复各 head 的内容 key/value；它仍提供全局 token-to-token attention。K3 的所有 MLA layer 都采用 NoPE，由相邻 KDA 提供顺序与 recency signal，并在输出端加入 full-rank channel gate。
+[Multi-head Latent Attention](https://arxiv.org/abs/2405.04434) 把每个 token 的 K/V 内容压入低维 latent cache，再恢复各 head 的内容 key/value；它仍提供全局 token-to-token attention。K3 的所有 MLA layer 都采用 NoPE，由相邻 KDA 提供顺序与 recency signal，并在输出端加入 full-rank channel gate。
 
-对未门控的 MLA 输出 $\widetilde o_t$，报告式 (7)为
+对未门控的 MLA 输出 $\widetilde o_t$，报告式 (7) 为
 
 $$
 y_t
@@ -314,7 +314,7 @@ $$
 
 递归展开后，所有历史层输出以固定单位权重累加。随着深度增加，单层更新在总残差流中的相对占比可能被稀释；而每一层只能接收已经压缩成一个向量的 $h_\ell$。这在 depth 维上很像 attention 出现前的时间递推瓶颈。
 
-[Attention Residuals](https://arxiv.org/abs/2603.15031)让第 $\ell$ 层用一个可学习 pseudo-query $w_\ell$ 对 embedding 与此前 layer output 做 softmax：
+[Attention Residuals](https://arxiv.org/abs/2603.15031) 让第 $\ell$ 层用一个可学习 pseudo-query $w_\ell$ 对 embedding 与此前 layer output 做 softmax：
 
 $$
 k_i=v_i=
@@ -361,7 +361,7 @@ Full AttnRes 只有 $L<100$ 时，$O(L^2d)$ 算术并不可怕；真正昂贵的
 2. 跨 block 只对 embedding、已完成 block 与当前 partial block 做 depth attention；
 3. 最终层聚合全部 block representation。
 
-报告式 (10)把第 $n$ 个 block 内第 $i$ 层实际可读取的 value layout 写得更精确。令 $b_0=h_1$ 为 embedding，$b_1,\ldots,b_{n-1}$ 为已完成 block，$b_n^{i-1}$ 为当前 block 在进入第 $i$ 层前的 partial sum，则
+报告式 (10) 把第 $n$ 个 block 内第 $i$ 层实际可读取的 value layout 写得更精确。令 $b_0=h_1$ 为 embedding，$b_1,\ldots,b_{n-1}$ 为已完成 block，$b_n^{i-1}$ 为当前 block 在进入第 $i$ 层前的 partial sum，则
 
 $$
 V_{n,i}
@@ -383,13 +383,13 @@ $$
 - speculative draft 从哪些深度抽特征；
 - prefill 和 decode 时 depth state 如何在 sequence parallel rank 间同步。
 
-从 PreNorm dilution、Full/Block AttnRes 到 online softmax 与 pipeline cache 的完整推导见[Attention Residuals](attention-residuals.md)；稳定结构接口见[注意力与位置](../../architecture/attention-position.md)，训练期通信则见[模型并行](../../systems/model-parallelism.md)。
+从 PreNorm dilution、Full/Block AttnRes 到 online softmax 与 pipeline cache 的完整推导见 [Attention Residuals](attention-residuals.md)；稳定结构接口见[注意力与位置](../../architecture/attention-position.md)，训练期通信则见[模型并行](../../systems/model-parallelism.md)。
 
 ## channel 维：Stable LatentMoE
 
 ### latent path 让专家数和全宽通信解耦 {#latent-path}
 
-普通 sparse MoE 让每个 routed expert 都处理 $d$ 维 token。K3 采用[LatentMoE](https://arxiv.org/abs/2601.18089)的宽窄分工：
+普通 sparse MoE 让每个 routed expert 都处理 $d$ 维 token。K3 采用 [LatentMoE](https://arxiv.org/abs/2601.18089) 的宽窄分工：
 
 $$
 z=W_\downarrow x\in\mathbb R^\ell,
@@ -515,7 +515,7 @@ assert bias.shape == (2,)
 torch.testing.assert_close(bias.mean(), torch.tensor(0.))
 ```
 
-全局 batch 的 margin 数以百万计，实际实现不 gather 全量值，而为每个 expert 建直方图，all-reduce 各 bin 的整数 count，再从累计计数恢复 quantile。若 bin width 为 $\Delta$，未做 bin 内插值时阈值误差不超过一个 bin；count 的可加性保证结果对应全局 token 池，而不是 rank-wise quantile 的错误平均。[一次 coordinate update 的路由变化](latentmoe-quantile-balancing.md#k3-figure-05)给出直观读法；LatentMoE 原作与 K3 的 RMSNorm、SiTU、QB 增量也在该页展开，稳定路由几何见[Mixture of Experts](../../architecture/moe.md)，通信与负载尾部见[MoE 系统](../../systems/moe-systems.md)。
+全局 batch 的 margin 数以百万计，实际实现不 gather 全量值，而为每个 expert 建直方图，all-reduce 各 bin 的整数 count，再从累计计数恢复 quantile。若 bin width 为 $\Delta$，未做 bin 内插值时阈值误差不超过一个 bin；count 的可加性保证结果对应全局 token 池，而不是 rank-wise quantile 的错误平均。[一次 coordinate update 的路由变化](latentmoe-quantile-balancing.md#k3-figure-05)给出直观读法；LatentMoE 原作与 K3 的 RMSNorm、SiTU、QB 增量也在该页展开，稳定路由几何见 [Mixture of Experts](../../architecture/moe.md)，通信与负载尾部见 [MoE 系统](../../systems/moe-systems.md)。
 
 ## 原生视觉与 Per-Head Muon
 
@@ -624,7 +624,7 @@ $$
 
 每轮对 $N$ 个 prompt 各采样 $K$ 条 completion，共维护 $NK$ 条 active trajectory。当完成比例达到 $\lambda$ 时，generation 暂停，learner 开始优化；未完成轨迹排队到下一轮优先恢复。只有同一 prompt 的 $K$ 条结果都完成，才形成可优化的 group。
 
-它减少“每一轮必须等待最慢 trajectory”的 wall-clock barrier，却仍保留 group sampling。与[SAO](sao-compactionrl.md#sao)的 single-rollout、critic-based 更新不同，K3 partial rollout 是调度层的跨 iteration 暂停/恢复。长轨迹因此会跨越多个 policy version；报告只说一个未展开的 per-token regularization 能容忍 extreme off-policy，没有给出公式、系数和消融。不能把这句描述补写成 PPO clip、DIS 或任何已知算法。
+它减少“每一轮必须等待最慢 trajectory”的 wall-clock barrier，却仍保留 group sampling。与 [SAO](sao-compactionrl.md#sao) 的 single-rollout、critic-based 更新不同，K3 partial rollout 是调度层的跨 iteration 暂停/恢复。长轨迹因此会跨越多个 policy version；报告只说一个未展开的 per-token regularization 能容忍 extreme off-policy，没有给出公式、系数和消融。不能把这句描述补写成 PPO clip、DIS 或任何已知算法。
 
 ### Agentic GRM 把评分过程也变成轨迹
 
@@ -674,7 +674,7 @@ MOPD 的公式只定义 dense signal，并没有完整规定 return、advantage�
 
 ### QAT 与 EAGLE-3 都从部署路径倒推训练 {#deployment-aware}
 
-expert weight 占据绝大部分参数内存，K3 只把 routed expert weight 量化为 MXFP4、activation 量化为 MXFP8；attention、latent projection、shared expert、router、vision/projector 和 LM head 保持更高精度。[公开 config](https://huggingface.co/moonshotai/Kimi-K3/blob/main/config.json)还给出 group size 32。QAT 从 SFT 持续到 RL，rollout 与 learner 使用同一量化路径，直接减少 policy engine mismatch。
+expert weight 占据绝大部分参数内存，K3 只把 routed expert weight 量化为 MXFP4、activation 量化为 MXFP8；attention、latent projection、shared expert、router、vision/projector 和 LM head 保持更高精度。[公开 config](https://huggingface.co/moonshotai/Kimi-K3/blob/main/config.json) 还给出 group size 32。QAT 从 SFT 持续到 RL，rollout 与 learner 使用同一量化路径，直接减少 policy engine mismatch。
 
 预训练时的一层 MTP 被微调成 EAGLE-3 draft：
 
@@ -779,7 +779,7 @@ AET 明确给出 initial state、constrained goal、tool action space、budget �
 - chunk 内 token 可用矩阵化形式并行；
 - chunk 间 recurrent state 仍有顺序依赖。
 
-FlashKDA 以 CUTLASS kernel 重叠 token-parallel 的 intra-chunk 计算与 head-parallel 的 state propagation；[FLA](https://github.com/fla-org/flash-linear-attention)提供另一实现底座。单 GPU 内 context parallel 利用 segment transition 的结合性组合不同分段。
+FlashKDA 以 CUTLASS kernel 重叠 token-parallel 的 intra-chunk 计算与 head-parallel 的 state propagation；[FLA](https://github.com/fla-org/flash-linear-attention) 提供另一实现底座。单 GPU 内 context parallel 利用 segment transition 的结合性组合不同分段。
 
 把一个 segment 抽象成仿射状态变换
 
@@ -797,7 +797,7 @@ $$
 
 该运算满足结合律，因此跨设备 KDA Context Parallelism（KCP）可以对每段只交换固定大小的 $(M,\widetilde S)$，再用 prefix scan 得到各 rank 的 entering state。
 
-报告式 (17)还明确了“只交换 fragment”怎样重建任意 rank、任意 local prefix 的 state。若第 $j$ 个 rank 的完整 fragment 为 $(M_j,E_j)$，第 $i$ 个 rank 前 $t$ 个 local token 的 fragment 为 $(M_{i,t},E_{i,t})$，则
+报告式 (17) 还明确了“只交换 fragment”怎样重建任意 rank、任意 local prefix 的 state。若第 $j$ 个 rank 的完整 fragment 为 $(M_j,E_j)$，第 $i$ 个 rank 前 $t$ 个 local token 的 fragment 为 $(M_{i,t},E_{i,t})$，则
 
 $$
 S_{\mathrm{in}}^{(i)}
@@ -836,7 +836,7 @@ torch.testing.assert_close(left[1], right[1])
 
 训练组合 pipeline parallel + virtual pipeline、expert parallel、ZeRO-1 / Pipeline ZeRO-2 与 context parallel。极端 expert pool 下，普通 dispatch 的每 rank token 数由 router 决定，最慢 rank 控制 step time。
 
-[MoonEP](moonep.md)动态放置少量 redundant expert，使每个 rank 恰好处理 $S\!\times\!K$ 个 routed token。报告在附录 E 证明：若有 $E$ 个 expert、$R$ 个 rank，最坏只需每 rank 至多 $E/R$ 个冗余 expert，并给出近似 tight construction。
+[MoonEP](moonep.md) 动态放置少量 redundant expert，使每个 rank 恰好处理 $S\!\times\!K$ 个 routed token。报告在附录 E 证明：若有 $E$ 个 expert、$R$ 个 rank，最坏只需每 rank 至多 $E/R$ 个冗余 expert，并给出近似 tight construction。
 
 系统层还做了三件关键事：
 
@@ -858,7 +858,7 @@ forward 会根据当前 micro-batch 与 layer 的 router output 规划并预取 
 - offload 到 CPU；
 - remote-offload 到其他 pipeline rank。
 
-它使用单一 memory pool 和主 stream 约束生命周期，避免多个异步 allocator 各自高估可用空间。MoE dispatch activation 可重算并在 backward 重新做 routing transform；Block AttnRes 只增量传递 block cache；[Mooncake](https://github.com/kvcache-ai/Mooncake)用于把 activation 临时放到其他 PP rank。
+它使用单一 memory pool 和主 stream 约束生命周期，避免多个异步 allocator 各自高估可用空间。MoE dispatch activation 可重算并在 backward 重新做 routing transform；Block AttnRes 只增量传递 block cache；[Mooncake](https://github.com/kvcache-ai/Mooncake) 用于把 activation 临时放到其他 PP rank。
 
 Pipeline ZeRO-2 把 gradient shard 转移到 CPU，并用双 GPU buffer 隐藏传输；Per-Head Muon 则以 P2P 拉取所需 matrix shard，避免对完整矩阵做全局 all-gather。视觉侧按每个样本的 patch 数动态组 context-parallel subgroup，并把 ViT forward/backward 尽量放进 LLM pipeline bubble。
 
@@ -883,7 +883,7 @@ reference model forward 还会复用 policy 的 FP32 gradient buffer，以 chunk
 
 ### AgentENV 把环境状态变成可恢复对象
 
-[AgentENV](https://github.com/kvcache-ai/AgentENV)基于 Firecracker microVM，为长程任务提供 pause、resume、fork 与 snapshot。报告给出增量 checkpoint 133 ms、resume 49 ms 的内部测量；OverlayBD、ublk 与 P2P image distribution 用于快速启动与共享 image layer，copy-on-write 和 cache overcommit 报告达到 6.5×。
+[AgentENV](https://github.com/kvcache-ai/AgentENV) 基于 Firecracker microVM，为长程任务提供 pause、resume、fork 与 snapshot。报告给出增量 checkpoint 133 ms、resume 49 ms 的内部测量；OverlayBD、ublk 与 P2P image distribution 用于快速启动与共享 image layer，copy-on-write 和 cache overcommit 报告达到 6.5×。
 
 报告还给出 51,219,741 个 sandbox、1,505,678 个 image 的累计规模。这些是作者系统的运营统计，不是公开仓库一键复现的 benchmark。真正可迁移的设计原则是：
 
@@ -893,7 +893,7 @@ reference model forward 还会复用 policy 的 FP32 gradient buffer，以 chunk
 - snapshot identity 要绑定 environment image、tool version 与 policy observation；
 - 恢复后的 wall clock、随机数和外部服务语义必须明确。
 
-长时环境与安全边界见[长时任务](../../agentic-rl/long-horizon.md)和[Agent 安全](../../applications/agent-security.md)。
+长时环境与安全边界见[长时任务](../../agentic-rl/long-horizon.md)和 [Agent 安全](../../applications/agent-security.md)。
 
 ## 在线推理：两类记忆必须共同命中
 
@@ -923,7 +923,7 @@ assert hybrid_hit({512, 1024, 1536}, {0, 1024}) == 1024
 assert hybrid_hit({512, 1024}, {0, 1536}) == 0
 ```
 
-生产实现还要检查 MLA block 连续性、全部 KDA layer group、page generation、COW epoch 和 chat-template identity；这段代码只冻结“共同边界”这一不变量。详见[Cache 复用](../../inference/cache-reuse.md)。
+生产实现还要检查 MLA block 连续性、全部 KDA layer group、page generation、COW epoch 和 chat-template identity；这段代码只冻结“共同边界”这一不变量。详见 [Cache 复用](../../inference/cache-reuse.md)。
 
 ### recurrent speculative decoding 不能复制整个状态
 
@@ -1033,7 +1033,7 @@ Webdev 内部盲评中，相对 Claude Opus 4.8，K3 在 game / 3D-WebGL-Shader 
 
 Tier 1 中，数百 candidate 里已人工审阅部分约 70% 被确认，含 6 个项目中的 16 个此前未知漏洞；具体细节因修复与风险未公开。Tier 2 内部 36 题中，K3 完成 14 题，GLM-5.2 完成 8 题；K3 的 14 个成功有 10 个来自 user space，kernel track 为 $4/20$，即 $80\%$ 未解。
 
-英国 AI Security Institute 与 NIST CAISI 的独立评估报告 K3 在 ExploitBench 为 32% 对 GLM-5.2 的 24%，在 32-step enterprise network 中完成 17 步对 11 步，但在 41 个 arbitrary-code-execution task 上为 0。它支持“能力明显增长但完整 exploit chain 仍有巨大缺口”，也意味着开放部署需要更严密的 tool permission、network isolation、audit 与 abuse monitoring。此处只讨论能力测量与治理，不展开攻击步骤。详见[安全评测](../../evaluation/safety-evaluation.md)与[Agentic RL 评测与安全](../../agentic-rl/evaluation-safety.md)。
+英国 AI Security Institute 与 NIST CAISI 的独立评估报告 K3 在 ExploitBench 为 32% 对 GLM-5.2 的 24%，在 32-step enterprise network 中完成 17 步对 11 步，但在 41 个 arbitrary-code-execution task 上为 0。它支持“能力明显增长但完整 exploit chain 仍有巨大缺口”，也意味着开放部署需要更严密的 tool permission、network isolation、audit 与 abuse monitoring。此处只讨论能力测量与治理，不展开攻击步骤。详见[安全评测](../../evaluation/safety-evaluation.md)与 [Agentic RL 评测与安全](../../agentic-rl/evaluation-safety.md)。
 
 ### 第三方与成本都是日期快照
 
@@ -1123,7 +1123,7 @@ Arena Elo 会随新 vote 漂移，第三方 index 会改版本与权重，因此
 
 ### A：贡献者表明这是一份系统团队报告
 
-附录 A 用两页按姓氏排序记录大规模贡献者，并把 “Kimi K3” 本身列在 contributor 表的末尾。它没有新增算法，却说明报告横跨模型、数据、RL、kernel、分布式系统、推理、环境与评测，不应被误读成少数作者完成的一篇单点算法论文。引用时应使用报告给出的 Kimi Team 集体署名；贡献者名单则以官方 PDF 为准，不在正文复制一份容易失真的静态副本。
+附录 A 用两页按姓氏排序记录大规模贡献者，并把“Kimi K3”本身列在 contributor 表的末尾。它没有新增算法，却说明报告横跨模型、数据、RL、kernel、分布式系统、推理、环境与评测，不应被误读成少数作者完成的一篇单点算法论文。引用时应使用报告给出的 Kimi Team 集体署名；贡献者名单则以官方 PDF 为准，不在正文复制一份容易失真的静态副本。
 
 ### B：SiTU-GLU 的四个性质 {#appendix-situ}
 
@@ -1131,7 +1131,7 @@ Arena Elo 会随新 vote 漂移，第三方 index 会改版本与权重，因此
 
 ### C：QB 来自 balanced assignment 的对偶 {#appendix-qb}
 
-把 batch 路由写成二部图线性规划：每个 token 必须选 $k$ 个 expert，每个 expert 目标接收 $q=mk/n$ 个 token。报告式 (20)是
+把 batch 路由写成二部图线性规划：每个 token 必须选 $k$ 个 expert，每个 expert 目标接收 $q=mk/n$ 个 token。报告式 (20) 是
 
 $$
 \max_{x_{i,j}\in\{0,1\}}
@@ -1142,7 +1142,7 @@ $$
 \sum_ix_{i,j}=q.
 $$
 
-把 $x$ 放松到 $[0,1]$ 后，bipartite $b$-matching polytope 保证存在整数最优点。为 token 与 expert 等式分别引入自由变量 $\alpha_i,\beta_j$，式 (21)先把 relaxed primal 写成 max–min Lagrangian：
+把 $x$ 放松到 $[0,1]$ 后，bipartite $b$-matching polytope 保证存在整数最优点。为 token 与 expert 等式分别引入自由变量 $\alpha_i,\beta_j$，式 (21) 先把 relaxed primal 写成 max–min Lagrangian：
 
 $$
 \max_{0\le x\le1}\min_{\alpha,\beta}
@@ -1153,7 +1153,7 @@ $$
 \right].
 $$
 
-目标对 $x,\alpha,\beta$ 都是线性的，约束集是凸集，因此式 (22)可交换优化次序并展开为
+目标对 $x,\alpha,\beta$ 都是线性的，约束集是凸集，因此式 (22) 可交换优化次序并展开为
 
 $$
 \min_{\alpha,\beta}
@@ -1162,7 +1162,7 @@ $$
 +k\sum_i\alpha_i+q\sum_j\beta_j.
 $$
 
-对每个 $x_{i,j}$ 的内部最大化可独立完成：$s_{i,j}-\alpha_i-\beta_j>0$ 时取 1，小于 0 时取 0。于是式 (23)变成凸对偶
+对每个 $x_{i,j}$ 的内部最大化可独立完成：$s_{i,j}-\alpha_i-\beta_j>0$ 时取 1，小于 0 时取 0。于是式 (23) 变成凸对偶
 
 $$
 \mathcal L(\alpha,\beta)
@@ -1171,7 +1171,7 @@ $$
 +k\sum_i\alpha_i+q\sum_j\beta_j.
 $$
 
-固定 $\beta$ 后，式 (24)的单 token 子问题为
+固定 $\beta$ 后，式 (24) 的单 token 子问题为
 
 $$
 \min_{\alpha}
@@ -1206,7 +1206,7 @@ repeat T times:
 assignment = top-k(score - beta)
 ```
 
-部署只需保存 expert threshold $\beta$，等价于正文中的 selection bias $b=-\beta$；随 batch 改变的 $\alpha$ 会被丢弃。式 (27)进一步给出
+部署只需保存 expert threshold $\beta$，等价于正文中的 selection bias $b=-\beta$；随 batch 改变的 $\alpha$ 会被丢弃。式 (27) 进一步给出
 
 $$
 \frac{\partial\mathcal L}{\partial\beta_j}
@@ -1215,7 +1215,7 @@ q-\sum_{i=1}^{m}
 \mathbf1[s_{i,j}-\alpha_i-\beta_j>0],
 $$
 
-即目标负载减实际负载。sign-based auxiliary-loss-free update 只保留这个梯度的方向并走固定步长，QB 则跳到同一个 coordinate 的 exact minimizer；“exact”不表示一次交替就解完所有坐标，也不表示新 batch 必然严格均衡。更完整的结构、算法与可执行 tie 检查见[Stable LatentMoE 与 Quantile Balancing](latentmoe-quantile-balancing.md)。
+即目标负载减实际负载。sign-based auxiliary-loss-free update 只保留这个梯度的方向并走固定步长，QB 则跳到同一个 coordinate 的 exact minimizer；“exact”不表示一次交替就解完所有坐标，也不表示新 batch 必然严格均衡。更完整的结构、算法与可执行 tie 检查见 [Stable LatentMoE 与 Quantile Balancing](latentmoe-quantile-balancing.md)。
 
 这个推导依赖可行的整数目标、无 tie 或明确 tie-breaking；实际 microbatch 若 $mk$ 不能整除 $n$，还需要跨 accumulation window 处理余数或定义近似 target。
 
@@ -1274,7 +1274,7 @@ $$
 M(I)=\min_P\max_r m_r(P).
 $$
 
-Theorem 1 的构造从当前 home-rank load 出发，反复选择一个 underloaded rank 与一个 overloaded rank，从后者迁移 token，恰好填满前者。每次填充会永久完成一个 underloaded rank，所以至多 $R-1$ 次结束；一个被填充 rank 的 remote token 只来自一个 donor rank，而 donor 最多拥有 $E/R$ 个 home expert。因此式 (28)为
+Theorem 1 的构造从当前 home-rank load 出发，反复选择一个 underloaded rank 与一个 overloaded rank，从后者迁移 token，恰好填满前者。每次填充会永久完成一个 underloaded rank，所以至多 $R-1$ 次结束；一个被填充 rank 的 remote token 只来自一个 donor rank，而 donor 最多拥有 $E/R$ 个 home expert。因此式 (28) 为
 
 $$
 M(I)
@@ -1294,7 +1294,7 @@ $$
 \right\rceil
 $$
 
-个 remote expert；按 expert 优先迁移的 filling plan 又能达到这个数，所以该构造上取等。$R$ 较大时它约为 $E/R$。证明控制的是每 rank 最多需要多少个冗余 expert placement，不是额外参数内存、复制带宽、planner latency 或最终 wall-clock；完整执行语义见[MoonEP](moonep.md)。
+个 remote expert；按 expert 优先迁移的 filling plan 又能达到这个数，所以该构造上取等。$R$ 较大时它约为 $E/R$。证明控制的是每 rank 最多需要多少个冗余 expert placement，不是额外参数内存、复制带宽、planner latency 或最终 wall-clock；完整执行语义见 [MoonEP](moonep.md)。
 
 ### F：XTML 把 chat、thinking 和 tool 变成同一语法
 

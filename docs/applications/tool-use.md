@@ -2,7 +2,7 @@
 
 工具调用把模型输出从自然语言建议变成可校验动作。一个可靠工具既有参数 schema，也有权限、幂等、错误和终态契约。
 
-[ReAct 与 Toolformer](../landscape/works/react-toolformer.md)展示两种不同起点：前者在推理时交错 reasoning、action 与 observation，后者从候选 API 调用中筛选能降低语言模型损失的训练样本。两者在应用系统演进中的位置见[检索、工具与智能体](../landscape/lineages/retrieval-agents.md)。
+[ReAct 与 Toolformer](../landscape/works/react-toolformer.md) 展示两种不同起点：前者在推理时交错 reasoning、action 与 observation，后者从候选 API 调用中筛选能降低语言模型损失的训练样本。两者在应用系统演进中的位置见[检索、工具与智能体](../landscape/lineages/retrieval-agents.md)。
 
 ## 四段边界
 
@@ -36,7 +36,7 @@ $$
 - 超时、取消和最大结果大小；
 - 幂等性与重复调用语义。
 
-受约束解码或 structured outputs 可以保证语法形状。[OpenAI Structured Outputs](https://openai.com/index/introducing-structured-outputs-in-the-api/)与 [Anthropic tool use](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview)展示了两类官方接口。结构合法仍不代表：
+受约束解码或 structured outputs 可以保证语法形状。[OpenAI Structured Outputs](https://openai.com/index/introducing-structured-outputs-in-the-api/) 与 [Anthropic tool use](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview) 展示了两类官方接口。结构合法仍不代表：
 
 - 工具选择正确；
 - 实体解析无歧义；
@@ -211,14 +211,14 @@ $\varnothing$ 表示无需调用。仅报告“工具名准确率”会忽略过
 
 工具协议定义互操作，不替代应用安全。
 
-- [Model Context Protocol tools specification](https://modelcontextprotocol.io/specification/2025-11-25/server/tools)定义工具发现、调用、输入/输出 schema 与错误传递；相应 [schema](https://modelcontextprotocol.io/specification/2025-11-25/schema)给出消息结构。
-- [Agent2Agent specification](https://a2a-protocol.org/latest/specification/)面向 agent 之间的任务、消息与产物交换。
+- [Model Context Protocol tools specification](https://modelcontextprotocol.io/specification/2025-11-25/server/tools) 定义工具发现、调用、输入/输出 schema 与错误传递；相应 [schema](https://modelcontextprotocol.io/specification/2025-11-25/schema) 给出消息结构。
+- [Agent2Agent specification](https://a2a-protocol.org/latest/specification/) 面向 agent 之间的任务、消息与产物交换。
 
 这些协议持续演进；本页链接核验于 2026-07-27，实施时应绑定具体版本。协议可描述“怎样交换”，身份、租户、数据分类、审批和业务终态仍由部署系统负责。
 
 ## DeepSeek-V4 的模型侧协议
 
-[DeepSeek-V4](../landscape/works/deepseek-v4.md#post-training-interface)在模型模板中引入 `|DSML|` 特殊 token，并用 XML 表示 tool call。目标是减少通用文本转义造成的参数错误；它仍需外层 parser、schema validation 与权限检查，不能因为 XML 可解析就直接执行。
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#post-training-interface) 在模型模板中引入 `|DSML|` 特殊 token，并用 XML 表示 tool call。目标是减少通用文本转义造成的参数错误；它仍需外层 parser、schema validation 与权限检查，不能因为 XML 可解析就直接执行。
 
 对 reasoning history，V4 区分两条 context policy：
 

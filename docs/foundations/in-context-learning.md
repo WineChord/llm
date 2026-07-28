@@ -19,7 +19,7 @@ ICL 被系统研究之前，语言模型已经经历了从扩大参数到同时�
 - **In-context instruction induction**：从示例中推断隐含规则。
 - **In-context adaptation**：在上下文中给纠错、偏好或中间反馈。
 
-[GPT-3](https://arxiv.org/abs/2005.14165)系统展示了规模增大后广泛的 few-shot 行为，但“示例更多”不保证单调提升。示例质量、顺序、覆盖范围和格式可能比数量更重要。
+[GPT-3](https://arxiv.org/abs/2005.14165) 系统展示了规模增大后广泛的 few-shot 行为，但“示例更多”不保证单调提升。示例质量、顺序、覆盖范围和格式可能比数量更重要。
 
 ## 一个可计算的视角
 
@@ -39,7 +39,7 @@ w_1=w_0-\eta X^\top(Xw_0-y),
 \hat y_q=x_q^\top w_1.
 $$
 
-[Transformers Learn In-Context by Gradient Descent](https://arxiv.org/abs/2212.07677)说明 Transformer 在受控任务中可以学出与学习算法相似的前向计算。这个类比提供了可检验机制，但不能推出所有自然语言 ICL 都是在隐式执行梯度下降。
+[Transformers Learn In-Context by Gradient Descent](https://arxiv.org/abs/2212.07677) 说明 Transformer 在受控任务中可以学出与学习算法相似的前向计算。这个类比提供了可检验机制，但不能推出所有自然语言 ICL 都是在隐式执行梯度下降。
 
 ## Induction heads
 
@@ -55,7 +55,7 @@ $$
 2. induction head 以当前 token 为 query，匹配历史中的同 token；
 3. value 携带匹配位置之后的 token。
 
-[In-context Learning and Induction Heads](https://arxiv.org/abs/2209.11895)把该机制与受控复制行为联系起来。它解释局部模式补全很有价值，但不应被扩张为对所有推理、任务识别和知识调用的唯一解释。
+[In-context Learning and Induction Heads](https://arxiv.org/abs/2209.11895) 把该机制与受控复制行为联系起来。它解释局部模式补全很有价值，但不应被扩张为对所有推理、任务识别和知识调用的唯一解释。
 
 ## 示例选择
 
@@ -152,7 +152,7 @@ $$
 | 是否受污染 | 新合成任务、时间切分、可控随机标签 |
 | 是否值得成本 | 相同总 token 与延迟预算比较 |
 
-长位置效应见[长上下文](../architecture/long-context.md)，检索侧的候选构造见[RAG](../applications/rag.md)，参数更新式适配见[参数高效与压缩](../training/peft-compression.md)。
+长位置效应见[长上下文](../architecture/long-context.md)，检索侧的候选构造见 [RAG](../applications/rag.md)，参数更新式适配见[参数高效与压缩](../training/peft-compression.md)。
 
 ## Reference {#reference}
 

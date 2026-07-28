@@ -34,7 +34,7 @@ $$
 
 ## JEPA：预测目标编码器中的表示 {#jepa}
 
-[I-JEPA](https://arxiv.org/abs/2301.08243)与 [V-JEPA](https://arxiv.org/abs/2404.08471)不要求恢复目标像素，而让 context encoder 与 predictor 逼近 target encoder 的表示：
+[I-JEPA](https://arxiv.org/abs/2301.08243) 与 [V-JEPA](https://arxiv.org/abs/2404.08471) 不要求恢复目标像素，而让 context encoder 与 predictor 逼近 target encoder 的表示：
 
 $$
 \mathcal L_{\mathrm{JEPA}}
@@ -62,7 +62,7 @@ $$
 
 ### 从 action-free 到 action-conditioned
 
-[V-JEPA 2](https://arxiv.org/abs/2506.09985)先在超过一百万小时互联网视频与图像上做 action-free 表示学习，再冻结视频 encoder，用不足 62 小时的 DROID 机器人视频训练约 300M 的 action-conditioned predictor。论文中的 teacher-forcing 目标为
+[V-JEPA 2](https://arxiv.org/abs/2506.09985) 先在超过一百万小时互联网视频与图像上做 action-free 表示学习，再冻结视频 encoder，用不足 62 小时的 DROID 机器人视频训练约 300M 的 action-conditioned predictor。论文中的 teacher-forcing 目标为
 
 $$
 \mathcal L_{\mathrm{TF}}(\phi)
@@ -119,7 +119,7 @@ assert action_conditioned_loss(step, z, state, action).item() == 0
 
 ### V-JEPA 2.1：预测更稠密的空间状态
 
-[V-JEPA 2.1](https://arxiv.org/abs/2603.14482)于 2026 年公开，进一步对被遮和可见 patch 都施加 dense predictive loss，并加入深层自监督与 2D/3D 多模态 tokenizer。论文报告了更强的密集视觉与机器人规划结果，但这些仍是作者在特定数据和任务协议中的结果；新版本的独立复现和跨硬件鲁棒性不能由论文表格代替。
+[V-JEPA 2.1](https://arxiv.org/abs/2603.14482) 于 2026 年公开，进一步对被遮和可见 patch 都施加 dense predictive loss，并加入深层自监督与 2D/3D 多模态 tokenizer。论文报告了更强的密集视觉与机器人规划结果，但这些仍是作者在特定数据和任务协议中的结果；新版本的独立复现和跨硬件鲁棒性不能由论文表格代替。
 
 ## Latent action：从变化中猜测“做了什么”
 
@@ -135,7 +135,7 @@ $$
 \hat x_{t+1}=F_\theta(x_t,u_t).
 $$
 
-[Genie](https://arxiv.org/abs/2402.15391)用 latent action 表示可控游戏变化；[LAPA](https://arxiv.org/abs/2410.11758)以 VQ 风格 action quantizer 先在无动作视频上预训练，再用少量机器人数据把 latent action 映射为真实动作。
+[Genie](https://arxiv.org/abs/2402.15391) 用 latent action 表示可控游戏变化；[LAPA](https://arxiv.org/abs/2410.11758) 以 VQ 风格 action quantizer 先在无动作视频上预训练，再用少量机器人数据把 latent action 映射为真实动作。
 
 这里存在三种不可识别性：
 
@@ -155,21 +155,21 @@ $$
 
 ### Genie：把无标签游戏视频变成可操纵环境
 
-[Genie 1](https://arxiv.org/abs/2402.15391)组合时空 tokenizer、latent action model 与 autoregressive dynamics。它的重要转折是：训练视频不需要显式动作标签，也能产生有限的交互控制接口。
+[Genie 1](https://arxiv.org/abs/2402.15391) 组合时空 tokenizer、latent action model 与 autoregressive dynamics。它的重要转折是：训练视频不需要显式动作标签，也能产生有限的交互控制接口。
 
-[Genie 2](https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/)由 Google DeepMind 在 2024 年通过官方文章介绍为大规模 foundation world model，强调动作控制、长时一致和 3D 环境能力；公开材料不足以复原完整训练配方。
+[Genie 2](https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/) 由 Google DeepMind 在 2024 年通过官方文章介绍为大规模 foundation world model，强调动作控制、长时一致和 3D 环境能力；公开材料不足以复原完整训练配方。
 
-[Genie 3](https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/)在 2025 年的官方研究预览中报告 720p、24 fps、数分钟实时交互，并允许 promptable world events。截至 2026-07-28，它仍是 limited research preview。官方同时列出限制：直接动作空间有限，多智能体交互、地理一致性、清晰文字和持续时长仍不足。没有公开 checkpoint 和完整 benchmark 时，应把数字写成发布方报告，而不是独立验证事实。
+[Genie 3](https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/) 在 2025 年的官方研究预览中报告 720p、24 fps、数分钟实时交互，并允许 promptable world events。截至 2026-07-28，它仍是 limited research preview。官方同时列出限制：直接动作空间有限，多智能体交互、地理一致性、清晰文字和持续时长仍不足。没有公开 checkpoint 和完整 benchmark 时，应把数字写成发布方报告，而不是独立验证事实。
 
 ### Cosmos：从视频平台走向全模态物理 AI
 
-[Cosmos World Foundation Model Platform](https://arxiv.org/abs/2501.03575)在 2025 年把视频 tokenizer、数据 curation、预训练与后训练组成一套 physical-AI 平台。Cosmos Predict 后续版本继续统一 Text2World、Image2World 与 Video2World。
+[Cosmos World Foundation Model Platform](https://arxiv.org/abs/2501.03575) 在 2025 年把视频 tokenizer、数据 curation、预训练与后训练组成一套 physical-AI 平台。Cosmos Predict 后续版本继续统一 Text2World、Image2World 与 Video2World。
 
-[Cosmos 3](https://research.nvidia.com/labs/cosmos-lab/cosmos3/)于 2026 年 6 月公开，官方将其描述为语言、图像、视频、音频与动作统一的 omnimodal world model，覆盖理解、生成、policy 与 forward dynamics。它已有论文、代码、模型和数据入口，但发布时间很近；代码、权重和数据受 OpenMDW-1.1 等对应条款约束，不能统一简写为 Apache 或 MIT。
+[Cosmos 3](https://research.nvidia.com/labs/cosmos-lab/cosmos3/) 于 2026 年 6 月公开，官方将其描述为语言、图像、视频、音频与动作统一的 omnimodal world model，覆盖理解、生成、policy 与 forward dynamics。它已有论文、代码、模型和数据入口，但发布时间很近；代码、权重和数据受 OpenMDW-1.1 等对应条款约束，不能统一简写为 Apache 或 MIT。
 
 ### 3D 世界不是长视频的自然副产品
 
-显式 3D 场景需要相机、几何、遮挡与跨视角一致性。World Labs 在 2025 年公开的 [Marble](https://www.worldlabs.ai/blog/marble-world-model)提供从文本、图像、视频和粗 3D 输入生成、编辑并导出 3D 世界的产品接口。公开产品能力可以作为空间世界生成的一条证据，但其未公开训练数据、失败分布和内部模型保持未知。
+显式 3D 场景需要相机、几何、遮挡与跨视角一致性。World Labs 在 2025 年公开的 [Marble](https://www.worldlabs.ai/blog/marble-world-model) 提供从文本、图像、视频和粗 3D 输入生成、编辑并导出 3D 世界的产品接口。公开产品能力可以作为空间世界生成的一条证据，但其未公开训练数据、失败分布和内部模型保持未知。
 
 ## 怎样比较交互式世界
 
@@ -225,7 +225,7 @@ $$
 
 对于 action-conditioned 模型，还要明确动作发生在 $o_t$ 之前还是之后、控制周期、坐标系与相机标定。V-JEPA 2 论文自己报告了对相机位置的敏感性，这正说明“从单目画面隐式推断机器人动作轴”不是天然稳健的接口。
 
-动作怎样在真实机器人数据和策略中落地，见[状态、动作与策略](../embodied/state-action-policies.md)；视频、人类示范与机器人轨迹怎样连接，见[VLA 与数据谱系](../embodied/vla-data-lineage.md)。
+动作怎样在真实机器人数据和策略中落地，见[状态、动作与策略](../embodied/state-action-policies.md)；视频、人类示范与机器人轨迹怎样连接，见 [VLA 与数据谱系](../embodied/vla-data-lineage.md)。
 
 时空表示与 rollout 的组合测试见[多模态手撕实现](../practice/multimodal.md)，规划语义见[强化学习手撕实现](../practice/reinforcement-learning.md)。
 

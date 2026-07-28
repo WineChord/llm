@@ -310,7 +310,7 @@ HCA 同理把 $m$ 换成 $m'$。例如 $m'=128$ 时，第一个 HCA entry 汇总
 
 它们的更新率、block size、prefix 命中和逐出规则都不相同。因而 V4 的 cache 不能只用一个
 `[layers, blocks, heads, dim]` 的 PagedAttention 布局描述；完整状态契约见
-[KV Cache](../../inference/kv-cache.md)和[缓存复用](../../inference/cache-reuse.md)。
+[KV Cache](../../inference/kv-cache.md) 和[缓存复用](../../inference/cache-reuse.md)。
 
 ## Attention sink：公式 (27)
 

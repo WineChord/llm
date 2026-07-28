@@ -88,7 +88,7 @@ $$
 
 ### 引擎内
 
-[Orca](https://www.usenix.org/conference/osdi22/presentation/yu)提出迭代级调度：每个生成 step 都可移除完成请求并加入新请求，避免静态 batch 被最长序列锁住。现代引擎通常进一步结合：
+[Orca](https://www.usenix.org/conference/osdi22/presentation/yu) 提出迭代级调度：每个生成 step 都可移除完成请求并加入新请求，避免静态 batch 被最长序列锁住。现代引擎通常进一步结合：
 
 - paged KV 与 block budget；
 - chunked prefill；
@@ -110,11 +110,11 @@ router 需要综合：
 - GPU 健康和网络拓扑；
 - P/D 分离后的 decode reservation。
 
-只按最短队列路由会丢失 cache locality；只追求 cache hit 又可能把热前缀压到单个副本。[Preble](https://arxiv.org/abs/2407.00023)研究了共享前缀工作负载中的分布式调度权衡，但具体策略仍要用本地流量和失败域验证。
+只按最短队列路由会丢失 cache locality；只追求 cache hit 又可能把热前缀压到单个副本。[Preble](https://arxiv.org/abs/2407.00023) 研究了共享前缀工作负载中的分布式调度权衡，但具体策略仍要用本地流量和失败域验证。
 
 ### 集群层
 
-集群层负责副本数、模型放置、版本排空和过载策略。[Kubernetes Gateway API Inference Extension 的 InferencePool](https://gateway-api-inference-extension.sigs.k8s.io/api-types/inferencepool/)把模型感知 endpoint selection 与普通流量入口分离，提供了一种控制面边界；它不替代引擎内 token / KV 调度。
+集群层负责副本数、模型放置、版本排空和过载策略。[Kubernetes Gateway API Inference Extension 的 InferencePool](https://gateway-api-inference-extension.sigs.k8s.io/api-types/inferencepool/) 把模型感知 endpoint selection 与普通流量入口分离，提供了一种控制面边界；它不替代引擎内 token / KV 调度。
 
 ## 过载与公平
 
@@ -128,7 +128,7 @@ router 需要综合：
 | 路由到其他模型 | 有等价服务层级 | 质量、价格与合规变化 |
 | 抢占低优先级请求 | 有明确等级 | 重算和 starvation |
 
-多租户公平不能只看请求数：一个长 prompt 和一个短 decode 的成本不同。公平记账至少要选定 token、GPU time、KV-time 或成本单位，并说明 prefill 与 decode 怎样折算。[Virtual Token Counter](https://arxiv.org/abs/2401.00588)提供了一种面向 LLM 服务公平性的研究路线。
+多租户公平不能只看请求数：一个长 prompt 和一个短 decode 的成本不同。公平记账至少要选定 token、GPU time、KV-time 或成本单位，并说明 prefill 与 decode 怎样折算。[Virtual Token Counter](https://arxiv.org/abs/2401.00588) 提供了一种面向 LLM 服务公平性的研究路线。
 
 ## 正确性契约
 

@@ -2,7 +2,7 @@
 
 Transformer 的关键不是“没有循环”这一表述，而是把序列依赖转化为可并行的全局内容寻址，并用残差堆叠交替完成 token mixing 与 channel mixing。
 
-这一步并非从空白开始。[Seq2Seq 与神经对齐](../landscape/works/seq2seq-and-neural-alignment.md)展示 fixed-vector bottleneck 怎样先变成按 decoder 状态读取的 memory，[从递归到注意力](../landscape/lineages/transduction-to-attention.md)再把问题推向 self-attention；[Attention Is All You Need](../landscape/works/attention-is-all-you-need.md)逐项拆解原论文、Tensor2Tensor 实现边界与最小可执行 attention。
+这一步并非从空白开始。[Seq2Seq 与神经对齐](../landscape/works/seq2seq-and-neural-alignment.md)展示 fixed-vector bottleneck 怎样先变成按 decoder 状态读取的 memory，[从递归到注意力](../landscape/lineages/transduction-to-attention.md)再把问题推向 self-attention；[Attention Is All You Need](../landscape/works/attention-is-all-you-need.md) 逐项拆解原论文、Tensor2Tensor 实现边界与最小可执行 attention。
 
 ## 缩放点积注意力
 
@@ -93,7 +93,7 @@ $$
 - 训练中的 attention kernel 与推理 kernel 是否使用相同语义。
 - chat template、position IDs 与 KV Cache 增量位置是否一致。
 
-还应保存 tokenizer、模型配置、参数命名与 tied-weight 规则；只拿到权重张量而缺少这些契约，无法唯一重建前向。原始架构见 [Attention Is All You Need](https://arxiv.org/abs/1706.03762)。MHA/GQA/MLA 见[注意力家族](attention-variants.md)，位置外推见[长上下文](long-context.md)，训练与增量前向的等价性见[手撕 Transformer](../practice/transformer-from-scratch.md)，高效执行见[Attention Kernel](../systems/attention-kernels.md)与 [KV Cache](../inference/kv-cache.md)。
+还应保存 tokenizer、模型配置、参数命名与 tied-weight 规则；只拿到权重张量而缺少这些契约，无法唯一重建前向。原始架构见 [Attention Is All You Need](https://arxiv.org/abs/1706.03762)。MHA/GQA/MLA 见[注意力家族](attention-variants.md)，位置外推见[长上下文](long-context.md)，训练与增量前向的等价性见[手撕 Transformer](../practice/transformer-from-scratch.md)，高效执行见 [Attention Kernel](../systems/attention-kernels.md) 与 [KV Cache](../inference/kv-cache.md)。
 
 ## Reference {#reference}
 

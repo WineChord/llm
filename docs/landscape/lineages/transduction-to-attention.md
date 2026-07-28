@@ -4,7 +4,7 @@
 
 ## Seq2Seq 建立条件生成接口
 
-[Sutskever、Vinyals 与 Le 2014](https://proceedings.neurips.cc/paper_files/paper/2014/hash/5a18e133cbf9f257297f410bb7eca942-Abstract.html)用 LSTM encoder 读取源序列，以最终状态初始化 LSTM decoder：
+[Sutskever、Vinyals 与 Le 2014](https://proceedings.neurips.cc/paper_files/paper/2014/hash/5a18e133cbf9f257297f410bb7eca942-Abstract.html) 用 LSTM encoder 读取源序列，以最终状态初始化 LSTM decoder：
 
 $$
 c=h_T^{\mathrm{enc}},\qquad
@@ -19,7 +19,7 @@ $$
 
 ## 可微对齐把一个状态变成一张表
 
-[Bahdanau、Cho 与 Bengio](https://arxiv.org/abs/1409.0473)明确把 fixed-length vector 视为瓶颈。该工作 2014 年 9 月首次提交，后发表于 ICLR 2015；它与 2014 年的 Seq2Seq 工作时间重叠，不宜写成在后者正式发表后才出现的单线回应。
+[Bahdanau、Cho 与 Bengio](https://arxiv.org/abs/1409.0473) 明确把 fixed-length vector 视为瓶颈。该工作 2014 年 9 月首次提交，后发表于 ICLR 2015；它与 2014 年的 Seq2Seq 工作时间重叠，不宜写成在后者正式发表后才出现的单线回应。
 
 encoder 保留每个位置的状态 $h_j$，decoder 在第 $t$ 步用当前需求计算软对齐：
 
@@ -47,7 +47,7 @@ Bahdanau 模型还使用双向 encoder annotation，使 $h_j$ 同时包含源位
 
 ## Transformer 把寻址移进每一层
 
-[Attention Is All You Need](../works/attention-is-all-you-need.md)把 attention 从 encoder–decoder 之间的接口推广为 encoder self-attention、decoder masked self-attention 与 cross-attention：
+[Attention Is All You Need](../works/attention-is-all-you-need.md) 把 attention 从 encoder–decoder 之间的接口推广为 encoder self-attention、decoder masked self-attention 与 cross-attention：
 
 $$
 \operatorname{Attention}(Q,K,V)

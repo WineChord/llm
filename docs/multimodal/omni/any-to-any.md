@@ -21,13 +21,13 @@ Any-to-Any 描述的是接口目标，不是一种固定架构。
 
 ## 从多任务共享到交错全模态
 
-早期统一模型主要共享中间主干。[MultiModel](https://arxiv.org/abs/1706.05137)为图像、音频和文本设置模态专用前后端，再让共享 encoder–mixer–decoder 处理多项任务。[Perceiver IO](https://arxiv.org/abs/2107.14795)用 latent bottleneck 接受不同结构输入并产生灵活输出。这类工作证明参数可以跨模态复用，但任务通常仍由独立输入/输出 adapter 定义。
+早期统一模型主要共享中间主干。[MultiModel](https://arxiv.org/abs/1706.05137) 为图像、音频和文本设置模态专用前后端，再让共享 encoder–mixer–decoder 处理多项任务。[Perceiver IO](https://arxiv.org/abs/2107.14795) 用 latent bottleneck 接受不同结构输入并产生灵活输出。这类工作证明参数可以跨模态复用，但任务通常仍由独立输入/输出 adapter 定义。
 
-第二阶段强调共享语义空间。[CLIP](../../landscape/works/clip.md)连接图像与文本，[CLAP](https://arxiv.org/abs/2206.04769)连接音频与文本，[ImageBind](https://arxiv.org/abs/2305.05665)进一步把图像、文本、音频、深度、热成像和 IMU 绑定到共同空间。共享 embedding 适合检索和条件接口，却不天然可逆，不能直接生成高保真媒体。
+第二阶段强调共享语义空间。[CLIP](../../landscape/works/clip.md) 连接图像与文本，[CLAP](https://arxiv.org/abs/2206.04769) 连接音频与文本，[ImageBind](https://arxiv.org/abs/2305.05665) 进一步把图像、文本、音频、深度、热成像和 IMU 绑定到共同空间。共享 embedding 适合检索和条件接口，却不天然可逆，不能直接生成高保真媒体。
 
-第三阶段把不同模态编入一个序列或联合主干。[Chameleon](https://arxiv.org/abs/2405.09818)以离散图像 token 和文本 token 做 mixed-modal early fusion；[Transfusion](https://arxiv.org/abs/2408.11039)在同一 Transformer 中对文本使用 next-token loss、对连续图像使用 diffusion loss；[Janus](https://arxiv.org/abs/2410.13848)为理解和生成保留不同视觉编码路径，再共享自回归主干。它们说明“统一”可以发生在 token、参数、序列或训练目标的不同层级。
+第三阶段把不同模态编入一个序列或联合主干。[Chameleon](https://arxiv.org/abs/2405.09818) 以离散图像 token 和文本 token 做 mixed-modal early fusion；[Transfusion](https://arxiv.org/abs/2408.11039) 在同一 Transformer 中对文本使用 next-token loss、对连续图像使用 diffusion loss；[Janus](https://arxiv.org/abs/2410.13848) 为理解和生成保留不同视觉编码路径，再共享自回归主干。它们说明“统一”可以发生在 token、参数、序列或训练目标的不同层级。
 
-实时语音与视频又提出第四个要求：系统不能等所有输入结束后才一次性输出。[Moshi](https://arxiv.org/abs/2410.00037)探索全双工语音交互，[Qwen2.5-Omni](https://arxiv.org/abs/2503.20215)用 Thinker–Talker 和多模态旋转位置处理连续输入与流式语音输出。公开产品如 GPT-4o 也披露了跨文本、视觉和音频的实时接口，但未公开细节不能被补写成确定架构；能力、系统卡和研究机制应分开表述。
+实时语音与视频又提出第四个要求：系统不能等所有输入结束后才一次性输出。[Moshi](https://arxiv.org/abs/2410.00037) 探索全双工语音交互，[Qwen2.5-Omni](https://arxiv.org/abs/2503.20215) 用 Thinker–Talker 和多模态旋转位置处理连续输入与流式语音输出。公开产品如 GPT-4o 也披露了跨文本、视觉和音频的实时接口，但未公开细节不能被补写成确定架构；能力、系统卡和研究机制应分开表述。
 
 ## 五种“统一”
 

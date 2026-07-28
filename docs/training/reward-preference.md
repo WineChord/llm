@@ -42,7 +42,7 @@ $$
 
 ### 可执行结果
 
-数学等价检查、编译测试、游戏终局或可查询环境状态能给出可重复反馈。这类信号通常比开放式 judge 更精确，却只覆盖 verifier 实际检查的性质。策略可能通过格式漏洞、测试盲区或环境副作用得分；[RLVR](../reinforcement-learning/rlvr.md)和 [Verifier 与奖励塑形](../reinforcement-learning/verifiers-reward-shaping.md)专门讨论这个边界。
+数学等价检查、编译测试、游戏终局或可查询环境状态能给出可重复反馈。这类信号通常比开放式 judge 更精确，却只覆盖 verifier 实际检查的性质。策略可能通过格式漏洞、测试盲区或环境副作用得分；[RLVR](../reinforcement-learning/rlvr.md) 和 [Verifier 与奖励塑形](../reinforcement-learning/verifiers-reward-shaping.md)专门讨论这个边界。
 
 ### 过程反馈
 

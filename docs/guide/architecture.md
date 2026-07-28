@@ -41,15 +41,15 @@
 
 ### 结构与系统
 
-[Decoder Block](../architecture/decoder-block.md)、[注意力](../architecture/attention-variants.md)、[MoE](../architecture/moe.md)和[记忆架构](../architecture/memory-architectures.md)定义计算图；[性能成本模型](../systems/performance-model.md)、[Attention Kernel](../systems/attention-kernels.md)和[模型并行](../systems/model-parallelism.md)解释它如何映射到硬件。
+[Decoder Block](../architecture/decoder-block.md)、[注意力](../architecture/attention-variants.md)、[MoE](../architecture/moe.md) 和[记忆架构](../architecture/memory-architectures.md)定义计算图；[性能成本模型](../systems/performance-model.md)、[Attention Kernel](../systems/attention-kernels.md) 和[模型并行](../systems/model-parallelism.md)解释它如何映射到硬件。
 
 ### 训练与推理
 
-[预训练](../training/pretraining.md)形成基础分布，[SFT](../training/supervised-finetuning.md)提供示范，[蒸馏](../training/distillation.md)与 [PEFT](../training/peft.md)改变知识和适配成本；[强化学习](../reinforcement-learning/index.md)则在策略会改变采样分布、反馈可能延迟时讨论行为改进。部署侧由[解码](../inference/decoding.md)、[KV Cache](../inference/kv-cache.md)、[调度](../inference/scheduling-goodput.md)和[量化](../inference/quantization.md)决定可交付能力与成本。
+[预训练](../training/pretraining.md)形成基础分布，[SFT](../training/supervised-finetuning.md) 提供示范，[蒸馏](../training/distillation.md)与 [PEFT](../training/peft.md) 改变知识和适配成本；[强化学习](../reinforcement-learning/index.md)则在策略会改变采样分布、反馈可能延迟时讨论行为改进。部署侧由[解码](../inference/decoding.md)、[KV Cache](../inference/kv-cache.md)、[调度](../inference/scheduling-goodput.md)和[量化](../inference/quantization.md)决定可交付能力与成本。
 
 ### 知识、行动与反馈
 
-[RAG](../applications/rag.md)连接外部证据，[工具调用](../applications/tool-use.md)连接外部动作，[智能体运行时](../applications/agent-runtime.md)维护状态。[搜索与验证](../reasoning/search-verification.md)产生推理时反馈；需要参数更新时进入[推理后训练](../training/reasoning-posttraining.md)，涉及环境转移与长时信用时继续进入 [Agentic RL](../agentic-rl/index.md)。
+[RAG](../applications/rag.md) 连接外部证据，[工具调用](../applications/tool-use.md)连接外部动作，[智能体运行时](../applications/agent-runtime.md)维护状态。[搜索与验证](../reasoning/search-verification.md)产生推理时反馈；需要参数更新时进入[推理后训练](../training/reasoning-posttraining.md)，涉及环境转移与长时信用时继续进入 [Agentic RL](../agentic-rl/index.md)。
 
 [多模态表示](../multimodal/foundations/signals-tokenization.md)把像素、波形和视频变成模型状态；[世界模型](../world-models/index.md)预测动作条件下的状态转移；[具身策略](../embodied/state-action-policies.md)把目标与观察映射为可执行动作。三者必须通过坐标、时间、控制频率和安全监督形成闭环，不能把视频生成质量直接当作规划能力。
 

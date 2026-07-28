@@ -55,7 +55,7 @@ assert pass_at_k(10, 10, 3) == 1
 assert math.isclose(pass_at_k(2, 1, 1), 0.5)
 ```
 
-报告必须同时给 $n,k$、temperature、预算和 verifier。[HumanEval](https://arxiv.org/abs/2107.03374)使用这一估计；它与连续 $k$ 次都成功的 `pass^k` 方向相反。
+报告必须同时给 $n,k$、temperature、预算和 verifier。[HumanEval](https://arxiv.org/abs/2107.03374) 使用这一估计；它与连续 $k$ 次都成功的 `pass^k` 方向相反。
 
 ```python
 def pass_power_k(episodes):

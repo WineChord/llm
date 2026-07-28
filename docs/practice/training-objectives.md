@@ -74,7 +74,7 @@ torch.testing.assert_close(p, ref)
 
 ## LoRA
 
-[LoRA](https://arxiv.org/abs/2106.09685)对冻结线性层 $W\in\mathbb R^{d_{\text{out}}\times d_{\text{in}}}$ 注入低秩增量：
+[LoRA](https://arxiv.org/abs/2106.09685) 对冻结线性层 $W\in\mathbb R^{d_{\text{out}}\times d_{\text{in}}}$ 注入低秩增量：
 
 $$
 \Delta W=\frac{\alpha}{r}BA,\qquad
@@ -130,7 +130,7 @@ $B=0$ 使初始输出精确等于基座。量化基座不能把增量直接原�
 
 ## Knowledge distillation
 
-[Knowledge Distillation](https://arxiv.org/abs/1503.02531)用 teacher 的软分布向 student 传递类别关系。温度为 $T$ 时：
+[Knowledge Distillation](https://arxiv.org/abs/1503.02531) 用 teacher 的软分布向 student 传递类别关系。温度为 $T$ 时：
 
 $$
 q_T=\operatorname{softmax}(z_{\text{teacher}}/T),\quad
@@ -225,7 +225,7 @@ def preference_loss(chosen, rejected, ref_chosen=None, ref_rejected=None,
     raise ValueError(f"unknown preference loss: {kind}")
 ```
 
-sequence log-probability使用 token sum 还是 mean 会改变长度先验，必须在调用前明确；`beta` 与 SimPO 的 margin convention 也应随实验记录。[DPO](https://arxiv.org/abs/2305.18290)、[IPO](https://arxiv.org/abs/2310.12036)与 [SimPO](https://arxiv.org/abs/2405.14734)不是可以只换字符串而保持其他配方不变的同义目标。
+sequence log-probability 使用 token sum 还是 mean 会改变长度先验，必须在调用前明确；`beta` 与 SimPO 的 margin convention 也应随实验记录。[DPO](https://arxiv.org/abs/2305.18290)、[IPO](https://arxiv.org/abs/2310.12036) 与 [SimPO](https://arxiv.org/abs/2405.14734) 不是可以只换字符串而保持其他配方不变的同义目标。
 
 <details class="code-disclosure">
 <summary id="training-objective-degenerate-tests">Mask 与退化输入回归 <span class="code-disclosure__meta">Python · 42 行</span></summary>
@@ -283,11 +283,11 @@ else:
 
 GAE、PPO、RLOO 与 GRPO 不再在本页维护第二套实现。它们共同依赖 prompt group、action mask、terminal/truncation、old/behavior/reference policy 和 loss reduction；拆开复制会让这些接口在不同页面逐渐漂移。
 
-统一的张量实现、退化断言与方法变体见[手撕 LLM 策略优化](llm-policy-optimization.md)。概念推导分别见 [Advantage 估计与 GAE](../reinforcement-learning/advantage-estimation-gae.md)、[PPO](../reinforcement-learning/trust-region-ppo.md)与 [GRPO](../reinforcement-learning/grpo.md)。本页继续保留 V-trace，因为它展示的是异步 value target 与 off-policy trace correction，而不是另一种 LLM policy-loss 配方。
+统一的张量实现、退化断言与方法变体见[手撕 LLM 策略优化](llm-policy-optimization.md)。概念推导分别见 [Advantage 估计与 GAE](../reinforcement-learning/advantage-estimation-gae.md)、[PPO](../reinforcement-learning/trust-region-ppo.md) 与 [GRPO](../reinforcement-learning/grpo.md)。本页继续保留 V-trace，因为它展示的是异步 value target 与 off-policy trace correction，而不是另一种 LLM policy-loss 配方。
 
 ## V-trace
 
-[IMPALA](https://arxiv.org/abs/1802.01561)提出的 V-trace 用于行为策略 $\mu$ 与当前策略 $\pi$ 不同的异步 rollout。令 $\rho_t=\pi(a_t)/\mu(a_t)$，V-trace 对 value 与 trace 权重截断：
+[IMPALA](https://arxiv.org/abs/1802.01561) 提出的 V-trace 用于行为策略 $\mu$ 与当前策略 $\pi$ 不同的异步 rollout。令 $\rho_t=\pi(a_t)/\mu(a_t)$，V-trace 对 value 与 trace 权重截断：
 
 ```python
 @torch.no_grad()

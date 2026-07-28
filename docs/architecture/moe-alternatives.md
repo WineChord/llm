@@ -87,7 +87,7 @@ $$
 
 稳定正文优先描述可复现的计算图、复杂度和已公开实现。新模型在自有配方上的结果适合作为案例，不应直接推出“已取代 attention”或“能无限记忆”。涉及前沿方案时，应同时写出公开 checkpoint、kernel、独立复现、测试规模和未验证外推。
 
-至少要同时存在：同数据同预算的训练比较、短长序列的端到端性能、状态重置与 chunk/step 等价测试、关键压力任务、公开实现和可检查 checkpoint。系统层的 MoE 通信见[MoE 系统](../systems/moe-systems.md)，序列模型的最小递推与等价性实验见[序列模型手撕实现](../practice/sequence-models.md)，历史路线见[线性注意力与状态空间谱系](../landscape/lineages/linear-time-sequence-models.md)。
+至少要同时存在：同数据同预算的训练比较、短长序列的端到端性能、状态重置与 chunk/step 等价测试、关键压力任务、公开实现和可检查 checkpoint。系统层的 MoE 通信见 [MoE 系统](../systems/moe-systems.md)，序列模型的最小递推与等价性实验见[序列模型手撕实现](../practice/sequence-models.md)，历史路线见[线性注意力与状态空间谱系](../landscape/lineages/linear-time-sequence-models.md)。
 
 ## Reference {#reference}
 

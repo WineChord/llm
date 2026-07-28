@@ -26,7 +26,7 @@ def selective_scan(x, a, b, c, initial=None):
     return torch.stack(output, dim=1), state
 ```
 
-这不是完整 Mamba block；它只固定输入依赖系数下的递推语义。[Mamba](https://arxiv.org/abs/2312.00752)还包含离散化、卷积与硬件感知 scan。
+这不是完整 Mamba block；它只固定输入依赖系数下的递推语义。[Mamba](https://arxiv.org/abs/2312.00752) 还包含离散化、卷积与硬件感知 scan。
 
 ## 显式矩阵对照
 
@@ -188,7 +188,7 @@ def associative_recall_batch(batch, pairs, vocab, generator=None):
     return torch.stack(stream), torch.stack(query), torch.stack(answer)
 ```
 
-扫描 pair 数、查询距离、key 冲突和 state dimension，才能观察固定状态的容量边界。[Zoology](https://arxiv.org/abs/2312.04927)系统研究了长程 recall 任务中的架构差异。
+扫描 pair 数、查询距离、key 冲突和 state dimension，才能观察固定状态的容量边界。[Zoology](https://arxiv.org/abs/2312.04927) 系统研究了长程 recall 任务中的架构差异。
 
 ## 验证边界
 

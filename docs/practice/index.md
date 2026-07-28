@@ -54,7 +54,7 @@
 
 ## 与正文怎样配合
 
-每个通用机制的最小语义核先放在正文第一次完整解释它的位置：例如 [RoPE](../architecture/position-encoding.md)、[packed GAE](../reinforcement-learning/advantage-estimation-gae.md)、[KV page table](../inference/kv-cache.md)和[配对重采样](../evaluation/statistical-inference.md)。这些代码与公式共用符号，并用少量断言固定最容易写错的边界。
+每个通用机制的最小语义核先放在正文第一次完整解释它的位置：例如 [RoPE](../architecture/position-encoding.md)、[packed GAE](../reinforcement-learning/advantage-estimation-gae.md)、[KV page table](../inference/kv-cache.md) 和[配对重采样](../evaluation/statistical-inference.md)。这些代码与公式共用符号，并用少量断言固定最容易写错的边界。
 
 本区在此基础上继续完成三件事：
 

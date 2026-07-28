@@ -4,7 +4,7 @@
 
 ## 检索先解决“知识放在哪里”
 
-[REALM](https://arxiv.org/abs/2002.08909)把检索器放进预训练目标，尝试让 masked language modeling 的梯度选择有用文档；[DPR](https://arxiv.org/abs/2004.04906)把开放域问答中的检索变成双 encoder 的稠密向量匹配；[RAG](https://arxiv.org/abs/2005.11401)进一步把检索文档视为生成时的隐变量，在候选文档上边缘化答案概率。
+[REALM](https://arxiv.org/abs/2002.08909) 把检索器放进预训练目标，尝试让 masked language modeling 的梯度选择有用文档；[DPR](https://arxiv.org/abs/2004.04906) 把开放域问答中的检索变成双 encoder 的稠密向量匹配；[RAG](https://arxiv.org/abs/2005.11401) 进一步把检索文档视为生成时的隐变量，在候选文档上边缘化答案概率。
 
 这条路线的重要变化，不只是“在 prompt 前拼文档”。它把系统分成三种可分别更新和验证的状态：
 
@@ -16,7 +16,7 @@ $$
 
 ## 工具调用改变“模型能做什么”
 
-检索返回文本，工具调用返回的可以是数值、结构化对象或环境状态。[Toolformer](https://arxiv.org/abs/2302.04761)问的是训练问题：能否用少量示例自动标注 API 调用，并保留那些真正降低语言模型损失的调用；[ReAct](https://arxiv.org/abs/2210.03629)问的是推理问题：能否让语言推理与外部行动交错，使观察结果反过来修正下一步计划。
+检索返回文本，工具调用返回的可以是数值、结构化对象或环境状态。[Toolformer](https://arxiv.org/abs/2302.04761) 问的是训练问题：能否用少量示例自动标注 API 调用，并保留那些真正降低语言模型损失的调用；[ReAct](https://arxiv.org/abs/2210.03629) 问的是推理问题：能否让语言推理与外部行动交错，使观察结果反过来修正下一步计划。
 
 二者经常被并列提及，却不在同一层：
 
@@ -24,7 +24,7 @@ $$
 - ReAct 定义一种 trajectory 组织方式，让 observation 进入后续上下文；
 - 生产 runtime 还必须独立处理权限、参数校验、超时、幂等、重试和副作用。
 
-这一差别见[ReAct 与 Toolformer 深读](../works/react-toolformer.md)以及[工具调用](../../applications/tool-use.md)。一个模型能生成合法 JSON，只证明语法层通过；它是否应该调用、调用是否成功、结果是否可信，属于不同状态。
+这一差别见 [ReAct 与 Toolformer 深读](../works/react-toolformer.md)以及[工具调用](../../applications/tool-use.md)。一个模型能生成合法 JSON，只证明语法层通过；它是否应该调用、调用是否成功、结果是否可信，属于不同状态。
 
 ## 当一次调用变成一条轨迹
 
@@ -41,7 +41,7 @@ $$
 \text{success}=f(\text{checkpoint},\text{context},\text{tools},\text{runtime},\text{environment}).
 $$
 
-这促使后来的工作把 planning、memory、reflection、search 与 reinforcement learning 接入同一个闭环。可是在真实系统中，语言形式的“思考”不等于可恢复状态，所谓记忆也不能只是不断增长的消息转录。状态契约见[Agent Runtime](../../applications/agent-runtime.md)，长时训练见[Agentic RL](../../agentic-rl/index.md)。
+这促使后来的工作把 planning、memory、reflection、search 与 reinforcement learning 接入同一个闭环。可是在真实系统中，语言形式的“思考”不等于可恢复状态，所谓记忆也不能只是不断增长的消息转录。状态契约见 [Agent Runtime](../../applications/agent-runtime.md)，长时训练见 [Agentic RL](../../agentic-rl/index.md)。
 
 ## 三次边界扩张
 
@@ -62,7 +62,7 @@ $$
 - 环境终态能否由程序验证，还是依赖另一个模型评分；
 - 增长的 token、工具调用和 wall-clock 是否计入同一预算。
 
-这套坐标把“能调用工具”的表面现象还原成可分析的系统。检索侧继续读[检索与索引](../../applications/retrieval-indexing.md)和[有依据生成](../../applications/grounded-generation.md)；行动侧继续读[记忆与规划](../../applications/memory-planning.md)、[Agent 安全](../../applications/agent-security.md)和[Agent 与工具评测](../../evaluation/agent-tool-evaluation.md)。
+这套坐标把“能调用工具”的表面现象还原成可分析的系统。检索侧继续读[检索与索引](../../applications/retrieval-indexing.md)和[有依据生成](../../applications/grounded-generation.md)；行动侧继续读[记忆与规划](../../applications/memory-planning.md)、[Agent 安全](../../applications/agent-security.md)和 [Agent 与工具评测](../../evaluation/agent-tool-evaluation.md)。
 
 ## Reference {#reference}
 

@@ -4,7 +4,7 @@
 
 ## DDPM：学习逆转一个已知破坏过程
 
-[DDPM](https://arxiv.org/abs/2006.11239)定义前向马尔可夫链：
+[DDPM](https://arxiv.org/abs/2006.11239) 定义前向马尔可夫链：
 
 $$
 q(x_t\mid x_{t-1})
@@ -45,7 +45,7 @@ assert torch.allclose(xt[1], 0.9 * x0[1] + alpha_bar[1].sub(1).neg().sqrt() * no
 
 ## Latent Diffusion：先决定在哪里生成
 
-像素空间的长宽直接决定计算量。[Latent Diffusion](https://arxiv.org/abs/2112.10752)先训练 autoencoder：
+像素空间的长宽直接决定计算量。[Latent Diffusion](https://arxiv.org/abs/2112.10752) 先训练 autoencoder：
 
 $$
 z=E(x),\qquad \hat x=D(z),
@@ -67,7 +67,7 @@ $w$ 增大通常加强条件一致性，也可能牺牲多样性、饱和颜色�
 
 ## DiT：Transformer 成为去噪 backbone
 
-[DiT](https://arxiv.org/abs/2212.09748)把 latent 切成 patch token，用 Transformer 替代 U-Net，并通过 timestep 与类别条件调制 block。论文在 ImageNet latent diffusion 和所测试的 DiT 家族中观察到 FID 随模型计算量增加而改善的趋势，但这并没有把扩散变成自回归，也不能脱离数据、训练与采样配方外推：
+[DiT](https://arxiv.org/abs/2212.09748) 把 latent 切成 patch token，用 Transformer 替代 U-Net，并通过 timestep 与类别条件调制 block。论文在 ImageNet latent diffusion 和所测试的 DiT 家族中观察到 FID 随模型计算量增加而改善的趋势，但这并没有把扩散变成自回归，也不能脱离数据、训练与采样配方外推：
 
 - token 轴表示空间 patch，不是已生成前缀；
 - attention 通常是双向的，没有 causal mask；
@@ -78,7 +78,7 @@ $w$ 增大通常加强条件一致性，也可能牺牲多样性、饱和颜色�
 
 ## Flow Matching：直接学习速度场
 
-[Flow Matching](https://arxiv.org/abs/2210.02747)选择从噪声分布到数据分布的概率路径 $p_t$，训练向量场 $v_\theta(x,t)$ 匹配条件速度 $u_t$：
+[Flow Matching](https://arxiv.org/abs/2210.02747) 选择从噪声分布到数据分布的概率路径 $p_t$，训练向量场 $v_\theta(x,t)$ 匹配条件速度 $u_t$：
 
 $$
 \mathcal L_{\text{FM}}
@@ -91,7 +91,7 @@ $$
 \frac{dx_t}{dt}=v_\theta(x_t,t).
 $$
 
-Flow Matching 把“噪声 schedule”推广为“概率路径与速度场”，但采样误差仍取决于路径曲率、solver 和步长。[Rectified Flow](https://arxiv.org/abs/2209.03003)进一步研究怎样让路径更直，以更少数值步逼近。
+Flow Matching 把“噪声 schedule”推广为“概率路径与速度场”，但采样误差仍取决于路径曲率、solver 和步长。[Rectified Flow](https://arxiv.org/abs/2209.03003) 进一步研究怎样让路径更直，以更少数值步逼近。
 
 ## 这条线真正改变了什么
 
@@ -105,7 +105,7 @@ Flow Matching 把“噪声 schedule”推广为“概率路径与速度场”，
 
 ## Reference {#reference}
 
-- [DDPM 论文](https://arxiv.org/abs/2006.11239)与[hojonathanho/diffusion](https://github.com/hojonathanho/diffusion)；
-- [Latent Diffusion 论文](https://arxiv.org/abs/2112.10752)与[CompVis/latent-diffusion](https://github.com/CompVis/latent-diffusion)；
-- [DiT 论文](https://arxiv.org/abs/2212.09748)与[facebookresearch/DiT](https://github.com/facebookresearch/DiT)；
-- [Flow Matching 论文](https://arxiv.org/abs/2210.02747)；后续的 [Flow Matching Guide and Code](https://arxiv.org/abs/2412.06264)提供了通用[facebookresearch/flow_matching](https://github.com/facebookresearch/flow_matching)，它不是 2022 原论文实验代码。
+- [DDPM 论文](https://arxiv.org/abs/2006.11239)与 [hojonathanho/diffusion](https://github.com/hojonathanho/diffusion)；
+- [Latent Diffusion 论文](https://arxiv.org/abs/2112.10752)与 [CompVis/latent-diffusion](https://github.com/CompVis/latent-diffusion)；
+- [DiT 论文](https://arxiv.org/abs/2212.09748)与 [facebookresearch/DiT](https://github.com/facebookresearch/DiT)；
+- [Flow Matching 论文](https://arxiv.org/abs/2210.02747)；后续的 [Flow Matching Guide and Code](https://arxiv.org/abs/2412.06264) 提供了通用 [facebookresearch/flow_matching](https://github.com/facebookresearch/flow_matching)，它不是 2022 原论文实验代码。

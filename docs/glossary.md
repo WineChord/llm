@@ -622,7 +622,7 @@ Value-model-based PPO 长推理配方，组合 value warmup、decoupled/adaptive
 
 **XTML**
 
-eXtensible Token Markup Language，用 special token 统一表示 role、thinking、response、typed tool call 与 option 生命周期的 chat template；完整结构见[Kimi K3 附录](landscape/works/kimi-k3.md#appendices)。
+eXtensible Token Markup Language，用 special token 统一表示 role、thinking、response、typed tool call 与 option 生命周期的 chat template；完整结构见 [Kimi K3 附录](landscape/works/kimi-k3.md#appendices)。
 
 **[Value function](reinforcement-learning/values-bellman.md)**
 

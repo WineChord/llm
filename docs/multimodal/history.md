@@ -24,21 +24,21 @@
 - 原始信号必须先被采样和压缩；
 - 不同不变性需要不同归纳偏置，例如平移、局部时间连续性和尺度变化。
 
-[LeNet](https://ieeexplore.ieee.org/document/726791)展示了卷积、共享权重与端到端梯度训练如何结合；[AlexNet](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks)则把大数据、GPU 与深层卷积网络推到同一条扩展曲线上。随后，检测与分割把“这是什么”推进到“它在哪里”，为后来的 grounding 留下坐标、区域和密集预测接口。
+[LeNet](https://ieeexplore.ieee.org/document/726791) 展示了卷积、共享权重与端到端梯度训练如何结合；[AlexNet](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks) 则把大数据、GPU 与深层卷积网络推到同一条扩展曲线上。随后，检测与分割把“这是什么”推进到“它在哪里”，为后来的 grounding 留下坐标、区域和密集预测接口。
 
-语音侧经历了相似变化。频谱仍是有效的信号坐标系，但表示逐渐由模型从波形中学习。[wav2vec 2.0](https://arxiv.org/abs/2006.11477)和 [HuBERT](https://arxiv.org/abs/2106.07447)通过遮蔽预测与离散伪标签，从大量无标注语音中学习上下文表示。这里产生的表示适合识别，却未必足以重建音色和相位；“理解表示”和“生成表示”从一开始就不是同一个目标。
+语音侧经历了相似变化。频谱仍是有效的信号坐标系，但表示逐渐由模型从波形中学习。[wav2vec 2.0](https://arxiv.org/abs/2006.11477) 和 [HuBERT](https://arxiv.org/abs/2106.07447) 通过遮蔽预测与离散伪标签，从大量无标注语音中学习上下文表示。这里产生的表示适合识别，却未必足以重建音色和相位；“理解表示”和“生成表示”从一开始就不是同一个目标。
 
-Transformer 把这种演进带到视觉和视频。[Vision Transformer](https://arxiv.org/abs/2010.11929)把图像切成 patch 序列，[TimeSformer](https://arxiv.org/abs/2102.05095)与 [VideoMAE](https://arxiv.org/abs/2203.12602)继续处理时空 token。统一的序列接口降低了跨模态架构复用成本，却没有消除采样率、二维几何和时间别名等模态差异。
+Transformer 把这种演进带到视觉和视频。[Vision Transformer](https://arxiv.org/abs/2010.11929) 把图像切成 patch 序列，[TimeSformer](https://arxiv.org/abs/2102.05095) 与 [VideoMAE](https://arxiv.org/abs/2203.12602) 继续处理时空 token。统一的序列接口降低了跨模态架构复用成本，却没有消除采样率、二维几何和时间别名等模态差异。
 
 ## 第二条水流：语言成为开放语义接口
 
-图像描述曾经主要是“视觉 encoder + 文本 decoder”的单向翻译任务。[Show and Tell](https://arxiv.org/abs/1411.4555)是这一范式的代表：图像被压成一个条件向量，语言模型据此生成 caption。它能够描述，却难以把任意语言概念反向变成视觉检索与分类接口。
+图像描述曾经主要是“视觉 encoder + 文本 decoder”的单向翻译任务。[Show and Tell](https://arxiv.org/abs/1411.4555) 是这一范式的代表：图像被压成一个条件向量，语言模型据此生成 caption。它能够描述，却难以把任意语言概念反向变成视觉检索与分类接口。
 
-[CLIP](https://arxiv.org/abs/2103.00020)改变了接口：不再为每个封闭标签集训练分类头，而是把图像和文本映射到同一个对比空间。自然语言由输出形式变成了开放词表查询。随后几条路线解决“如何让语言模型持续读取视觉证据”：
+[CLIP](https://arxiv.org/abs/2103.00020) 改变了接口：不再为每个封闭标签集训练分类头，而是把图像和文本映射到同一个对比空间。自然语言由输出形式变成了开放词表查询。随后几条路线解决“如何让语言模型持续读取视觉证据”：
 
-- [Flamingo](https://arxiv.org/abs/2204.14198)用 resampler 与 gated cross-attention，把视觉条件反复注入冻结语言模型；
-- [BLIP-2](https://arxiv.org/abs/2301.12597)用 Q-Former 在冻结视觉 encoder 与语言模型之间学习信息瓶颈；
-- [LLaVA](https://arxiv.org/abs/2304.08485)说明简单 projector 配合视觉指令数据也能形成有效基线。
+- [Flamingo](https://arxiv.org/abs/2204.14198) 用 resampler 与 gated cross-attention，把视觉条件反复注入冻结语言模型；
+- [BLIP-2](https://arxiv.org/abs/2301.12597) 用 Q-Former 在冻结视觉 encoder 与语言模型之间学习信息瓶颈；
+- [LLaVA](https://arxiv.org/abs/2304.08485) 说明简单 projector 配合视觉指令数据也能形成有效基线。
 
 这一步的实质不是“图片变成文字”，而是建立三层契约：
 
@@ -54,7 +54,7 @@ $$
 
 $E_m$ 决定保留什么感知信息，$P_m$ 决定以多少 token、什么位置和尺度接入，$G$ 决定语言推理怎样访问证据。模型可能拥有很强的语言先验，却因低分辨率、过强压缩或错误坐标变换而看不清输入；因此 caption、OCR、grounding 与跨帧推理必须分开验证。
 
-音频和视频也逐渐进入语言接口。[Whisper](https://arxiv.org/abs/2212.04356)把多任务语音识别、翻译与时间戳统一为序列预测；[CLAP](https://arxiv.org/abs/2206.04769)把声音与语言映射到共享空间；视频—语言模型则需要额外处理采样、镜头边界和事件顺序。语言提供了统一的任务描述，却不能代替模态内部的时空结构。
+音频和视频也逐渐进入语言接口。[Whisper](https://arxiv.org/abs/2212.04356) 把多任务语音识别、翻译与时间戳统一为序列预测；[CLAP](https://arxiv.org/abs/2206.04769) 把声音与语言映射到共享空间；视频—语言模型则需要额外处理采样、镜头边界和事件顺序。语言提供了统一的任务描述，却不能代替模态内部的时空结构。
 
 ## 第三条水流：表示开始可逆
 
@@ -62,11 +62,11 @@ $E_m$ 决定保留什么感知信息，$P_m$ 决定以多少 token、什么位�
 
 > 从表示中能否重建那些对当前语义任务不重要、但对感知质量重要的细节？
 
-[VAE](https://arxiv.org/abs/1312.6114)把数据映射到连续概率 latent，[GAN](https://arxiv.org/abs/1406.2661)通过生成器与判别器博弈学习样本分布，[PixelRNN/PixelCNN](https://arxiv.org/abs/1601.06759)则直接分解像素条件概率。三者分别强调可推断 latent、对抗式感知质量与精确似然分解，也暴露出模糊、训练不稳定和长序列采样等不同代价。
+[VAE](https://arxiv.org/abs/1312.6114) 把数据映射到连续概率 latent，[GAN](https://arxiv.org/abs/1406.2661) 通过生成器与判别器博弈学习样本分布，[PixelRNN/PixelCNN](https://arxiv.org/abs/1601.06759) 则直接分解像素条件概率。三者分别强调可推断 latent、对抗式感知质量与精确似然分解，也暴露出模糊、训练不稳定和长序列采样等不同代价。
 
-[VQ-VAE](https://arxiv.org/abs/1711.00937)把图像压成离散码，[VQGAN](https://arxiv.org/abs/2012.09841)进一步用感知和对抗目标改善重建。于是图像可以像文本一样交给自回归或 masked-token 模型处理。音频侧的 [SoundStream](https://arxiv.org/abs/2107.03312)与 [EnCodec](https://arxiv.org/abs/2210.13438)用多级量化码本在码率、语义和音质之间取舍；视频 tokenizer 还要同时压缩空间与时间。
+[VQ-VAE](https://arxiv.org/abs/1711.00937) 把图像压成离散码，[VQGAN](https://arxiv.org/abs/2012.09841) 进一步用感知和对抗目标改善重建。于是图像可以像文本一样交给自回归或 masked-token 模型处理。音频侧的 [SoundStream](https://arxiv.org/abs/2107.03312) 与 [EnCodec](https://arxiv.org/abs/2210.13438) 用多级量化码本在码率、语义和音质之间取舍；视频 tokenizer 还要同时压缩空间与时间。
 
-另一条生成路线从连续扰动出发。[DDPM](https://arxiv.org/abs/2006.11239)学习逆转加噪过程，[Latent Diffusion](https://arxiv.org/abs/2112.10752)把计算移入压缩 latent，[DiT](https://arxiv.org/abs/2212.09748)让 Transformer 成为可扩展去噪 backbone。[Flow Matching](https://arxiv.org/abs/2210.02747)则把问题写成沿概率路径学习速度场。它们共享“从简单分布运输到数据分布”的几何，但训练参数化、时间方向、采样器和少步误差并不相同。
+另一条生成路线从连续扰动出发。[DDPM](https://arxiv.org/abs/2006.11239) 学习逆转加噪过程，[Latent Diffusion](https://arxiv.org/abs/2112.10752) 把计算移入压缩 latent，[DiT](https://arxiv.org/abs/2212.09748) 让 Transformer 成为可扩展去噪 backbone。[Flow Matching](https://arxiv.org/abs/2210.02747) 则把问题写成沿概率路径学习速度场。它们共享“从简单分布运输到数据分布”的几何，但训练参数化、时间方向、采样器和少步误差并不相同。
 
 这条水流后来扩展到声音和视频：
 
@@ -85,11 +85,11 @@ $E_m$ 决定保留什么感知信息，$P_m$ 决定以多少 token、什么位�
 3. 预测能否在闭环中支持规划；
 4. 误差在长时 rollout 中怎样累积。
 
-[World Models](https://arxiv.org/abs/1803.10122)把视觉压缩、潜在动力学和控制器拆开；[PlaNet](https://arxiv.org/abs/1811.04551)与 [Dreamer](https://arxiv.org/abs/1912.01603)在 latent imagination 中学习策略；[MuZero](https://www.nature.com/articles/s41586-020-03051-4)表明模型不必重建全部观察，也可以学习支持价值与策略预测的动力学。
+[World Models](https://arxiv.org/abs/1803.10122) 把视觉压缩、潜在动力学和控制器拆开；[PlaNet](https://arxiv.org/abs/1811.04551) 与 [Dreamer](https://arxiv.org/abs/1912.01603) 在 latent imagination 中学习策略；[MuZero](https://www.nature.com/articles/s41586-020-03051-4) 表明模型不必重建全部观察，也可以学习支持价值与策略预测的动力学。
 
-另一支路线减少对像素重建的依赖。[I-JEPA](https://arxiv.org/abs/2301.08243)与 [V-JEPA](https://arxiv.org/abs/2404.08471)在表示空间预测被遮蔽的图像或视频区域；[V-JEPA 2](https://ai.meta.com/research/publications/v-jepa-2-self-supervised-video-models-enable-understanding-prediction-and-planning/)进一步把视频预训练与机器人动作条件模型连接起来。这里的关键不是生成一张漂亮未来帧，而是预测对下游决策足够稳定的状态。
+另一支路线减少对像素重建的依赖。[I-JEPA](https://arxiv.org/abs/2301.08243) 与 [V-JEPA](https://arxiv.org/abs/2404.08471) 在表示空间预测被遮蔽的图像或视频区域；[V-JEPA 2](https://ai.meta.com/research/publications/v-jepa-2-self-supervised-video-models-enable-understanding-prediction-and-planning/) 进一步把视频预训练与机器人动作条件模型连接起来。这里的关键不是生成一张漂亮未来帧，而是预测对下游决策足够稳定的状态。
 
-大规模交互式视频模型又把视觉生成与环境响应拉到一起。[Genie](https://arxiv.org/abs/2402.15391)从无标注视频学习可控环境，[Genie 2](https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/)和 [Genie 3](https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/)继续强调交互、场景一致性和在线动作响应。它们提供了新的训练环境与模拟接口，但不能仅凭画面连贯就推断出精确物理、可靠因果或可迁移控制。
+大规模交互式视频模型又把视觉生成与环境响应拉到一起。[Genie](https://arxiv.org/abs/2402.15391) 从无标注视频学习可控环境，[Genie 2](https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/) 和 [Genie 3](https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/) 继续强调交互、场景一致性和在线动作响应。它们提供了新的训练环境与模拟接口，但不能仅凭画面连贯就推断出精确物理、可靠因果或可迁移控制。
 
 具身模型把接口推到最后一步。RT-1、RT-2、OpenVLA、$\pi_0$、Gemini Robotics 与 GR00T 等路线共同探索视觉、语言、状态与动作怎样共享主干。真正的困难落在闭环而不是单步输出：
 

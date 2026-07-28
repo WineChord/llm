@@ -1,6 +1,6 @@
 # Scaling Laws 与 Chinchilla：固定算力该怎样分
 
-Scaling Laws 和 Chinchilla 经常被压成两条口号：“loss 遵循幂律”和“参数与 token 应同比增加”。更有价值的读法，是把它们看成同一个实验问题的两次建模：给定有限计算，怎样用一组不同大小、不同数据量的训练运行估计 loss 曲面，再从曲面选择资源分配。[Kaplan et al. 2020](https://arxiv.org/abs/2001.08361)建立早期系统规律，[Chinchilla 2022](https://arxiv.org/abs/2203.15556)通过新的 isoFLOP 实验改变了 compute-optimal 结论。
+Scaling Laws 和 Chinchilla 经常被压成两条口号：“loss 遵循幂律”和“参数与 token 应同比增加”。更有价值的读法，是把它们看成同一个实验问题的两次建模：给定有限计算，怎样用一组不同大小、不同数据量的训练运行估计 loss 曲面，再从曲面选择资源分配。[Kaplan et al. 2020](https://arxiv.org/abs/2001.08361) 建立早期系统规律，[Chinchilla 2022](https://arxiv.org/abs/2203.15556) 通过新的 isoFLOP 实验改变了 compute-optimal 结论。
 
 ## 单轴规律为何有吸引力
 

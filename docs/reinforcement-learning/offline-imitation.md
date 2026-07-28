@@ -22,7 +22,7 @@ $$
 
 ## Covariate shift 与 DAgger
 
-[DAgger](https://proceedings.mlr.press/v15/ross11a.html)迭代执行当前 policy，在它实际访问的状态上查询专家，再聚合数据。它把训练分布逐渐拉向 learner occupancy：
+[DAgger](https://proceedings.mlr.press/v15/ross11a.html) 迭代执行当前 policy，在它实际访问的状态上查询专家，再聚合数据。它把训练分布逐渐拉向 learner occupancy：
 
 ```text
 train policy
@@ -48,11 +48,11 @@ p(s_0)
 \exp\left(R_\theta(\tau)\right).
 $$
 
-环境初始分布与转移决定哪些轨迹可行，指数项才在这些轨迹之间偏向更高 reward；简写成 $p_\theta(\tau)\propto e^{R_\theta(\tau)}$ 时，这个 base measure 不能被理解为消失。它与[KL 正则化控制](kl-regularized-control.md)的指数倾斜有共同结构，但状态、数据和规范化对象不同。
+环境初始分布与转移决定哪些轨迹可行，指数项才在这些轨迹之间偏向更高 reward；简写成 $p_\theta(\tau)\propto e^{R_\theta(\tau)}$ 时，这个 base measure 不能被理解为消失。它与 [KL 正则化控制](kl-regularized-control.md)的指数倾斜有共同结构，但状态、数据和规范化对象不同。
 
 ## GAIL
 
-[GAIL](https://proceedings.neurips.cc/paper/2016/hash/cc7e2b878868cbae992d1fb743995d8f-Abstract.html)用 discriminator 区分 expert 与 policy occupancy，再通过 adversarial training 让两者接近。它避免显式恢复 reward，却仍需要在线采样 policy 轨迹；因此不属于纯 offline 方法。
+[GAIL](https://proceedings.neurips.cc/paper/2016/hash/cc7e2b878868cbae992d1fb743995d8f-Abstract.html) 用 discriminator 区分 expert 与 policy occupancy，再通过 adversarial training 让两者接近。它避免显式恢复 reward，却仍需要在线采样 policy 轨迹；因此不属于纯 offline 方法。
 
 ## Offline RL
 
@@ -80,9 +80,9 @@ $$
 
 ## CQL 与 IQL 的不同取向
 
-[Conservative Q-Learning](https://proceedings.neurips.cc/paper/2020/hash/0d2b2061826a5df3221116a5085a6052-Abstract.html)惩罚数据外动作的高 Q，试图学习保守价值下界。
+[Conservative Q-Learning](https://proceedings.neurips.cc/paper/2020/hash/0d2b2061826a5df3221116a5085a6052-Abstract.html) 惩罚数据外动作的高 Q，试图学习保守价值下界。
 
-[Implicit Q-Learning](https://arxiv.org/abs/2110.06169)避免在训练 value 时直接评估数据外动作，使用 expectile value 与 advantage-weighted behavior cloning 提取 policy。两者都依赖固定数据质量与超参数，不能将“offline”理解为无需环境假设。
+[Implicit Q-Learning](https://arxiv.org/abs/2110.06169) 避免在训练 value 时直接评估数据外动作，使用 expectile value 与 advantage-weighted behavior cloning 提取 policy。两者都依赖固定数据质量与超参数，不能将“offline”理解为无需环境假设。
 
 ## 与离线偏好优化的关系
 

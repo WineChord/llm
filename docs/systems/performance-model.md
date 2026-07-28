@@ -115,7 +115,7 @@ C_{\mathrm{prefill,layer}}
 +4BS^2H.
 $$
 
-因果 attention 只使用下三角，但 kernel 可能通过 tile mask 跳过部分工作，也可能仍执行被 mask 的 tile；必须说明 FLOPs 是算法 FLOPs还是硬件实际执行 FLOPs。
+因果 attention 只使用下三角，但 kernel 可能通过 tile mask 跳过部分工作，也可能仍执行被 mask 的 tile；必须说明 FLOPs 是算法 FLOPs 还是硬件实际执行 FLOPs。
 
 ### Decode
 

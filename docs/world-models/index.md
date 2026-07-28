@@ -54,9 +54,9 @@ $z_t$ 不必是可解码的图像。它可以是连续 latent、离散 token、�
 由此可以区分几条互相连接却不能混同的路线：
 
 - **可重建动力学**：预测像素或可解码 latent，便于观察模型到底想象了什么；
-- **决策等价动力学**：只预测 reward、policy、value 等决策充分量，[MuZero](dynamics-planning.md#muzero)是代表；
-- **预测表征**：在 feature space 预测可预期结构，避开纹理噪声，[V-JEPA](predictive-generative-worlds.md#jepa)沿此展开；
-- **交互式生成世界**：同时追求视觉生成、动作响应、长时一致和在线速度，[Genie 与 Cosmos](predictive-generative-worlds.md#interactive-worlds)处在这条线上。
+- **决策等价动力学**：只预测 reward、policy、value 等决策充分量，[MuZero](dynamics-planning.md#muzero) 是代表；
+- **预测表征**：在 feature space 预测可预期结构，避开纹理噪声，[V-JEPA](predictive-generative-worlds.md#jepa) 沿此展开；
+- **交互式生成世界**：同时追求视觉生成、动作响应、长时一致和在线速度，[Genie 与 Cosmos](predictive-generative-worlds.md#interactive-worlds) 处在这条线上。
 
 “latent”本身不是质量保证。一个 latent 可以很适合分类，却丢掉控制所需的精确位置；也可以精确重建纹理，却没有对象恒常性和可干预动力学。
 
@@ -66,12 +66,12 @@ $z_t$ 不必是可解码的图像。它可以是连续 latent、离散 token、�
 
 | 时间 | 问题 | 代表转折 |
 | --- | --- | --- |
-| 1990 | 如何复用真实经验 | [Dyna](https://doi.org/10.1016/B978-1-55860-141-3.50030-4)让真实 transition 与模型生成 transition 共享学习更新 |
-| 2018 | 高维视觉里怎样建模 | [World Models](https://arxiv.org/abs/1803.10122)以 VAE + RNN + controller 拆开表征、动力学和控制 |
-| 2018–2019 | 怎样在 latent 中规划或学习策略 | [PlaNet](https://arxiv.org/abs/1811.04551)使用 RSSM 与 CEM；[Dreamer](https://arxiv.org/abs/1912.01603)在 imagined trajectory 上训练 actor–critic |
-| 2020 | 是否必须重建观察 | [MuZero](https://www.nature.com/articles/s41586-020-03051-4)只学习搜索所需的 reward、policy 与 value |
-| 2024 | 是否能从无标签视频学可控变化 | [Genie](https://arxiv.org/abs/2402.15391)联合视频 tokenizer、latent action 与动力学 |
-| 2024–2026 | 是否能在语义 feature 中预测与规划 | [V-JEPA](https://arxiv.org/abs/2404.08471)到 [V-JEPA 2](https://arxiv.org/abs/2506.09985)把表示预测接到 action-conditioned planning |
+| 1990 | 如何复用真实经验 | [Dyna](https://doi.org/10.1016/B978-1-55860-141-3.50030-4) 让真实 transition 与模型生成 transition 共享学习更新 |
+| 2018 | 高维视觉里怎样建模 | [World Models](https://arxiv.org/abs/1803.10122) 以 VAE + RNN + controller 拆开表征、动力学和控制 |
+| 2018–2019 | 怎样在 latent 中规划或学习策略 | [PlaNet](https://arxiv.org/abs/1811.04551) 使用 RSSM 与 CEM；[Dreamer](https://arxiv.org/abs/1912.01603) 在 imagined trajectory 上训练 actor–critic |
+| 2020 | 是否必须重建观察 | [MuZero](https://www.nature.com/articles/s41586-020-03051-4) 只学习搜索所需的 reward、policy 与 value |
+| 2024 | 是否能从无标签视频学可控变化 | [Genie](https://arxiv.org/abs/2402.15391) 联合视频 tokenizer、latent action 与动力学 |
+| 2024–2026 | 是否能在语义 feature 中预测与规划 | [V-JEPA](https://arxiv.org/abs/2404.08471) 到 [V-JEPA 2](https://arxiv.org/abs/2506.09985) 把表示预测接到 action-conditioned planning |
 | 2025–2026 | 能否成为通用、实时、全模态交互环境 | Genie 3、Cosmos 3 等开始汇合视频、音频、语言、动作与在线生成 |
 
 前半段主要在可控环境中研究“学模型后怎样规划”；后半段开始吸收互联网视频与生成模型的规模，却同时带来一个新风险：视觉质量越来越容易掩盖因果、几何和控制错误。
@@ -149,7 +149,7 @@ $$
 - **产品/研究预览**：只能确认发布方公开展示和明确写出的限制；
 - **未知**：未披露的训练配方、数据组成、失败率与内部安全措施保持未知。
 
-截至 2026-07-28，[Genie 3](https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/)仍由发布方描述为 limited research preview；[Cosmos 3](https://research.nvidia.com/labs/cosmos-lab/cosmos3/)已有官方论文、代码和模型入口，但刚于 2026 年 6 月公开。二者不应仅凭演示画面被写成已经验证的通用物理模拟器。
+截至 2026-07-28，[Genie 3](https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/) 仍由发布方描述为 limited research preview；[Cosmos 3](https://research.nvidia.com/labs/cosmos-lab/cosmos3/) 已有官方论文、代码和模型入口，但刚于 2026 年 6 月公开。二者不应仅凭演示画面被写成已经验证的通用物理模拟器。
 
 ## 阅读路线
 

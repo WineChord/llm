@@ -17,7 +17,7 @@ p(w_t\mid w_{<t})
 \approx p(w_t\mid w_{t-n+1:t-1}).
 $$
 
-最大似然计数对见过的上下文有效，却会给未见组合零概率。[Katz backoff](https://ieeexplore.ieee.org/document/1165125)对可靠计数折扣，把剩余概率质量交给更短历史：
+最大似然计数对见过的上下文有效，却会给未见组合零概率。[Katz backoff](https://ieeexplore.ieee.org/document/1165125) 对可靠计数折扣，把剩余概率质量交给更短历史：
 
 $$
 p_{\mathrm{BO}}(w\mid h)=
@@ -27,7 +27,7 @@ p_{\mathrm{BO}}(w\mid h)=
 \end{cases}
 $$
 
-$\alpha(h)$ 负责重新归一化，而不是任意的回退权重。[Brown 等人的 class-based $n$-gram](https://aclanthology.org/J92-4003/)进一步让词类共享统计。平滑和聚类缓解了稀疏性，但没有移除固定窗口，也不能让语义相近的词自然共享连续参数。
+$\alpha(h)$ 负责重新归一化，而不是任意的回退权重。[Brown 等人的 class-based $n$-gram](https://aclanthology.org/J92-4003/) 进一步让词类共享统计。平滑和聚类缓解了稀疏性，但没有移除固定窗口，也不能让语义相近的词自然共享连续参数。
 
 ## 连续表示让相似历史共享参数
 
@@ -46,7 +46,7 @@ $$
 
 ## 循环状态把窗口变成动态记忆
 
-[Elman 1990](https://onlinelibrary.wiley.com/doi/10.1207/s15516709cog1402_1)展示了循环隐藏状态怎样保存序列中的动态结构；[Mikolov 等人 2010](https://www.isca-archive.org/interspeech_2010/mikolov10_interspeech.html)则把简单 RNN 与经典 backoff 语言模型作了有影响力的语言建模比较：
+[Elman 1990](https://onlinelibrary.wiley.com/doi/10.1207/s15516709cog1402_1) 展示了循环隐藏状态怎样保存序列中的动态结构；[Mikolov 等人 2010](https://www.isca-archive.org/interspeech_2010/mikolov10_interspeech.html) 则把简单 RNN 与经典 backoff 语言模型作了有影响力的语言建模比较：
 
 $$
 h_t=\phi(W_xe_t+W_hh_{t-1}+b),\qquad
@@ -64,7 +64,7 @@ $$
 
 ## LSTM 改写梯度路径
 
-[Hochreiter 与 Schmidhuber 1997](https://direct.mit.edu/neco/article/9/8/1735/6109/Long-Short-Term-Memory)以加性的 cell path 改善长时间间隔上的误差信号。现代常用记号可写为
+[Hochreiter 与 Schmidhuber 1997](https://direct.mit.edu/neco/article/9/8/1735/6109/Long-Short-Term-Memory) 以加性的 cell path 改善长时间间隔上的误差信号。现代常用记号可写为
 
 $$
 c_t=f_t\odot c_{t-1}+i_t\odot g_t,\qquad

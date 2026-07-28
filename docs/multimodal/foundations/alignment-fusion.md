@@ -21,17 +21,17 @@ $$
 
 ## 从共同坐标系到可生成接口
 
-早期跨模态学习常把视觉类别映射到固定标签。自然语言监督把类别表换成了开放描述，但真正形成可复用接口的转折，是大规模双塔对比学习。[CLIP](https://arxiv.org/abs/2103.00020)和同期的 [ALIGN](https://arxiv.org/abs/2102.05918)分别编码图像与文本，用配对关系学习共同 embedding；推理时，新的文本描述可以直接充当分类器或检索查询。
+早期跨模态学习常把视觉类别映射到固定标签。自然语言监督把类别表换成了开放描述，但真正形成可复用接口的转折，是大规模双塔对比学习。[CLIP](https://arxiv.org/abs/2103.00020) 和同期的 [ALIGN](https://arxiv.org/abs/2102.05918) 分别编码图像与文本，用配对关系学习共同 embedding；推理时，新的文本描述可以直接充当分类器或检索查询。
 
 这类模型善于回答“图与文是否相配”，却不天然生成长文本，也没有要求每个词对应到具体区域。随后出现的桥接模型开始复用已经训练好的视觉 encoder 与语言模型：
 
-- [Flamingo](https://arxiv.org/abs/2204.14198)用 Perceiver Resampler 压缩视觉特征，并在冻结语言模型之间插入 gated cross-attention；
-- [BLIP-2](https://arxiv.org/abs/2301.12597)让 Q-Former 先学会从冻结视觉 encoder 中抽取与语言有关的信息，再接入冻结 LLM；
-- [LLaVA](https://arxiv.org/abs/2304.08485)用轻量 projector 与视觉指令数据展示了更直接的输入 embedding 路线。
+- [Flamingo](https://arxiv.org/abs/2204.14198) 用 Perceiver Resampler 压缩视觉特征，并在冻结语言模型之间插入 gated cross-attention；
+- [BLIP-2](https://arxiv.org/abs/2301.12597) 让 Q-Former 先学会从冻结视觉 encoder 中抽取与语言有关的信息，再接入冻结 LLM；
+- [LLaVA](https://arxiv.org/abs/2304.08485) 用轻量 projector 与视觉指令数据展示了更直接的输入 embedding 路线。
 
 三者不是“桥越复杂越好”的排行榜。Flamingo 面向交错图文与 in-context learning，BLIP-2 面向冻结两端时的表示鸿沟，LLaVA 面向可访问的视觉指令跟随。冻结策略、数据目标和媒体注入位置不同，不能只比较 trainable parameter 数。
 
-再往后，early-fusion 与统一模型让媒体 token 更早进入共享主干。[Chameleon](https://arxiv.org/abs/2405.09818)把离散图像和文本 token 放进统一自回归序列。共享序列减少了专用接口，却把模态竞争、位置、mask、token budget 与生成误差带进同一系统。
+再往后，early-fusion 与统一模型让媒体 token 更早进入共享主干。[Chameleon](https://arxiv.org/abs/2405.09818) 把离散图像和文本 token 放进统一自回归序列。共享序列减少了专用接口，却把模态竞争、位置、mask、token budget 与生成误差带进同一系统。
 
 ## 全局对齐究竟优化什么
 
@@ -67,7 +67,7 @@ $$
 
 把这些 pair 全当负例会形成 false negatives。可采用多正例标签、去重、软目标或更细粒度监督，但必须同步修改分母和评测协议，不能只改 dataloader。
 
-[SigLIP](https://arxiv.org/abs/2303.15343)把 batch softmax 换成对每个图文 pair 独立计算的 sigmoid loss：
+[SigLIP](https://arxiv.org/abs/2303.15343) 把 batch softmax 换成对每个图文 pair 独立计算的 sigmoid loss：
 
 $$
 \mathcal L_{\mathrm{sigmoid}}
@@ -81,7 +81,7 @@ $$
 
 它取消了 softmax 的全局归一化，却没有自动解决错误 pair、多正例和数据偏差。目标形式改变后，logit scale、bias、负例数量和 loss reduction 仍需共同报告。
 
-共同 embedding 也不必只覆盖图像和文本。[ImageBind](https://arxiv.org/abs/2305.05665)把图像、文本、音频、深度、热成像与惯性信号映射到共享空间，展示了以图像配对为枢纽连接多种模态的路线。共享空间支持跨模态检索，却仍不等于任意两种模态都获得了同等粒度的直接监督。
+共同 embedding 也不必只覆盖图像和文本。[ImageBind](https://arxiv.org/abs/2305.05665) 把图像、文本、音频、深度、热成像与惯性信号映射到共享空间，展示了以图像配对为枢纽连接多种模态的路线。共享空间支持跨模态检索，却仍不等于任意两种模态都获得了同等粒度的直接监督。
 
 ## 对齐粒度决定能力上限
 
@@ -235,7 +235,7 @@ $$
 - 不同模态是否共享 embedding、norm 和输出 head；
 - 高 token 模态是否挤压文本与其他媒体的容量。
 
-“同一个 Transformer”并不等于同一个概率目标。文本 next-token、图像 diffusion latent 和动作 flow 可以共享部分主干，却仍需要不同的时间语义和 loss mask。对应细节应与[空间、时间、位置与 Mask](position-time-masks.md)一起核对。
+“同一个 Transformer”并不等于同一个概率目标。文本 next-token、图像 diffusion latent 和动作 flow 可以共享部分主干，却仍需要不同的时间语义和 loss mask。对应细节应与[空间、时间、位置与 Mask](position-time-masks.md) 一起核对。
 
 ## 冻结、解冻与联合训练
 

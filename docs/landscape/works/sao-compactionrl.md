@@ -1,11 +1,11 @@
 # SAO 与 CompactionRL：长程 Agentic RL 的两条轴
 
-长程 Agentic RL 同时受两种物理约束支配：一条沿 wall-clock time 展开，轨迹越长、完成时间越不齐，同步等待和 policy lag 越严重；另一条沿 context space 展开，交互历史不断增长，最终必须截断、检索或压缩。2026 年的 [SAO](https://arxiv.org/abs/2607.07508) 与 [CompactionRL](https://arxiv.org/abs/2607.05378)分别处理这两个方向：
+长程 Agentic RL 同时受两种物理约束支配：一条沿 wall-clock time 展开，轨迹越长、完成时间越不齐，同步等待和 policy lag 越严重；另一条沿 context space 展开，交互历史不断增长，最终必须截断、检索或压缩。2026 年的 [SAO](https://arxiv.org/abs/2607.07508) 与 [CompactionRL](https://arxiv.org/abs/2607.05378) 分别处理这两个方向：
 
 - **SAO** 让单条 rollout 完成后即可进入异步训练队列，并用 critic、token 级行为概率与严格双侧筛选控制方差和策略漂移；
 - **CompactionRL** 在固定工作窗口内生成摘要、重建上下文，并让执行 token 与摘要 token 共同接受最终任务奖励。
 
-它们不是同一个算法的两个名字，也不是“彻底淘汰 GRPO”的结论。更准确的理解是：当 prompt 内成组采样成为同步屏障，或者一次任务被压缩成数量不定的训练段时， **critic-based、token-level、single-rollout PPO** 提供了一种更自然的接口。
+它们不是同一个算法的两个名字，也不是“彻底淘汰 GRPO”的结论。更准确的理解是：当 prompt 内成组采样成为同步屏障，或者一次任务被压缩成数量不定的训练段时，**critic-based、token-level、single-rollout PPO** 提供了一种更自然的接口。
 
 ## 先把两个瓶颈分开
 
@@ -22,7 +22,7 @@ $$
 | 时间轴 | rollout 时长重尾，快样本等待慢样本 | 同步屏障、数据变旧、learner 与 behavior policy 分离 | 尽早消费完成的轨迹，同时限制 off-policy |
 | 空间轴 | prompt、工具输出与推理不断占用上下文 | 超出窗口；压缩后一个任务变成可变数量的 segment | 在固定峰值窗口内继续任务，同时保持跨段信用 |
 
-SAO 主要改变“ **轨迹何时可训练** ”；CompactionRL 主要改变“ **轨迹以什么状态表示继续、怎样跨段训练** ”。一个系统可以同时需要二者。
+SAO 主要改变“**轨迹何时可训练**”；CompactionRL 主要改变“**轨迹以什么状态表示继续、怎样跨段训练**”。一个系统可以同时需要二者。
 
 ## 为什么成组优势在这里不顺手
 
@@ -60,7 +60,7 @@ $$
 
 ## 共同底座：critic 回到闭环
 
-两项工作的公开实验都使用 group size $1$、token-level advantage、value pretraining、每批两次 critic update 与一次 policy update，以及 [VAPO](vapo.md)中的 length-adaptive GAE：
+两项工作的公开实验都使用 group size $1$、token-level advantage、value pretraining、每批两次 critic update 与一次 policy update，以及 [VAPO](vapo.md) 中的 length-adaptive GAE：
 
 $$
 \lambda_{\mathrm{policy}}
@@ -158,7 +158,7 @@ $$
 
 因此 DIS 更像 **hard trust gate**。它以偏差换稳定性：极端 off-policy token 不再主导更新，但被系统性丢弃的数据可能带来 selection bias。下面实现只冻结“ratio 作为样本权重和门控”的语义；论文公式没有披露 method-specific autograd 实现，复现时必须显式决定 ratio 是否 stop-gradient。
 
-PPO、TIS、IcePop 与 DIS 所使用 ratio、粒度和越界梯度的逐项对照见[Ratio、Clipping 与 Gate](../../reinforcement-learning/ratio-clipping-gating.md#dis)。
+PPO、TIS、IcePop 与 DIS 所使用 ratio、粒度和越界梯度的逐项对照见 [Ratio、Clipping 与 Gate](../../reinforcement-learning/ratio-clipping-gating.md#dis)。
 
 ```python
 import math
@@ -202,7 +202,7 @@ $$
 =\delta_t+\gamma\lambda\widehat A(a_{i+1,0}).
 $$
 
-这相当于先选定 action-token 时间轴，再在该子序列上做 GAE；terminal、truncation 与跨 turn bootstrap 的通用语义见[Advantage 估计与 GAE](../../reinforcement-learning/advantage-estimation-gae.md)。
+这相当于先选定 action-token 时间轴，再在该子序列上做 GAE；terminal、truncation 与跨 turn bootstrap 的通用语义见 [Advantage 估计与 GAE](../../reinforcement-learning/advantage-estimation-gae.md)。
 
 一个最小实现可以先抽出 action token 索引，再在这条子序列上反向递推：
 
@@ -450,7 +450,7 @@ CompactionRL 使用 64K 或 80K 峰值工作窗口，最多压缩三次；SWE-be
 
 ### 开源边界
 
-[slime](https://github.com/THUDM/slime)公开了异步 rollout 与 PPO 的基础设施入口，[GLM-5 技术报告](https://arxiv.org/abs/2602.15763)披露了相关的大规模 agentic RL 系统；截至两篇论文 v1，未见论文配方对应的完整 method-level code release。可验证复现应把“框架可用”“目标函数可实现”“论文超参数已披露”和“端到端结果可复现”分成四个不同结论。
+[slime](https://github.com/THUDM/slime) 公开了异步 rollout 与 PPO 的基础设施入口，[GLM-5 技术报告](https://arxiv.org/abs/2602.15763)披露了相关的大规模 agentic RL 系统；截至两篇论文 v1，未见论文配方对应的完整 method-level code release。可验证复现应把“框架可用”“目标函数可实现”“论文超参数已披露”和“端到端结果可复现”分成四个不同结论。
 
 ## 最值得记住的五句话
 

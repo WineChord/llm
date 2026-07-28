@@ -59,13 +59,13 @@ $$
 {\operatorname{std}(r_{1:G})+\epsilon},
 $$
 
-但实际效果还取决于采样多样性、奖励可验证性、KL 约束和训练系统。详见[Agentic RL 数学与算法](../agentic-rl/math-algorithms.md)。
+但实际效果还取决于采样多样性、奖励可验证性、KL 约束和训练系统。详见 [Agentic RL 数学与算法](../agentic-rl/math-algorithms.md)。
 
 ## V3.1 到 V3.2：能力接口与注意力路径同时变化
 
-[V3.1](https://api-docs.deepseek.com/news/news250821/)首先把 Think / Non-Think 合并进同一 checkpoint，并以 840B token continued pretraining 把 context 扩到 128K；这是一项模型、tokenizer、chat template 与 API 同时变化的事件，不能只记成产品按钮。
+[V3.1](https://api-docs.deepseek.com/news/news250821/) 首先把 Think / Non-Think 合并进同一 checkpoint，并以 840B token continued pretraining 把 context 扩到 128K；这是一项模型、tokenizer、chat template 与 API 同时变化的事件，不能只记成产品按钮。
 
-[V3.2-Exp](https://api-docs.deepseek.com/news/news250929/)随后在 V3.1-Terminus 上引入 DeepSeek Sparse Attention（DSA）。Lightning Indexer 先以低成本分数从历史 KV 中选出 top-$k$，core attention 再只访问选中项。正式 [V3.2](https://api-docs.deepseek.com/news/news251201/)保留这条结构线，又把 thinking 直接接入 tool-use，并披露覆盖 1,800 余环境、85K 复杂指令的 agent 数据合成。
+[V3.2-Exp](https://api-docs.deepseek.com/news/news250929/) 随后在 V3.1-Terminus 上引入 DeepSeek Sparse Attention（DSA）。Lightning Indexer 先以低成本分数从历史 KV 中选出 top-$k$，core attention 再只访问选中项。正式 [V3.2](https://api-docs.deepseek.com/news/news251201/) 保留这条结构线，又把 thinking 直接接入 tool-use，并披露覆盖 1,800 余环境、85K 复杂指令的 agent 数据合成。
 
 这一阶段建立了 V4 的两个前提：
 
@@ -76,12 +76,12 @@ V4 没有简单把 DSA 的 context 上限改成 1M，而是在选择之前先压
 
 ## V4：压缩、选择与局部精度分工
 
-[DeepSeek-V4](works/deepseek-v4.md)发布 Flash 与 Pro 两个 MoE 规模：284B / 13B activated 和 1.6T / 49B activated，均给出 1M context。主线可以分成四层：
+[DeepSeek-V4](works/deepseek-v4.md) 发布 Flash 与 Pro 两个 MoE 规模：284B / 13B activated 和 1.6T / 49B activated，均给出 1M context。主线可以分成四层：
 
-1. [CSA](works/deepseek-compressed-attention.md#token-compressor)每 $m=4$ 个 token 产生一个重叠压缩项，再由 Lightning Indexer 做 top-$k$ 选择；
+1. [CSA](works/deepseek-compressed-attention.md#token-compressor) 每 $m=4$ 个 token 产生一个重叠压缩项，再由 Lightning Indexer 做 top-$k$ 选择；
 2. HCA 每 $m'=128$ 个 token 产生一个非重叠压缩项，在较短的压缩序列上做 dense MQA；
 3. SWA 保留最近 128 token 的未压缩局部细节，并承接当前尚未闭合的压缩块；
-4. [mHC](works/manifold-hyper-connections.md)扩展 layer 之间的 residual width，Muon 则改变大多数二维权重的优化几何。
+4. [mHC](works/manifold-hyper-connections.md) 扩展 layer 之间的 residual width，Muon 则改变大多数二维权重的优化几何。
 
 因此 V2 的 MLA、V3.2 的 DSA 和 V4 的 CSA/HCA 不是三次同义命名：
 
@@ -92,9 +92,9 @@ V4 没有简单把 DSA 的 context 上限改成 1M，而是在选择之前先压
 | CSA | token positions + 访问集合 | 先 $4\times$ compression，再 top-$k$ | compressed KV + indexer + SWA |
 | HCA | token positions | $128\times$ compression 后 dense | heavily compressed KV + SWA |
 
-V4 的 [系统闭环](works/tilelang-mega-moe.md)同样属于模型定义的一部分：compressed block 改变 Context Parallel 边界和 KV cache；MegaMoE 用 wave 隐藏 expert communication；token WAL 与 DSec 让百万 token Agent rollout 可以被抢占和恢复；[全词表 OPD](works/on-policy-distillation.md)把十余个 specialist 的行为合回一个学生。
+V4 的 [系统闭环](works/tilelang-mega-moe.md)同样属于模型定义的一部分：compressed block 改变 Context Parallel 边界和 KV cache；MegaMoE 用 wave 隐藏 expert communication；token WAL 与 DSec 让百万 token Agent rollout 可以被抢占和恢复；[全词表 OPD](works/on-policy-distillation.md) 把十余个 specialist 的行为合回一个学生。
 
-官方把当前版本称为 Preview。报告没有给出训练集配比、总训练 FLOPs、硬件规模、完整 RL 配方或核心组件的充分规模消融，并明确把架构简化、多模态和新的稀疏方向列为后续工作。对应的 103 项正文引用、方法前身与 benchmark 入口见[V4 引用图谱](deepseek-v4-reference-map.md)。
+官方把当前版本称为 Preview。报告没有给出训练集配比、总训练 FLOPs、硬件规模、完整 RL 配方或核心组件的充分规模消融，并明确把架构简化、多模态和新的稀疏方向列为后续工作。对应的 103 项正文引用、方法前身与 benchmark 入口见 [V4 引用图谱](deepseek-v4-reference-map.md)。
 
 ## 多模态不是旁支标签
 
@@ -105,7 +105,7 @@ VL、VL2、Janus 与 OCR 系列处理不同问题：
 - Janus 将视觉理解与图像生成的表示路径解耦，再交给统一 Transformer；
 - OCR 路线把视觉压缩、文档结构和文字识别作为独立系统问题。
 
-因此“支持图像”不足以说明模型处于同一谱系。详见[DeepSeek 多模态案例](../multimodal/deepseek.md)。
+因此“支持图像”不足以说明模型处于同一谱系。详见 [DeepSeek 多模态案例](../multimodal/deepseek.md)。
 
 ## 怎样维护时间线
 

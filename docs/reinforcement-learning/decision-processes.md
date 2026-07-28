@@ -203,12 +203,12 @@ assert np.isclose(td_target(1.0, 5.0, 0.9, terminated=True), 1.0)
 
 ## 常见误区
 
-1. **“把最近若干帧或全部文本拼起来，就得到 Markov state。”** 拼接能增加信息，却不能恢复从未观察到的外部状态，也不能保证有限窗口充分。
-2. **“POMDP 只是 observation 有噪声的 MDP。”** 状态别名、隐藏权限、未观测目标和对手意图都能产生部分可观察性，不要求显式加性噪声。
-3. **“$\gamma<1$ 只是为了偏爱眼前收益。”** 它还影响回报是否有限、Bellman contraction 和有效时间尺度。
-4. **“episode 结束就应把 bootstrap 置零。”** 只有真正 `terminated` 才如此；`truncated` 常需要 continuation value。
-5. **“response 是离散动作，所以可以枚举最优动作。”** token 字典可枚举，不代表指数多的完整序列可枚举。
-6. **“reward 是状态的属性。”** 一般 reward 属于转移，可能依赖 $s_t,a_t,s_{t+1}$，也可能是随机变量。
+1. <strong>“把最近若干帧或全部文本拼起来，就得到 Markov state。”</strong>拼接能增加信息，却不能恢复从未观察到的外部状态，也不能保证有限窗口充分。
+2. <strong>“POMDP 只是 observation 有噪声的 MDP。”</strong>状态别名、隐藏权限、未观测目标和对手意图都能产生部分可观察性，不要求显式加性噪声。
+3. <strong>“$\gamma<1$ 只是为了偏爱眼前收益。”</strong>它还影响回报是否有限、Bellman contraction 和有效时间尺度。
+4. <strong>“episode 结束就应把 bootstrap 置零。”</strong>只有真正 `terminated` 才如此；`truncated` 常需要 continuation value。
+5. <strong>“response 是离散动作，所以可以枚举最优动作。”</strong>token 字典可枚举，不代表指数多的完整序列可枚举。
+6. <strong>“reward 是状态的属性。”</strong>一般 reward 属于转移，可能依赖 $s_t,a_t,s_{t+1}$，也可能是随机变量。
 
 ## Reference {#reference}
 

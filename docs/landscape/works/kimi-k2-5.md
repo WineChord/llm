@@ -1,8 +1,8 @@
 # Kimi K2.5：原生多模态、联合 RL 与 Agent Swarm
 
-[Kimi K2.5](https://arxiv.org/abs/2602.02276)在[Kimi 家族](../families/kimi.md)中把两条此前相对独立的路线接到一起：一条从
-[Kimi-VL](../../multimodal/kimi-vl.md)出发，研究视觉 token 怎样与语言共同预训练和强化学习；另一条
-从 [Kimi K2](kimi-k2.md)出发，研究长程 agent 怎样在工具世界中行动。连接点不是“给 agent 多看一张
+[Kimi K2.5](https://arxiv.org/abs/2602.02276) 在 [Kimi 家族](../families/kimi.md)中把两条此前相对独立的路线接到一起：一条从
+[Kimi-VL](../../multimodal/kimi-vl.md) 出发，研究视觉 token 怎样与语言共同预训练和强化学习；另一条
+从 [Kimi K2](kimi-k2.md) 出发，研究长程 agent 怎样在工具世界中行动。连接点不是“给 agent 多看一张
 图”，而是让 text、vision、reasoning、tool use 与 parallel orchestration 共享训练主干和 outcome。
 
 报告最值得保留的历史位置也在这里：Kimi k1.5 把搜索压进一条长 CoT，K2 把这条轨迹接入真实工具，
@@ -29,7 +29,7 @@ foundation，不应把 K2 的 15.5T text pretraining 与 K2.5 的后续 multimod
 
 官方 artifact 使用
 [Modified MIT License](https://github.com/MoonshotAI/Kimi-K2.5/blob/3e60763b943e93c443287c383e0468ffe05b188f/LICENSE)：
-超过 1 亿月活或月收入 2,000 万美元的商业产品 / 服务需要在界面显著展示 “Kimi K2.5”。这项附加条件
+超过 1 亿月活或月收入 2,000 万美元的商业产品 / 服务需要在界面显著展示“Kimi K2.5”。这项附加条件
 意味着它不应被简称为未修改的标准 MIT。
 
 ## 早融合的真正对照：固定总预算，改变何时看见视觉
@@ -72,7 +72,7 @@ MoonViT-3D 将这个“patch n' pack”扩到时间轴：
 代价是 temporal pooling 会丢失组内的细粒度顺序；高速动作、瞬时事件与精确 timestamp 仍需用更密的
 sampling 或专门评测检验。
 
-它也不等于 [Kimi K3](kimi-k3.md)的 MoonViT-V2。K2.5 报告描述 MoonViT-3D 的 shared
+它也不等于 [Kimi K3](kimi-k3.md) 的 MoonViT-V2。K2.5 报告描述 MoonViT-3D 的 shared
 image-video path；K3 则从 next-token objective 重新训练视觉塔并接入另一套 hybrid backbone。
 
 ## 约 15T 的后续训练应该怎样计数
@@ -118,7 +118,7 @@ chart / document、vision-critical STEM 上提供不可绕过的视觉结果奖�
 
 ## Joint multimodal RL：按能力组织，而不是按输入模态分家
 
-K2.5 不把 RL experts 简单拆成 “text expert” 与 “vision expert”，而按 knowledge、reasoning、coding、
+K2.5 不把 RL experts 简单拆成“text expert”与“vision expert”，而按 knowledge、reasoning、coding、
 agentic 等能力域组织；同一个域可同时接收 text-only 与 multimodal queries。视觉 verifier 也随任务
 变化：
 
@@ -334,7 +334,7 @@ forward，也不说明每项任务的 tool latency 或 token throughput。
 white-box environment 能使用定制 inference API、精确记录 log-prob 与环境状态；black-box
 environment 只有标准 LLM API，LLM Gateway 代为记录 request / response。train-inference mismatch
 correction 依赖 token-in-token-out 与 rollout log-prob，这也是 agent framework 不能只存最终文本的
-原因。相关状态契约见[Agentic RL 训练系统](../../agentic-rl/training-systems.md)。
+原因。相关状态契约见 [Agentic RL 训练系统](../../agentic-rl/training-systems.md)。
 
 <figure class="paper-figure paper-figure--wide" id="k25-figure-10" data-paper-source="kimi-k2-5" data-paper-asset="k25-figure-10" markdown="1">
 [![Kimi K2.5 统一 Agentic RL runtime 由 rollout manager、可插拔任务组件、递归核心循环、黑白盒环境、推理服务与训练服务组成](../../assets/papers/kimi-k2-5/figure-10-agentic-rl-runtime.png){ width="1454" height="617" loading="lazy" decoding="async" }](../../assets/papers/kimi-k2-5/figure-10-agentic-rl-runtime.png)
@@ -387,9 +387,9 @@ K2.5 把多模态与 multi-agent 从“额外模块”提升为优化问题：
 4. PARL 让是否并行成为 policy action，并用 finish reward 与退火抑制投机；
 5. critical path 与 total work 双账本让 latency 改善不再伪装成成本下降。
 
-继续向前，[Kimi K3](kimi-k3.md)把 K2/K2.5 的训练经验接到 KDA、Attention Residuals 与 Stable
-LatentMoE；回看视觉前史，则应从[Kimi-VL](../../multimodal/kimi-vl.md)理解 native-resolution packing、
-2D position 与 128K multimodal context。完整家族关系见[Kimi 技术谱系](../kimi-timeline.md)。
+继续向前，[Kimi K3](kimi-k3.md) 把 K2/K2.5 的训练经验接到 KDA、Attention Residuals 与 Stable
+LatentMoE；回看视觉前史，则应从 [Kimi-VL](../../multimodal/kimi-vl.md) 理解 native-resolution packing、
+2D position 与 128K multimodal context。完整家族关系见 [Kimi 技术谱系](../kimi-timeline.md)。
 
 ## Reference {#reference}
 

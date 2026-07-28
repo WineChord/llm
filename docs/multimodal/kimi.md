@@ -1,8 +1,8 @@
 # Kimi 家族的多模态分支
 
-Kimi 家族的多模态路线并不是“语言模型后来接上一个视觉 encoder”。[Kimi-VL](kimi-vl.md)先独立探索视觉语言 MoE，[Kimi K2.5](../landscape/works/kimi-k2-5.md)再把视觉 token、thinking、工具使用与 Agent Swarm 放进同一训练系统，[Kimi K3](../landscape/works/kimi-k3.md)则让 MoonViT-V2 从 next-token prediction 开始与 3T 级 hybrid backbone 联合训练。音频仍由 Kimi-Audio 形成另一条分支。
+Kimi 家族的多模态路线并不是“语言模型后来接上一个视觉 encoder”。[Kimi-VL](kimi-vl.md) 先独立探索视觉语言 MoE，[Kimi K2.5](../landscape/works/kimi-k2-5.md) 再把视觉 token、thinking、工具使用与 Agent Swarm 放进同一训练系统，[Kimi K3](../landscape/works/kimi-k3.md) 则让 MoonViT-V2 从 next-token prediction 开始与 3T 级 hybrid backbone 联合训练。音频仍由 Kimi-Audio 形成另一条分支。
 
-本页只讨论家族与模态之间的关系。完整分支与公开产物见[Kimi 家族总览](../landscape/families/kimi.md)，关键继承与发布日期见[Kimi 技术谱系](../landscape/kimi-timeline.md)；K3 的 150 项引用及其归因边界见[引用图谱](../landscape/kimi-k3-reference-map.md)；K3 架构、训练、系统和评测的逐层解释见[工作深读](../landscape/works/kimi-k3.md)。
+本页只讨论家族与模态之间的关系。完整分支与公开产物见 [Kimi 家族总览](../landscape/families/kimi.md)，关键继承与发布日期见 [Kimi 技术谱系](../landscape/kimi-timeline.md)；K3 的 150 项引用及其归因边界见[引用图谱](../landscape/kimi-k3-reference-map.md)；K3 架构、训练、系统和评测的逐层解释见[工作深读](../landscape/works/kimi-k3.md)。
 
 ## 家族分叉而不是版本替换
 
@@ -121,7 +121,7 @@ $$
 
 其中 observation 不只是一张初始图片，还包括工具产生的新视图。最终分数同时测量 perception、planning、代码、工具协议和 verifier。报告中 CharXiv、MATH-Vision、ZeroBench 等“无工具 / 有 Python”双分数正是在区分这两层能力。
 
-这条路线与[文档与 GUI grounding](document-gui-grounding.md)、[工具调用](../applications/tool-use.md)和[Agentic RL 轨迹契约](../agentic-rl/trajectory-contract.md)相连。比较模型时必须固定图像预处理、最大 patch / frame 数、工具、最大步数、reasoning effort 和采样次数。
+这条路线与[文档与 GUI grounding](document-gui-grounding.md)、[工具调用](../applications/tool-use.md)和 [Agentic RL 轨迹契约](../agentic-rl/trajectory-contract.md)相连。比较模型时必须固定图像预处理、最大 patch / frame 数、工具、最大步数、reasoning effort 和采样次数。
 
 ## Kimi-Audio：另一条仍需单独追踪的模态路线
 
@@ -146,7 +146,7 @@ Kimi-Audio 同时覆盖 audio understanding、speech recognition、audio generat
 | 评测 | 无工具与有工具分开，保留 sampling、pass@$k$、harness 和日期 |
 | 安全 | 图像内指令、OCR 注入、跨模态权限、敏感视觉数据与持久化历史 |
 
-沿家族阅读时，先用[时间线](../landscape/kimi-timeline.md)确认公开对象，再用[K3 引用图谱](../landscape/kimi-k3-reference-map.md)追到方法与 benchmark 原作，最后回到[K3 工作深读](../landscape/works/kimi-k3.md)检查公式、系统接口和证据边界。
+沿家族阅读时，先用[时间线](../landscape/kimi-timeline.md)确认公开对象，再用 [K3 引用图谱](../landscape/kimi-k3-reference-map.md)追到方法与 benchmark 原作，最后回到 [K3 工作深读](../landscape/works/kimi-k3.md)检查公式、系统接口和证据边界。
 
 ## Reference {#reference}
 

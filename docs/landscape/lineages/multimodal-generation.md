@@ -10,7 +10,7 @@
 
 ## 复用预训练组件的桥
 
-[Flamingo](https://arxiv.org/abs/2204.14198)用 Perceiver Resampler 把可变数量的视觉特征压成固定数量 latent，并把 gated cross-attention 插入冻结语言模型；[BLIP-2](https://arxiv.org/abs/2301.12597)让 Q-Former 先从冻结视觉 encoder 中提取与语言有关的信息，再对接冻结 LLM；[LLaVA](https://arxiv.org/abs/2304.08485)则展示了另一种重要经验：当视觉 encoder 与语言模型已经足够强时，简单 projector 加高质量视觉指令数据也能成为有竞争力的起点。
+[Flamingo](https://arxiv.org/abs/2204.14198) 用 Perceiver Resampler 把可变数量的视觉特征压成固定数量 latent，并把 gated cross-attention 插入冻结语言模型；[BLIP-2](https://arxiv.org/abs/2301.12597) 让 Q-Former 先从冻结视觉 encoder 中提取与语言有关的信息，再对接冻结 LLM；[LLaVA](https://arxiv.org/abs/2304.08485) 则展示了另一种重要经验：当视觉 encoder 与语言模型已经足够强时，简单 projector 加高质量视觉指令数据也能成为有竞争力的起点。
 
 这三项工作并不是“桥越复杂越好”的排序。它们回答的是不同资源约束：
 
@@ -22,15 +22,15 @@
 
 ## 第二股水流：从离散表示到连续生成
 
-理解模型把世界压进表示；生成模型必须从表示返回世界。早期自回归图像模型直接预测像素，概率定义清楚但序列极长。[VQ-VAE](https://arxiv.org/abs/1711.00937)把图像压成离散 code，使自回归 prior 可以在更短的 latent grid 上建模；原作使用 PixelCNN，后续路线才进一步采用 Transformer。[DDPM](https://arxiv.org/abs/2006.11239)则换了问题：不再一次预测复杂分布，而是学习把逐渐加噪的样本一步步去噪。
+理解模型把世界压进表示；生成模型必须从表示返回世界。早期自回归图像模型直接预测像素，概率定义清楚但序列极长。[VQ-VAE](https://arxiv.org/abs/1711.00937) 把图像压成离散 code，使自回归 prior 可以在更短的 latent grid 上建模；原作使用 PixelCNN，后续路线才进一步采用 Transformer。[DDPM](https://arxiv.org/abs/2006.11239) 则换了问题：不再一次预测复杂分布，而是学习把逐渐加噪的样本一步步去噪。
 
-[Latent Diffusion](https://arxiv.org/abs/2112.10752)把这两类思想接了起来：先用 autoencoder 压缩，再在连续 latent 中扩散。随后 [DiT](https://arxiv.org/abs/2212.09748)表明去噪 backbone 也可以换成 Transformer；[Flow Matching](https://arxiv.org/abs/2210.02747)进一步把训练表述为沿选定概率路径回归向量场。它们共享的深层问题不是“U-Net 还是 Transformer”，而是表示空间、概率路径、训练目标和数值求解器怎样共同决定误差。
+[Latent Diffusion](https://arxiv.org/abs/2112.10752) 把这两类思想接了起来：先用 autoencoder 压缩，再在连续 latent 中扩散。随后 [DiT](https://arxiv.org/abs/2212.09748) 表明去噪 backbone 也可以换成 Transformer；[Flow Matching](https://arxiv.org/abs/2210.02747) 进一步把训练表述为沿选定概率路径回归向量场。它们共享的深层问题不是“U-Net 还是 Transformer”，而是表示空间、概率路径、训练目标和数值求解器怎样共同决定误差。
 
 完整推导和一段可执行的噪声预测 reference 见[从 DDPM 到 DiT 与 Flow](../works/diffusion-dit-flow.md)，机制地图见[多模态生成模型](../../multimodal/generative-modeling.md)。
 
 ## 第三股水流：声音与视频带来真实时间
 
-图像模型可以把一个样本当作静态 token 集，音频与视频却必须面对采样率、同步、流式状态和中断。[wav2vec 2.0](https://arxiv.org/abs/2006.11477)与 [HuBERT](https://arxiv.org/abs/2106.07447)从无标注语音学习上下文表示；[SoundStream](https://arxiv.org/abs/2107.03312)和 [EnCodec](https://arxiv.org/abs/2210.13438)把波形压成多码本 codec token；[AudioLM](https://arxiv.org/abs/2209.03143)再把语义与声学 token 分层生成。声音由此同时接入理解与生成，但 speech content、speaker identity、韵律和高保真声学仍属于不同信息层。
+图像模型可以把一个样本当作静态 token 集，音频与视频却必须面对采样率、同步、流式状态和中断。[wav2vec 2.0](https://arxiv.org/abs/2006.11477) 与 [HuBERT](https://arxiv.org/abs/2106.07447) 从无标注语音学习上下文表示；[SoundStream](https://arxiv.org/abs/2107.03312) 和 [EnCodec](https://arxiv.org/abs/2210.13438) 把波形压成多码本 codec token；[AudioLM](https://arxiv.org/abs/2209.03143) 再把语义与声学 token 分层生成。声音由此同时接入理解与生成，但 speech content、speaker identity、韵律和高保真声学仍属于不同信息层。
 
 视频侧从 3D CNN、分解时空 attention 与 masked video modeling，逐步走到时空 latent 生成。理解任务要求事件顺序和时间证据，生成任务还要求身份、运动、镜头与长 rollout 一致。两者共享视频 tokenizer 并不意味着目标相同：理解表示可以忽略难以预测的纹理，生成表示则要把它恢复。
 
@@ -38,7 +38,7 @@
 
 ## 第四股水流：预测开始服务行动
 
-[World Models](https://arxiv.org/abs/1803.10122)、[PlaNet](https://arxiv.org/abs/1811.04551)与 [Dreamer](https://arxiv.org/abs/1912.01603)把观察压入 latent dynamics，并在想象中规划或训练策略；[MuZero](https://www.nature.com/articles/s41586-020-03051-4)进一步说明，决策模型可以只学习 reward、value 与 policy 所需状态，而不重建全部像素。
+[World Models](https://arxiv.org/abs/1803.10122)、[PlaNet](https://arxiv.org/abs/1811.04551) 与 [Dreamer](https://arxiv.org/abs/1912.01603) 把观察压入 latent dynamics，并在想象中规划或训练策略；[MuZero](https://www.nature.com/articles/s41586-020-03051-4) 进一步说明，决策模型可以只学习 reward、value 与 policy 所需状态，而不重建全部像素。
 
 视频预测与这条路线后来重新相遇。JEPA 在表示空间预测未来或被遮区域，Genie 类工作从视频学习潜在动作和交互环境，VLA 则把视觉、语言、机器人状态与动作块接入共同模型。真正的汇流标准不是画面“像一个世界”，而是动作能否改变预测、预测能否改善规划、真实反馈能否纠正模型。
 
@@ -53,7 +53,7 @@
 3. 自回归、diffusion 与 flow 的时间轴含义不同，不能只因为都使用 Transformer 就共享同一 loss mask；
 4. 端到端训练会让梯度跨模态流动，也可能破坏原来稳定的单模态能力。
 
-因此，“原生多模态”只有落到计算图和训练目标才有意义。统一理解与生成的具体接口见[统一理解与生成](../../multimodal/unified-understanding-generation.md)，多输入、多输出和实时状态见[Any-to-Any 系统](../../multimodal/omni/any-to-any.md)。
+因此，“原生多模态”只有落到计算图和训练目标才有意义。统一理解与生成的具体接口见[统一理解与生成](../../multimodal/unified-understanding-generation.md)，多输入、多输出和实时状态见 [Any-to-Any 系统](../../multimodal/omni/any-to-any.md)。
 
 ## 留给后来工作的三个问题
 

@@ -30,11 +30,11 @@ $$
 z\sim p(z),\qquad x=G_\theta(z).
 $$
 
-它可以采样，却未必能对任意图像求密度。[GAN](https://arxiv.org/abs/1406.2661)用判别器学习一个可训练的分布差异，绕开显式像素似然。
+它可以采样，却未必能对任意图像求密度。[GAN](https://arxiv.org/abs/1406.2661) 用判别器学习一个可训练的分布差异，绕开显式像素似然。
 
 ### 变分下界
 
-[VAE](https://arxiv.org/abs/1312.6114)引入潜变量 $z$ 与近似后验 $q_\phi(z\mid x)$：
+[VAE](https://arxiv.org/abs/1312.6114) 引入潜变量 $z$ 与近似后验 $q_\phi(z\mid x)$：
 
 $$
 \log p_\theta(x)
@@ -48,7 +48,7 @@ $$
 
 ## 自回归：把图像变成一句很长的话
 
-[PixelRNN](https://arxiv.org/abs/1601.06759)把二维像素按固定顺序展开：
+[PixelRNN](https://arxiv.org/abs/1601.06759) 把二维像素按固定顺序展开：
 
 $$
 p(x)=\prod_{i=1}^{H}\prod_{j=1}^{W}
@@ -62,7 +62,7 @@ $$
 \text{生成关键路径长度}=HWC.
 $$
 
-[Image Transformer](https://arxiv.org/abs/1802.05751)说明 attention 可以代替 recurrent/convolutional 条件器，但没有消除序列长度和扫描顺序。Raster order 给出了合法概率分解，却把本来相邻的上下像素隔开一整行，也人为规定“左上角永远先发生”。
+[Image Transformer](https://arxiv.org/abs/1802.05751) 说明 attention 可以代替 recurrent/convolutional 条件器，但没有消除序列长度和扫描顺序。Raster order 给出了合法概率分解，却把本来相邻的上下像素隔开一整行，也人为规定“左上角永远先发生”。
 
 这类模型的优势并不是“像语言模型所以先进”，而是：
 
@@ -102,11 +102,11 @@ L_G
 -\mathbb E_z\log D(G(z)).
 $$
 
-[DCGAN](https://arxiv.org/abs/1511.06434)给出卷积架构经验，[BigGAN](https://arxiv.org/abs/1809.11096)展示规模、类别条件和正则化可以显著提升高分辨率生成，[StyleGAN](https://arxiv.org/abs/1812.04948)则把 latent 的不同层级注入 synthesis network，让粗结构与细节更可控。它们共同说明：GAN 的有效性来自目标、归一化、架构和数据规模的耦合，不能只复制一条 loss。
+[DCGAN](https://arxiv.org/abs/1511.06434) 给出卷积架构经验，[BigGAN](https://arxiv.org/abs/1809.11096) 展示规模、类别条件和正则化可以显著提升高分辨率生成，[StyleGAN](https://arxiv.org/abs/1812.04948) 则把 latent 的不同层级注入 synthesis network，让粗结构与细节更可控。它们共同说明：GAN 的有效性来自目标、归一化、架构和数据规模的耦合，不能只复制一条 loss。
 
 ### WGAN 为什么改变了训练语言
 
-[WGAN](https://arxiv.org/abs/1701.07875)从“真假概率”转向 1-Lipschitz critic：
+[WGAN](https://arxiv.org/abs/1701.07875) 从“真假概率”转向 1-Lipschitz critic：
 
 $$
 W_1(p_{\mathrm{data}},p_G)
@@ -117,7 +117,7 @@ W_1(p_{\mathrm{data}},p_G)
 \mathbb E_{p_G}f(x).
 $$
 
-当真实与生成分布支撑集几乎不重叠时，Wasserstein-1 仍能提供随样本移动而连续变化的信号。[WGAN-GP](https://arxiv.org/abs/1704.00028)用插值点的梯度惩罚近似 Lipschitz 约束：
+当真实与生成分布支撑集几乎不重叠时，Wasserstein-1 仍能提供随样本移动而连续变化的信号。[WGAN-GP](https://arxiv.org/abs/1704.00028) 用插值点的梯度惩罚近似 Lipschitz 约束：
 
 $$
 L_{\mathrm{GP}}
@@ -131,7 +131,7 @@ $$
 
 ## 视觉 tokenizer 让序列重新变短
 
-逐像素自回归太慢，连续 VAE 又常在强压缩下模糊。[VQ-VAE](https://arxiv.org/abs/1711.00937)把 encoder 输出映射到有限码本：
+逐像素自回归太慢，连续 VAE 又常在强压缩下模糊。[VQ-VAE](https://arxiv.org/abs/1711.00937) 把 encoder 输出映射到有限码本：
 
 $$
 k^\star
@@ -151,7 +151,7 @@ $$
 
 若空间下采样率为 $f$，序列长度约从 $HW$ 降为 $HW/f^2$。这不是免费压缩：prior 再强，也恢复不了 tokenizer 已丢掉的小字、细线或面孔细节。
 
-[VQGAN](https://arxiv.org/abs/2012.09841)用 perceptual 与 adversarial loss 提高重建的感知质量，并以 Transformer 建模离散 code；[DALL·E](https://arxiv.org/abs/2102.12092)把文本与图像 token 放入统一自回归序列；[Parti](https://arxiv.org/abs/2206.10789)进一步验证大规模文本到图像的序列建模。这里形成了后来统一多模态模型仍在使用的接口：
+[VQGAN](https://arxiv.org/abs/2012.09841) 用 perceptual 与 adversarial loss 提高重建的感知质量，并以 Transformer 建模离散 code；[DALL·E](https://arxiv.org/abs/2102.12092) 把文本与图像 token 放入统一自回归序列；[Parti](https://arxiv.org/abs/2206.10789) 进一步验证大规模文本到图像的序列建模。这里形成了后来统一多模态模型仍在使用的接口：
 
 $$
 \text{continuous media}
@@ -163,7 +163,7 @@ $$
 
 ## 不一定要从左上角生成到右下角
 
-自回归只要求一个因果偏序，并不要求 raster scan。[MaskGIT](https://arxiv.org/abs/2202.04200)从全 mask 开始，并行预测未知 token，每轮保留高置信位置、重新 mask 其余位置。其迭代状态可以写成
+自回归只要求一个因果偏序，并不要求 raster scan。[MaskGIT](https://arxiv.org/abs/2202.04200) 从全 mask 开始，并行预测未知 token，每轮保留高置信位置、重新 mask 其余位置。其迭代状态可以写成
 
 $$
 \mathcal M_{s+1}
@@ -174,7 +174,7 @@ $$
 
 其中 $\mathcal M_s$ 是第 $s$ 轮未知位置，$r_s$ 是剩余 mask 比例。生成步数从 $N$ 降为固定迭代轮数，但它不再给出同一个标准 left-to-right likelihood；置信度校准与 remask schedule 成为算法的一部分。
 
-[Muse](https://arxiv.org/abs/2301.00704)沿这一路线扩展文本条件 masked generation。[VAR](https://arxiv.org/abs/2404.02905)把“下一 token”改写为“下一尺度”，先生成低分辨率布局，再补更高分辨率细节。[MAR](https://arxiv.org/abs/2406.11838)则表明自回归顺序并不必绑定离散码本，可以在连续表示上使用 diffusion loss。它们共同揭示一个更一般的设计空间：
+[Muse](https://arxiv.org/abs/2301.00704) 沿这一路线扩展文本条件 masked generation。[VAR](https://arxiv.org/abs/2404.02905) 把“下一 token”改写为“下一尺度”，先生成低分辨率布局，再补更高分辨率细节。[MAR](https://arxiv.org/abs/2406.11838) 则表明自回归顺序并不必绑定离散码本，可以在连续表示上使用 diffusion loss。它们共同揭示一个更一般的设计空间：
 
 > 自回归规定的是信息何时可见；token 的类型、分组方式和每一步内部采用的生成目标仍可独立选择。
 
@@ -261,7 +261,7 @@ Maximum likelihood 倾向覆盖数据中的多种模式，却可能把不确定�
 
 公平比较必须固定分辨率、数据、prompt、采样数、reranking、truncation/temperature 与是否使用外部 caption rewrite。GAN 的一次前向、AR 的 $N$ 次解码和 masked 模型的若干轮 refinement，应同时报告端到端延迟与硬件，而不是只比较 FLOPs。
 
-对视觉表示与压缩的下一层分析见[Autoencoder 与视觉 Tokenizer](autoencoders-tokenizers.md)；diffusion 的概率路径见[Diffusion 与 Score](diffusion-score.md)；控制、编辑与组合评测见[可控生成、编辑与评测](control-editing-evaluation.md)。
+对视觉表示与压缩的下一层分析见 [Autoencoder 与视觉 Tokenizer](autoencoders-tokenizers.md)；diffusion 的概率路径见 [Diffusion 与 Score](diffusion-score.md)；控制、编辑与组合评测见[可控生成、编辑与评测](control-editing-evaluation.md)。
 
 离散视觉 token 与生成原语的组合测试见[多模态手撕实现](../../practice/multimodal.md)。
 

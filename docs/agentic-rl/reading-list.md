@@ -81,4 +81,4 @@
 可迁移结论：
 ```
 
-完整概念路径从[Agentic RL 总览](index.md)开始。
+完整概念路径从 [Agentic RL 总览](index.md)开始。

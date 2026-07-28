@@ -106,7 +106,7 @@ G_t^{(n)}
 +\gamma^nV(S_{t+n}).
 $$
 
-Backward-view TD($\lambda$)用 eligibility trace 将后来的 TD error 传播给较早访问的状态：
+Backward-view TD($\lambda$) 用 eligibility trace 将后来的 TD error 传播给较早访问的状态：
 
 ```python
 import torch
@@ -146,7 +146,7 @@ torch.testing.assert_close(td_one, torch.tensor([0.09, 0.1]))
 
 ## REINFORCE
 
-[REINFORCE](https://link.springer.com/article/10.1007/BF00992696)直接用采样 return 加权 score function：
+[REINFORCE](https://link.springer.com/article/10.1007/BF00992696) 直接用采样 return 加权 score function：
 
 $$
 \nabla_\theta J
@@ -222,7 +222,7 @@ assert value.grad[2] == 0 and torch.isfinite(target).all()
 
 ## PPO Clipping
 
-[PPO](https://arxiv.org/abs/1707.06347)使用 old policy ratio：
+[PPO](https://arxiv.org/abs/1707.06347) 使用 old policy ratio：
 
 $$
 \rho_t=\exp(\log\pi_\theta-\log\pi_{\mathrm{old}}),

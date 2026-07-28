@@ -182,7 +182,7 @@ x16 = torch.randn(2, 5, 16, dtype=torch.float16)
 assert RMSNorm(16)(x16).dtype == x16.dtype
 ```
 
-这是结构参考而非 checkpoint 兼容层：attention 的 head/position/cache 契约、bias、初始化、dropout、tensor parallel 与 fused residual-norm 都必须由具体模型补齐。逐算子版本见[张量原语：LayerNorm 与 RMSNorm](../practice/tensor-primitives.md#layernorm-rmsnorm)，带 causal attention 和增量缓存的组合见[Decoder-only Transformer：RMSNorm、SwiGLU 与 Block](../practice/transformer-from-scratch.md#rmsnormswiglu-block)。
+这是结构参考而非 checkpoint 兼容层：attention 的 head/position/cache 契约、bias、初始化、dropout、tensor parallel 与 fused residual-norm 都必须由具体模型补齐。逐算子版本见[张量原语：LayerNorm 与 RMSNorm](../practice/tensor-primitives.md#layernorm-rmsnorm)，带 causal attention 和增量缓存的组合见 [Decoder-only Transformer：RMSNorm、SwiGLU 与 Block](../practice/transformer-from-scratch.md#rmsnormswiglu-block)。
 
 ## 残差尺度
 
@@ -208,7 +208,7 @@ $$
 
 其中 $A_l$从多条 residual 中读出一个 $d$-维 layer input，$C_l$把 layer output 写回多条流，$B_l$负责跨层搬运原状态。它在不改变内部 attention / MLP hidden width 的情况下增加了 depth mixing 自由度，但任意 $B_l$ 连乘可能放大或抵消信号。
 
-[mHC](../landscape/works/manifold-hyper-connections.md)把 $B_l$投影到 Birkhoff polytope：
+[mHC](../landscape/works/manifold-hyper-connections.md) 把 $B_l$投影到 Birkhoff polytope：
 
 $$
 B_l\mathbf1=\mathbf1,\qquad
@@ -216,7 +216,7 @@ B_l\mathbf1=\mathbf1,\qquad
 B_l\ge0.
 $$
 
-双随机矩阵的谱范数不超过 1，且集合对乘法封闭；$A_l=\sigma(\widetilde A_l)$、$C_l=2\sigma(\widetilde C_l)$也保持非负有界。[DeepSeek-V4](../landscape/works/deepseek-v4.md#mhc)取 $n_{\mathrm{hc}}=4$，用 20 次 Sinkhorn row/column normalization 得到 $B_l$，并通过融合、选择性重算与修改的 pipeline 把报告中的 wall-time 增量控制在 6.7%。这是特定系统测量，不等于所有实现只增加 6.7%。
+双随机矩阵的谱范数不超过 1，且集合对乘法封闭；$A_l=\sigma(\widetilde A_l)$、$C_l=2\sigma(\widetilde C_l)$也保持非负有界。[DeepSeek-V4](../landscape/works/deepseek-v4.md#mhc) 取 $n_{\mathrm{hc}}=4$，用 20 次 Sinkhorn row/column normalization 得到 $B_l$，并通过融合、选择性重算与修改的 pipeline 把报告中的 wall-time 增量控制在 6.7%。这是特定系统测量，不等于所有实现只增加 6.7%。
 
 mHC 与 K3 的 Attention Residuals 都改变 layer 之间的信息流，但前者只混合固定宽度的当前 residual state，后者对更早 layer/block 表示做内容寻址，状态与系统接口不同。
 
@@ -252,7 +252,7 @@ parameter names, tying and tensor layout
 4. 再启用 fused norm、fused MLP、低精度和 tensor parallel。
 5. 记录第一个发生数值分叉的层，而不是只比较最终 logits。
 
-attention 细节见[注意力家族](attention-variants.md)，完整主干见[Transformer](transformer.md)，优化稳定性见[优化与稳定性](../training/optimization.md)。
+attention 细节见[注意力家族](attention-variants.md)，完整主干见 [Transformer](transformer.md)，优化稳定性见[优化与稳定性](../training/optimization.md)。
 
 ## Reference {#reference}
 

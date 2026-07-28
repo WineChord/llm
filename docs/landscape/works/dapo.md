@@ -25,7 +25,7 @@ DAPO 仍使用 group-normalized advantage 与 PPO-style surrogate。它不是 dy
 
 DAPO 作者以 Qwen2.5-32B 的长 CoT 数学训练为实验环境，报告 naive GRPO baseline 在 AIME 2024 上明显低于目标结果，并观察 entropy、reward 与 response length 的不稳定。其四项技术分别作用在不同接口，不能把总收益归因给其中任意一项。
 
-完整 baseline 语义与后续 bias 分析见[GRPO](../../reinforcement-learning/grpo.md)，这一系列方法为何出现见[推理策略优化谱系](../lineages/reasoning-policy-optimization.md)。
+完整 baseline 语义与后续 bias 分析见 [GRPO](../../reinforcement-learning/grpo.md)，这一系列方法为何出现见[推理策略优化谱系](../lineages/reasoning-policy-optimization.md)。
 
 ## 一个公式容纳不了整套 DAPO
 
@@ -101,7 +101,7 @@ $$
 
 扩大正 advantage 的上侧活动区，同时保留较紧的 lower side。论文实验配置使用 $0.2/0.28$，这是特定模型、数据和训练预算上的选择，不是通用默认值。
 
-从公式可见，Clip-Higher 改的是 sampled action 的局部梯度几何。它不保证未采动作的概率、全分布 KL 或最终 entropy；这些仍需通过 ratio tail、entropy、采样多样性和 held-out 能力观察。它与 CISPO、GSPO、SAPO 的区别见[Ratio、Clipping 与 Gate](../../reinforcement-learning/ratio-clipping-gating.md)。
+从公式可见，Clip-Higher 改的是 sampled action 的局部梯度几何。它不保证未采动作的概率、全分布 KL 或最终 entropy；这些仍需通过 ratio tail、entropy、采样多样性和 held-out 能力观察。它与 CISPO、GSPO、SAPO 的区别见 [Ratio、Clipping 与 Gate](../../reinforcement-learning/ratio-clipping-gating.md)。
 
 ## Dynamic Sampling：保持有效组，而非创造信号 {#dynamic-sampling}
 
@@ -177,7 +177,7 @@ L_{\mathrm{cache}}
 \end{cases}
 $$
 
-它让接近上限的惩罚逐步增加，减少在硬边界处把相近轨迹标成完全不同 reward 的噪声。代价是 reward 已不再只表示答案正确性；length penalty 会主动塑造策略。对 agent 环境，还必须把 time-limit truncation、任务 terminal 和系统失败分开，见[GAE 的边界语义](../../reinforcement-learning/advantage-estimation-gae.md#boundaries)。
+它让接近上限的惩罚逐步增加，减少在硬边界处把相近轨迹标成完全不同 reward 的噪声。代价是 reward 已不再只表示答案正确性；length penalty 会主动塑造策略。对 agent 环境，还必须把 time-limit truncation、任务 terminal 和系统失败分开，见 [GAE 的边界语义](../../reinforcement-learning/advantage-estimation-gae.md#boundaries)。
 
 ## 最小可执行语义
 
@@ -248,7 +248,7 @@ old、behavior 与 reference 的区别见[策略身份与概率契约](../../rei
 
 ## 开源边界
 
-[DAPO 官方仓库](https://github.com/BytedTsinghua-SIA/DAPO)公开训练代码、数据、模型与 recipe，并基于 [verl](https://github.com/volcengine/verl)构建。这使研究者能够核对远多于一条 loss：
+[DAPO 官方仓库](https://github.com/BytedTsinghua-SIA/DAPO)公开训练代码、数据、模型与 recipe，并基于 [verl](https://github.com/volcengine/verl) 构建。这使研究者能够核对远多于一条 loss：
 
 ```text
 data transformation
@@ -266,7 +266,7 @@ distributed trainer
 
 DAPO 选择无 learned critic 的 group-relative 路线。对每题可以并行采多条、reward 是终局 verifier 的数学任务，这个交换很有吸引力；但超长或多轮 agent trajectory 会让 group barrier、全错组和跨步骤信用重新变得突出。
 
-[VAPO](vapo.md)没有沿着“进一步去掉 value”的方向前进，而是重新设计 value-based PPO：预热 critic、拆分 actor/critic 的 GAE、让 policy $\lambda$ 随长度变化，再吸收 Clip-Higher、token-level loss 与 group sampling。这正说明方法谱系不是排行榜：当任务的物理约束变化，曾经被省掉的 critic 可能重新变得有价值。
+[VAPO](vapo.md) 没有沿着“进一步去掉 value”的方向前进，而是重新设计 value-based PPO：预热 critic、拆分 actor/critic 的 GAE、让 policy $\lambda$ 随长度变化，再吸收 Clip-Higher、token-level loss 与 group sampling。这正说明方法谱系不是排行榜：当任务的物理约束变化，曾经被省掉的 critic 可能重新变得有价值。
 
 ## Reference {#reference}
 

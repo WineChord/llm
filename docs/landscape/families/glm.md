@@ -65,7 +65,7 @@ flowchart LR
 
 ### 两个最容易混淆的名字
 
-**GLM-Zero Preview** 是 2024 年 12 月上线过的推理模型服务；官方公司时间线确认了产品事件，但截至本页截面没有相应公开权重、代码或完整技术报告。**GLM-Z1** 则是 2025 年 4 月随 GLM-4-0414 开放的 9B / 32B 推理 checkpoint，其中 Rumination 版本带固定搜索协议。二者不是同一个公开对象，也没有足够材料证明简单的 checkpoint 继承关系。[官方里程碑](https://www.zhipuai.cn/en/about)与 [GLM-4 仓库](https://github.com/zai-org/GLM-4)分别固定了这两层证据。
+**GLM-Zero Preview<strong> 是 2024 年 12 月上线过的推理模型服务；官方公司时间线确认了产品事件，但截至本页截面没有相应公开权重、代码或完整技术报告。</strong>GLM-Z1** 则是 2025 年 4 月随 GLM-4-0414 开放的 9B / 32B 推理 checkpoint，其中 Rumination 版本带固定搜索协议。二者不是同一个公开对象，也没有足够材料证明简单的 checkpoint 继承关系。[官方里程碑](https://www.zhipuai.cn/en/about)与 [GLM-4 仓库](https://github.com/zai-org/GLM-4)分别固定了这两层证据。
 
 **CogVLM 与 GLM-V** 也不能写成一条无条件直线。CogVLM 以 visual expert 改造语言主干；CogVLM2 的公开主模型基于 Llama 3，而同期 GLM-4V 使用相同数据与训练方法、换成 GLM-4 语言基座。后来的 GLM-4.1V 才在官方论文中形成更清晰的 GLM-V 线。[CogVLM2 仓库](https://github.com/zai-org/CogVLM2)明确给出了这种“方法与数据相近、语言基座不同”的边界。
 
@@ -85,7 +85,7 @@ $$
 
 ### 规模化把模型问题变成系统问题
 
-[GLM-130B](https://arxiv.org/abs/2210.02414)把双语模型推进到 130B 参数，并少见地同时公开权重、训练日志、并行工具和 loss spike 经验。这里的历史转折是：模型质量不再只由目标函数解释，初始化、数值精度、数据混合、3D parallelism、回滚和量化共同成为模型定义的一部分。它建立了工程经验谱系，却不意味着 ChatGLM-6B 是 130B checkpoint 的等比例缩小。
+[GLM-130B](https://arxiv.org/abs/2210.02414) 把双语模型推进到 130B 参数，并少见地同时公开权重、训练日志、并行工具和 loss spike 经验。这里的历史转折是：模型质量不再只由目标函数解释，初始化、数值精度、数据混合、3D parallelism、回滚和量化共同成为模型定义的一部分。它建立了工程经验谱系，却不意味着 ChatGLM-6B 是 130B checkpoint 的等比例缩小。
 
 ### ChatGLM 把序列变成协议
 
@@ -103,7 +103,7 @@ $$
 
 ### 推理并没有另起炉灶
 
-GLM-Zero Preview 先以服务形式试验推理；GLM-Z1 再把 cold start、长程 RL、数学/代码/逻辑任务和搜索式 rumination 放到可下载 checkpoint 上。随后 GLM-4.5 不再维护“普通模型”和“推理模型”两个完全分离的接口，而是在同一 MoE 模型中支持 thinking / non-thinking。4.6 与 4.7 沿着上下文、coding、tool use、interleaved thinking 和 preserved thinking继续迭代。
+GLM-Zero Preview 先以服务形式试验推理；GLM-Z1 再把 cold start、长程 RL、数学/代码/逻辑任务和搜索式 rumination 放到可下载 checkpoint 上。随后 GLM-4.5 不再维护“普通模型”和“推理模型”两个完全分离的接口，而是在同一 MoE 模型中支持 thinking / non-thinking。4.6 与 4.7 沿着上下文、coding、tool use、interleaved thinking 和 preserved thinking 继续迭代。
 
 这条线说明，test-time compute 不是多输出一段隐藏文本那么简单。它同时改变训练数据、奖励、上下文协议、缓存成本与多轮状态，通用原理应回到[推理后训练](../../training/reasoning-posttraining.md)、[测试时计算](../../reasoning/test-time-compute.md)和[工具使用](../../applications/tool-use.md)理解。
 
@@ -150,7 +150,7 @@ GLM-4.5 的 355B-A32B MoE 建立稀疏主干，GLM-5 再扩到约 744B-A40B，�
 | --- | --- | --- | --- | --- |
 | 2022-09 | CodeGeeX | 独立 13B code Transformer，23 种语言，训练累计通过约 850B token | [P](https://arxiv.org/abs/2303.17568) · [C/W/D](https://github.com/zai-org/CodeGeeX) | 与 GLM 团队同源，但第一代不是某个 ChatGLM checkpoint 的代码微调 |
 | 2023-07 | CodeGeeX2 | 从 ChatGLM2 架构继续代码预训练 | [C/W](https://github.com/zai-org/CodeGeeX2) | 6B 权重有专用模型许可 |
-| 2024-07 | CodeGeeX4 | 从 GLM-4-9B 继续训练，统一 completion、interpreter、search、function call 与 repo QA | [C/W](https://github.com/zai-org/CodeGeeX4) | “ALL” 描述任务接口，不表示训练配方全部公开 |
+| 2024-07 | CodeGeeX4 | 从 GLM-4-9B 继续训练，统一 completion、interpreter、search、function call 与 repo QA | [C/W](https://github.com/zai-org/CodeGeeX4) | “ALL”描述任务接口，不表示训练配方全部公开 |
 | 2023-06 | WebGLM | GLM-10B 加检索器、生成器与偏好 scorer | [P](https://arxiv.org/abs/2306.07906) · [C/D](https://github.com/THUDM/WebGLM) | 它是检索增强系统，不是单一端到端权重的代际名称 |
 | 2023-10 | AgentTuning | agent instruction tuning 与 AgentInstruct 数据 | [P/C/D](https://github.com/THUDM/AgentTuning) | 是通用训练方法与数据线，不应伪装成 GLM 核心版本 |
 | 2024-04 | AutoWebGLM | 从 ChatGLM3-6B 出发，HTML 压缩、课程数据、拒绝采样与 RL | [P](https://arxiv.org/abs/2404.03648) · [C/W/D](https://github.com/THUDM/AutoWebGLM) | 浏览器环境与动作空间属于模型表现的一部分 |
@@ -210,9 +210,9 @@ GLM-4.5 的 355B-A32B MoE 建立稀疏主干，GLM-5 再扩到约 744B-A40B，�
 | ZClawBench | [D](https://huggingface.co/datasets/zai-org/ZClawBench) | 面向 OpenClaw 风格的多步工具使用和真实工作流，公开跨模型轨迹 | 属同组织最新的通用 Agent 评测；当前数据卡说明代码仍在解耦准备，故不能把数据集当作已完整开放的可执行环境 |
 | ImageReward / VisionReward | [C/W](https://github.com/zai-org/ImageReward) · [C/W](https://github.com/zai-org/VisionReward) | 学习图像以及图像 / 视频的多维人类偏好，用于排序、评估或生成模型优化 | reward / evaluator 与生成器是不同模型；若既用于调优又用于汇报分数，应说明潜在的 evaluator overfitting |
 
-工具也要避免与模型、benchmark 混称。[GLM-skills](https://github.com/zai-org/GLM-skills)封装任务接口，[CogKit](https://github.com/THUDM/CogKit)服务 CogView4 / CogVideoX 微调与推理，[OpenWebAgent](https://github.com/THUDM/OpenWebAgent)提供网页 Agent 开发框架，[Z.AI Python SDK](https://github.com/zai-org/z-ai-sdk-python)、[Java SDK](https://github.com/zai-org/z-ai-sdk-java)和 [coding plugins](https://github.com/zai-org/zai-coding-plugins)负责接入与运行。它们可以改变可用性和系统表现，却既不是新 checkpoint，也不能凭自身产出模型能力分数。
+工具也要避免与模型、benchmark 混称。[GLM-skills](https://github.com/zai-org/GLM-skills) 封装任务接口，[CogKit](https://github.com/THUDM/CogKit) 服务 CogView4 / CogVideoX 微调与推理，[OpenWebAgent](https://github.com/THUDM/OpenWebAgent) 提供网页 Agent 开发框架，[Z.AI Python SDK](https://github.com/zai-org/z-ai-sdk-python)、[Java SDK](https://github.com/zai-org/z-ai-sdk-java) 和 [coding plugins](https://github.com/zai-org/zai-coding-plugins) 负责接入与运行。它们可以改变可用性和系统表现，却既不是新 checkpoint，也不能凭自身产出模型能力分数。
 
-`THUDM` 还公开了 [BattleAgentBench](https://github.com/THUDM/BattleAgentBench)、[DataSciBench](https://github.com/THUDM/DataSciBench)、[SWE-Dev](https://github.com/THUDM/SWE-Dev)、[SCALE-CUA](https://github.com/THUDM/SCALE-CUA)与 [CodeRM-NT](https://github.com/THUDM/CodeRM-NT)等通用研究工件。它们与 Agent、coding、RL 主题相关；在一手材料没有给出 GLM checkpoint、训练数据或发布评测的直接关系时，应留在同组织相邻层，而不是写进家族版本表。
+`THUDM` 还公开了 [BattleAgentBench](https://github.com/THUDM/BattleAgentBench)、[DataSciBench](https://github.com/THUDM/DataSciBench)、[SWE-Dev](https://github.com/THUDM/SWE-Dev)、[SCALE-CUA](https://github.com/THUDM/SCALE-CUA) 与 [CodeRM-NT](https://github.com/THUDM/CodeRM-NT) 等通用研究工件。它们与 Agent、coding、RL 主题相关；在一手材料没有给出 GLM checkpoint、训练数据或发布评测的直接关系时，应留在同组织相邻层，而不是写进家族版本表。
 
 ### 视觉理解、文档、语音与端侧
 
@@ -232,7 +232,7 @@ GLM-4.5 的 355B-A32B MoE 建立稀疏主干，GLM-5 再扩到约 744B-A40B，�
 | 2025-12 | GLM-TTS | LLM 生成 speech token，flow matching 转 mel，再由 vocoder 合成；多奖励 RL 调整表现力 | [P](https://arxiv.org/abs/2512.14291) · [C/W](https://github.com/zai-org/GLM-TTS) | TTS 使用独立两阶段结构，不能仅凭名称视为 GLM-4-Voice 后继 checkpoint |
 | 2025-12 | GLM-ASR-Nano-2512 | 1.5B speech-to-text，面向多语、方言与低音量语音 | [C/W](https://github.com/zai-org/GLM-ASR) · [A](https://docs.z.ai/guides/audio/glm-asr-2512) | API `GLM-ASR-2512` 与开放权重 `GLM-ASR-Nano-2512` 名称不同，应分别固定版本 |
 
-多模态家族的完整谱系、结构与证据边界见 [GLM 多模态家族](../../multimodal/glm.md)；机制层再进入[视觉—语言模型](../../multimodal/vision-language.md)、[表示与 grounding](../../multimodal/vision/representation-grounding.md)、[文档、GUI 与 grounding](../../multimodal/document-gui-grounding.md)和[音频语言模型](../../multimodal/audio-language-models.md)。模型卡中的“支持视频”只说明输入接口与训练覆盖，不能自动证明长视频时间定位、跨段推理和流式处理都已解决。
+多模态家族的完整谱系、结构与证据边界见 [GLM 多模态家族](../../multimodal/glm.md)；机制层再进入[视觉—语言模型](../../multimodal/vision-language.md)、[表示与 grounding](../../multimodal/vision/representation-grounding.md)、[文档、GUI 与 grounding](../../multimodal/document-gui-grounding.md) 和[音频语言模型](../../multimodal/audio-language-models.md)。模型卡中的“支持视频”只说明输入接口与训练覆盖，不能自动证明长视频时间定位、跨段推理和流式处理都已解决。
 
 ### 图像与视频生成：相关，但不是一条 GLM 权重直线
 
@@ -248,7 +248,7 @@ GLM-4.5 的 355B-A32B MoE 建立稀疏主干，GLM-5 再扩到约 744B-A40B，�
 | 2024-11 | CogVideoX 1.5 | 分辨率、时长与 image-to-video 更新 | [C/W](https://github.com/zai-org/CogVideo) | 属 checkpoint 更新，不是新论文自动覆盖全部细节 |
 | 2025-07 | CogVideoX-3 | 起止帧、清晰度与服务侧生成接口更新 | [A](https://docs.z.ai/guides/video/cogvideox-3) | 当前公开证据是 API 文档；不能假定与 1.5 开放权重逐层相同 |
 
-[ImageReward](https://github.com/zai-org/ImageReward)与 [VisionReward](https://github.com/zai-org/VisionReward)提供图像 / 视频偏好建模，[Kaleido](https://github.com/zai-org/Kaleido)、[SCAIL](https://github.com/zai-org/SCAIL)、[SCAIL-2](https://github.com/zai-org/SCAIL-2)和 [RealVideo](https://github.com/zai-org/RealVideo)继续探索参考主体、角色动画与流式生成。它们是同一组织的相邻生成研究，不因共同托管在 `zai-org` 就自动成为 CogVideoX 或 GLM-Image 的正式版本。
+[ImageReward](https://github.com/zai-org/ImageReward) 与 [VisionReward](https://github.com/zai-org/VisionReward) 提供图像 / 视频偏好建模，[Kaleido](https://github.com/zai-org/Kaleido)、[SCAIL](https://github.com/zai-org/SCAIL)、[SCAIL-2](https://github.com/zai-org/SCAIL-2) 和 [RealVideo](https://github.com/zai-org/RealVideo) 继续探索参考主体、角色动画与流式生成。它们是同一组织的相邻生成研究，不因共同托管在 `zai-org` 就自动成为 CogVideoX 或 GLM-Image 的正式版本。
 
 从方法史看，这条线走过三次摆动：
 
@@ -299,7 +299,7 @@ GLM-4.5 的 355B-A32B MoE 建立稀疏主干，GLM-5 再扩到约 744B-A40B，�
 ### 想沿能力分支进入
 
 - 通用语言与推理：从本页主线进入[预训练](../../training/pretraining.md)、[后训练](../../training/post-training.md)与[推理系统](../../inference/index.md)。
-- 代码与 Agent：沿 CodeGeeX、AutoWebGLM、slime 进入 [coding agents](../../applications/coding-agents.md)和 [Agentic RL](../../agentic-rl/index.md)。
+- 代码与 Agent：沿 CodeGeeX、AutoWebGLM、slime 进入 [coding agents](../../applications/coding-agents.md) 和 [Agentic RL](../../agentic-rl/index.md)。
 - 视觉理解与 GUI：先沿 [GLM 多模态家族](../../multimodal/glm.md)厘清 VisualGLM、CogVLM、GLM-V、AutoGLM 的继承关系，再进入[视觉—语言](../../multimodal/vision-language.md)和[具身智能](../../embodied/index.md)。
 - 图像、视频与语音：沿 [GLM 多模态家族](../../multimodal/glm.md)定位 CogView、CogVideoX、GLM-Image、GLM-TTS，再进入[多模态知识树](../../multimodal/index.md)中的通用机制页面。
 - 评测与发布比较：先固定模型 revision、模板、thinking budget、工具、judge 与日期，再进入[评测注册表](../../evaluation/benchmark-registry.md)。
@@ -308,16 +308,16 @@ GLM-4.5 的 355B-A32B MoE 建立稀疏主干，GLM-5 再扩到约 744B-A40B，�
 
 公开材料足以重建方向，却不足以复刻整个家族。下面这些空白应长期保留为空白，不能由相邻版本补齐：
 
-1. **GLM-Zero Preview 的技术账本。** 官方能确认上线事件，不能确认训练数据、参数规模、权重继承、RL 配方或它与 GLM-Z1 的确切关系。
-2. **旗舰 GLM-4 服务与开放 9B checkpoint 的等价性。** 家族报告同时讨论产品模型和开放模型，但没有证明二者只是尺寸不同的同配方训练。
-3. **4.6 / 4.7 / 5.1 / 5.2 的完整训练增量。** 权重与能力更新已公开，数据混合、算力、完整超参数与逐项消融没有同等粒度披露。
-4. **GLM-5 报告内部冲突。** 正文 80 层与附录 / 配置 78 层不能自行裁决；Agentic RL 的简化开场目标也不足以直接实现训练器。
-5. **API 与开放权重的 revision 对齐。** GLM-5-Turbo、GLM-5V-Turbo、CogVideoX-3 等服务对象不能被默认当作某个公开 checkpoint 的逐位副本。
-6. **多模态家族的完整数据谱系。** CogVLM2 与 GLM-4V 的共同数据关系有官方说明，但 GLM-V、OCR、图像和视频各阶段的数据来源、去重、合成比例与安全过滤并未全部公开。
-7. **生成模型的可比评测。** 文本渲染、图像偏好、视频物理一致性与审美指标经常依赖私有 prompt、reward model 或人工协议；官方表格不能替代同条件独立复现。
-8. **端侧和国产硬件的可移植性能。** 量化格式、kernel、驱动、batch、上下文和 SLO 任一变化都会改变结果；单设备案例不是普遍吞吐定律。
-9. **许可证的跨工件一致性。** 仓库代码常为 Apache-2.0，历史权重可能使用单独研究 / 商业许可，较新权重也可能标注 MIT；每个 checkpoint 必须以当时模型卡为准。
-10. **同组织研究的继承关系。** ImageReward、VisionReward、SCAIL、Kaleido、RealVideo、AgentTuning、WebRL 与 GLM 产品线互相提供方法背景，但除非论文或仓库明确说明，不能制造 checkpoint 箭头。
+1. <strong>GLM-Zero Preview 的技术账本。</strong>官方能确认上线事件，不能确认训练数据、参数规模、权重继承、RL 配方或它与 GLM-Z1 的确切关系。
+2. <strong>旗舰 GLM-4 服务与开放 9B checkpoint 的等价性。</strong>家族报告同时讨论产品模型和开放模型，但没有证明二者只是尺寸不同的同配方训练。
+3. <strong>4.6 / 4.7 / 5.1 / 5.2 的完整训练增量。</strong>权重与能力更新已公开，数据混合、算力、完整超参数与逐项消融没有同等粒度披露。
+4. <strong>GLM-5 报告内部冲突。</strong>正文 80 层与附录 / 配置 78 层不能自行裁决；Agentic RL 的简化开场目标也不足以直接实现训练器。
+5. <strong>API 与开放权重的 revision 对齐。</strong>GLM-5-Turbo、GLM-5V-Turbo、CogVideoX-3 等服务对象不能被默认当作某个公开 checkpoint 的逐位副本。
+6. <strong>多模态家族的完整数据谱系。</strong>CogVLM2 与 GLM-4V 的共同数据关系有官方说明，但 GLM-V、OCR、图像和视频各阶段的数据来源、去重、合成比例与安全过滤并未全部公开。
+7. <strong>生成模型的可比评测。</strong>文本渲染、图像偏好、视频物理一致性与审美指标经常依赖私有 prompt、reward model 或人工协议；官方表格不能替代同条件独立复现。
+8. <strong>端侧和国产硬件的可移植性能。</strong>量化格式、kernel、驱动、batch、上下文和 SLO 任一变化都会改变结果；单设备案例不是普遍吞吐定律。
+9. <strong>许可证的跨工件一致性。</strong>仓库代码常为 Apache-2.0，历史权重可能使用单独研究 / 商业许可，较新权重也可能标注 MIT；每个 checkpoint 必须以当时模型卡为准。
+10. <strong>同组织研究的继承关系。</strong>ImageReward、VisionReward、SCAIL、Kaleido、RealVideo、AgentTuning、WebRL 与 GLM 产品线互相提供方法背景，但除非论文或仓库明确说明，不能制造 checkpoint 箭头。
 
 ## Reference {#reference}
 

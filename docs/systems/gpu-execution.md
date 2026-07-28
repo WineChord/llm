@@ -127,7 +127,7 @@ $$
 
 这要求下一 tile 的地址、buffer 生命周期和依赖能提前确定。错误的 barrier 可能读到未完成数据；过多 stage 又会吃掉 shared memory 和 register。
 
-Hopper 上的 TMA 可把多维 tensor 搬运交给专门硬件；warp specialization 可令 producer warp 负责搬运、consumer warp 负责矩阵计算或 softmax。[FlashAttention-3](https://arxiv.org/abs/2407.08608)展示了这种异步性在 attention 中的组合方式。这是硬件特定优化，不应把“TMA”写成所有 GPU 的通用实现要求。
+Hopper 上的 TMA 可把多维 tensor 搬运交给专门硬件；warp specialization 可令 producer warp 负责搬运、consumer warp 负责矩阵计算或 softmax。[FlashAttention-3](https://arxiv.org/abs/2407.08608) 展示了这种异步性在 attention 中的组合方式。这是硬件特定优化，不应把“TMA”写成所有 GPU 的通用实现要求。
 
 ## Warp specialization
 
@@ -178,7 +178,7 @@ shape bucket 太少会 padding 浪费，太多会增加 capture 时间、显存�
 
 ## 编译与 autotune
 
-[Triton tutorials](https://triton-lang.org/main/getting-started/tutorials/)展示了以 tile 和 program instance 表达 GPU kernel 的方式；[CUTLASS](https://github.com/NVIDIA/cutlass)则提供更接近硬件指令和 collective kernel 的模板。二者解决的是不同抽象层的问题。
+[Triton tutorials](https://triton-lang.org/main/getting-started/tutorials/) 展示了以 tile 和 program instance 表达 GPU kernel 的方式；[CUTLASS](https://github.com/NVIDIA/cutlass) 则提供更接近硬件指令和 collective kernel 的模板。二者解决的是不同抽象层的问题。
 
 autotune 的搜索空间通常包括：
 

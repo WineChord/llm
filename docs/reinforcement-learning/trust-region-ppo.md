@@ -2,11 +2,11 @@
 
 Policy gradient 给出上升方向，却没有保证一步走多远。神经策略的一次大更新可能让新策略几乎不再访问旧数据中的状态，使原先估计的 advantage 立刻失效。PPO 用 clipped surrogate 让 sampled action 在“有利方向”越界后不再获得额外收益，并换取一阶优化器、minibatch 与多 epoch 训练的便利。
 
-PPO 继承 trust-region 路线的动机，却不等价于硬 KL 约束。[Trust Region 与 TRPO](trust-region.md)独立推导 performance-difference、Fisher、conjugate gradient 与 line search；本页集中解释 PPO 的精确分段、policy 身份、LLM reduction、batch lifecycle 与诊断。梯度起点见 [Policy Gradient](policy-gradient.md)，advantage 的构造见 [Advantage 与 GAE](advantage-estimation-gae.md)。
+PPO 继承 trust-region 路线的动机，却不等价于硬 KL 约束。[Trust Region 与 TRPO](trust-region.md) 独立推导 performance-difference、Fisher、conjugate gradient 与 line search；本页集中解释 PPO 的精确分段、policy 身份、LLM reduction、batch lifecycle 与诊断。梯度起点见 [Policy Gradient](policy-gradient.md)，advantage 的构造见 [Advantage 与 GAE](advantage-estimation-gae.md)。
 
 ## 从 trust region 到 clipped surrogate {#trpo}
 
-旧轨迹只在策略仍靠近采样分布时提供可信的局部改进信号。[Trust Region 与 TRPO](trust-region.md)从 performance-difference identity 出发，把“靠近”写成显式 KL 约束，再用 Fisher、conjugate gradient 与 line search 求解。PPO 保留同一个局部更新动机，却不再求解二阶约束问题。
+旧轨迹只在策略仍靠近采样分布时提供可信的局部改进信号。[Trust Region 与 TRPO](trust-region.md) 从 performance-difference identity 出发，把“靠近”写成显式 KL 约束，再用 Fisher、conjugate gradient 与 line search 求解。PPO 保留同一个局部更新动机，却不再求解二阶约束问题。
 
 对当前训练批次，先在训练引擎上冻结旧策略 $\pi_{\mathrm{old}}^{\mathrm{train}}$，定义 token ratio
 
@@ -74,7 +74,7 @@ $$
 =\widehat A_t\max(r_t,1-\epsilon).
 $$
 
-因此正 advantage 只在 $r_t>1+\epsilon$ 后饱和，负 advantage 只在 $r_t<1-\epsilon$ 后饱和。正 advantage 且 $r_t<1-\epsilon$ 仍要提高概率；负 advantage 且 $r_t>1+\epsilon$ 仍要降低概率。PPO、Clip-Higher、CISPO、GSPO 与 SAPO 的真实梯度差异见[Ratio、Clipping 与 Gate](ratio-clipping-gating.md)。
+因此正 advantage 只在 $r_t>1+\epsilon$ 后饱和，负 advantage 只在 $r_t<1-\epsilon$ 后饱和。正 advantage 且 $r_t<1-\epsilon$ 仍要提高概率；负 advantage 且 $r_t>1+\epsilon$ 仍要降低概率。PPO、Clip-Higher、CISPO、GSPO 与 SAPO 的真实梯度差异见 [Ratio、Clipping 与 Gate](ratio-clipping-gating.md)。
 
 PPO 也不保证实际 KL 小于某个硬阈值：未被当前样本覆盖的动作仍可变化，多个 minibatch epoch 还会持续推动策略。因此实践中常同时监控：
 

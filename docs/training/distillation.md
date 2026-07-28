@@ -160,7 +160,7 @@ assert not reward.requires_grad
 
 #### DeepSeek-V4：全词表、多教师 OPD {#deepseek-v4-full-vocabulary-opd}
 
-[DeepSeek-V4](../landscape/works/deepseek-v4.md#on-policy-distillation)同样先训练多个 domain specialist，再由学生从自身 policy 采样；区别在于它不把 sampled-token log-ratio 当作 RL advantage，而在每个已访问前缀显式计算
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#on-policy-distillation) 同样先训练多个 domain specialist，再由学生从自身 policy 采样；区别在于它不把 sampled-token log-ratio 当作 RL advantage，而在每个已访问前缀显式计算
 
 $$
 \mathcal L_{\mathrm{OPD}}
@@ -174,7 +174,7 @@ $$
 
 全词表目标以更高计算和通信换取更低方差。为了避免同时物化十余个 $T\times |V|$ teacher logits，V4 只缓存 teacher last hidden state，按 teacher 对样本排序，再逐个装入输出 head、重建 logits 并流式累计 KL；teacher 主体权重存于集中式存储并按需做 ZeRO-like sharding。
 
-因此“是否 on-policy”“KL 方向”“全词表还是 sampled-token estimator”“一个还是多个 teacher”是四个独立开关。完整推导、几何混合解释与可执行实现见[On-Policy Distillation 深读](../landscape/works/on-policy-distillation.md)。
+因此“是否 on-policy”“KL 方向”“全词表还是 sampled-token estimator”“一个还是多个 teacher”是四个独立开关。完整推导、几何混合解释与可执行实现见 [On-Policy Distillation 深读](../landscape/works/on-policy-distillation.md)。
 
 ### 推理与过程蒸馏
 

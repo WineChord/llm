@@ -13,7 +13,7 @@ API / product
 license
 ```
 
-具体发布日期与版本继承见[Kimi 技术谱系](../kimi-timeline.md)；K3 的结构、训练、系统、评测与附录见[Kimi K3 工作深读](../works/kimi-k3.md)，其 150 项参考文献如何组成论证链见[K3 引用图谱](../kimi-k3-reference-map.md)。本页负责回答更高一层的问题：整个公开家族有哪些分支，它们怎样汇合，又有哪些内容仍未公开。
+具体发布日期与版本继承见 [Kimi 技术谱系](../kimi-timeline.md)；K3 的结构、训练、系统、评测与附录见 [Kimi K3 工作深读](../works/kimi-k3.md)，其 150 项参考文献如何组成论证链见 [K3 引用图谱](../kimi-k3-reference-map.md)。本页负责回答更高一层的问题：整个公开家族有哪些分支，它们怎样汇合，又有哪些内容仍未公开。
 
 ## 家族地图 {#family-map}
 
@@ -26,15 +26,15 @@ license
 | 长推理与 Agentic RL | [Kimi k1.5](../works/kimi-k1-5.md) → [Kimi-Researcher](https://moonshotai.github.io/Kimi-Researcher/) → [K2 Thinking](https://www.kimi.com/blog/kimi-k2-thinking) → [K2.5](../works/kimi-k2-5.md) | 长轨迹怎样采样、续跑、评分并在动态工具环境中训练 | partial rollout、general critic、multimodal RL、persistent rollout 与 MOPD |
 | 多模态与专门模型 | [Kimi-VL](../../multimodal/kimi-vl.md)、[Kimi-Audio](https://arxiv.org/abs/2504.18425)、[Kimina-Prover](https://arxiv.org/abs/2504.11354)、[Kimi-Dev](https://arxiv.org/abs/2509.23045) | 视觉、音频、形式证明和软件修复分别需要什么表示、数据与反馈 | K2.5 / K2.6 / K2.7 Code 的视觉 Agent，以及 K3 的 MoonViT-V2 与专业任务环境 |
 | 稀疏结构与高性能实现 | [LatentMoE](../works/latentmoe-quantile-balancing.md)、[FlashKDA](../works/kimi-linear-flashkda.md)、[Attention Residuals](../works/attention-residuals.md)、[MoonEP](../works/moonep.md) | 宽度、序列和深度的稀疏性怎样真正落到 kernel、通信和流水线 | K3 的 Stable LatentMoE、Block AttnRes、FlashKDA 与动态冗余专家 |
-| Agent 与验证工具 | [Kimi Code](https://github.com/MoonshotAI/kimi-code)、[Agent SDK](https://github.com/MoonshotAI/kimi-agent-sdk)、[K2 专项 Vendor Verifier](https://github.com/MoonshotAI/K2-Vendor-Verifier)与[当前 Kimi Vendor Verifier](https://github.com/MoonshotAI/Kimi-Vendor-Verifier) | checkpoint 怎样获得工具、权限、状态、协议与可重复的服务质量 | coding / research harness、typed tool call、跨供应商 API contract；两个 verifier 是前后两套评测面，不是模型版本节点 |
+| Agent 与验证工具 | [Kimi Code](https://github.com/MoonshotAI/kimi-code)、[Agent SDK](https://github.com/MoonshotAI/kimi-agent-sdk)、[K2 专项 Vendor Verifier](https://github.com/MoonshotAI/K2-Vendor-Verifier) 与[当前 Kimi Vendor Verifier](https://github.com/MoonshotAI/Kimi-Vendor-Verifier) | checkpoint 怎样获得工具、权限、状态、协议与可重复的服务质量 | coding / research harness、typed tool call、跨供应商 API contract；两个 verifier 是前后两套评测面，不是模型版本节点 |
 
 这些箭头表示公开材料支持的技术承接关系，不表示后一节点完整继承了前一项目的代码。例如 K3 使用 KDA，却不是把 48B Kimi Linear 机械放大；K2.5 把 Agent Swarm 作为系统能力，不能据此断言公开权重在任意本地 harness 中都会自行产生同样的并发拓扑；Kimi Code 能调用 K3，也不因此成为 K3 checkpoint 的组成部分。
 
 ### 第一阶段：先让长上下文成为可运营的系统
 
-[Mooncake](https://arxiv.org/abs/2407.00079)把长上下文首先表述为服务系统问题：prefill 与 decode 分离，GPU 集群之外的 CPU、DRAM 和 SSD 组成分布式 KV cache，调度器在 goodput 与 SLO 之间选择。它公开的是论文、代码与 trace/data，而不是一个 Kimi 模型 checkpoint。由此可见，支持长输入从来不只等于扩大 RoPE 范围；状态放置、传输、复用与过载控制同样决定用户最终看到的上下文能力。
+[Mooncake](https://arxiv.org/abs/2407.00079) 把长上下文首先表述为服务系统问题：prefill 与 decode 分离，GPU 集群之外的 CPU、DRAM 和 SSD 组成分布式 KV cache，调度器在 goodput 与 SLO 之间选择。它公开的是论文、代码与 trace/data，而不是一个 Kimi 模型 checkpoint。由此可见，支持长输入从来不只等于扩大 RoPE 范围；状态放置、传输、复用与过载控制同样决定用户最终看到的上下文能力。
 
-[MoBA](https://arxiv.org/abs/2502.13189)随后把问题推回模型内部：将上下文切成 block，让 query 自己选择 top-$k$ KV blocks，同时保留从 full attention 平滑过渡到 sparse attention 的训练路径。它需要继续训练，不能像推理插件一样无损套在任意既有模型上。再往后，[Kimi Linear](../works/kimi-linear-flashkda.md)用 Kimi Delta Attention（KDA）把一部分 token 历史压进递推状态，并周期性插入全局 MLA；K3 才把这条算法路线与 kernel、context parallelism、prefix-state cache 一起放大到 1M context。
+[MoBA](https://arxiv.org/abs/2502.13189) 随后把问题推回模型内部：将上下文切成 block，让 query 自己选择 top-$k$ KV blocks，同时保留从 full attention 平滑过渡到 sparse attention 的训练路径。它需要继续训练，不能像推理插件一样无损套在任意既有模型上。再往后，[Kimi Linear](../works/kimi-linear-flashkda.md) 用 Kimi Delta Attention（KDA）把一部分 token 历史压进递推状态，并周期性插入全局 MLA；K3 才把这条算法路线与 kernel、context parallelism、prefix-state cache 一起放大到 1M context。
 
 这三步对应三种不同的“长”：
 
@@ -42,39 +42,39 @@ license
 2. MoBA 解决 token 应该稀疏读取哪些历史 block；
 3. KDA 解决一部分历史能否压缩成固定大小的递推状态。
 
-它们可以组合，却不是同一种复杂度优化。进一步比较可回到[长上下文](../../architecture/long-context.md)、[注意力变体](../../architecture/attention-variants.md)、[状态空间与线性注意力](../../architecture/state-space-linear-attention.md)、[KV Cache](../../inference/kv-cache.md)与[推理分离](../../inference/disaggregation.md)。
+它们可以组合，却不是同一种复杂度优化。进一步比较可回到[长上下文](../../architecture/long-context.md)、[注意力变体](../../architecture/attention-variants.md)、[状态空间与线性注意力](../../architecture/state-space-linear-attention.md)、[KV Cache](../../inference/kv-cache.md) 与[推理分离](../../inference/disaggregation.md)。
 
 ### 第二阶段：优化器、长轨迹与专门模型同时分叉
 
-[Moonlight](https://github.com/MoonshotAI/Moonlight)用 16B 总参数、约 3B activated 的 MoE checkpoint 验证大规模 Muon，并公开 base、instruct、中间 checkpoint 与分布式实现。它的历史作用不只是又一个小模型，而是把矩阵正交化更新、参数尺度和 weight decay 变成可做 scaling-law 对照的训练变量。K2 在此基础上面对更大模型的 attention-logit explosion，引入 MuonClip；K3 又把矩阵块进一步切到 attention head，形成 Per-Head Muon。
+[Moonlight](https://github.com/MoonshotAI/Moonlight) 用 16B 总参数、约 3B activated 的 MoE checkpoint 验证大规模 Muon，并公开 base、instruct、中间 checkpoint 与分布式实现。它的历史作用不只是又一个小模型，而是把矩阵正交化更新、参数尺度和 weight decay 变成可做 scaling-law 对照的训练变量。K2 在此基础上面对更大模型的 attention-logit explosion，引入 MuonClip；K3 又把矩阵块进一步切到 attention head，形成 Per-Head Muon。
 
-与此同时，[Kimi k1.5](../works/kimi-k1-5.md)把长 chain-of-thought、128K RL context、partial rollout 和 long2short 放进同一训练叙事。这里的关键不是“生成更长”，而是 episode 的生命周期发生变化：未完成轨迹可以暂停、续跑和进入下一轮数据消费，而不必在同步 barrier 前被截断为失败样本。后来 K2.5 和 K3 延续了这条状态语义，但算法、环境与系统规模并不相同。
+与此同时，[Kimi k1.5](../works/kimi-k1-5.md) 把长 chain-of-thought、128K RL context、partial rollout 和 long2short 放进同一训练叙事。这里的关键不是“生成更长”，而是 episode 的生命周期发生变化：未完成轨迹可以暂停、续跑和进入下一轮数据消费，而不必在同步 barrier 前被截断为失败样本。后来 K2.5 和 K3 延续了这条状态语义，但算法、环境与系统规模并不相同。
 
 2025 年春夏的公开项目则像一组受控探针：
 
-- [Kimi-VL](../../multimodal/kimi-vl.md)研究原生分辨率视觉编码、稀疏语言主干、128K 视觉上下文与多模态 reasoning；
-- [Kimi-Audio](https://github.com/MoonshotAI/Kimi-Audio)用连续声学特征作为输入、12.5 Hz 离散语义 token 作为输出，并以 flow-matching streaming detokenizer 接回语音波形；
-- [Kimina-Prover Preview](https://github.com/MoonshotAI/Kimina-Prover-Preview)在 Lean 4 whole-proof generation 上研究大规模 RL、formal reasoning pattern 与采样计算扩展；
-- [Kimi-Dev](https://github.com/MoonshotAI/Kimi-Dev)把真实仓库、Docker test suite 与代码修复 reward 结合起来，后续报告再把 Agentless skill prior 与 SWE-Agent 适配联系起来；
-- [Kimi-Researcher](https://moonshotai.github.io/Kimi-Researcher/)把搜索、浏览、代码执行和终止动作放在单条 end-to-end RL 轨迹中，公开方法页面与线上 Deep Research 产品，但没有把“计划开放”当成已经发布的权重。
+- [Kimi-VL](../../multimodal/kimi-vl.md) 研究原生分辨率视觉编码、稀疏语言主干、128K 视觉上下文与多模态 reasoning；
+- [Kimi-Audio](https://github.com/MoonshotAI/Kimi-Audio) 用连续声学特征作为输入、12.5 Hz 离散语义 token 作为输出，并以 flow-matching streaming detokenizer 接回语音波形；
+- [Kimina-Prover Preview](https://github.com/MoonshotAI/Kimina-Prover-Preview) 在 Lean 4 whole-proof generation 上研究大规模 RL、formal reasoning pattern 与采样计算扩展；
+- [Kimi-Dev](https://github.com/MoonshotAI/Kimi-Dev) 把真实仓库、Docker test suite 与代码修复 reward 结合起来，后续报告再把 Agentless skill prior 与 SWE-Agent 适配联系起来；
+- [Kimi-Researcher](https://moonshotai.github.io/Kimi-Researcher/) 把搜索、浏览、代码执行和终止动作放在单条 end-to-end RL 轨迹中，公开方法页面与线上 Deep Research 产品，但没有把“计划开放”当成已经发布的权重。
 
 这些支线说明，专业能力的差异不只来自 prompt：观察空间、action grammar、验证器、环境可恢复性、数据合成与评测 harness 都在改变优化问题。
 
 ### 第三阶段：K2 把稀疏规模与 Agentic 训练合流
 
-[Kimi K2](../works/kimi-k2.md)以 1T 总参数、32B activated 的 MoE 为主干，将 15.5T token 预训练、MuonClip、agentic data synthesis、可验证与不可验证任务的通用 critic，以及 checkpoint-engine 权重热更新放到同一系统中。初始公开的 Base / Instruct 是 non-thinking 路线；后续版本不是简单改名：
+[Kimi K2](../works/kimi-k2.md) 以 1T 总参数、32B activated 的 MoE 为主干，将 15.5T token 预训练、MuonClip、agentic data synthesis、可验证与不可验证任务的通用 critic，以及 checkpoint-engine 权重热更新放到同一系统中。初始公开的 Base / Instruct 是 non-thinking 路线；后续版本不是简单改名：
 
-- [K2-Instruct-0905](https://huggingface.co/moonshotai/Kimi-K2-Instruct-0905)把上下文从 128K 扩到 256K，并加强 coding 与 tool use；
-- [K2 Thinking](https://huggingface.co/moonshotai/Kimi-K2-Thinking)转向 interleaved thinking 与多步工具调用，并在 post-training 中采用 native INT4 QAT；
-- [K2.5](../works/kimi-k2-5.md)在 K2-Base 上做约 15T mixed visual-text continual pretraining，把 vision、thinking / instant、joint multimodal RL 与 Agent Swarm 放入同一模型和系统；
-- [K2.6](https://huggingface.co/moonshotai/Kimi-K2.6)沿用 K2.5 报告所描述的 1T / 32B、MoonViT、256K 架构面，重点公开新的 coding、long-horizon execution 与 swarm post-training / 产品能力；
-- [K2.7 Code](https://huggingface.co/moonshotai/Kimi-K2.7-Code)继续沿用 K2.5 / K2.6 架构，专门优化长程软件工程，并强制 thinking 与 preserved thinking。
+- [K2-Instruct-0905](https://huggingface.co/moonshotai/Kimi-K2-Instruct-0905) 把上下文从 128K 扩到 256K，并加强 coding 与 tool use；
+- [K2 Thinking](https://huggingface.co/moonshotai/Kimi-K2-Thinking) 转向 interleaved thinking 与多步工具调用，并在 post-training 中采用 native INT4 QAT；
+- [K2.5](../works/kimi-k2-5.md) 在 K2-Base 上做约 15T mixed visual-text continual pretraining，把 vision、thinking / instant、joint multimodal RL 与 Agent Swarm 放入同一模型和系统；
+- [K2.6](https://huggingface.co/moonshotai/Kimi-K2.6) 沿用 K2.5 报告所描述的 1T / 32B、MoonViT、256K 架构面，重点公开新的 coding、long-horizon execution 与 swarm post-training / 产品能力；
+- [K2.7 Code](https://huggingface.co/moonshotai/Kimi-K2.7-Code) 继续沿用 K2.5 / K2.6 架构，专门优化长程软件工程，并强制 thinking 与 preserved thinking。
 
 这条线最容易产生两个误读。第一，K2.6 与 K2.7 Code 的官方模型卡仍把 K2.5 报告作为论文入口，因此它们是有独立权重与模型卡、但没有新 full technical report 的后训练发布。第二，Agent Swarm 的并发数量、step 上限、工具权限和 context management 属于完整在线系统协议；checkpoint 只提供做决策的 policy，不自动携带整个运行时。
 
 ### 第四阶段：K3 把三种信息通路与系统状态合成
 
-[Kimi K3](../works/kimi-k3.md)不是只把 K2 的专家数放大。它同时重新组织：
+[Kimi K3](../works/kimi-k3.md) 不是只把 K2 的专家数放大。它同时重新组织：
 
 - **sequence**：69 层 KDA 与 24 层 Gated MLA；
 - **depth**：8 个 Block Attention Residuals block；
@@ -84,7 +84,7 @@ MoonViT-V2、Per-Head Muon、Quantile Balancing、Multi-Teacher On-Policy Distil
 
 ## 公开产物账本 {#release-ledger}
 
-下表核验到 2026-07-28。日期指最早可核验的对应公开物；博客、论文、权重、代码与 API 可以不同日上线。`未公开`只表示在所列第一方入口中没有找到相应产物，不表示内部不存在。
+下表核验到 2026-07-28。日期指最早可核验的对应公开物；博客、论文、权重、代码与 API 可以不同日上线。`未公开` 只表示在所列第一方入口中没有找到相应产物，不表示内部不存在。
 
 ### 模型与 checkpoint
 
@@ -92,7 +92,7 @@ MoonViT-V2、Per-Head Muon、Quantile Balancing、Multi-Teacher On-Policy Distil
 | --- | --- | --- | --- |
 | Kimi k1.5 | [2025-01-22 报告](https://arxiv.org/abs/2501.12599)与[官方仓库](https://github.com/MoonshotAI/Kimi-k1.5) | 报告、说明与图表 | 没有稳定的一手发布页可支撑更早的日级产品日期；仓库未随附 checkpoint、完整训练代码或模型许可证 |
 | Moonlight | [2025-02-24 论文](https://arxiv.org/abs/2502.16982)；[2025-03-03 技术文章](https://platform.kimi.com/blog/posts/moonlight) | [Base](https://huggingface.co/moonshotai/Moonlight-16B-A3B)、[Instruct](https://huggingface.co/moonshotai/Moonlight-16B-A3B-Instruct)、中间 checkpoint、分布式 Muon 代码；[仓库 MIT](https://github.com/MoonshotAI/Moonlight/blob/master/LICENSE) | 论文首次提交与后续技术文章是两种日期口径；它仍是研究 checkpoint，不应自动写成 Kimi 商业 API 型号 |
-| Kimi-VL | [2025-04-10 报告](https://arxiv.org/abs/2504.07491) | [MoonViT-SO-400M](https://huggingface.co/moonshotai/MoonViT-SO-400M)、[A3B-Instruct](https://huggingface.co/moonshotai/Kimi-VL-A3B-Instruct)、[A3B-Thinking](https://huggingface.co/moonshotai/Kimi-VL-A3B-Thinking)与 [Thinking-2506](https://huggingface.co/moonshotai/Kimi-VL-A3B-Thinking-2506)；[代码](https://github.com/MoonshotAI/Kimi-VL)；MIT | 权重、推理代码和完整训练栈是三种开放层级；K3 的 MoonViT-V2 不是 MoonViT 的同名复用 |
+| Kimi-VL | [2025-04-10 报告](https://arxiv.org/abs/2504.07491) | [MoonViT-SO-400M](https://huggingface.co/moonshotai/MoonViT-SO-400M)、[A3B-Instruct](https://huggingface.co/moonshotai/Kimi-VL-A3B-Instruct)、[A3B-Thinking](https://huggingface.co/moonshotai/Kimi-VL-A3B-Thinking) 与 [Thinking-2506](https://huggingface.co/moonshotai/Kimi-VL-A3B-Thinking-2506)；[代码](https://github.com/MoonshotAI/Kimi-VL)；MIT | 权重、推理代码和完整训练栈是三种开放层级；K3 的 MoonViT-V2 不是 MoonViT 的同名复用 |
 | Kimina-Prover | [2025-04-15 Preview 报告](https://arxiv.org/abs/2504.11354)；[2025-07-10 72B 更新](https://huggingface.co/blog/AI-MO/kimina-prover) | [distilled 1.5B / 7B 与 autoformalization 权重](https://huggingface.co/collections/AI-MO/kimina-prover-preview-67fb536b883d60e7ca25d7f9)、后续 72B；rectified miniF2F；Lean server | Moonshot AI 与 Numina 的专门分支，基座和每个 checkpoint 许可证应分别查看模型卡 |
 | Kimi-Audio | [2025-04-25 报告](https://arxiv.org/abs/2504.18425) | [Base](https://huggingface.co/moonshotai/Kimi-Audio-7B)、[Instruct](https://huggingface.co/moonshotai/Kimi-Audio-7B-Instruct)、推理 / finetune 代码与[评测工具](https://github.com/MoonshotAI/Kimi-Audio-Evalkit) | 仓库中 Qwen 派生代码为 Apache-2.0，其余代码为 MIT；模型卡仍需单独核验 |
 | Kimi-Dev | 2025-06-17 模型发布；[2025-09-27 报告](https://arxiv.org/abs/2509.23045) | [72B 权重](https://huggingface.co/moonshotai/Kimi-Dev-72B)、workflow / rollout 代码 | 基于 Qwen2.5-72B；许可证受 Qwen agreement 约束，其余标为 MIT |
@@ -143,7 +143,7 @@ MoonViT-V2、Per-Head Muon、Quantile Balancing、Multi-Teacher On-Policy Distil
 
 ### 官方 GitHub 公共仓库快照：43 / 43
 
-截至 2026-07-28，[MoonshotAI 官方组织](https://github.com/MoonshotAI)的 GitHub public-repository API 返回 43 个仓库，均不是 fork，也没有标记 archived。下面把 **43 个逐一归档且只计一次**；分类描述的是公开物角色，不是 checkpoint lineage。Hugging Face 权重、Kimi 产品与 API 型号不在这 43 个 GitHub 仓库数内；[Mooncake](https://github.com/kvcache-ai/Mooncake)位于 `kvcache-ai` 组织，也因此在家族叙事中收录、在本快照计数中排除。
+截至 2026-07-28，[MoonshotAI 官方组织](https://github.com/MoonshotAI)的 GitHub public-repository API 返回 43 个仓库，均不是 fork，也没有标记 archived。下面把 **43 个逐一归档且只计一次**；分类描述的是公开物角色，不是 checkpoint lineage。Hugging Face 权重、Kimi 产品与 API 型号不在这 43 个 GitHub 仓库数内；[Mooncake](https://github.com/kvcache-ai/Mooncake) 位于 `kvcache-ai` 组织，也因此在家族叙事中收录、在本快照计数中排除。
 
 #### 模型与研究：13
 
@@ -232,7 +232,7 @@ Mooncake、MoBA、Kimi Linear 与 K3 分别落在不同层。对外比较时，�
 
 Moonlight 的 Muon 路线先用 Newton–Schulz 型正交化处理二维参数更新，再通过 weight decay 与 update RMS scaling 解决跨形状一致性。K2 的 MuonClip 观察到 attention logit 爆炸与 $W_Q,W_K$ 更新直接相关，于每步后约束二者乘积尺度。K3 的 Per-Head Muon 则承认 fused projection 中不同 head 不是一个自然的单矩阵块，按 head 分组做更新。
 
-这里的共同线索是：optimizer state、参数分组与模型语义不能彼此独立设计。完整推导与比较见[优化器家族](../../training/optimizer-families.md)和[K2 工作深读](../works/kimi-k2.md)。
+这里的共同线索是：optimizer state、参数分组与模型语义不能彼此独立设计。完整推导与比较见[优化器家族](../../training/optimizer-families.md)和 [K2 工作深读](../works/kimi-k2.md)。
 
 ### 强化学习：轨迹越来越长，状态也越来越“物理”
 
@@ -264,7 +264,7 @@ Kimi-Audio 则没有简单接到视觉 token 管线上：它同时使用连续�
 - Attention Residuals 在历史 depth representations 中选择；
 - KDA 则不是 top-$k$ 选择，而是对递推状态做带遗忘的 associative update。
 
-K3 把后三者同时放进一个模型，才会产生新的系统耦合：KDA state 进入 prefix cache，AttnRes block summary 进入 pipeline communication，expert routing 进入 MoonEP load plan。更一般的比较见[Mixture of Experts](../../architecture/moe.md)、[MoE 系统](../../systems/moe-systems.md)与[注意力 kernel](../../systems/attention-kernels.md)。
+K3 把后三者同时放进一个模型，才会产生新的系统耦合：KDA state 进入 prefix cache，AttnRes block summary 进入 pipeline communication，expert routing 进入 MoonEP load plan。更一般的比较见 [Mixture of Experts](../../architecture/moe.md)、[MoE 系统](../../systems/moe-systems.md)与[注意力 kernel](../../systems/attention-kernels.md)。
 
 ### Agent：模型分数必须与 scaffold 分列
 
@@ -278,7 +278,7 @@ Kimi-Researcher、Kimi Code、Agent Swarm 与 K3 white-box harness 代表四个�
 - 最大 steps、并发宽度、重试与中断策略；
 - verifier / judge、重复次数、cost 与评测日期。
 
-缺少这些字段时，分数只是一套系统配置的快照。通用方法见[Agent 应用](../../applications/agents.md)、[Coding Agents](../../applications/coding-agents.md)与[Agent 工具评测](../../evaluation/agent-tool-evaluation.md)。
+缺少这些字段时，分数只是一套系统配置的快照。通用方法见 [Agent 应用](../../applications/agents.md)、[Coding Agents](../../applications/coding-agents.md) 与 [Agent 工具评测](../../evaluation/agent-tool-evaluation.md)。
 
 ## 站内阅读路径 {#site-map}
 
@@ -324,7 +324,7 @@ Kimi-Researcher、Kimi Code、Agent Swarm 与 K3 white-box harness 代表四个�
 5. **API 等价性**：同名 API、Kimi.com 产品、Kimi Code 路由与公开 safetensors 可能具有不同的模板、effort、fallback、cache、tool 与 safety layer。
 6. **独立复现**：大部分 benchmark 是作者报告或动态 leaderboard；长程任务尤其受 harness、网络、judge、重试和预算影响，需要固定日期与协议后再比较。
 7. **安全**：开放权重、长上下文与长程工具使用扩大了部署风险面，但家族各版本的系统化安全报告、训练数据风险和外部复现覆盖仍不均衡。
-8. **K3 视频输入证据面**：[官方仓库 README](https://github.com/MoonshotAI/Kimi-K3/blob/main/README.md)、[发布文章](https://www.kimi.com/blog/kimi-k3)和[K3 的 API / Hermes 接入指南](https://platform.kimi.com/docs/guide/use-kimi-in-hermes-agent)将能力表述为 text、image 与 video；API 的[文件接口](https://platform.kimi.com/docs/api/files-upload)也提供 `purpose="video"` 的服务端上传与预处理。与此同时，[Hugging Face 模型卡](https://huggingface.co/moonshotai/Kimi-K3)的结构化 `pipeline_tag` 是 `image-text-to-text`，Model Summary 写的是 `Text, Image`，公开本地示例也只展示 text + image。两组证据共同确认了产品 / 服务端视频理解表面，却还不足以证明开放 checkpoint 已公开一个可复现的“原始视频容器 → 本地 processor → 时序视觉 token”原生路径；服务端抽帧或其他视频预处理能力不能直接外推成开放权重接口。
+8. **K3 视频输入证据面**：[官方仓库 README](https://github.com/MoonshotAI/Kimi-K3/blob/main/README.md)、[发布文章](https://www.kimi.com/blog/kimi-k3)和 [K3 的 API / Hermes 接入指南](https://platform.kimi.com/docs/guide/use-kimi-in-hermes-agent)将能力表述为 text、image 与 video；API 的[文件接口](https://platform.kimi.com/docs/api/files-upload)也提供 `purpose="video"` 的服务端上传与预处理。与此同时，[Hugging Face 模型卡](https://huggingface.co/moonshotai/Kimi-K3)的结构化 `pipeline_tag` 是 `image-text-to-text`，Model Summary 写的是 `Text, Image`，公开本地示例也只展示 text + image。两组证据共同确认了产品 / 服务端视频理解表面，却还不足以证明开放 checkpoint 已公开一个可复现的“原始视频容器 → 本地 processor → 时序视觉 token”原生路径；服务端抽帧或其他视频预处理能力不能直接外推成开放权重接口。
 9. **许可证组合**：模型、派生基座、代码、kernel、dataset 与在线服务使用条款可能不同；组件采用 MIT / Apache-2.0 不会自动改变 checkpoint 的 [Modified MIT](https://github.com/MoonshotAI/Kimi-K2/blob/main/LICENSE) 或 [Kimi K3 License](https://github.com/MoonshotAI/Kimi-K3/blob/main/LICENSE)。
 
 这些空白不是待填的故事。新的模型卡、报告修订、代码或独立复现出现时，应先更新具体对象和日期，再判断它改变的是家族事件、工作深读还是 canonical 机制。

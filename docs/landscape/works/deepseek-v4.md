@@ -11,7 +11,7 @@ DeepSeek-V4 给出的答案由四层共同构成：
 
 所以，百万 token 不是配置文件中的一个上限。CSA/HCA 决定每层保留什么，KV 管理决定这些状态怎样复用，训练课程决定模型是否学会使用远距离信息，rollout 与沙箱决定长轨迹能否完成，评测协议才决定“1M”究竟测到了检索、推理还是工具使用。
 
-本页重建整份报告的因果链。[DeepSeek 家族总览](../families/deepseek.md)负责它与通用、代码、数学、多模态及开放系统分支的边界；[压缩注意力专题](deepseek-compressed-attention.md)、[mHC 专题](manifold-hyper-connections.md)、[On-Policy Distillation 专题](on-policy-distillation.md)和[TileLang 与 MegaMoE 专题](tilelang-mega-moe.md)继续展开可复用机制；[DeepSeek-V4 引用图谱](../deepseek-v4-reference-map.md)逐项梳理报告正文真正使用的 103 项来源。相关机制也分别进入[长上下文](../../architecture/long-context.md)、[注意力变体](../../architecture/attention-variants.md)、[Mixture of Experts](../../architecture/moe.md)、[预训练](../../training/pretraining.md)、[蒸馏](../../training/distillation.md)、[量化](../../inference/quantization.md)、[MoE 系统](../../systems/moe-systems.md)与[Agent 评测](../../evaluation/agent-tool-evaluation.md)等主干页面。
+本页重建整份报告的因果链。[DeepSeek 家族总览](../families/deepseek.md)负责它与通用、代码、数学、多模态及开放系统分支的边界；[压缩注意力专题](deepseek-compressed-attention.md)、[mHC 专题](manifold-hyper-connections.md)、[On-Policy Distillation 专题](on-policy-distillation.md)和 [TileLang 与 MegaMoE 专题](tilelang-mega-moe.md)继续展开可复用机制；[DeepSeek-V4 引用图谱](../deepseek-v4-reference-map.md)逐项梳理报告正文真正使用的 103 项来源。相关机制也分别进入[长上下文](../../architecture/long-context.md)、[注意力变体](../../architecture/attention-variants.md)、[Mixture of Experts](../../architecture/moe.md)、[预训练](../../training/pretraining.md)、[蒸馏](../../training/distillation.md)、[量化](../../inference/quantization.md)、[MoE 系统](../../systems/moe-systems.md)与 [Agent 评测](../../evaluation/agent-tool-evaluation.md)等主干页面。
 
 ## 一张地图：四条约束怎样闭合 {#causal-chain}
 
@@ -52,7 +52,7 @@ DeepSeek-V4 给出的答案由四层共同构成：
 | pre-training tokens | 32T | 33T |
 | context limit | 1,048,576 | 1,048,576 |
 
-[Pro config](https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/config.json)与[Flash config](https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash/blob/main/config.json)还给出论文近似口径之外的机器契约：
+[Pro config](https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/config.json) 与 [Flash config](https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash/blob/main/config.json) 还给出论文近似口径之外的机器契约：
 
 - vocabulary 的精确值是 129,280，正文将其记作 128K；
 - `max_position_embeddings=1048576`，YaRN factor 为 16，原始窗口为 65,536，普通与 compressed RoPE 的 $\theta$ 分别是 10,000 与 160,000；
@@ -96,7 +96,7 @@ X_l=[x_{l,1};\ldots;x_{l,n_{\mathrm{hc}}}]^\top
 \in\mathbb R^{n_{\mathrm{hc}}\times d},
 $$
 
-报告式 (1)写成
+报告式 (1) 写成
 
 $$
 X_{l+1}=B_lX_l+C_l\mathcal F_l(A_lX_l).
@@ -105,7 +105,7 @@ $$
 
 $A_l$ 决定当前 layer 从哪些 residual stream 读取，$C_l$ 决定新输出写回哪里，$B_l$ 则负责旧状态之间的传播。额外宽度为网络提供了与 hidden size 不同的扩展轴，但未经约束的 $B_l$ 在深层相乘时可能放大信号。
 
-[mHC](https://arxiv.org/abs/2512.24880)把 $B_l$ 投影到 Birkhoff polytope，即非负的 doubly stochastic matrices：
+[mHC](https://arxiv.org/abs/2512.24880) 把 $B_l$ 投影到 Birkhoff polytope，即非负的 doubly stochastic matrices：
 
 $$
 B_l\in\mathcal M
@@ -172,7 +172,7 @@ B_l=M^{(20)}.
 \tag{8}
 $$
 
-V4 的 $n_{\mathrm{hc}}=4$。这会把 layer 间状态扩为四路，但不会把 attention 或 expert 的实际 hidden size 也乘四；系统代价主要来自 activation、pipeline communication 和额外的小矩阵。通过 fused kernel、选择性重算与修改后的 DualPipe 1F1B，报告把 mHC 的 wall-time overhead 控制在 overlapped pipeline stage 的 6.7%。更完整的信号传播与实现讨论见[mHC 专题](manifold-hyper-connections.md)。
+V4 的 $n_{\mathrm{hc}}=4$。这会把 layer 间状态扩为四路，但不会把 attention 或 expert 的实际 hidden size 也乘四；系统代价主要来自 activation、pipeline communication 和额外的小矩阵。通过 fused kernel、选择性重算与修改后的 DualPipe 1F1B，报告把 mHC 的 wall-time overhead 控制在 overlapped pipeline stage 的 6.7%。更完整的信号传播与实现讨论见 [mHC 专题](manifold-hyper-connections.md)。
 
 ### CSA：压缩块，再稀疏选择 {#compressed-sparse-attention}
 
@@ -412,20 +412,20 @@ $$
 
 ### TileLang：开发速度也进入性能模型
 
-大量 CSA/HCA/mHC 细粒度算子若直接拼成 Torch ATen graph，会同时增加 kernel launch 与 Python host overhead。V4 用 [TileLang](https://github.com/tile-ai/tilelang)编写 fused kernels，并在编译器侧加入三类能力：
+大量 CSA/HCA/mHC 细粒度算子若直接拼成 Torch ATen graph，会同时增加 kernel launch 与 Python host overhead。V4 用 [TileLang](https://github.com/tile-ai/tilelang) 编写 fused kernels，并在编译器侧加入三类能力：
 
 - **Host Codegen** 把 dtype、rank、shape、stride 与 layout 检查从 Python 移进基于 TVM-FFI 的生成式 launcher，报告称单次校验从几十或几百微秒降到 1 微秒以内；
 - **Z3-assisted integer analysis** 把 tensor index expression 翻成 QF_NIA，在数秒资源上限内支持 layout inference、hazard/bound analysis、vectorization 与 barrier insertion；
 - **明确的数值语义** 默认关闭 fast-math，近似 `exp/log/sin` 必须显式选择；需要 IEEE-754 时可以指定 rounding mode，并以 layout annotation 固定 lowering 与 accumulation order。
 
-这使“reference CUDA 与 DSL kernel bitwise 对齐”成为可要求的契约，而不是只检查误差阈值。专门的工程脉络见[TileLang 与 MegaMoE](tilelang-mega-moe.md)。
+这使“reference CUDA 与 DSL kernel bitwise 对齐”成为可要求的契约，而不是只检查误差阈值。专门的工程脉络见 [TileLang 与 MegaMoE](tilelang-mega-moe.md)。
 
 ### Batch invariance 与 determinism 不是一回事 {#batch-invariance}
 
 **Batch invariance** 要求同一 token 无论位于怎样的 batch 都得到相同 bit pattern：
 
 - decode attention 不采用会改变 accumulation partition 的常规 split-KV；完整 wave 由单个 SM 处理，尾部不足一 wave 时用多个 SM，但通过 distributed shared memory 维持与单 SM 相同的累加顺序；
-- cuBLAS 由 [DeepGEMM](https://github.com/deepseek-ai/DeepGEMM)替代；
+- cuBLAS 由 [DeepGEMM](https://github.com/deepseek-ai/DeepGEMM) 替代；
 - 小 batch 原则上避免 split-K，并以专门 kernel 补回吞吐。
 
 **Determinism** 则要求同一训练运行能够重放，主要处理 backward 中 `atomicAdd` 的顺序：
@@ -569,7 +569,7 @@ $$
 
 常见近似只在已采到 token 上用
 $\operatorname{sg}[\log \pi_E(y_t)-\log\pi_\theta(y_t)]$
-当 advantage，这个 Monte Carlo estimator 便宜但方差大。V4 计算整个 vocabulary 的 teacher/student reverse KL，以更稠密的监督换稳定性。公式、几何混合解释和可运行实现见[On-Policy Distillation](on-policy-distillation.md)。
+当 advantage，这个 Monte Carlo estimator 便宜但方差大。V4 计算整个 vocabulary 的 teacher/student reverse KL，以更稠密的监督换稳定性。公式、几何混合解释和可运行实现见 [On-Policy Distillation](on-policy-distillation.md)。
 
 ### 为什么 full vocabulary 首先是存储调度问题
 
@@ -604,7 +604,7 @@ backward 对前向所用 FP8 weight 求梯度并直接传给 FP32 master，相�
 
 ### DSec：让环境状态也能恢复 {#dsec}
 
-DeepSeek Elastic Compute（DSec）为 Agent 环境提供统一 Python SDK，底层由三个 Rust 组件——API gateway `Apiserver`、host agent `Edge`、cluster monitor `Watcher`——通过自定义 RPC 和 [3FS](https://github.com/deepseek-ai/3FS)连接。一个 cluster 被报告可管理数十万并发 sandbox，并暴露四种 substrate：
+DeepSeek Elastic Compute（DSec）为 Agent 环境提供统一 Python SDK，底层由三个 Rust 组件——API gateway `Apiserver`、host agent `Edge`、cluster monitor `Watcher`——通过自定义 RPC 和 [3FS](https://github.com/deepseek-ai/3FS) 连接。一个 cluster 被报告可管理数十万并发 sandbox，并暴露四种 substrate：
 
 | substrate | 关键机制 | 适用边界 |
 | --- | --- | --- |
@@ -1042,7 +1042,7 @@ Tables 9–14 虽在 Section 5.4 正文被引用，实体集中排在 Appendix B
 
 ### Algorithm 1 与 Appendices A–B {#appendices}
 
-**Algorithm 1，p. 14** 是 Muon 的完整训练步：gradient、momentum、Nesterov input、hybrid Newton–Schulz、RMS rescale、weight decay/update。它没有展开 `HybridNewtonSchulz` 内部循环；式 (28)与正文给出 8+2 iterations 后才完整。
+**Algorithm 1，p. 14** 是 Muon 的完整训练步：gradient、momentum、Nesterov input、hybrid Newton–Schulz、RMS rescale、weight decay/update。它没有展开 `HybridNewtonSchulz` 内部循环；式 (28) 与正文给出 8+2 iterations 后才完整。
 
 **Appendix A，pp. 54–55** 列出 318 位具名作者，其中 Research & Engineering 270 人、Business & Compliance 48 人；按 first name 字母顺序，星号表示已离开团队。报告署名页另有组织作者 DeepSeek-AI。Acknowledgment 单独感谢 Dolly Deng 与其他 testers。
 

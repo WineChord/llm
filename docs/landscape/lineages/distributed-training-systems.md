@@ -31,7 +31,7 @@ $$
 
 ## Parameter server：先把共享状态独立出来
 
-[Parameter Server](https://www.usenix.org/conference/osdi14/technical-sessions/presentation/li_mu)让 worker 持有数据与局部计算，server 节点维护全局参数。它支持稠密或稀疏参数、异步通信、弹性成员和多种一致性模型，特别适合参数访问稀疏、worker 异构或需要弱同步的工作负载。
+[Parameter Server](https://www.usenix.org/conference/osdi14/technical-sessions/presentation/li_mu) 让 worker 持有数据与局部计算，server 节点维护全局参数。它支持稠密或稀疏参数、异步通信、弹性成员和多种一致性模型，特别适合参数访问稀疏、worker 异构或需要弱同步的工作负载。
 
 若 $D$ 个 worker 每轮各上传并取回 $S$ 字节稠密状态，集群总流量约为
 
@@ -74,7 +74,7 @@ $$
 
 ## ZeRO 与 FSDP：副本显存成为新瓶颈
 
-DDP 分散了计算和通信，却仍在每卡复制参数、梯度和 optimizer states。设三者字节数分别为 $W,G,O$，数据并行度为 $D$，[ZeRO](https://arxiv.org/abs/1910.02054)的静态状态近似为
+DDP 分散了计算和通信，却仍在每卡复制参数、梯度和 optimizer states。设三者字节数分别为 $W,G,O$，数据并行度为 $D$，[ZeRO](https://arxiv.org/abs/1910.02054) 的静态状态近似为
 
 $$
 M_{\text{S1}}\approx W+G+\frac{O}{D},
@@ -90,7 +90,7 @@ $$
 
 Stage 3 的最后一个式子不是峰值：模块执行前仍需 all-gather 参数 shard，反向还需 reduce-scatter 梯度，并产生 prefetch 与 allocator transient。分片把“永久复制”改成“按需物化”，因此 wrap 粒度同时决定峰值显存、消息大小与 overlap。
 
-[PyTorch FSDP](https://arxiv.org/abs/2304.11277)把这一执行语义集成进模块、dispatcher 与 allocator。它和 ZeRO 共享“消除数据并行冗余”的核心思想，但公开 API、wrap 单位、prefetch 与 state-dict 语义并不相同。具体内存和通信推导见[集合通信与状态分片](../../systems/collectives-sharding.md)，TP 与 ZeRO 的组合见[Megatron-LM 与 ZeRO](../works/megatron-zero.md)。
+[PyTorch FSDP](https://arxiv.org/abs/2304.11277) 把这一执行语义集成进模块、dispatcher 与 allocator。它和 ZeRO 共享“消除数据并行冗余”的核心思想，但公开 API、wrap 单位、prefetch 与 state-dict 语义并不相同。具体内存和通信推导见[集合通信与状态分片](../../systems/collectives-sharding.md)，TP 与 ZeRO 的组合见 [Megatron-LM 与 ZeRO](../works/megatron-zero.md)。
 
 ## Tensor parallel：状态分片仍救不了一层
 
@@ -107,7 +107,7 @@ X=[X_1,\ldots,X_T],\qquad
 Y=\sum_iX_iW_i,
 $$
 
-局部结果需要 all-reduce 或 reduce-scatter。[Megatron-LM](https://arxiv.org/abs/1909.08053)通过相邻 column/row parallel 设计，把 Transformer block 的通信集中到少数边界。
+局部结果需要 all-reduce 或 reduce-scatter。[Megatron-LM](https://arxiv.org/abs/1909.08053) 通过相邻 column/row parallel 设计，把 Transformer block 的通信集中到少数边界。
 
 TP 切的是层内计算，频繁交换的是 activation 或局部结果，规模通常随 batch tokens 与 hidden size 增长。并行度过大时，本地 GEMM 变小、算术强度下降、collective 启动变多；因此 TP 通常放在 NVLink/NVSwitch 等最快互联内，而不是无限扩到整个集群。
 
@@ -153,9 +153,9 @@ $$
 
 ## 数值与 kernel：显存释放后，瓶颈继续转移
 
-[Mixed Precision Training](https://arxiv.org/abs/1710.03740)用低精度保存和计算大部分 tensor，并以 FP32 master weights 与 loss scaling 处理 FP16 范围不足。它同时改变显存、HBM traffic、collective bytes 与数值稳定性；“checkpoint 是低比特”不代表运行时执行低比特 GEMM。
+[Mixed Precision Training](https://arxiv.org/abs/1710.03740) 用低精度保存和计算大部分 tensor，并以 FP32 master weights 与 loss scaling 处理 FP16 范围不足。它同时改变显存、HBM traffic、collective bytes 与数值稳定性；“checkpoint 是低比特”不代表运行时执行低比特 GEMM。
 
-Activation checkpointing 则保存少数边界并在反向重算中间 activation。[亚线性内存算法](https://arxiv.org/abs/1604.06174)展示了以额外 forward 计算换取 $O(\sqrt n)$ activation memory 的构造。两种技术释放的显存常被更大 batch 或更长 context 立即吃掉，随后 attention 的 HBM IO 可能成为主导，[FlashAttention](../works/flashattention.md)正从这里接续。
+Activation checkpointing 则保存少数边界并在反向重算中间 activation。[亚线性内存算法](https://arxiv.org/abs/1604.06174)展示了以额外 forward 计算换取 $O(\sqrt n)$ activation memory 的构造。两种技术释放的显存常被更大 batch 或更长 context 立即吃掉，随后 attention 的 HBM IO 可能成为主导，[FlashAttention](../works/flashattention.md) 正从这里接续。
 
 ## 长作业：故障从例外变成稳态成本
 
@@ -171,7 +171,7 @@ $$
 \tau^\star\approx\sqrt{2CM}.
 $$
 
-它忽略恢复时间、相关故障和存储拥塞，只适合作为起点。安全的分布式 checkpoint 应以逻辑 tensor range 描述状态，先写不可变 shard 与 checksum，最后原子提交 manifest；异步 staging 只有在 durable commit 完成后才算成功。[PyTorch DCP](https://docs.pytorch.org/docs/stable/distributed.checkpoint.html)提供分布式 state dict 与 planner，[ByteCheckpoint](https://arxiv.org/abs/2407.20143)进一步研究并行度无关表示和 load-time reshard。恢复契约见[检查点与容错](../../systems/checkpointing.md)和[韧性与可观测性](../../systems/resilience-observability.md)。
+它忽略恢复时间、相关故障和存储拥塞，只适合作为起点。安全的分布式 checkpoint 应以逻辑 tensor range 描述状态，先写不可变 shard 与 checksum，最后原子提交 manifest；异步 staging 只有在 durable commit 完成后才算成功。[PyTorch DCP](https://docs.pytorch.org/docs/stable/distributed.checkpoint.html) 提供分布式 state dict 与 planner，[ByteCheckpoint](https://arxiv.org/abs/2407.20143) 进一步研究并行度无关表示和 load-time reshard。恢复契约见[检查点与容错](../../systems/checkpointing.md)和[韧性与可观测性](../../systems/resilience-observability.md)。
 
 ## 用瓶颈选择机制
 

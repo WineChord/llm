@@ -71,11 +71,11 @@ assert model.embed.weight.grad is not None
 
 causal LM 的连续性首先在于预训练与生成共享同一种 next-token factorization。GPT-1 的下游迁移仍使用任务特定的输入变换与分类、相似度等读出头，并没有让任意任务都直接共享语言模型输出头。
 
-[GPT-2](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)才进一步强调把任务序列化成文本、通过自然语言条件完成零样本迁移；[GPT-3](https://arxiv.org/abs/2005.14165)又把这种接口推到大规模 few-shot in-context learning。它们延续的是 causal 目标，并逐步减少任务专用读出，不是说微调从此失去价值。
+[GPT-2](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) 才进一步强调把任务序列化成文本、通过自然语言条件完成零样本迁移；[GPT-3](https://arxiv.org/abs/2005.14165) 又把这种接口推到大规模 few-shot in-context learning。它们延续的是 causal 目标，并逐步减少任务专用读出，不是说微调从此失去价值。
 
 ## 与 BERT、T5 的分叉
 
-GPT 选择左到右可见性，适合生成，却不能让一个 token 在预训练时同时看见左右上下文。[BERT](bert.md)用 masked prediction 换取双向表示；[T5](t5.md)用 span corruption 与 encoder–decoder 把双向输入和自回归输出结合。三者不是简单版本升级，而是信息流和下游接口的不同选择，完整比较见[预训练目标谱系](../lineages/pretraining-objectives.md)。
+GPT 选择左到右可见性，适合生成，却不能让一个 token 在预训练时同时看见左右上下文。[BERT](bert.md) 用 masked prediction 换取双向表示；[T5](t5.md) 用 span corruption 与 encoder–decoder 把双向输入和自回归输出结合。三者不是简单版本升级，而是信息流和下游接口的不同选择，完整比较见[预训练目标谱系](../lineages/pretraining-objectives.md)。
 
 ## 论文证明到哪里
 

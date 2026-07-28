@@ -1,6 +1,6 @@
 # Seq2Seq 与 Bahdanau Attention：一个向量为什么不够
 
-2014 年，神经机器翻译出现了两项彼此时间重叠、共同改变条件生成的工作。[Sequence to Sequence Learning with Neural Networks](https://proceedings.neurips.cc/paper_files/paper/2014/hash/5a18e133cbf9f257297f410bb7eca942-Abstract.html)在其 WMT 设置中展示了 LSTM encoder–decoder 可以把变长源序列映射为变长目标序列；[Neural Machine Translation by Jointly Learning to Align and Translate](https://arxiv.org/abs/1409.0473)则针对 fixed-vector encoder–decoder 家族追问：为什么整个输入必须被压进一个固定向量？
+2014 年，神经机器翻译出现了两项彼此时间重叠、共同改变条件生成的工作。[Sequence to Sequence Learning with Neural Networks](https://proceedings.neurips.cc/paper_files/paper/2014/hash/5a18e133cbf9f257297f410bb7eca942-Abstract.html) 在其 WMT 设置中展示了 LSTM encoder–decoder 可以把变长源序列映射为变长目标序列；[Neural Machine Translation by Jointly Learning to Align and Translate](https://arxiv.org/abs/1409.0473) 则针对 fixed-vector encoder–decoder 家族追问：为什么整个输入必须被压进一个固定向量？
 
 它们不应被写成严格的“先有 Seq2Seq，后来才有人想到 attention”。Bahdanau 论文首次提交于 2014 年 9 月，与当年的 Seq2Seq 研究并行推进，后发表于 ICLR 2015。
 
@@ -100,7 +100,7 @@ Seq2Seq 在当时的机器翻译设置中展示了大规模 LSTM encoder–decod
 - recurrence 从此没有价值；
 - 后来的 scaled dot-product attention 与 additive attention 在所有条件下等价。
 
-有限状态的前序见[LSTM](lstm.md)，现代 cross-attention 在多模态和生成中的迁移见[冻结模型之间怎样架桥](visual-language-bridges.md)与[RAG](rag.md)，实现层的 mask 细节见[张量原语](../../practice/tensor-primitives.md)。
+有限状态的前序见 [LSTM](lstm.md)，现代 cross-attention 在多模态和生成中的迁移见[冻结模型之间怎样架桥](visual-language-bridges.md)与 [RAG](rag.md)，实现层的 mask 细节见[张量原语](../../practice/tensor-primitives.md)。
 
 ## Reference {#reference}
 

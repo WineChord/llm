@@ -19,7 +19,7 @@
 | 安全 | 1 | 独立能力与风险评估 |
 | **合计** | **150** | **每个官方编号恰出现一次** |
 
-K3 家族的发布日期、权重、代码、API 与许可证差别见[Kimi 技术谱系](kimi-timeline.md)；模型本身的公式、系统和评测见[K3 工作深读](works/kimi-k3.md)；Kimi-VL、K2.5、MoonViT-V2 与 Kimi-Audio 的边界则见[Kimi 多模态分支](../multimodal/kimi.md)。
+K3 家族的发布日期、权重、代码、API 与许可证差别见 [Kimi 技术谱系](kimi-timeline.md)；模型本身的公式、系统和评测见 [K3 工作深读](works/kimi-k3.md)；Kimi-VL、K2.5、MoonViT-V2 与 Kimi-Audio 的边界则见 [Kimi 多模态分支](../multimodal/kimi.md)。
 
 ## K3 与 Kimi 第一方谱系：12 项
 
@@ -61,7 +61,7 @@ K3 家族的发布日期、权重、代码、API 与许可证差别见[Kimi 技�
 - **[141] [Parallelizing Linear Transformers with the Delta Rule](https://arxiv.org/abs/2406.06484)**：给出 DeltaNet 沿序列并行的算法，是 KDA chunkwise formulation 的直接技术基础。
 - **[146] [Root Mean Square Layer Normalization](https://arxiv.org/abs/1910.07467)**：提供 K3 backbone、KDA output 与 AttnRes key normalization 使用的归一化原语。
 
-一层前溯后，KDA 的主链是 Linear Transformer → fast weights / DeltaNet → GLA / Gated DeltaNet → Kimi Linear → K3；AttnRes 的并行背景还包括 [DenseFormer](https://arxiv.org/abs/2402.02622)、[DeepNet](https://arxiv.org/abs/2203.00555)、[Hyper-Connections](https://arxiv.org/abs/2409.19606)、[MUDDFormer](https://proceedings.mlr.press/v267/xiao25d.html)与 [mHC](https://arxiv.org/abs/2512.24880)。这些工作都处理跨层信息流，但不等同于 K3 的 Block AttnRes。
+一层前溯后，KDA 的主链是 Linear Transformer → fast weights / DeltaNet → GLA / Gated DeltaNet → Kimi Linear → K3；AttnRes 的并行背景还包括 [DenseFormer](https://arxiv.org/abs/2402.02622)、[DeepNet](https://arxiv.org/abs/2203.00555)、[Hyper-Connections](https://arxiv.org/abs/2409.19606)、[MUDDFormer](https://proceedings.mlr.press/v267/xiao25d.html) 与 [mHC](https://arxiv.org/abs/2512.24880)。这些工作都处理跨层信息流，但不等同于 K3 的 Block AttnRes。
 
 ## MoE、路由与负载均衡：10 项
 
@@ -83,7 +83,7 @@ K3 家族的发布日期、权重、代码、API 与许可证差别见[Kimi 技�
 - **[45] [Training Compute-Optimal Large Language Models](https://arxiv.org/abs/2203.15556)**：提供 compute-optimal 参数 / token 配比背景，提醒规模比较必须固定总预算。
 - **[46] [MiniCPM](https://arxiv.org/abs/2404.06395)**：是报告讨论 Warmup Stable Decay（WSD）时引用的 schedule 来源；K3 独立搜索后选择 cosine。
 - **[53] [Muon](https://kellerjordan.github.io/posts/muon/)**：提出对隐藏层矩阵梯度做正交化更新，是 Per-Head Muon 的原始优化器起点。
-- **[54] [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361)**：建立 loss 对参数、数据与 compute 的经验幂律，是 K3 “整体 scaling efficiency”叙述的基础。
+- **[54] [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361)**：建立 loss 对参数、数据与 compute 的经验幂律，是 K3“整体 scaling efficiency”叙述的基础。
 
 K3 的约 $2.5\times$ 是多种结构和配方共同形成的 family curve 位移，不能归因于单一组件。Per-Head Muon 还要沿 Muon → [Muon is Scalable](https://arxiv.org/abs/2502.16982) → K2 MuonClip → K3 head-wise grouping 阅读。
 
@@ -114,7 +114,7 @@ K3 自身使用 8K → 64K → 256K → 1M 的 progressive curriculum，并把�
 - **[135] [MiMo-V2.5-Pro](https://huggingface.co/collections/XiaomiMiMo/mimo-v25)**：作为同时代开放模型基线，支撑“1T-class 附近趋同”的背景判断。
 - **[145] [GLM-5](https://arxiv.org/abs/2602.15763)**：提供 agentic engineering 与大规模开放模型的同期比较。
 
-MOPD 的更早一层是 [Generalized Knowledge Distillation](https://arxiv.org/abs/2306.13649)：学生从自己生成的分布接受 teacher feedback。与 K3 同期还应对照 [DAPO](https://arxiv.org/abs/2503.14476)、[VAPO](https://arxiv.org/abs/2504.05118)、[SAO](https://arxiv.org/abs/2607.07508)和 [CompactionRL](https://arxiv.org/abs/2607.05378)，但报告没有声称采用这些算法。K3 是同步 partial rollout 跨 iteration 续跑；SAO 是异步 single-rollout critic 路线；CompactionRL 则显式联合学习 context compaction。
+MOPD 的更早一层是 [Generalized Knowledge Distillation](https://arxiv.org/abs/2306.13649)：学生从自己生成的分布接受 teacher feedback。与 K3 同期还应对照 [DAPO](https://arxiv.org/abs/2503.14476)、[VAPO](https://arxiv.org/abs/2504.05118)、[SAO](https://arxiv.org/abs/2607.07508) 和 [CompactionRL](https://arxiv.org/abs/2607.05378)，但报告没有声称采用这些算法。K3 是同步 partial rollout 跨 iteration 续跑；SAO 是异步 single-rollout critic 路线；CompactionRL 则显式联合学习 context compaction。
 
 ## 量化与 speculative decoding：5 项
 
@@ -124,7 +124,7 @@ MOPD 的更早一层是 [Generalized Knowledge Distillation](https://arxiv.org/a
 - **[103] [Microscaling Data Formats](https://arxiv.org/abs/2310.10537)**：定义共享 scale 的 MX 数据格式背景，支撑 K3 MXFP4 weight / MXFP8 activation。
 - **[104] [LK Losses](https://arxiv.org/abs/2602.23881)**：直接优化 speculative acceptance rate，而不是只最小化 KL，是 K3 draft fine-tuning 的目标来源。
 
-还应连接 [OCP MX Formats Specification](https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf)、[Speculative Decoding](https://arxiv.org/abs/2211.17192)与[Speculative Sampling](https://arxiv.org/abs/2302.01318)。K3 从 SFT 起对 expert weights 做 MXFP4 QAT，并在 RL rollout / training 中维持同一量化路径；这比离线 PTQ 更深地改变训练分布。
+还应连接 [OCP MX Formats Specification](https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf)、[Speculative Decoding](https://arxiv.org/abs/2211.17192) 与 [Speculative Sampling](https://arxiv.org/abs/2302.01318)。K3 从 SFT 起对 expert weights 做 MXFP4 QAT，并在 RL rollout / training 中维持同一量化路径；这比离线 PTQ 更深地改变训练分布。
 
 ## Agent scaffold、环境与任务 benchmark：25 项
 
@@ -154,7 +154,7 @@ MOPD 的更早一层是 [Generalized Knowledge Distillation](https://arxiv.org/a
 - **[143] [OSWorld 2.0](https://arxiv.org/abs/2606.29537)**：扩展到长 horizon 真实操作系统任务。
 - **[150] [SpreadsheetBench 2](https://arxiv.org/abs/2606.29955)**：测量端到端业务表格工作流，连接 professional deliverable 与可验证终态。
 
-这一组的历史前溯还应包括 [ReAct](https://arxiv.org/abs/2210.03629)、[Toolformer](https://arxiv.org/abs/2302.04761)、[SWE-agent](https://arxiv.org/abs/2405.15793)、[OpenHands](https://arxiv.org/abs/2407.16741)和 [OSWorld](https://arxiv.org/abs/2404.07972)。它们分别建立 reasoning–acting loop、训练期工具调用、软件工程 agent、开放 agent platform 与 computer-use environment；K3 的新意在统一 white-box harness、知识图谱任务生成、persistent living environment 和 verifier-in-the-loop AET，而不是首次提出工具型 agent。
+这一组的历史前溯还应包括 [ReAct](https://arxiv.org/abs/2210.03629)、[Toolformer](https://arxiv.org/abs/2302.04761)、[SWE-agent](https://arxiv.org/abs/2405.15793)、[OpenHands](https://arxiv.org/abs/2407.16741) 和 [OSWorld](https://arxiv.org/abs/2404.07972)。它们分别建立 reasoning–acting loop、训练期工具调用、软件工程 agent、开放 agent platform 与 computer-use environment；K3 的新意在统一 white-box harness、知识图谱任务生成、persistent living environment 和 verifier-in-the-loop AET，而不是首次提出工具型 agent。
 
 ## 训练、通信、编译器与 kernel：17 项
 

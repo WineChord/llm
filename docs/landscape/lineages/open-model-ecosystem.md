@@ -4,13 +4,13 @@
 
 ## API 时代留下的缺口
 
-[GPT-3](https://arxiv.org/abs/2005.14165)展示了规模与 in-context learning 的强大组合，也让一个现实矛盾更加明显：训练成本高到难以独立复现，而 API 又隐藏了权重、数据和系统细节。研究者可以比较行为，却很难定位内部机制、复查训练污染，或验证一个改进是否能在同一基座上重现。
+[GPT-3](https://arxiv.org/abs/2005.14165) 展示了规模与 in-context learning 的强大组合，也让一个现实矛盾更加明显：训练成本高到难以独立复现，而 API 又隐藏了权重、数据和系统细节。研究者可以比较行为，却很难定位内部机制、复查训练污染，或验证一个改进是否能在同一基座上重现。
 
 开放生态随后沿两条线推进：一条努力释放更大模型，另一条努力释放更完整的研究过程。两者相关，但并不等价。
 
 ## 2022：规模本身成为公共工程
 
-[GPT-NeoX-20B](https://arxiv.org/abs/2204.06745)开放权重、训练与评测代码，并建立在 Megatron 与 DeepSpeed 之上；[OPT](https://arxiv.org/abs/2205.01068)发布从 125M 到 175B 的 decoder-only 模型及训练日志；[BLOOM](https://arxiv.org/abs/2211.05100)则通过 BigScience 协作训练 176B 多语言模型，同时公开 ROOTS 的数据目录、治理与跨机构工程过程，但这不等于所有底层语料都可重新分发。
+[GPT-NeoX-20B](https://arxiv.org/abs/2204.06745) 开放权重、训练与评测代码，并建立在 Megatron 与 DeepSpeed 之上；[OPT](https://arxiv.org/abs/2205.01068) 发布从 125M 到 175B 的 decoder-only 模型及训练日志；[BLOOM](https://arxiv.org/abs/2211.05100) 则通过 BigScience 协作训练 176B 多语言模型，同时公开 ROOTS 的数据目录、治理与跨机构工程过程，但这不等于所有底层语料都可重新分发。
 
 这几项工作的意义不只在参数量。它们让训练失败、分布式配置、数据语言比例和许可证进入公开讨论，也让后来的量化、微调与推理系统拥有真实的大模型对象。对应的官方入口包括 [GPT-NeoX](https://github.com/EleutherAI/gpt-neox)、已归档 metaseq 仓库中的 [OPT 项目](https://github.com/facebookresearch/metaseq/tree/main/projects/OPT)与 [BLOOM](https://huggingface.co/bigscience/bloom)。
 
@@ -18,7 +18,7 @@
 
 ## 2023：小而强的基座改变下游生态
 
-[LLaMA](https://arxiv.org/abs/2302.13971)强调用更多公开数据训练较小模型，在多个基准上达到有竞争力的性能；首代权重采用申请访问与研究用途许可证。[Llama 2](https://arxiv.org/abs/2307.09288)把公开权重的可得性推得更广，但其社区许可证仍不等同于 OSI 定义的 open source。两者共同使低秩适配、量化微调、领域数据和本地推理迅速围绕统一模型族积累。
+[LLaMA](https://arxiv.org/abs/2302.13971) 强调用更多公开数据训练较小模型，在多个基准上达到有竞争力的性能；首代权重采用申请访问与研究用途许可证。[Llama 2](https://arxiv.org/abs/2307.09288) 把公开权重的可得性推得更广，但其社区许可证仍不等同于 OSI 定义的 open source。两者共同使低秩适配、量化微调、领域数据和本地推理迅速围绕统一模型族积累。
 
 这段历史常被简化成“开源模型追上闭源模型”，但更准确的转折是实验门槛下降：
 
@@ -30,9 +30,9 @@
 
 ## 从模型发布到完整科学对象
 
-[OLMo](https://arxiv.org/abs/2402.00838)把开放范围扩展到训练数据、训练和评测代码、中间 checkpoint 与日志；[官方仓库](https://github.com/allenai/OLMo)和 Dolma 数据使研究者能够检查比最终权重更早的决策。这里的目标不只是提供一个可部署模型，而是让训练过程本身成为可复查实验。
+[OLMo](https://arxiv.org/abs/2402.00838) 把开放范围扩展到训练数据、训练和评测代码、中间 checkpoint 与日志；[官方仓库](https://github.com/allenai/OLMo)和 Dolma 数据使研究者能够检查比最终权重更早的决策。这里的目标不只是提供一个可部署模型，而是让训练过程本身成为可复查实验。
 
-与此同时，[Qwen](https://arxiv.org/abs/2309.16609)、[Qwen2](https://arxiv.org/abs/2407.10671)与 [DeepSeek](../deepseek-timeline.md)等家族推动了多语言、代码、数学、MoE、长上下文和多模态权重的开放。它们说明开放生态已经不再等于“英文 dense base model”，但不同家族披露的数据、系统和后训练细节仍有明显差异。
+与此同时，[Qwen](https://arxiv.org/abs/2309.16609)、[Qwen2](https://arxiv.org/abs/2407.10671) 与 [DeepSeek](../deepseek-timeline.md) 等家族推动了多语言、代码、数学、MoE、长上下文和多模态权重的开放。它们说明开放生态已经不再等于“英文 dense base model”，但不同家族披露的数据、系统和后训练细节仍有明显差异。
 
 ## 用六层而不是一个标签
 
@@ -53,9 +53,9 @@
 
 权重与代码的可得性让几个方向加速形成：
 
-1. [LoRA、QLoRA](../../training/peft.md)等适配方法可以跨尺寸反复验证；
-2. [GPTQ、AWQ](../../inference/quantization.md)与推理引擎能在真实权重上比较；
-3. [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness)等公共评测栈获得统一对象；
+1. [LoRA、QLoRA](../../training/peft.md) 等适配方法可以跨尺寸反复验证；
+2. [GPTQ、AWQ](../../inference/quantization.md) 与推理引擎能在真实权重上比较；
+3. [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness) 等公共评测栈获得统一对象；
 4. 数据归因、可解释性和模型合并不再完全依赖 API 黑箱；
 5. 官方训练仓库暴露的系统问题又推动[并行训练](../../systems/model-parallelism.md)与[容错](../../systems/checkpointing.md)演进。
 
@@ -63,7 +63,7 @@
 
 ## 继续阅读
 
-模型规模与数据配比的变化见[从规模规律到上下文内适应](scaling-and-context.md)，训练数字的可比边界见[训练 token 口径](../training-tokens.md)，完整发布事件怎样拆分可参考[DeepSeek 演化案例](../deepseek-timeline.md)。这条谱系关心的是可研究性，不替代具体模型的机制分析。
+模型规模与数据配比的变化见[从规模规律到上下文内适应](scaling-and-context.md)，训练数字的可比边界见[训练 token 口径](../training-tokens.md)，完整发布事件怎样拆分可参考 [DeepSeek 演化案例](../deepseek-timeline.md)。这条谱系关心的是可研究性，不替代具体模型的机制分析。
 
 ## Reference {#reference}
 

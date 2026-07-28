@@ -64,13 +64,13 @@ GLM-5.1 与 GLM-5.2 已在报告之后发布，但官方 [GLM-5.2 模型卡](htt
 本页负责报告台账；可复用机制继续进入以下路径：
 
 - [GLM-5 架构](glm-5-architecture.md)连接[注意力家族](../../architecture/attention-variants.md)、[长上下文](../../architecture/long-context.md)、[预训练](../../training/pretraining.md)与 Shared MTP；
-- [IndexCache 与 IndexShare](indexcache.md)追踪跨层索引共享，[slime 与异步 Agentic RL](slime-async-agentic-rl.md)连接[训练系统](../../agentic-rl/training-systems.md)和策略错位；
-- [GLM Agentic Engineering](glm-agentic-engineering.md)连接[数据与环境](../../agentic-rl/data-environments.md)、[Agent 评测](../../evaluation/agent-tool-evaluation.md)与长程上下文管理；
+- [IndexCache 与 IndexShare](indexcache.md) 追踪跨层索引共享，[slime 与异步 Agentic RL](slime-async-agentic-rl.md) 连接[训练系统](../../agentic-rl/training-systems.md)和策略错位；
+- [GLM Agentic Engineering](glm-agentic-engineering.md) 连接[数据与环境](../../agentic-rl/data-environments.md)、[Agent 评测](../../evaluation/agent-tool-evaluation.md)与长程上下文管理；
 - [知识蒸馏](../../training/distillation.md)展开 OPD，[量化](../../inference/quantization.md)展开 W4A8/W8A8 部署边界。
 
 ## 模型账本：744B、40B active 到底意味着什么 {#model-ledger}
 
-Appendix A 的参数表与[公开 `config.json`](https://huggingface.co/zai-org/GLM-5/blob/main/config.json)共同给出以下结构：
+Appendix A 的参数表与[公开 `config.json`](https://huggingface.co/zai-org/GLM-5/blob/main/config.json) 共同给出以下结构：
 
 | 配置 | GLM-5 |
 | --- | ---: |
@@ -118,7 +118,7 @@ GLM-4.5 有 160 个 routed experts、89 个 MoE layers；GLM-5 扩为 256 个 ex
 
 ### MLA-256 与 Muon Split：先修正更新几何 {#muon-split}
 
-[Multi-head Latent Attention](https://arxiv.org/abs/2405.04434)把 KV 压缩到低维 latent，显著缩小 KV cache。GLM-5 的早期实验却发现，576-dimensional KV 表示的 MLA 在 Muon 下落后于 GQA-8。作者没有放弃 MLA，而是改变 Muon 的正交化粒度：
+[Multi-head Latent Attention](https://arxiv.org/abs/2405.04434) 把 KV 压缩到低维 latent，显著缩小 KV cache。GLM-5 的早期实验却发现，576-dimensional KV 表示的 MLA 在 Muon 下落后于 GQA-8。作者没有放弃 MLA，而是改变 Muon 的正交化粒度：
 
 1. 普通做法把 $W^{UQ},W^{UK},W^{UV}$ 各自视为一个大矩阵；
 2. Muon Split 按 attention head 切成多个子矩阵；
@@ -150,7 +150,7 @@ assert torch.allclose(u[1] @ u[1].T, eye, atol=1e-5)
 
 ### 参数共享 MTP：一个 draft module，多次迭代 {#shared-mtp}
 
-[Multi-Token Prediction](https://arxiv.org/abs/2404.19737)既能作为训练辅助目标，也能成为 speculative decoding 的 draft model。若为未来第 $1,\ldots,n$ 个 token 分别配置一个 MTP layer，参数和 KV state 会随 $n$ 线性增长。GLM-5 改为：
+[Multi-Token Prediction](https://arxiv.org/abs/2404.19737) 既能作为训练辅助目标，也能成为 speculative decoding 的 draft model。若为未来第 $1,\ldots,n$ 个 token 分别配置一个 MTP layer，参数和 KV state 会随 $n$ 线性增长。GLM-5 改为：
 
 - 只保留一组 MTP 参数；
 - 训练时把同一模块递归使用 3 次；
@@ -273,7 +273,7 @@ Software-engineering 数据把 repository files、commit diff、issue、PR 与�
 长上下文数据同时包含：
 
 - 经过 PPL、去重和长度过滤的书籍、论文及普通文档；
-- 受 [NextLong](https://arxiv.org/abs/2501.12766) 与 [EntropyLong](https://arxiv.org/abs/2510.02330)启发的合成依赖；
+- 受 [NextLong](https://arxiv.org/abs/2501.12766) 与 [EntropyLong](https://arxiv.org/abs/2510.02330) 启发的合成依赖；
 - 把高相似文本交错 packing，强迫模型跨远距离对齐信息；
 - 200K 阶段少量 MRCR-like 多轮 recall 数据。
 
@@ -446,7 +446,7 @@ General RL 把目标拆成三层：
 
 顺序完成 Reasoning RL、Agentic RL 与 General RL 后，后一个阶段可能覆盖前一个阶段学到的行为。GLM-5 在最终阶段执行 On-Policy Cross-Stage Distillation；报告明确列出的 teacher 是 SFT、Reasoning RL 与 General RL 的 final checkpoints，并从对应训练 prompt pool 按比例采样。它没有明确说 Agentic RL checkpoint 也进入 teacher 集合，因此不能从流水线顺序补上这一项。
 
-Equation (2)用 teacher / student token 概率的 log-ratio 替换 Equation (1) 中的 advantage：
+Equation (2) 用 teacher / student token 概率的 log-ratio 替换 Equation (1) 中的 advantage：
 
 $$
 \widehat A_{i,t}
@@ -483,7 +483,7 @@ assert adv[0] > 0 and adv[2] < 0
 
 ## slime：优化目标是最慢 rollout，而不是平均 token/s {#slime}
 
-[slime](https://github.com/THUDM/slime)把 Megatron training、SGLang rollout、reward / verifier、environment interaction 与 Data Buffer 接在同一数据流上。GLM-5 使用它承载 reasoning、general、agentic RL 和 OPD。
+[slime](https://github.com/THUDM/slime) 把 Megatron training、SGLang rollout、reward / verifier、environment interaction 与 Data Buffer 接在同一数据流上。GLM-5 使用它承载 reasoning、general、agentic RL 和 OPD。
 
 ### Scale out：任务逻辑做成服务 {#slime-scale-out}
 
@@ -669,7 +669,7 @@ GLM-5 对 rollout ID 做 consistent hashing，把同一 Agent 固定到同一 DP
 
 ### SWE environments {#swe-environments}
 
-以真实 issue–PR 为种子，先做 rule-based 与 LLM-based filtering，再通过 [RepoLaunch](https://arxiv.org/abs/2505.23419)式流程：
+以真实 issue–PR 为种子，先做 rule-based 与 LLM-based filtering，再通过 [RepoLaunch](https://arxiv.org/abs/2505.23419) 式流程：
 
 1. 分析 repository installation 与 dependency；
 2. 构建可执行环境和 test command；

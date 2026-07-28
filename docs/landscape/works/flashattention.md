@@ -107,7 +107,7 @@ error = max(abs(a - b) for rows in zip(actual, reference) for a, b in zip(*rows)
 assert error < 1e-12 and all(math.isfinite(x) for row in actual for x in row)
 ```
 
-用于生产语义时还要加入 causal/padding/document mask、dropout RNG、GQA head mapping、ragged offsets 与 backward。对应 tensor reference 见[Tensor 原语](../../practice/tensor-primitives.md)。
+用于生产语义时还要加入 causal/padding/document mask、dropout RNG、GQA head mapping、ragged offsets 与 backward。对应 tensor reference 见 [Tensor 原语](../../practice/tensor-primitives.md)。
 
 ## IO 模型
 
@@ -123,7 +123,7 @@ FlashAttention 的额外中间存储随 $O(Nd)$ 而不是 $O(N^2)$ 增长，但�
 
 ## 从 FA1 到硬件协同
 
-[FlashAttention-2](https://arxiv.org/abs/2307.08691)减少非矩阵乘法工作，并重新划分 thread block 与 warp 的任务，让更多执行时间落在高吞吐矩阵单元上。[FlashAttention-3](https://arxiv.org/abs/2407.08608)进一步利用 Hopper 的 TMA、warp specialization 和异步流水，把数据搬运、GEMM 与 softmax 更深地重叠。
+[FlashAttention-2](https://arxiv.org/abs/2307.08691) 减少非矩阵乘法工作，并重新划分 thread block 与 warp 的任务，让更多执行时间落在高吞吐矩阵单元上。[FlashAttention-3](https://arxiv.org/abs/2407.08608) 进一步利用 Hopper 的 TMA、warp specialization 和异步流水，把数据搬运、GEMM 与 softmax 更深地重叠。
 
 这里的稳定思想与硬件结论应分开：
 
@@ -145,7 +145,7 @@ FlashAttention 的额外中间存储随 $O(Nd)$ 而不是 $O(N^2)$ 增长，但�
 | speculative verify | 多个候选 query | branch mask、事务式 KV |
 | prefix/tree attention | 共享或分叉历史 | block ownership、非规则 mask |
 
-因此“使用 FlashAttention”不足以描述推理 kernel。Paged KV、连续虚拟地址和 contiguous KV 会产生不同访存路径，见[Attention Kernel](../../systems/attention-kernels.md)和[vLLM 与 PagedAttention](vllm-pagedattention.md)。
+因此“使用 FlashAttention”不足以描述推理 kernel。Paged KV、连续虚拟地址和 contiguous KV 会产生不同访存路径，见 [Attention Kernel](../../systems/attention-kernels.md) 和 [vLLM 与 PagedAttention](vllm-pagedattention.md)。
 
 ## 数值与正确性
 
@@ -163,7 +163,7 @@ Online softmax 使用全局 running maximum 保持稳定，但浮点加法顺序
 ## Reference {#reference}
 
 - [FlashAttention 原论文](https://arxiv.org/abs/2205.14135)是算法与 IO 分析的一手来源。
-- [FlashAttention-2](https://arxiv.org/abs/2307.08691)和 [FlashAttention-3](https://arxiv.org/abs/2407.08608)分别代表工作划分与 Hopper 异步流水的后续演进。
+- [FlashAttention-2](https://arxiv.org/abs/2307.08691) 和 [FlashAttention-3](https://arxiv.org/abs/2407.08608) 分别代表工作划分与 Hopper 异步流水的后续演进。
 - [Dao-AILab 官方仓库](https://github.com/Dao-AILab/flash-attention)提供 CUDA/ROCm 路径与具体支持矩阵；支持的 GPU、dtype、head dimension、dropout 和 backward 能力必须按目标 commit 核验。
 - PyTorch SDPA、编译器生成 kernel 或其他 fused attention 可以实现相同数学语义，但不能仅凭 API 名称推断它们采用了论文中的同一 tile 与 IO schedule。
 

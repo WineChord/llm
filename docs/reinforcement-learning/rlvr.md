@@ -2,7 +2,7 @@
 
 Reinforcement Learning with Verifiable Rewards 使用程序、形式系统或环境终态自动判断结果。它解决的是 reward 扩展性，不指定 policy optimizer：PPO、RLOO、GRPO 或其他策略梯度都可以优化可验证 reward。
 
-本页负责 RLVR 的端到端训练范式：任务如何进入 rollout、原始验证结果怎样映射为 reward、怎样形成 advantage、何时构成在线闭环，以及怎样评测 policy improvement。Verifier 的详细 taxonomy、process shaping 与攻击面由[Verifier、过程奖励与 Reward Shaping](verifiers-reward-shaping.md)维护，避免两页重复给出不同定义。
+本页负责 RLVR 的端到端训练范式：任务如何进入 rollout、原始验证结果怎样映射为 reward、怎样形成 advantage、何时构成在线闭环，以及怎样评测 policy improvement。Verifier 的详细 taxonomy、process shaping 与攻击面由 [Verifier、过程奖励与 Reward Shaping](verifiers-reward-shaping.md) 维护，避免两页重复给出不同定义。
 
 ## 端到端闭环
 
@@ -42,7 +42,7 @@ $$
 
 它不需要学习 reward model，却可能极度稀疏：成功率接近 $0$ 时几乎没有正样本，接近 $1$ 时组内相对方法缺少方差。课程与采样调度可以维持有信息量的成功分布，但最终评测仍要覆盖原始任务分布。
 
-格式、过程、资源成本与终局正确性应保留为独立原始分量，再由明确规则聚合。过程分数是否能作为 dense reward、怎样避免重复计费，以及 potential-based shaping 何时保持最优策略，统一见[Verifier、过程奖励与 Reward Shaping](verifiers-reward-shaping.md)。
+格式、过程、资源成本与终局正确性应保留为独立原始分量，再由明确规则聚合。过程分数是否能作为 dense reward、怎样避免重复计费，以及 potential-based shaping 何时保持最优策略，统一见 [Verifier、过程奖励与 Reward Shaping](verifiers-reward-shaping.md)。
 
 ## 采样、搜索与 RL 的边界
 
@@ -86,7 +86,7 @@ $$
 
 ## Verifier 完整性与训练隔离
 
-程序 reward 仍会遭遇 specification、parser、test、judge 与 environment state gaming。具体攻击分类和 shaping 风险见[Verifier、过程奖励与 Reward Shaping](verifiers-reward-shaping.md)；端到端 RLVR pipeline 额外负责隔离训练 verifier 与最终 evaluator、冻结 reward mapping 版本、区分基础设施失败，并保存能重放 reward 的 evidence。
+程序 reward 仍会遭遇 specification、parser、test、judge 与 environment state gaming。具体攻击分类和 shaping 风险见 [Verifier、过程奖励与 Reward Shaping](verifiers-reward-shaping.md)；端到端 RLVR pipeline 额外负责隔离训练 verifier 与最终 evaluator、冻结 reward mapping 版本、区分基础设施失败，并保存能重放 reward 的 evidence。
 
 ## 从正确答案到可靠能力
 
@@ -104,7 +104,7 @@ RLVR 直接提高的是所选 verifier 下的期望 reward。要推断更广能�
 
 ## 历史位置
 
-[Training Verifiers](https://arxiv.org/abs/2110.14168)训练 learned verifier，并在推理时从多份数学解答中选择答案；它是验证器训练与 test-time selection 的重要前史，但论文没有用 verifier reward 对解题 policy 做 end-to-end RLVR。[DeepSeekMath](https://arxiv.org/abs/2402.03300)把 group-relative policy optimization 用于数学推理；[DeepSeek-R1](https://arxiv.org/abs/2501.12948)进一步组织冷启动、可验证 reward、RL 与蒸馏。它们分别改变 verifier、optimizer 和训练流程，不应压缩成单一“GRPO 公式”。
+[Training Verifiers](https://arxiv.org/abs/2110.14168) 训练 learned verifier，并在推理时从多份数学解答中选择答案；它是验证器训练与 test-time selection 的重要前史，但论文没有用 verifier reward 对解题 policy 做 end-to-end RLVR。[DeepSeekMath](https://arxiv.org/abs/2402.03300) 把 group-relative policy optimization 用于数学推理；[DeepSeek-R1](https://arxiv.org/abs/2501.12948) 进一步组织冷启动、可验证 reward、RL 与蒸馏。它们分别改变 verifier、optimizer 和训练流程，不应压缩成单一“GRPO 公式”。
 
 ## 验证清单
 
@@ -117,7 +117,7 @@ RLVR 直接提高的是所选 verifier 下的期望 reward。要推断更广能�
 7. 新 policy 必须重新采样，在线改善不能只由训练 loss 推断。
 8. 最终评测使用隔离数据和独立 verifier revision。
 
-reward 与反馈的整体坐标见[反馈制度](feedback-regimes.md)，过程 reward 的边界见[Verifier 与 reward shaping](verifiers-reward-shaping.md)。
+reward 与反馈的整体坐标见[反馈制度](feedback-regimes.md)，过程 reward 的边界见 [Verifier 与 reward shaping](verifiers-reward-shaping.md)。
 
 ## Reference {#reference}
 

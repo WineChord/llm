@@ -21,7 +21,7 @@ $$
 | MQA | $1$ | 所有 Q 共享 K/V | 缓存最小，可能损失质量 |
 | GQA | $1<H_{kv}<H_q$ | 每组 Q 共享 K/V | 质量与带宽折中 |
 
-[GQA](https://arxiv.org/abs/2305.13245)还给出从 MHA checkpoint uptrain 的路线，说明架构选择既可以从头训练，也可以通过受控转换获得。
+[GQA](https://arxiv.org/abs/2305.13245) 还给出从 MHA checkpoint uptrain 的路线，说明架构选择既可以从头训练，也可以通过受控转换获得。
 
 ### 最小语义实现 {#grouped-query-attention}
 
@@ -60,7 +60,7 @@ mapped = grouped_query_attention(mapping_q, mapping_k, mapping_v)
 assert mapped.flatten().tolist() == [1., 1., 7., 7.]
 ```
 
-这里的 `repeat_interleave` 只用于说明 head 映射，会真实复制 K/V；生产 kernel 应在不复制缓存的前提下完成分组寻址，并另行接入 padding、packed segment、RoPE、dropout 与低精度策略。逐张量实现见[张量原语：Grouped-Query Attention](../practice/tensor-primitives.md#grouped-query-attention)，完整 block 的 mask 组合见[Decoder-only Transformer：Attention](../practice/transformer-from-scratch.md#attention)。
+这里的 `repeat_interleave` 只用于说明 head 映射，会真实复制 K/V；生产 kernel 应在不复制缓存的前提下完成分组寻址，并另行接入 padding、packed segment、RoPE、dropout 与低精度策略。逐张量实现见[张量原语：Grouped-Query Attention](../practice/tensor-primitives.md#grouped-query-attention)，完整 block 的 mask 组合见 [Decoder-only Transformer：Attention](../practice/transformer-from-scratch.md#attention)。
 
 ## KV Cache 成本
 
@@ -89,7 +89,7 @@ k_t^C=W^{UK}c_t^{KV},
 v_t^C=W^{UV}c_t^{KV}.
 $$
 
-[DeepSeek-V2](https://arxiv.org/abs/2405.04434)中的 Multi-head Latent Attention 把这条路线与可单独缓存的位置分支组合。它的价值不只来自低秩分解，还取决于推理时能否将部分投影吸收到 query 或输出计算中，避免每步显式恢复大 K/V 张量。
+[DeepSeek-V2](https://arxiv.org/abs/2405.04434) 中的 Multi-head Latent Attention 把这条路线与可单独缓存的位置分支组合。它的价值不只来自低秩分解，还取决于推理时能否将部分投影吸收到 query 或输出计算中，避免每步显式恢复大 K/V 张量。
 
 ## 权重吸收的边界
 
@@ -110,7 +110,7 @@ $$
 ## Gated MLA 与混合注意力
 
 MLA 解决的是“全局注意力怎样减少历史缓存”，线性注意力解决的是“怎样用有限状态替代随长度增长的
-历史”。两者不是互斥选项。[Kimi Linear](https://arxiv.org/abs/2510.26692)与
+历史”。两者不是互斥选项。[Kimi Linear](https://arxiv.org/abs/2510.26692) 与
 [Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)给出一种
 层间混合：大多数层使用 KDA 递推，周期性插入 MLA，让 token 仍能对全局历史作精确、内容相关寻址。
 K3 的一个 block 是 3 层 KDA 加 1 层 Gated MLA，并让主干最后一层仍为 Gated MLA。
@@ -177,7 +177,7 @@ buffer、head layout 与增量 cache。混合架构的整体信息流见
 
 ## 从 DSA 到 CSA / HCA：先压缩时间轴，再决定怎样访问
 
-[DeepSeek-V3.2](https://arxiv.org/abs/2512.02556)的 DSA 用 Lightning Indexer 为 query 选择少量历史 KV；历史本身仍按 token 增长。[DeepSeek-V4](../landscape/works/deepseek-v4.md#csa-hca)再加入两种时间压缩路径：
+[DeepSeek-V3.2](https://arxiv.org/abs/2512.02556) 的 DSA 用 Lightning Indexer 为 query 选择少量历史 KV；历史本身仍按 token 增长。[DeepSeek-V4](../landscape/works/deepseek-v4.md#csa-hca) 再加入两种时间压缩路径：
 
 | 路径 | 压缩步幅 | 长历史访问 | 局部补偿 |
 | --- | ---: | --- | --- |
@@ -194,7 +194,7 @@ CSA 的每个输出从相邻两块共 $2m$ 个候选做逐 channel softmax 加�
 - grouped low-rank output projection，避免 $H_qd_h\to d$ 的直接大投影；
 - 未压缩 SWA，覆盖当前未闭合块和局部细节。
 
-因此它既不是 MLA 的单纯低秩 channel compression，也不是固定状态的 linear attention。公式、因果边界与最小实现见[CSA / HCA 深读](../landscape/works/deepseek-compressed-attention.md)；heterogeneous cache 见[V4 系统闭环](../landscape/works/tilelang-mega-moe.md#hybrid-kv-layout)。
+因此它既不是 MLA 的单纯低秩 channel compression，也不是固定状态的 linear attention。公式、因果边界与最小实现见 [CSA / HCA 深读](../landscape/works/deepseek-compressed-attention.md)；heterogeneous cache 见 [V4 系统闭环](../landscape/works/tilelang-mega-moe.md#hybrid-kv-layout)。
 
 ## Mask 与增量位置
 
@@ -220,7 +220,7 @@ attention 实现至少同时处理：
 | Tensor Parallel | Q/K/V head 能否均匀分片，是否需要复制 |
 | Prefix cache | cache key、position 与 adapter 是否完全兼容 |
 
-位置机制见[长上下文](long-context.md)，缓存管理见[KV Cache](../inference/kv-cache.md)，IO 优化见[Kernel 与性能](../systems/kernels-performance.md)。
+位置机制见[长上下文](long-context.md)，缓存管理见 [KV Cache](../inference/kv-cache.md)，IO 优化见 [Kernel 与性能](../systems/kernels-performance.md)。
 
 ## MLA、DSA 与共享索引器 {#glm-dsa}
 

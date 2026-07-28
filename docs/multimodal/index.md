@@ -2,7 +2,7 @@
 
 多模态模型把文本、图像、文档、音频与视频映射到可共同计算的表示，也可以把共享状态重新解码为媒体。核心问题不是输入类型的数量，而是信息怎样被采样、编码、对齐、压缩、融合、生成和验证。
 
-[多模态的历史](history.md)沿四条水流展开：可学习感知、语言对齐、可逆生成和环境交互。[从“看懂”到“生成”](../landscape/lineages/multimodal-generation.md)保留较短的工作谱系；[CLIP](../landscape/works/clip.md)、[视觉语言桥](../landscape/works/visual-language-bridges.md)与 [DDPM、DiT、Flow](../landscape/works/diffusion-dit-flow.md)则深入关键转折。
+[多模态的历史](history.md)沿四条水流展开：可学习感知、语言对齐、可逆生成和环境交互。[从“看懂”到“生成”](../landscape/lineages/multimodal-generation.md)保留较短的工作谱系；[CLIP](../landscape/works/clip.md)、[视觉语言桥](../landscape/works/visual-language-bridges.md)与 [DDPM、DiT、Flow](../landscape/works/diffusion-dit-flow.md) 则深入关键转折。
 
 ## 统一计算图
 
@@ -57,7 +57,7 @@ Caption、VQA、OCR、grounding、生成和行动不可互相替代。一个模�
 
 ### 再沿能力分流
 
-- **视觉理解**：[视觉表示、感知与 Grounding](vision/representation-grounding.md)先区分全局语义与空间证据，再进入[视觉语言模型](vision-language.md)和[文档、图表、GUI](document-gui-grounding.md)。
+- **视觉理解**：[视觉表示、感知与 Grounding](vision/representation-grounding.md) 先区分全局语义与空间证据，再进入[视觉语言模型](vision-language.md)和[文档、图表、GUI](document-gui-grounding.md)。
 - **图像生成**：[生成建模总览](generative-modeling.md)比较离散自回归、diffusion 与 flow，再沿 autoencoder、score、DiT 和编辑专题深读。
 - **声音**：[音频表示、Codec 与理解](audio/representations-understanding.md)从波形与事件开始，[音频生成、语音交互与流式](audio/generation-streaming.md)继续到 TTS、音乐、通用声音与全双工。
 - **视频**：[视频理解与长程记忆](video/understanding-long-context.md)处理采样、事件和证据，[视频生成](video/generation.md)处理运动、镜头、音画与长时一致性。
@@ -106,6 +106,6 @@ $$
 
 ## 案例与概念
 
-[Kimi-VL 深读](kimi-vl.md)从原生分辨率、视觉—语言桥、MoE decoder 与长视觉上下文展开一个具体模型；[Kimi 多模态分支](kimi.md)、[DeepSeek 多模态案例](deepseek.md)与 [GLM 多模态分支](glm.md)用于观察技术路线怎样跨版本组合通用机制。完整模型边界分别见 [Kimi](../landscape/families/kimi.md)、[DeepSeek](../landscape/families/deepseek.md)和 [GLM](../landscape/families/glm.md) 家族总览；概念结论仍以本节各主题页和一手论文为准。
+[Kimi-VL 深读](kimi-vl.md)从原生分辨率、视觉—语言桥、MoE decoder 与长视觉上下文展开一个具体模型；[Kimi 多模态分支](kimi.md)、[DeepSeek 多模态案例](deepseek.md)与 [GLM 多模态分支](glm.md)用于观察技术路线怎样跨版本组合通用机制。完整模型边界分别见 [Kimi](../landscape/families/kimi.md)、[DeepSeek](../landscape/families/deepseek.md) 和 [GLM](../landscape/families/glm.md) 家族总览；概念结论仍以本节各主题页和一手论文为准。
 
 紧凑的 patchify、对比损失、resampler、坐标、模态 mask、RVQ 与时空 attention 练习见[多模态手撕实现](../practice/multimodal.md)。

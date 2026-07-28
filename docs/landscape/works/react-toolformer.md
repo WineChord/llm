@@ -4,7 +4,7 @@
 
 ## Toolformer：用语言模型损失筛选调用
 
-[Toolformer](https://arxiv.org/abs/2302.04761)从少量人工示例出发，让模型在普通文本中提出候选 API 调用。执行调用后，把返回值插入文本；若调用能显著降低后续 token 的负对数似然，就保留为自监督训练样本。
+[Toolformer](https://arxiv.org/abs/2302.04761) 从少量人工示例出发，让模型在普通文本中提出候选 API 调用。执行调用后，把返回值插入文本；若调用能显著降低后续 token 的负对数似然，就保留为自监督训练样本。
 
 设插入调用及结果后的损失为 $L_i^+$。Toolformer 的 baseline 不是只有“不调用”：它取“不插入调用”与“保留调用但隐藏返回结果”两种后续损失的较小者，记为 $L_i^-$。筛选逻辑是：
 
@@ -20,7 +20,7 @@ Toolformer 的工具是论文预先定义的一组 API，调用结果可直接�
 
 ## ReAct：观察必须进入下一步推理
 
-[ReAct](https://arxiv.org/abs/2210.03629)把轨迹写成交错序列：
+[ReAct](https://arxiv.org/abs/2210.03629) 把轨迹写成交错序列：
 
 ```text
 Thought -> Action -> Observation -> Thought -> ...
@@ -87,11 +87,11 @@ $$
 - 通过 search、reflection 或 verifier 在推理时比较多条轨迹；
 - 通过 online RL 根据环境终态优化完整策略。
 
-它们分别对应[工具调用](../../applications/tool-use.md)、[搜索与验证](../../reasoning/search-verification.md)和[Agentic RL](../../agentic-rl/index.md)。完整前后关系见[从参数记忆到可行动系统](../lineages/retrieval-agents.md)，运行时边界见[Agent Runtime](../../applications/agent-runtime.md)。
+它们分别对应[工具调用](../../applications/tool-use.md)、[搜索与验证](../../reasoning/search-verification.md)和 [Agentic RL](../../agentic-rl/index.md)。完整前后关系见[从参数记忆到可行动系统](../lineages/retrieval-agents.md)，运行时边界见 [Agent Runtime](../../applications/agent-runtime.md)。
 
 这条演进不意味着轨迹越长越好。每增加一步都增加错误、延迟和攻击面；只有 observation 能改变后续选择、且最终结果可以验证时，额外行动才可能带来净收益。评测应与无工具、固定检索和等预算 baseline 比较，而不是只展示成功案例。
 
 ## Reference {#reference}
 
-- [ReAct 论文](https://arxiv.org/abs/2210.03629)、[ReAct project page](https://react-lm.github.io/)与[ysymyth/ReAct](https://github.com/ysymyth/ReAct)；
+- [ReAct 论文](https://arxiv.org/abs/2210.03629)、[ReAct project page](https://react-lm.github.io/) 与 [ysymyth/ReAct](https://github.com/ysymyth/ReAct)；
 - [Toolformer 论文](https://arxiv.org/abs/2302.04761)。论文公开了训练流程与实验，但没有把完整训练系统作为官方仓库发布；复现应明确这一证据边界。

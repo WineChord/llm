@@ -12,11 +12,11 @@ On-Policy Distillation（OPD）改变的不是教师是谁，而是 **由谁产�
 
 这个动机并非始于语言模型：[DAgger](https://arxiv.org/abs/1011.0686) 已经把 sequential
 prediction 的核心困难表述为“训练分布与当前策略真正诱导出的状态分布不同”。语言模型中的
-[MiniLLM](https://arxiv.org/abs/2306.08543)把 reverse KL 与学生采样连接起来；
-[GKD](https://arxiv.org/abs/2306.13649)把学生自生成序列与多种分布距离放入统一接口；
+[MiniLLM](https://arxiv.org/abs/2306.08543) 把 reverse KL 与学生采样连接起来；
+[GKD](https://arxiv.org/abs/2306.13649) 把学生自生成序列与多种分布距离放入统一接口；
 [Thinking Machines Lab 的 OPD 实验](https://thinkingmachines.ai/blog/on-policy-distillation/)
 进一步展示了 sampled-token 版本在推理与持续学习中的训练方式。[Kimi K3](kimi-k3.md#mopd)
-把多教师信号接入 RL-style loss，[DeepSeek-V4](deepseek-v4.md#on-policy-distillation)则选择计算
+把多教师信号接入 RL-style loss，[DeepSeek-V4](deepseek-v4.md#on-policy-distillation) 则选择计算
 更昂贵、方差更低的全词表 reverse KL，并为十余个教师设计调度系统。这些实现属于同一谱系，
 却不是同一个损失估计器。
 
@@ -199,7 +199,7 @@ teacher index 聚拢样本、一次只驻留一个 head、按需重建并流式�
 
 ### 与 SFT
 
-SFT 的 teacher-forced cross-entropy相当于在固定数据前缀上逼近目标 token。它擅长把教师支持集之外的新知识或格式先放进学生的可达区域；OPD 更擅长修正学生已经会访问的状态。实践中先做 domain mid-training / SFT，再做 OPD，不只是经验顺序：如果学生几乎永远到不了目标行为附近，reverse KL 的 mode-seeking 倾向也无法凭空创造那条轨迹。
+SFT 的 teacher-forced cross-entropy 相当于在固定数据前缀上逼近目标 token。它擅长把教师支持集之外的新知识或格式先放进学生的可达区域；OPD 更擅长修正学生已经会访问的状态。实践中先做 domain mid-training / SFT，再做 OPD，不只是经验顺序：如果学生几乎永远到不了目标行为附近，reverse KL 的 mode-seeking 倾向也无法凭空创造那条轨迹。
 
 ### 与 outcome RL
 

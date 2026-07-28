@@ -1,6 +1,6 @@
 # DeepSeek-R1：可验证奖励、冷启动与蒸馏闭环
 
-[DeepSeek-R1](https://arxiv.org/abs/2501.12948) 把 reasoning post-training 的多条路线集中到一套公开流程中：在强 base model 上执行可验证奖励 RL，观察长推理行为，再用少量 cold-start 数据改善可读性，通过 rejection sampling 扩充监督数据，最后进行第二阶段 RL 与模型蒸馏。它在通用主干、数学与证明分支中的位置见[DeepSeek 家族总览](../families/deepseek.md)。
+[DeepSeek-R1](https://arxiv.org/abs/2501.12948) 把 reasoning post-training 的多条路线集中到一套公开流程中：在强 base model 上执行可验证奖励 RL，观察长推理行为，再用少量 cold-start 数据改善可读性，通过 rejection sampling 扩充监督数据，最后进行第二阶段 RL 与模型蒸馏。它在通用主干、数学与证明分支中的位置见 [DeepSeek 家族总览](../families/deepseek.md)。
 
 它不应被压缩成“GRPO 训练出了推理”。GRPO 属于 policy optimizer；accuracy、format 和后续偏好信号属于 reward；长 rollout、采样数和输出上限属于训练与推理预算。
 
@@ -121,7 +121,7 @@ assert reward("<answer>4</answer>", 4) > reward("4", 4) > reward("5", 4)
 
 训练侧，R1 承接 SFT、在线 RL、group-relative advantage 与 distillation，见[从续写到偏好与在线学习](../lineages/training-alignment.md)。推理侧，它把长轨迹、候选验证、搜索数据和 RLVR 连接起来，见[从外显推理到可验证搜索](../lineages/reasoning-verification.md)。
 
-机制细节见[推理后训练](../../training/reasoning-posttraining.md)、[在线 RL](../../training/online-rl.md)、[推理时计算](../../reasoning/test-time-compute.md)、[搜索与验证](../../reasoning/search-verification.md)和[Agentic RL 数学与算法](../../agentic-rl/math-algorithms.md)。
+机制细节见[推理后训练](../../training/reasoning-posttraining.md)、[在线 RL](../../training/online-rl.md)、[推理时计算](../../reasoning/test-time-compute.md)、[搜索与验证](../../reasoning/search-verification.md)和 [Agentic RL 数学与算法](../../agentic-rl/math-algorithms.md)。
 
 ## Reference {#reference}
 

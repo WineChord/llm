@@ -12,7 +12,7 @@ $$
 
 ## 单轨迹与多轨迹
 
-[Chain-of-Thought Prompting](https://arxiv.org/abs/2201.11903)展示了显式中间步骤可以改善部分算术、符号和常识推理任务。它改变的是生成轨迹；轨迹更长本身不保证更正确。
+[Chain-of-Thought Prompting](https://arxiv.org/abs/2201.11903) 展示了显式中间步骤可以改善部分算术、符号和常识推理任务。它改变的是生成轨迹；轨迹更长本身不保证更正确。
 
 增加计算有两种基本方向：
 
@@ -23,7 +23,7 @@ $$
 
 ## Self-consistency
 
-[Self-Consistency](https://arxiv.org/abs/2203.11171)从多个随机推理轨迹提取最终答案并投票：
+[Self-Consistency](https://arxiv.org/abs/2203.11171) 从多个随机推理轨迹提取最终答案并投票：
 
 $$
 a^\star
@@ -168,7 +168,7 @@ $$
 
 产品接口常把推理时计算压成 `low`、`high`、`max` 一类 effort 档位，但档位可能同时改变 context cap、system instruction、thinking envelope、采样次数、工具预算与停止规则。它不是一个跨模型天然可比的物理量。
 
-[DeepSeek-V4](../landscape/works/deepseek-v4.md#post-training-interface)公开了一个可拆解的例子：Non-think 直接进入答案，Think High 使用常规 thinking envelope，Think Max 还增加强调穷尽路径、边界与反例的 system instruction；评测时三档 context cap 分别为 8K、128K、384K。因而 High $\rightarrow$ Max 的差异至少混合了 **预算** 与 **elicitation**，不能把分数增量全部归因于更多 token。
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#post-training-interface) 公开了一个可拆解的例子：Non-think 直接进入答案，Think High 使用常规 thinking envelope，Think Max 还增加强调穷尽路径、边界与反例的 system instruction；评测时三档 context cap 分别为 8K、128K、384K。因而 High $\rightarrow$ Max 的差异至少混合了 **预算** 与 **elicitation**，不能把分数增量全部归因于更多 token。
 
 报告中的结果也说明 effort 不保证逐项单调：Flash 的 MMLU-Pro 在 Max 略低于 High，Pro 的 MCPAtlas Public 也略低于 High；HLE、竞赛代码、Apex 与 BrowseComp 则明显受益。合理的评测应把每个档位写成一份完整 intervention card：
 
@@ -243,7 +243,7 @@ $$
 | 校准 | verifier score 分桶后的真实正确率 |
 | 泛化 | 不同任务、难度与分布外切片 |
 
-[Scaling LLM Test-Time Compute Optimally](https://arxiv.org/abs/2408.03314)给出了按问题难度选择计算策略的实证框架；[DeepSeek-R1 深读](../landscape/works/deepseek-r1.md)把可验证奖励、在线 RL、多阶段数据与蒸馏的公开证据拆开。对开放和闭源系统，都应把可观察的预算—质量曲线与未披露训练机制分开。
+[Scaling LLM Test-Time Compute Optimally](https://arxiv.org/abs/2408.03314) 给出了按问题难度选择计算策略的实证框架；[DeepSeek-R1 深读](../landscape/works/deepseek-r1.md)把可验证奖励、在线 RL、多阶段数据与蒸馏的公开证据拆开。对开放和闭源系统，都应把可观察的预算—质量曲线与未披露训练机制分开。
 
 本节的边界与阅读顺序见[推理与推理时计算总览](index.md)，搜索与 verifier 的计算图见[搜索与验证](search-verification.md)，底层采样见[解码](../inference/decoding.md)，紧凑实现与测试见[测试时计算手撕实现](../practice/test-time-compute.md)。
 

@@ -151,7 +151,7 @@ $$
 
 码本更大不一定更好。若 encoder 只使用少量 code，有效容量远低于 $K$；若 code 过于接近像素噪声，语言主干又难以学习长程规律。
 
-[Residual Vector Quantization](../audio-language-models.md#residual-vector-quantization)通过多个码本逐级量化残差。前层往往承担粗结构，后层补充细节，但这种“语义在前、声学在后”是训练结果而非数学保证，需要用码本消融和重建验证。
+[Residual Vector Quantization](../audio-language-models.md#residual-vector-quantization) 通过多个码本逐级量化残差。前层往往承担粗结构，后层补充细节，但这种“语义在前、声学在后”是训练结果而非数学保证，需要用码本消融和重建验证。
 
 ## 连续 token 也在压缩
 

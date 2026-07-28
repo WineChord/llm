@@ -79,7 +79,7 @@ $m_t=1$ 应只覆盖由 behavior policy 实际采样且允许训练的动作。�
 - 从旧 context 复制进来的历史 token；
 - 只作为条件输入的 summary 或 retrieval span。
 
-summary 是否是 action 取决于它是否由当前 policy 采样并参与决策。例如 [CompactionRL](../landscape/works/sao-compactionrl.md#compactionrl)直接训练 summary token；把已有摘要复制到下一段 prompt 时，复制位置不应再次进入 loss。
+summary 是否是 action 取决于它是否由当前 policy 采样并参与决策。例如 [CompactionRL](../landscape/works/sao-compactionrl.md#compactionrl) 直接训练 summary token；把已有摘要复制到下一段 prompt 时，复制位置不应再次进入 loss。
 
 action mask 的最小语义是同时控制分子、分母和梯度。输入 `logp` 已经是 rollout action ID 在 learner 上的重算 log-probability；`advantage` 属于冻结 target，不能通过 policy loss 回传。
 
@@ -192,7 +192,7 @@ assert reduce_action_terms(term, mask, "token") == 1.2
 assert reduce_action_terms(term, mask, "fixed", budget=4) == .75
 ```
 
-`fixed` 中预算是目标定义，不应随实际生成长度变化；mask 仍排除 prompt、observation 与 padding。分布式实现必须分别全局归约 numerator 和相应 denominator，不能先求各 rank mean 再平均。更完整的长度退化实验见[LLM 策略优化手撕实现](../practice/llm-policy-optimization.md#loss-reduction)。
+`fixed` 中预算是目标定义，不应随实际生成长度变化；mask 仍排除 prompt、observation 与 padding。分布式实现必须分别全局归约 numerator 和相应 denominator，不能先求各 rank mean 再平均。更完整的长度退化实验见 [LLM 策略优化手撕实现](../practice/llm-policy-optimization.md#loss-reduction)。
 
 ## 终止语义
 
@@ -217,7 +217,7 @@ a_t\sim\pi_\theta(\cdot\mid h_t),
 o_{t+1}\sim\Omega(\cdot\mid s_{t+1},a_t).
 $$
 
-这时旧轨迹不只包含旧 token 分布，还包含旧策略诱导的状态访问分布。逐 token ratio 能修正动作概率的一部分差异，却不能神奇地让新策略访问旧数据中从未出现的状态。详见[Off-policy 校正](off-policy-correction.md)与[语言模型信用分配](credit-assignment.md)。
+这时旧轨迹不只包含旧 token 分布，还包含旧策略诱导的状态访问分布。逐 token ratio 能修正动作概率的一部分差异，却不能神奇地让新策略访问旧数据中从未出现的状态。详见 [Off-policy 校正](off-policy-correction.md)与[语言模型信用分配](credit-assignment.md)。
 
 ## 最小检查
 

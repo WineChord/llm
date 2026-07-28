@@ -4,19 +4,19 @@
 
 ## Flamingo：让视觉条件反复进入语言层
 
-[Flamingo](https://arxiv.org/abs/2204.14198)先把视觉特征送进 Perceiver Resampler，用固定数量 latent queries 吸收可变数量的图像或视频 token；随后在冻结语言模型的若干层之间插入 gated cross-attention。门控从接近零开始，使新分支在训练初期不会突然破坏原语言模型。
+[Flamingo](https://arxiv.org/abs/2204.14198) 先把视觉特征送进 Perceiver Resampler，用固定数量 latent queries 吸收可变数量的图像或视频 token；随后在冻结语言模型的若干层之间插入 gated cross-attention。门控从接近零开始，使新分支在训练初期不会突然破坏原语言模型。
 
 这套设计服务于交错图文与 few-shot prompting：视觉条件不是只在输入端投影一次，而能在语言深层反复被读取。代价是桥接计算贯穿多层，KV、mask 与 media position 都需要单独管理。
 
 ## BLIP-2：先让查询学会“看什么”
 
-[BLIP-2](https://arxiv.org/abs/2301.12597)冻结图像 encoder 和 LLM，中间放置 Q-Former。learned queries 通过 cross-attention 从视觉特征中提取有限数量的信息。训练分两阶段：先建立视觉—语言表示关系，再把 query 输出接到 LLM 做生成。
+[BLIP-2](https://arxiv.org/abs/2301.12597) 冻结图像 encoder 和 LLM，中间放置 Q-Former。learned queries 通过 cross-attention 从视觉特征中提取有限数量的信息。训练分两阶段：先建立视觉—语言表示关系，再把 query 输出接到 LLM 做生成。
 
 这里的 bottleneck 是有意设计的。固定数量 query 控制送入 LLM 的视觉 token 数，却可能压掉 OCR、小目标和密集空间细节。query 数量不是越少越好；它同时决定成本上限与信息容量。
 
 ## LLaVA：简单 projector 与指令数据
 
-[LLaVA](https://arxiv.org/abs/2304.08485)使用视觉 encoder、线性 projector 与语言模型，把视觉特征映射为语言 embedding 序列。它的两阶段边界很重要：feature alignment 阶段冻结视觉 encoder 与 LLM，只训练 projector；视觉指令微调阶段继续冻结视觉 encoder，但同时更新 projector 与 LLM。[LLaVA 1.5](https://arxiv.org/abs/2310.03744)进一步显示，MLP projector、更高视觉分辨率和更合适的数据混合可以显著加强这一简单基线。
+[LLaVA](https://arxiv.org/abs/2304.08485) 使用视觉 encoder、线性 projector 与语言模型，把视觉特征映射为语言 embedding 序列。它的两阶段边界很重要：feature alignment 阶段冻结视觉 encoder 与 LLM，只训练 projector；视觉指令微调阶段继续冻结视觉 encoder，但同时更新 projector 与 LLM。[LLaVA 1.5](https://arxiv.org/abs/2310.03744) 进一步显示，MLP projector、更高视觉分辨率和更合适的数据混合可以显著加强这一简单基线。
 
 这条路线的启发不应被简化成“复杂桥接无用”。LLaVA 的目标是可访问的视觉对话模型；Flamingo 的交错 few-shot 场景和 BLIP-2 的冻结两端预训练约束并不相同。架构结论必须与数据、冻结策略和任务一起读。
 
@@ -65,7 +65,7 @@ assert torch.allclose(weight.sum(-1), torch.ones(2, 4), atol=1e-6)
 
 这些工作在各自的数据、冻结策略和任务中展示了“复用强单模态组件”这条路线的可行性与竞争力，也暴露了桥接的长期张力：视觉信息必须适配语言 token 接口，而语言模型未必保留空间结构。后来的多分辨率切片、二维位置编码、视觉 token pruning 和原生多模态训练都在缓解这一问题。
 
-这段历史的前一站是[CLIP](clip.md)，后一站是[统一理解与生成](../../multimodal/unified-understanding-generation.md)。训练计算图、冻结策略与数据阶段见[融合与训练](../../multimodal/architecture-training.md)，完整谱系见[从“看懂”到“生成”](../lineages/multimodal-generation.md)。
+这段历史的前一站是 [CLIP](clip.md)，后一站是[统一理解与生成](../../multimodal/unified-understanding-generation.md)。训练计算图、冻结策略与数据阶段见[融合与训练](../../multimodal/architecture-training.md)，完整谱系见[从“看懂”到“生成”](../lineages/multimodal-generation.md)。
 
 ## Reference {#reference}
 

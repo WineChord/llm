@@ -123,7 +123,7 @@ TP degree 增大时，单卡参数与计算下降，但每层 collective 更频�
 
 ## ZeRO：逐步消除副本
 
-[ZeRO](https://arxiv.org/abs/1910.02054)从 optimizer states 开始，再分片 gradients 和 parameters。设权重、梯度、optimizer states 总字节为 $W,G,O$，数据并行度为 $D$：
+[ZeRO](https://arxiv.org/abs/1910.02054) 从 optimizer states 开始，再分片 gradients 和 parameters。设权重、梯度、optimizer states 总字节为 $W,G,O$，数据并行度为 $D$：
 
 $$
 M_{\text{S1}}\approx W+G+\frac{O}{D},
@@ -173,6 +173,6 @@ $$
 - [NVIDIA Megatron-LM 官方仓库](https://github.com/NVIDIA/Megatron-LM)持续加入 sequence/context/expert parallel、distributed optimizer 与新硬件路径；当前代码不能反向代表 2019 论文的全部实验条件。
 - [ZeRO 原始论文](https://arxiv.org/abs/1910.02054)给出三阶段冗余消除与通信分析。
 - [DeepSpeed ZeRO 官方指南](https://www.deepspeed.ai/tutorials/zero/)描述一种生产实现及其配置；offload、quantization 和新 runtime 特性需要按具体版本核验。
-- [PyTorch FSDP 论文](https://arxiv.org/abs/2304.11277)与[PyTorch Fully Sharded Data Parallel documentation](https://docs.pytorch.org/docs/stable/fsdp.html)提供另一套 fully sharded 执行与 API 语义，不应把 FSDP 配置名机械映射成某个 DeepSpeed stage。
+- [PyTorch FSDP 论文](https://arxiv.org/abs/2304.11277)与 [PyTorch Fully Sharded Data Parallel documentation](https://docs.pytorch.org/docs/stable/fsdp.html) 提供另一套 fully sharded 执行与 API 语义，不应把 FSDP 配置名机械映射成某个 DeepSpeed stage。
 
 评测必须同时报告模型 shape、TP/PP/DP 网格、物理拓扑、microbatch、dtype、checkpoint/recompute、峰值显存、collective 暴露和有效 token throughput。只报告 GPU 数量无法复现实验。

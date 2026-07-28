@@ -133,7 +133,7 @@ $$
 p'(x)\propto\max(0,p(x)-q(x))
 $$
 
-采样。这样在假设满足时保持 target 分布不变。[Speculative Decoding](https://arxiv.org/abs/2211.17192)的收益近似取决于接受长度与 draft/verify 成本，而不是只看 draft 模型更小。
+采样。这样在假设满足时保持 target 分布不变。[Speculative Decoding](https://arxiv.org/abs/2211.17192) 的收益近似取决于接受长度与 draft/verify 成本，而不是只看 draft 模型更小。
 
 需要验证：
 
@@ -158,7 +158,7 @@ parallel layout
 stop and detokenization rules
 ```
 
-KV 分支与分页见[KV Cache](kv-cache.md)，请求级状态见[推理运行时](runtime.md)，加速选择见[加速与量化](acceleration.md)。
+KV 分支与分页见 [KV Cache](kv-cache.md)，请求级状态见[推理运行时](runtime.md)，加速选择见[加速与量化](acceleration.md)。
 
 连续批处理、增量状态与 decode 一致性测试见[推理引擎手撕实现](../practice/inference-engine.md)。
 

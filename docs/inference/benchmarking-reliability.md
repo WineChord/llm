@@ -142,7 +142,7 @@ GPU utilization, memory bandwidth, power and health
 streaming backpressure and cancellation latency
 ```
 
-[vLLM 的指标定义](https://docs.vllm.ai/en/stable/design/metrics/)可作为一个引擎级观测实例；[OpenTelemetry GenAI semantic conventions](https://github.com/open-telemetry/semantic-conventions/blob/main/docs/gen-ai/gen-ai-metrics.md)提供跨组件命名的演进中规范。截至 2026-07，这些软件接口仍可能变化，生产仪表盘应固定版本并保留内部稳定 schema。
+[vLLM 的指标定义](https://docs.vllm.ai/en/stable/design/metrics/)可作为一个引擎级观测实例；[OpenTelemetry GenAI semantic conventions](https://github.com/open-telemetry/semantic-conventions/blob/main/docs/gen-ai/gen-ai-metrics.md) 提供跨组件命名的演进中规范。截至 2026-07，这些软件接口仍可能变化，生产仪表盘应固定版本并保留内部稳定 schema。
 
 默认 telemetry 不应记录 prompt、输出、token IDs、cache key 或可还原内容的高基数标签。诊断内容采样需经过独立的数据治理。
 
@@ -178,7 +178,7 @@ stop, detokenization and streaming semantics
 | Cache schema 变化 | 旧条目 miss / 拒绝，不按相似 shape 误读 |
 | 存储或目录失联 | 远程 cache 降级为重算，核心生成仍有界 |
 
-GPU 硬件与驱动状态可由 [NVIDIA DCGM](https://docs.nvidia.com/datacenter/dcgm/latest/)及其[诊断接口](https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/dcgm-diagnostics.html)提供部分信号；健康检查仍需结合当前请求错误、collective、温度、ECC 和进程状态。单一 utilization 数值不能判定健康。
+GPU 硬件与驱动状态可由 [NVIDIA DCGM](https://docs.nvidia.com/datacenter/dcgm/latest/) 及其[诊断接口](https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/dcgm-diagnostics.html)提供部分信号；健康检查仍需结合当前请求错误、collective、温度、ECC 和进程状态。单一 utilization 数值不能判定健康。
 
 ## 生命周期与版本
 

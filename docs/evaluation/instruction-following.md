@@ -37,7 +37,7 @@ $$
 
 ## 评测方法
 
-[IFEval](https://arxiv.org/abs/2311.07911)使用可程序验证指令，适合测格式、词数和特定结构。[FollowBench](https://arxiv.org/abs/2310.20410)覆盖更细粒度的约束类型。两者说明一个重要原则：尽量把约束变成可执行 verifier。
+[IFEval](https://arxiv.org/abs/2311.07911) 使用可程序验证指令，适合测格式、词数和特定结构。[FollowBench](https://arxiv.org/abs/2310.20410) 覆盖更细粒度的约束类型。两者说明一个重要原则：尽量把约束变成可执行 verifier。
 
 对一组约束，严格成功率为
 
@@ -157,7 +157,7 @@ JSON grammar、正则、有限状态机和 schema-constrained decoding 能保证
 - 多轮约束保持率；
 - 注入攻击下的任务保持率。
 
-每个聚合数字应保留 constraint type、数量、作用域、冲突状态、输出长度、是否调用工具和 verifier 版本等切片。否则 strict accuracy 下降时，无法判断是 JSON parser、长上下文遗忘还是权限问题。幻觉与证据见[幻觉与事实性](hallucination.md)，统计区间见[统计推断](statistical-inference.md)，工具权限见[Agentic RL 评测与安全](../agentic-rl/evaluation-safety.md)。
+每个聚合数字应保留 constraint type、数量、作用域、冲突状态、输出长度、是否调用工具和 verifier 版本等切片。否则 strict accuracy 下降时，无法判断是 JSON parser、长上下文遗忘还是权限问题。幻觉与证据见[幻觉与事实性](hallucination.md)，统计区间见[统计推断](statistical-inference.md)，工具权限见 [Agentic RL 评测与安全](../agentic-rl/evaluation-safety.md)。
 
 ## Reference {#reference}
 

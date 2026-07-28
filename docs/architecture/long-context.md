@@ -4,7 +4,7 @@
 
 ## RoPE 的相对位置
 
-[RoPE](https://arxiv.org/abs/2104.09864)在每个二维子空间对 Q/K 施加位置相关旋转。第 $j$ 个频率可写为
+[RoPE](https://arxiv.org/abs/2104.09864) 在每个二维子空间对 Q/K 施加位置相关旋转。第 $j$ 个频率可写为
 
 $$
 \theta_j=b^{-2j/d_h},
@@ -30,7 +30,7 @@ $$
 m'=m\frac{L_0}{L_1}.
 $$
 
-所有频率统一缩放易实现，却会压缩短距离分辨率。NTK-aware 一类方法按频率维度调整基数或缩放，使高低频受到不同影响；[YaRN](https://arxiv.org/abs/2309.00071)进一步组合频率分区与 attention scale。实现时应以具体公式和版本为准，“NTK”“dynamic”不是统一规范。
+所有频率统一缩放易实现，却会压缩短距离分辨率。NTK-aware 一类方法按频率维度调整基数或缩放，使高低频受到不同影响；[YaRN](https://arxiv.org/abs/2309.00071) 进一步组合频率分区与 attention scale。实现时应以具体公式和版本为准，“NTK”“dynamic”不是统一规范。
 
 ## 训练与推理策略
 
@@ -98,7 +98,7 @@ perceptual hashing、规则与 classifier 质量过滤、文件结构校验，�
 
 ## DeepSeek-V4：压缩历史、稀疏读取与局部窗口
 
-[DeepSeek-V4](../landscape/works/deepseek-v4.md#csa-hca)把 1M context 分给三种互补路径：CSA 以 $4\times$ 时间压缩后做 query-dependent top-$k$；HCA 以 $128\times$ 时间压缩后做 dense global attention；SWA 保留最近 128 token 的未压缩细节。完整机制见[CSA / HCA](../landscape/works/deepseek-compressed-attention.md)。
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#csa-hca) 把 1M context 分给三种互补路径：CSA 以 $4\times$ 时间压缩后做 query-dependent top-$k$；HCA 以 $128\times$ 时间压缩后做 dense global attention；SWA 保留最近 128 token 的未压缩细节。完整机制见 [CSA / HCA](../landscape/works/deepseek-compressed-attention.md)。
 
 训练长度按 $4\text{K}\rightarrow16\text{K}\rightarrow64\text{K}\rightarrow1\text{M}$扩展；sparse attention 到 64K 阶段才引入，并先单独 warm up indexer。Flash 在前 1T token 保持 dense attention，Pro 的 dense 阶段更长但报告没有给出精确 token 数。这个顺序避免从第一步就同时学习语言、压缩器和稀疏选择，但也意味着“总训练 token”不能直接告诉我们模型实际见过多少 1M 样本。
 
@@ -113,7 +113,7 @@ V4 的 learnable sink 不是把某个真实 token 固定成 sink：每个 head �
 
 ## 系统代价
 
-标准 attention 的 score 计算为 $O(T^2d)$，KV Cache 则随 $T$ 线性增长。训练时可用 IO-aware kernel 避免物化完整 score 矩阵，但不会消除所有二次 FLOPs。跨设备长序列还需要交换 K/V block 或在线 softmax 统计；[Ring Attention](https://arxiv.org/abs/2310.01889)展示了将 block 通信与计算重叠的一条路线。
+标准 attention 的 score 计算为 $O(T^2d)$，KV Cache 则随 $T$ 线性增长。训练时可用 IO-aware kernel 避免物化完整 score 矩阵，但不会消除所有二次 FLOPs。跨设备长序列还需要交换 K/V block 或在线 softmax 统计；[Ring Attention](https://arxiv.org/abs/2310.01889) 展示了将 block 通信与计算重叠的一条路线。
 
 ## 评测矩阵
 
@@ -171,7 +171,7 @@ GLM-5 的 base model 总训练量为 28.5T tokens，长上下文不是最后一�
 
 DSA 不属于表内 50B 阶段的同一 token 账。报告把它放在 mid-training 结束之后：先做 1000-step indexer warm-up，再用 20B tokens 做 sparse adaptation。长度课程与架构适应必须分别登记，不能把 20B 重复计入 50B。
 
-数据侧同时采用自然长文、合成长样本、[NextLong](https://arxiv.org/abs/2501.12766)与 EntropyLong 一类方法，评测侧还需要区分检索、跨段推理和 Agent 工具历史。搜索 Agent 的 keep-recent / discard-all 进一步说明：窗口容量只是物理上限，哪些 observation 留在活动上下文仍是独立算法，见 [GLM Agentic Engineering](../landscape/works/glm-agentic-engineering.md#context-management)。
+数据侧同时采用自然长文、合成长样本、[NextLong](https://arxiv.org/abs/2501.12766) 与 EntropyLong 一类方法，评测侧还需要区分检索、跨段推理和 Agent 工具历史。搜索 Agent 的 keep-recent / discard-all 进一步说明：窗口容量只是物理上限，哪些 observation 留在活动上下文仍是独立算法，见 [GLM Agentic Engineering](../landscape/works/glm-agentic-engineering.md#context-management)。
 
 ## Reference {#reference}
 

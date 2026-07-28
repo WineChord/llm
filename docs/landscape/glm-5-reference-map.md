@@ -108,13 +108,13 @@
 
 ## 证据边界 {#evidence-boundaries}
 
-1. **层数存在内部冲突。** 正文写 80 层，超参数附录写 3 个 dense layer 加 75 个 MoE layer，公开配置也给出 78 层。应保留冲突，不用算术替作者选择版本。
-2. **Agentic RL 的开场公式不能直接执行。** 该式未显式包含 policy ratio 或 log-prob；若只把组内中心化 reward 相加，目标恒为零。后文的 rollout-ratio、双侧 masking 与 token loss 才提供可训练线索，但仍不足以复原完整实现。
-3. **实验口径不是统一常数。** HLE 有 text-only / full-set 区分，Terminal-Bench 有原版与 verified 任务，GDPval-AA 是带日期的 Elo 截面，BrowseComp 依赖 proprietary judge，MTP 接受长度使用 private prompt set。
-4. **模型对比不等于同条件复现。** 闭源模型的系统卡、官方分数和 GLM 团队重跑结果应分开标注；context、max tokens、thinking effort、工具、sampling 与 harness 任一变化都可能改变结论。
-5. **书目映射需要人工校正。** SimpleQA 的 key 大小写不一致；SWE-bench Multilingual、Vending-Bench 2、Terminal-Bench 2.0 的实际版本与最终书目题名并不一一对应；MiniLLM 年份错误；DeepSeek-V3.2 重复出现。
-6. **报告后工作不能倒灌。** GLM-5.1、GLM-5.2、IndexCache、Bebop、SAO 与 CompactionRL 能解释后续演化，但不能被写成 2 月版 GLM-5 报告已经采用或引用。
-7. **作者报告值仍需外部复现。** 数据规模、内部环境数量、国产硬件吞吐、私有评测和 serving efficiency 可以作为第一方披露引用，不能改写成独立验证事实。
+1. <strong>层数存在内部冲突。</strong>正文写 80 层，超参数附录写 3 个 dense layer 加 75 个 MoE layer，公开配置也给出 78 层。应保留冲突，不用算术替作者选择版本。
+2. <strong>Agentic RL 的开场公式不能直接执行。</strong>该式未显式包含 policy ratio 或 log-prob；若只把组内中心化 reward 相加，目标恒为零。后文的 rollout-ratio、双侧 masking 与 token loss 才提供可训练线索，但仍不足以复原完整实现。
+3. <strong>实验口径不是统一常数。</strong>HLE 有 text-only / full-set 区分，Terminal-Bench 有原版与 verified 任务，GDPval-AA 是带日期的 Elo 截面，BrowseComp 依赖 proprietary judge，MTP 接受长度使用 private prompt set。
+4. <strong>模型对比不等于同条件复现。</strong>闭源模型的系统卡、官方分数和 GLM 团队重跑结果应分开标注；context、max tokens、thinking effort、工具、sampling 与 harness 任一变化都可能改变结论。
+5. <strong>书目映射需要人工校正。</strong>SimpleQA 的 key 大小写不一致；SWE-bench Multilingual、Vending-Bench 2、Terminal-Bench 2.0 的实际版本与最终书目题名并不一一对应；MiniLLM 年份错误；DeepSeek-V3.2 重复出现。
+6. <strong>报告后工作不能倒灌。</strong>GLM-5.1、GLM-5.2、IndexCache、Bebop、SAO 与 CompactionRL 能解释后续演化，但不能被写成 2 月版 GLM-5 报告已经采用或引用。
+7. <strong>作者报告值仍需外部复现。</strong>数据规模、内部环境数量、国产硬件吞吐、私有评测和 serving efficiency 可以作为第一方披露引用，不能改写成独立验证事实。
 
 ## Reference {#reference}
 

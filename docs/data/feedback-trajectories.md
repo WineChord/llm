@@ -94,7 +94,7 @@ assert torch.isfinite(terminal).all() and not terminal.requires_grad
 assert truncated[-1] > terminal[-1]
 ```
 
-它只展示数据语义，没有加入 $\lambda$-return、mask、变长 batch 或 critic 训练；生产数据必须另外区分基础设施错误和环境终态。优势估计的完整向量化实现见[LLM 策略优化：Packed trajectory 上的 GAE](../practice/llm-policy-optimization.md#gae)。
+它只展示数据语义，没有加入 $\lambda$-return、mask、变长 batch 或 critic 训练；生产数据必须另外区分基础设施错误和环境终态。优势估计的完整向量化实现见 [LLM 策略优化：Packed trajectory 上的 GAE](../practice/llm-policy-optimization.md#gae)。
 
 ## 切分与污染
 
@@ -136,7 +136,7 @@ $$
 - train/dev/test 的分组规则与污染审计；
 - 许可、隐私、删除和保留期限。
 
-目标函数见[奖励建模与偏好优化](../training/reward-preference.md)，在线环境数据见[Agentic RL 数据与环境](../agentic-rl/data-environments.md)。
+目标函数见[奖励建模与偏好优化](../training/reward-preference.md)，在线环境数据见 [Agentic RL 数据与环境](../agentic-rl/data-environments.md)。
 
 ## Reference {#reference}
 

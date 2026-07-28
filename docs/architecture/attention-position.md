@@ -59,7 +59,7 @@ $$
 ## Attention Residuals：沿深度寻址
 
 标准 residual stream 递推地把所有历史层压进一个 $h_l$。它保留了恒等梯度路径，却要求后续层从这份
-累积混合物中恢复早期表示。[Attention Residuals](https://arxiv.org/abs/2603.15031)把相同的
+累积混合物中恢复早期表示。[Attention Residuals](https://arxiv.org/abs/2603.15031) 把相同的
 “按内容读取”思想转到网络深度轴：第 $l$ 层不再均匀接收单个 residual state，而是用该层独有的
 learnable pseudo-query $q_l$ 在 embedding 与所有先前模块输出间选择。
 
@@ -100,7 +100,7 @@ block 和当前 partial sum 上做同样的 depth attention。于是持有与通
 [Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)公开的实例把
 主干分成 8 个、每个 12 层的 block，末块允许不满；再计入 embedding，共有 9 个跨 block 来源。
 这是一个具体规模选择，不是方法要求的常数。K3 如何把它与 KDA、Gated MLA 和 Stable LatentMoE
-组合，见[Kimi K3](../landscape/works/kimi-k3.md)。
+组合，见 [Kimi K3](../landscape/works/kimi-k3.md)。
 PreNorm 的深度稀释、Full/Block 推导、精确 online merge 与 pipeline cache 的完整脉络，见
 [Attention Residuals：让 residual stream 沿深度寻址](../landscape/works/attention-residuals.md)。
 

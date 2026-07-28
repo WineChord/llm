@@ -156,13 +156,13 @@ for args in [(torch.tensor([1.]), 1, 4, torch.tensor([0.])),
     raise AssertionError("invalid block scales and cross-row blocks must be rejected")
 ```
 
-block 边界、scale 轴和饱和判定是这里的核心不变量；历史 amax 落后于分布时，超范围值必须可观察，不能静默包装。历史 scale 为零而当前 block 非零时连量化方向都没有定义，reference 会直接拒绝，而不是用临时除数计算后再乘回零。它没有模拟 E4M3/E5M2 的舍入、subnormal 与 NaN 编码，生产实现还需保存 amax history、格式版本和 scale layout，并用实际 cast kernel 对照；稳定 softmax 与 norm 的组合断言见[Tensor 原语](../practice/tensor-primitives.md)。
+block 边界、scale 轴和饱和判定是这里的核心不变量；历史 amax 落后于分布时，超范围值必须可观察，不能静默包装。历史 scale 为零而当前 block 非零时连量化方向都没有定义，reference 会直接拒绝，而不是用临时除数计算后再乘回零。它没有模拟 E4M3/E5M2 的舍入、subnormal 与 NaN 编码，生产实现还需保存 amax history、格式版本和 scale layout，并用实际 cast kernel 对照；稳定 softmax 与 norm 的组合断言见 [Tensor 原语](../practice/tensor-primitives.md)。
 
 ## MXFP8 与 NVFP4
 
-[MXFP8](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/features/low_precision_training/mxfp8/mxfp8.html)把连续小块元素与块级 E8M0 scale 绑定，使不同幅度区域不必共享一个 tensor-wide scale。其收益依赖特定数据布局、转置策略和硬件支持；块边界改变会改变量化结果。
+[MXFP8](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/features/low_precision_training/mxfp8/mxfp8.html) 把连续小块元素与块级 E8M0 scale 绑定，使不同幅度区域不必共享一个 tensor-wide scale。其收益依赖特定数据布局、转置策略和硬件支持；块边界改变会改变量化结果。
 
-[NVFP4](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/features/low_precision_training/nvfp4/nvfp4.html)进一步使用 FP4 数据和分层 scale，并在训练路径中结合随机舍入等机制。FP4 的有效表示能力不能只由“4 bit”判断：
+[NVFP4](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/features/low_precision_training/nvfp4/nvfp4.html) 进一步使用 FP4 数据和分层 scale，并在训练路径中结合随机舍入等机制。FP4 的有效表示能力不能只由“4 bit”判断：
 
 $$
 b_{\mathrm{effective}}
@@ -213,7 +213,7 @@ $$
 
 deterministic 表示固定 shape 和执行图重复运行一致；batch invariant 还要求同一请求放进不同 batch、不同位置后得到同一 token 分布。动态 GEMM 算法、split-K、atomic arrival order 与 sparse gather 都可能让后者失败。
 
-[DeepSeek-V4](../landscape/works/deepseek-v4.md#batch-invariance)在 attention、GEMM、sparse backward、MoE 与 mHC 上分别固定 accumulation order：短 attention 由单 SM 归约，跨 SM 路径保持同一合并语义；DeepGEMM 避免 cuBLAS 随 shape 换算法；每个 SM / rank 写隔离 buffer 后再按固定次序归约。
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#batch-invariance) 在 attention、GEMM、sparse backward、MoE 与 mHC 上分别固定 accumulation order：短 attention 由单 SM 归约，跨 SM 路径保持同一合并语义；DeepGEMM 避免 cuBLAS 随 shape 换算法；每个 SM / rank 写隔离 buffer 后再按固定次序归约。
 
 这项约束服务于 rollout 恢复与可比较 log-prob，但会增加 buffer、限制 autotuning，并可能放弃某些 shape 下更快的 split-K。验证应把同一序列随机插入不同 batch size、顺序和并发组合，逐层比较 logits；只在固定 batch 重跑不足以覆盖它。
 
@@ -254,7 +254,7 @@ deterministic 表示固定 shape 和执行图重复运行一致；batch invarian
 6. 对推理验证 perplexity 之外的长上下文、结构化输出和目标任务质量。
 7. 使用实际 kernel 和真实 shape 测显存、带宽与端到端吞吐；把 cast、scale 和 metadata 计入成本。
 
-Google 对 [bfloat16](https://docs.cloud.google.com/tpu/docs/bfloat16) 的说明展示了指数范围与尾数精度的设计取舍；具体 GPU kernel 和数据布局则应结合 [CUDA Programming Guide](https://docs.nvidia.com/cuda/cuda-programming-guide/index.html)及目标运行时验证。
+Google 对 [bfloat16](https://docs.cloud.google.com/tpu/docs/bfloat16) 的说明展示了指数范围与尾数精度的设计取舍；具体 GPU kernel 和数据布局则应结合 [CUDA Programming Guide](https://docs.nvidia.com/cuda/cuda-programming-guide/index.html) 及目标运行时验证。
 
 低比特表示进入部署后的校准与 kernel 约束见[量化](../inference/quantization.md)，训练中发现 overflow、NaN 与续训漂移的顺序见[调试手册](../practice/debugging.md)。
 

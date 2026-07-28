@@ -72,7 +72,7 @@ $$
 
 大规模 MoE 常提前计算下一批 token 的路由，才能预取远端 expert 权重或 activation。若执行时参数已经从 $\theta_{t-\Delta t}$ 更新到 $\theta_t$，route ID 与当前 hidden state / router score 不再完全匹配。
 
-[DeepSeek-V4](../landscape/works/deepseek-v4.md#training-stability)的 Anticipatory Routing 明确接受这项时滞：当前特征仍由 $\theta_t$ 计算，但执行预先由旧参数决定的 expert ID。常态训练不持续付这笔代价；loss-spike detector 触发后，控制器回滚到近期 checkpoint，临时开启 anticipatory path，让数据和 route 更早进入流水，再在稳定后关闭。报告称只有该模式活跃时增加约 20% overhead，而总训练 overhead 可忽略。
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#training-stability) 的 Anticipatory Routing 明确接受这项时滞：当前特征仍由 $\theta_t$ 计算，但执行预先由旧参数决定的 expert ID。常态训练不持续付这笔代价；loss-spike detector 触发后，控制器回滚到近期 checkpoint，临时开启 anticipatory path，让数据和 route 更早进入流水，再在稳定后关闭。报告称只有该模式活跃时增加约 20% overhead，而总训练 overhead 可忽略。
 
 这是一项作者系统上的经验恢复机制，不是异步路由的收敛证明。报告没有披露 $\Delta t$、spike threshold、回滚窗口、误报率或独立消融。复现时至少记录：
 
@@ -107,7 +107,7 @@ V4 还把 SwiGLU linear branch clamp 到 $[-10,10]$，gate branch 只做上界 1
 | loss 缓慢恶化且 norm 平稳 | 数据混合、重复率、标签或 mask | 数值溢出 |
 | 吞吐下降但 loss 正常 | shape、路由负载、通信与重算 | 优化器退化 |
 
-AdamW、Muon、参数分组和更新尺度的系统比较见[优化器家族](optimizer-families.md)，softmax/交叉熵的数值起点见[概率、损失与梯度](../foundations/probability-objectives.md)，可重放 checkpoint 见[Checkpoint、韧性与可观测性](../systems/checkpointing.md)。
+AdamW、Muon、参数分组和更新尺度的系统比较见[优化器家族](optimizer-families.md)，softmax/交叉熵的数值起点见[概率、损失与梯度](../foundations/probability-objectives.md)，可重放 checkpoint 见 [Checkpoint、韧性与可观测性](../systems/checkpointing.md)。
 
 ## Reference {#reference}
 

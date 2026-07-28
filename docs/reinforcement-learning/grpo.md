@@ -11,7 +11,7 @@ GRPO = group-relative advantage estimator
      + 可选的 reference KL
 ```
 
-它不是一种 reward 来源，也不等于 RLVR。原始 [DeepSeekMath](https://arxiv.org/abs/2402.03300)同时讨论 outcome reward model 与 process reward model；后续 reasoning RL 常用 verifier，只说明实验的[反馈制度](feedback-regimes.md)发生了变化。
+它不是一种 reward 来源，也不等于 RLVR。原始 [DeepSeekMath](https://arxiv.org/abs/2402.03300) 同时讨论 outcome reward model 与 process reward model；后续 reasoning RL 常用 verifier，只说明实验的[反馈制度](feedback-regimes.md)发生了变化。
 
 ## 为什么会想去掉 critic
 
@@ -23,7 +23,7 @@ V^\pi(h_t)
 \mathbb E[R\mid h_t],
 $$
 
-再用 [GAE](advantage-estimation-gae.md)构造 token 或 step advantage。对单轮、终局 reward 的语言任务，这条路线有三个成本：
+再用 [GAE](advantage-estimation-gae.md) 构造 token 或 step advantage。对单轮、终局 reward 的语言任务，这条路线有三个成本：
 
 1. value model 需要额外参数、显存、前向与优化器状态；
 2. response 很长而 reward 只在结尾出现时，早期 prefix 的 value target 很难学习；
@@ -183,7 +183,7 @@ binary verifier 下：
 
 若实现用 `(R - mean) / (std + eps)`，全同组的分子理论上仍为零；浮点误差或不同 worker 的归约顺序却可能产生微小非零量。更稳妥的契约是：`std <= threshold` 时优势显式置零。
 
-去掉 group std 的 [Dr. GRPO](https://arxiv.org/abs/2503.20783)正是针对这种 question-level difficulty weighting，而不是简单“少做一次归一化”。
+去掉 group std 的 [Dr. GRPO](https://arxiv.org/abs/2503.20783) 正是针对这种 question-level difficulty weighting，而不是简单“少做一次归一化”。
 
 下面把输入固定为 `[prompt, rollout]`，因此中心化绝不会跨 prompt。输出仍是 response-level advantage；广播到 token 后必须再乘 action mask。`unbiased=False` 对应 population std，而显式零方差分支保证全同组没有伪信号。
 
@@ -300,7 +300,7 @@ $$
 - step 数不同的 response 怎样比较；
 - process reward 是否改变了原任务目标。
 
-过程反馈可以缩短信用路径，也可能让模型优化评分器局部模式。其证据与设计边界见[Verifier 与奖励塑形](verifiers-reward-shaping.md)。
+过程反馈可以缩短信用路径，也可能让模型优化评分器局部模式。其证据与设计边界见 [Verifier 与奖励塑形](verifiers-reward-shaping.md)。
 
 ## Dynamic sampling 修复了什么 {#dynamic-sampling}
 
@@ -366,15 +366,15 @@ $$
 
 ## 历史位置
 
-[DeepSeekMath](https://arxiv.org/abs/2402.03300)在数学语言模型训练中系统描述 GRPO，以 group-relative estimation 省去同规模 critic；[DeepSeek-R1](../landscape/works/deepseek-r1.md)进一步把 group-relative RL 放入可验证 reward、cold start、rejection sampling 与蒸馏的多阶段闭环。
+[DeepSeekMath](https://arxiv.org/abs/2402.03300) 在数学语言模型训练中系统描述 GRPO，以 group-relative estimation 省去同规模 critic；[DeepSeek-R1](../landscape/works/deepseek-r1.md) 进一步把 group-relative RL 放入可验证 reward、cold start、rejection sampling 与蒸馏的多阶段闭环。
 
 随后工作没有形成一条“后者彻底取代前者”的单线：
 
-- [RLOO](https://arxiv.org/abs/2402.14740)重新强调简单 leave-one-out baseline；
-- [Dr. GRPO](https://arxiv.org/abs/2503.20783)分离 group std 与 response-length weighting；
-- [DAPO](../landscape/works/dapo.md)组合 asymmetric clip、dynamic sampling、token reduction 与长度处理；
-- [VAPO](../landscape/works/vapo.md)回到 value-based PPO，集中处理长 reasoning 的 critic 与 GAE；
-- GSPO、SAPO、CISPO 从 ratio 粒度和 gate 形状继续修改更新几何，见[Ratio、Clipping 与 Gate](ratio-clipping-gating.md)。
+- [RLOO](https://arxiv.org/abs/2402.14740) 重新强调简单 leave-one-out baseline；
+- [Dr. GRPO](https://arxiv.org/abs/2503.20783) 分离 group std 与 response-length weighting；
+- [DAPO](../landscape/works/dapo.md) 组合 asymmetric clip、dynamic sampling、token reduction 与长度处理；
+- [VAPO](../landscape/works/vapo.md) 回到 value-based PPO，集中处理长 reasoning 的 critic 与 GAE；
+- GSPO、SAPO、CISPO 从 ratio 粒度和 gate 形状继续修改更新几何，见 [Ratio、Clipping 与 Gate](ratio-clipping-gating.md)。
 
 真正延续的主线不是缩写，而是四个问题：baseline 从哪里来、哪些 rollout 有信息、长度怎样进入分母、分布偏移怎样被约束。
 

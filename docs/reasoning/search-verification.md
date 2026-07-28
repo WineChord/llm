@@ -32,7 +32,7 @@ v_{\mathrm{proc}}(x,s_t)
 P(\text{该前缀仍可导向正确答案}\mid x,s_t).
 $$
 
-[Let's Verify Step by Step](https://arxiv.org/abs/2305.20050)系统比较了结果监督与过程监督。过程分数适合搜索，但“当前步骤看似合理”不等于最终可完成；局部 verifier 也可能偏好冗长、模板化轨迹。
+[Let's Verify Step by Step](https://arxiv.org/abs/2305.20050) 系统比较了结果监督与过程监督。过程分数适合搜索，但“当前步骤看似合理”不等于最终可完成；局部 verifier 也可能偏好冗长、模板化轨迹。
 
 ## Beam search
 
@@ -98,7 +98,7 @@ assert "done" in {state for state, _ in kept}
 
 ## Tree of Thoughts
 
-[Tree of Thoughts](https://arxiv.org/abs/2305.10601)把可读的中间“thought”作为搜索节点，并通过生成、评价、选择和回溯探索多条路径。核心不是固定一种 BFS/DFS，而是：
+[Tree of Thoughts](https://arxiv.org/abs/2305.10601) 把可读的中间“thought”作为搜索节点，并通过生成、评价、选择和回溯探索多条路径。核心不是固定一种 BFS/DFS，而是：
 
 1. 状态足以描述剩余子问题；
 2. action 粒度允许修正；

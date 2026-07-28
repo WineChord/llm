@@ -92,7 +92,7 @@ $$
 - CPU、NUMA、内存、数据盘与远端对象存储；
 - 驱动、runtime、collective library、kernel 与框架版本。
 
-只说“用了多少张 GPU”无法复现性能。训练框架的代表性参考包括 [Megatron-LM](https://github.com/NVIDIA/Megatron-LM) 与 [PyTorch FSDP](https://pytorch.org/docs/stable/fsdp.html)。状态怎样切分见[集合通信与状态分片](collectives-sharding.md)，算术强度怎样落到 kernel 见[Kernel 与性能](kernels-performance.md)。
+只说“用了多少张 GPU”无法复现性能。训练框架的代表性参考包括 [Megatron-LM](https://github.com/NVIDIA/Megatron-LM) 与 [PyTorch FSDP](https://pytorch.org/docs/stable/fsdp.html)。状态怎样切分见[集合通信与状态分片](collectives-sharding.md)，算术强度怎样落到 kernel 见 [Kernel 与性能](kernels-performance.md)。
 
 同样数量的设备可能形成完全不同的系统：八卡在一个 NVSwitch 域内，与跨八个节点各取一张卡，all-reduce 的带宽、延迟和故障域都不同。并行维度应映射到实际 rank topology，性能报告则同时给出有效 batch、sequence shape、step time 分解、峰值显存和失败重试；只报理论 TFLOP/s 会隐藏数据与通信空泡。
 

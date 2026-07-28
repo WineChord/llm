@@ -118,7 +118,7 @@ assert new_loss < loss and torch.all(new_margin > 0)
 
 ## 公开实现边界
 
-[作者参考实现](https://github.com/eric-mitchell/direct-preference-optimization)公开了论文训练代码；[TRL 的 DPOTrainer](https://huggingface.co/docs/trl/main/en/dpo_trainer)提供了持续演进的工程实现。两者不是同一个复现实验环境，默认 loss、长度归一化、数据 collator、reference 处理和后续变体可能不同。
+[作者参考实现](https://github.com/eric-mitchell/direct-preference-optimization)公开了论文训练代码；[TRL 的 DPOTrainer](https://huggingface.co/docs/trl/main/en/dpo_trainer) 提供了持续演进的工程实现。两者不是同一个复现实验环境，默认 loss、长度归一化、数据 collator、reference 处理和后续变体可能不同。
 
 使用任何实现时都应冻结并记录：
 

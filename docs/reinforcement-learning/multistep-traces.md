@@ -2,7 +2,7 @@
 
 一步 TD 每看到一个 transition 就 bootstrap，Monte Carlo 则等待完整回报。多步方法在两者之间连续插值：向前多看几步可减少对当前 value estimate 的依赖，却也会引入更多采样噪声。理解这条轴，才能分清 n-step return、TD($\lambda$)、eligibility trace 与 GAE 各自在做什么。
 
-本文沿用 transition $(s_t,a_t,r_t,s_{t+1})$，重点保留 n-step、$\lambda$-return 与 eligibility trace 的历史连接。GAE 的完整推导、双 mask、actor/critic target 与语言模型时间轴已独立到[Advantage 估计与 GAE](advantage-estimation-gae.md)。先读[价值函数与 Bellman 递推](values-bellman.md)和[Monte Carlo、TD 与控制](prediction-control.md)，会更容易看清 bootstrap target 从何而来。
+本文沿用 transition $(s_t,a_t,r_t,s_{t+1})$，重点保留 n-step、$\lambda$-return 与 eligibility trace 的历史连接。GAE 的完整推导、双 mask、actor/critic target 与语言模型时间轴已独立到 [Advantage 估计与 GAE](advantage-estimation-gae.md)。先读[价值函数与 Bellman 递推](values-bellman.md)和 [Monte Carlo、TD 与控制](prediction-control.md)，会更容易看清 bootstrap target 从何而来。
 
 ## 从一步到 n 步
 
@@ -212,15 +212,15 @@ $$
 =\delta_t+\gamma\lambda(1-b_t)\widehat A_{t+1}.
 $$
 
-本页到这里为止只建立历史与代数接口：$\lambda$-return 如何连接 forward view 与 eligibility trace。GAE 的 advantage 语义、bootstrap/trace 双边界、actor/critic target，以及 token、turn、segment 三条时间轴见[Advantage 估计与 GAE](advantage-estimation-gae.md)；packed tensor 实现与断言见[手撕 LLM 策略优化](../practice/llm-policy-optimization.md)。
+本页到这里为止只建立历史与代数接口：$\lambda$-return 如何连接 forward view 与 eligibility trace。GAE 的 advantage 语义、bootstrap/trace 双边界、actor/critic target，以及 token、turn、segment 三条时间轴见 [Advantage 估计与 GAE](advantage-estimation-gae.md)；packed tensor 实现与断言见[手撕 LLM 策略优化](../practice/llm-policy-optimization.md)。
 
 ## 常见误区
 
-1. **$\lambda=1$ 永远等于无偏 Monte Carlo。** 只有展开到真正 terminal 才成立；在 truncation 上仍会依赖 bootstrap value。
-2. **GAE 越长越准确。** critic bias 会随 residual 传播，采样 variance 与非平稳性也会累积。
-3. **反向循环就是 eligibility trace。** batch reverse GAE 只是在固定数据上算 target；在线 trace 还会在采样期间更新参数。
-4. **传统 TD($\lambda$) 在线时也与 forward view 严格等价。** 一般只有离线版本精确；true-online 方法专门修复了这个边界。
-5. **`done` 一个布尔量足够。** 合并 terminal 与 time-limit truncation 会分别丢失 bootstrap 和 trace-reset 语义。
+1. <strong>$\lambda=1$ 永远等于无偏 Monte Carlo。</strong>只有展开到真正 terminal 才成立；在 truncation 上仍会依赖 bootstrap value。
+2. <strong>GAE 越长越准确。</strong>critic bias 会随 residual 传播，采样 variance 与非平稳性也会累积。
+3. <strong>反向循环就是 eligibility trace。</strong>batch reverse GAE 只是在固定数据上算 target；在线 trace 还会在采样期间更新参数。
+4. <strong>传统 TD($\lambda$) 在线时也与 forward view 严格等价。</strong>一般只有离线版本精确；true-online 方法专门修复了这个边界。
+5. <strong>`done` 一个布尔量足够。</strong>合并 terminal 与 time-limit truncation 会分别丢失 bootstrap 和 trace-reset 语义。
 
 ## Reference {#reference}
 

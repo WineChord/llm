@@ -118,7 +118,7 @@ vision / audio / language / proprioception
 | Task planner | 目标/技能/状态 → 子目标 | 长程分解、权限和资源 | 接触级轨迹 |
 | Low-level controller | 轨迹/目标位姿 → 电机命令 | 稳定、限位、反馈控制 | 开放语义理解 |
 
-[PaLM-E](https://arxiv.org/abs/2303.03378)展示了把连续传感器表示注入语言模型，[RT-2](https://proceedings.mlr.press/v229/zitkovich23a.html)把动作编码进 VLM 输出空间。它们建立了 VLM 到 VLA 的接口，却没有消除低层控制、标定与运行时约束。
+[PaLM-E](https://arxiv.org/abs/2303.03378) 展示了把连续传感器表示注入语言模型，[RT-2](https://proceedings.mlr.press/v229/zitkovich23a.html) 把动作编码进 VLM 输出空间。它们建立了 VLM 到 VLA 的接口，却没有消除低层控制、标定与运行时约束。
 
 ## 具身系统最容易忽略的时间
 

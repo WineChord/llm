@@ -2,7 +2,7 @@
 
 语言模型强化学习的公式通常不难，难的是让公式、张量和 rollout 语义完全对齐。一次训练更新至少同时涉及四种坐标：样本属于哪个 prompt group，哪些位置真是 policy action，数据由哪个 policy 产生，以及最终 loss 按 token、response 还是 prompt 归约。
 
-本页不实现分布式 trainer，而用小张量冻结十个最容易漂移的接口。完整概念分别见 [GAE](../reinforcement-learning/advantage-estimation-gae.md)、[PPO](../reinforcement-learning/trust-region-ppo.md)、[GRPO](../reinforcement-learning/grpo.md)和 [ratio、clipping 与 gate](../reinforcement-learning/ratio-clipping-gating.md)。
+本页不实现分布式 trainer，而用小张量冻结十个最容易漂移的接口。完整概念分别见 [GAE](../reinforcement-learning/advantage-estimation-gae.md)、[PPO](../reinforcement-learning/trust-region-ppo.md)、[GRPO](../reinforcement-learning/grpo.md) 和 [ratio、clipping 与 gate](../reinforcement-learning/ratio-clipping-gating.md)。
 
 ## Packed trajectory 上的 GAE {#gae}
 
@@ -251,7 +251,7 @@ assert accept.tolist() == [False, True, False]
 assert not cispo.requires_grad and not tis.requires_grad and not icepop.requires_grad
 ```
 
-`detach` 只冻结校正权重；真实 loss 仍要让底层 `logp` 提供梯度。实现时还应分别记录 update ratio 和 engine ratio 的分位数，不能把两种偏移压成同一个直方图。公式与适用边界见 [CISPO、TIS 与 IcePop](../reinforcement-learning/ratio-clipping-gating.md#cispo)及[训推分布与策略滞后](../reinforcement-learning/training-inference-discrepancy.md#tis)。
+`detach` 只冻结校正权重；真实 loss 仍要让底层 `logp` 提供梯度。实现时还应分别记录 update ratio 和 engine ratio 的分位数，不能把两种偏移压成同一个直方图。公式与适用边界见 [CISPO、TIS 与 IcePop](../reinforcement-learning/ratio-clipping-gating.md#cispo) 及[训推分布与策略滞后](../reinforcement-learning/training-inference-discrepancy.md#tis)。
 
 ## DIS 的双侧硬门
 

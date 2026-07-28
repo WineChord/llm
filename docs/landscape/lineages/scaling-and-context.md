@@ -4,7 +4,7 @@
 
 ## 当规模从经验变成可拟合对象
 
-早期神经语言模型已经观察到扩大数据与模型会改善困惑度，但训练昂贵时，研究者更需要知道“再增加十倍资源大概会怎样”。[Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361)在受控实验中分别用幂律拟合 loss 与非 embedding 参数、数据和 compute-efficient 计算的关系；把相应自变量统记为 $X$，其单轴形式可写成：
+早期神经语言模型已经观察到扩大数据与模型会改善困惑度，但训练昂贵时，研究者更需要知道“再增加十倍资源大概会怎样”。[Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361) 在受控实验中分别用幂律拟合 loss 与非 embedding 参数、数据和 compute-efficient 计算的关系；把相应自变量统记为 $X$，其单轴形式可写成：
 
 $$
 L(X)\approx\left(\frac{X_c}{X}\right)^{\alpha_X},
@@ -17,7 +17,7 @@ $$
 
 ## GPT-3：不更新参数也能临时适应
 
-[GPT-3](https://arxiv.org/abs/2005.14165)把规模曲线与 few-shot prompting 放在同一组实验中。给定示例
+[GPT-3](https://arxiv.org/abs/2005.14165) 把规模曲线与 few-shot prompting 放在同一组实验中。给定示例
 
 $$
 (x_1,y_1),\ldots,(x_k,y_k),x_q,
@@ -36,7 +36,7 @@ $$
 
 ## Chinchilla：更大参数不一定是更好的算力使用
 
-[Chinchilla](https://arxiv.org/abs/2203.15556)重新研究固定计算下参数 $N$ 与训练 token $D$ 的分配，用
+[Chinchilla](https://arxiv.org/abs/2203.15556) 重新研究固定计算下参数 $N$ 与训练 token $D$ 的分配，用
 
 $$
 L(N,D)=E+\frac{A}{N^\alpha}+\frac{B}{D^\beta}
@@ -63,7 +63,7 @@ $$
 
 ## Induction heads：从行为曲线走向局部机制
 
-[In-context Learning and Induction Heads](https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/)在小型受控 Transformer 中研究一种复制模式：若上下文出现 $[A][B]$，后来再见到 $[A]$ 时，attention head 倾向预测 $[B]$。它给出了 ICL 机制的具体候选，也展示了某些电路在训练中出现时 loss 曲线怎样变化。
+[In-context Learning and Induction Heads](https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/) 在小型受控 Transformer 中研究一种复制模式：若上下文出现 $[A][B]$，后来再见到 $[A]$ 时，attention head 倾向预测 $[B]$。它给出了 ICL 机制的具体候选，也展示了某些电路在训练中出现时 loss 曲线怎样变化。
 
 这类证据很重要，但边界同样重要：
 
@@ -76,7 +76,7 @@ $$
 
 ## 数据质量把缩放曲线变成移动目标
 
-当高质量数据有限，重复训练、合成数据和课程会改变 $D$ 的含义。[Data-Constrained Language Models](https://arxiv.org/abs/2305.16264)研究重复数据条件下的缩放，[DoReMi](https://arxiv.org/abs/2305.10429)与后续数据混合工作则说明 token 来源比例会影响给定预算的收益。
+当高质量数据有限，重复训练、合成数据和课程会改变 $D$ 的含义。[Data-Constrained Language Models](https://arxiv.org/abs/2305.16264) 研究重复数据条件下的缩放，[DoReMi](https://arxiv.org/abs/2305.10429) 与后续数据混合工作则说明 token 来源比例会影响给定预算的收益。
 
 一万亿 token 不是同质质量单位。代码、数学、多语言、重复网页和合成推理轨迹对 loss 与下游能力的贡献不同。模型之间比较训练量时，必须回到[训练 token 口径](../training-tokens.md)和[数据混合与课程](../../data/mixtures-curricula.md)。
 

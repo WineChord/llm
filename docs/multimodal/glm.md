@@ -232,7 +232,7 @@ GLM-V 的公开 reward system 按任务改变判分：
 | Chart / STEM | 数值、符号或语义等价 | 单位、容差与 answer extraction |
 | 文档 / 视频 | 规则与 model judge 组合 | judge 版本、prompt 与开放答案偏差 |
 
-报告中的重要反例是：某个多图 QA verifier 被利用以后，不仅对应领域的 reward 被抬高，STEM 等其他领域的实际指标也会下降。共享参数使一个弱 verifier 的偏差跨域传播。因此，reward 单元测试、错误切片和离线回放不是外围工程，而是多模态 RL 的一部分。通用推导见 [GRPO](../reinforcement-learning/grpo.md)与[验证器和奖励塑形](../reinforcement-learning/verifiers-reward-shaping.md)。
+报告中的重要反例是：某个多图 QA verifier 被利用以后，不仅对应领域的 reward 被抬高，STEM 等其他领域的实际指标也会下降。共享参数使一个弱 verifier 的偏差跨域传播。因此，reward 单元测试、错误切片和离线回放不是外围工程，而是多模态 RL 的一部分。通用推导见 [GRPO](../reinforcement-learning/grpo.md) 与[验证器和奖励塑形](../reinforcement-learning/verifiers-reward-shaping.md)。
 
 ## 文档与 OCR：把整页问题拆成可并行子问题
 
@@ -352,7 +352,7 @@ s_{t+1}
 o_{t+1},
 $$
 
-其中 $\mathcal E_t$ 是 DOM / accessibility / app 状态，$h_t$ 是历史。模型输出合法工具 JSON 只证明协议可解析；任务成功还取决于权限、元素可点击性、动作后的重新观察、超时、回滚和高风险确认。[工具使用](../applications/tool-use.md)与 [Agent runtime](../applications/agent-runtime.md)给出了运行时契约。
+其中 $\mathcal E_t$ 是 DOM / accessibility / app 状态，$h_t$ 是历史。模型输出合法工具 JSON 只证明协议可解析；任务成功还取决于权限、元素可点击性、动作后的重新观察、超时、回滚和高风险确认。[工具使用](../applications/tool-use.md)与 [Agent runtime](../applications/agent-runtime.md) 给出了运行时契约。
 
 ## 端侧视觉：参数量之外还有一个硬件闭环
 
@@ -542,7 +542,7 @@ $$
 
 - **压缩器也是模型上限**：VAE 的运动模糊、闪烁或细节损失会被 diffusion 继承；
 - **全时空 attention 很贵**：压缩、patchify、context parallel 与 frame packing 共同决定可训练长度；
-- **数据管线决定运动语义**：高质量 caption、渐进分辨率 / 帧长训练与多分辨率 frame packing不是附属预处理。
+- **数据管线决定运动语义**：高质量 caption、渐进分辨率 / 帧长训练与多分辨率 frame packing 不是附属预处理。
 
 CogVideoX 1.5 扩展分辨率、时长和 image-to-video，仍属于同一公开仓库中的 checkpoint 更新。CogVideoX-3 的公开入口主要是线上 API，不能据服务名称假定其 VAE、DiT 层数或训练配方与 1.5 完全相同。视频生成的一般评测与系统约束见[视频生成](video/generation.md)，长程事件证据见[视频理解与长程记忆](video/understanding-long-context.md)。
 
@@ -565,11 +565,11 @@ GLM-V 报告的 42 个 benchmark 覆盖八类任务，但模型表中混合了�
 
 ## 贯穿这些分支的五个判断
 
-1. **桥接越深，模态专门容量越大，保存原语言能力越难。** Q-Former 把风险集中在窄接口；visual expert 把视觉参数扩到每一层；GLM-V 又通过强 base、长训练和多域 RL 共同平衡。
-2. **高分辨率不是一个数字，而是一份 token 预算。** CogAgent 双分支、GLM-V 原生分辨率、GLM-OCR 先 layout crop、GLM-Edge 端侧缩放，都是在决定哪些像素值得进入昂贵主干。
-3. **“理解后行动”需要协议和环境。** Grounding、function calling 与 GUI benchmark 只能覆盖闭环的一部分；可靠 Agent 还需要状态、执行、重新观察、权限与恢复。
-4. **AR 擅长离散语义规划，diffusion / flow 擅长连续细节重建。** CogView 到 CogView3 是范式切换，GLM-Image 与 GLM-TTS 则显式把两者组合；组合减少单模块负担，也增加接口错误和系统成本。
-5. **组织谱系可以解释思想迁移，不能证明 checkpoint 继承。** CogVLM、CogView、CogVideo 的方法确实影响 GLM-V、GLM-Image 等工作，但只有论文、模型卡或代码明确说明时，才能画出权重箭头。
+1. <strong>桥接越深，模态专门容量越大，保存原语言能力越难。</strong>Q-Former 把风险集中在窄接口；visual expert 把视觉参数扩到每一层；GLM-V 又通过强 base、长训练和多域 RL 共同平衡。
+2. <strong>高分辨率不是一个数字，而是一份 token 预算。</strong>CogAgent 双分支、GLM-V 原生分辨率、GLM-OCR 先 layout crop、GLM-Edge 端侧缩放，都是在决定哪些像素值得进入昂贵主干。
+3. <strong>“理解后行动”需要协议和环境。</strong>Grounding、function calling 与 GUI benchmark 只能覆盖闭环的一部分；可靠 Agent 还需要状态、执行、重新观察、权限与恢复。
+4. <strong>AR 擅长离散语义规划，diffusion / flow 擅长连续细节重建。</strong>CogView 到 CogView3 是范式切换，GLM-Image 与 GLM-TTS 则显式把两者组合；组合减少单模块负担，也增加接口错误和系统成本。
+5. <strong>组织谱系可以解释思想迁移，不能证明 checkpoint 继承。</strong>CogVLM、CogView、CogVideo 的方法确实影响 GLM-V、GLM-Image 等工作，但只有论文、模型卡或代码明确说明时，才能画出权重箭头。
 
 继续沿概念阅读时，可从[视觉语言模型](vision-language.md)进入视觉桥接，从[多模态数据、训练与系统](foundations/data-training-systems.md)理解 variable shape 与 packing，从[理解与生成统一](unified-understanding-generation.md)比较共享主干与解耦表示。沿家族版本阅读则回到 [GLM 家族总览](../landscape/families/glm.md)和[演化时间线](../landscape/glm-timeline.md)。
 

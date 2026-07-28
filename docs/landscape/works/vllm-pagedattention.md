@@ -118,7 +118,7 @@ Kernel metadata 必须同时描述：
 - causal、sliding-window、prefix 或 branch mask；
 - KV dtype、quantization scales 与 schema version。
 
-只根据输入 tensor shape 推断这些语义，会在 mixed batch、chunked prefill 或 speculative verify 中产生静默错误。Kernel 侧权衡见[Attention Kernel](../../systems/attention-kernels.md)。
+只根据输入 tensor shape 推断这些语义，会在 mixed batch、chunked prefill 或 speculative verify 中产生静默错误。Kernel 侧权衡见 [Attention Kernel](../../systems/attention-kernels.md)。
 
 ## Continuous batching 与 paging 互相成就
 
@@ -172,13 +172,13 @@ $$
 \text{layout}_{P}\longrightarrow\text{layout}_{D}.
 $$
 
-传输只有在 model、adapter、position、dtype 和 cache schema 完全兼容时才能复用。安装应幂等，同一请求重试不能生成两份 owner。跨 worker 的数据路径见[推理服务谱系](../lineages/inference-serving.md)和[Prefill–Decode 分离](../../inference/disaggregation.md)。
+传输只有在 model、adapter、position、dtype 和 cache schema 完全兼容时才能复用。安装应幂等，同一请求重试不能生成两份 owner。跨 worker 的数据路径见[推理服务谱系](../lineages/inference-serving.md)和 [Prefill–Decode 分离](../../inference/disaggregation.md)。
 
 ## Reference {#reference}
 
 - [PagedAttention/vLLM 论文](https://arxiv.org/abs/2309.06180)是一手算法与系统评测来源。
 - [vLLM 官方仓库](https://github.com/vllm-project/vllm)持续演进 scheduler、KV manager、prefix caching、distributed serving 与 kernel；当前类名和配置不能反向当作论文接口。
 - 论文中的 block 管理思想可以由不同 kernel 和 allocator 实现；“分页 KV”不保证采用 vLLM 的具体内存布局。
-- [Orca](https://www.usenix.org/conference/osdi22/presentation/yu)是一手 iteration-level scheduling 来源。Continuous batching 与 PagedAttention 相互补充，但不是同一项工作。
+- [Orca](https://www.usenix.org/conference/osdi22/presentation/yu) 是一手 iteration-level scheduling 来源。Continuous batching 与 PagedAttention 相互补充，但不是同一项工作。
 
 评测至少报告 block size、KV dtype、模型 head layout、prompt/output 分布、并发、token budget、内部浪费、prefix hit、TTFT、TPOT、goodput 与峰值显存。只比较静态同长度 batch 会绕过分页系统真正解决的动态生命周期问题。

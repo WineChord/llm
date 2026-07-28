@@ -86,7 +86,7 @@ Behavior cloning 的更深问题是 covariate shift：训练观察来自 expert�
 
 ## DAgger：训练模型处理自己造成的状态
 
-[DAgger](https://proceedings.mlr.press/v15/ross11a.html)反复执行：
+[DAgger](https://proceedings.mlr.press/v15/ross11a.html) 反复执行：
 
 1. rollout 当前策略 $\pi_i$；
 2. 在 learner 实际访问的状态上查询 expert；
@@ -110,7 +110,7 @@ DAgger 不是“把所有失败轨迹直接当负样本”。失败状态仍需�
 
 ## 把连续动作写成 token
 
-[RT-1](https://arxiv.org/abs/2212.06817)把每个动作维度离散成 256 个 bin。一般地，对范围 $[l_i,u_i]$：
+[RT-1](https://arxiv.org/abs/2212.06817) 把每个动作维度离散成 256 个 bin。一般地，对范围 $[l_i,u_i]$：
 
 $$
 q_i
@@ -169,11 +169,11 @@ $$
 - policy inference frequency；
 - observation-to-action latency。
 
-[ACT](https://arxiv.org/abs/2304.13705)使用 CVAE 风格的 action chunking，并用 temporal ensembling 融合相邻时刻预测的重叠动作。它针对示范的非平稳性和误差累积，不意味着 chunk 越长越好。
+[ACT](https://arxiv.org/abs/2304.13705) 使用 CVAE 风格的 action chunking，并用 temporal ensembling 融合相邻时刻预测的重叠动作。它针对示范的非平稳性和误差累积，不意味着 chunk 越长越好。
 
 ## Diffusion Policy：为多峰连续动作去噪
 
-[Diffusion Policy](https://arxiv.org/abs/2303.04137)对动作轨迹加噪：
+[Diffusion Policy](https://arxiv.org/abs/2303.04137) 对动作轨迹加噪：
 
 $$
 A^k
@@ -249,7 +249,7 @@ torch.testing.assert_close(noisy + .75 * target, action)
 
 ## FAST：先压缩时间，再做自回归
 
-简单做法每个时间步、每个维度各产生一个 token，高频灵巧动作会形成很长序列。[FAST](https://arxiv.org/abs/2501.09747)对动作块的每个维度沿时间做 Discrete Cosine Transform：
+简单做法每个时间步、每个维度各产生一个 token，高频灵巧动作会形成很长序列。[FAST](https://arxiv.org/abs/2501.09747) 对动作块的每个维度沿时间做 Discrete Cosine Transform：
 
 $$
 c_{k,d}
@@ -301,7 +301,7 @@ $$
 
 开放环应报告 NLL、action error、calibration 与 clipping；闭环应报告 success、progress、recovery、intervention、碰撞和端到端时间。所有指标必须附 robot、action schema、control rate、reset 与 trial 数。
 
-这些动作怎样与互联网预训练和跨机器人数据结合，见[VLA 与数据谱系](vla-data-lineage.md)；运行时怎样拒绝过期或危险动作，见[规划、评测与安全](planning-evaluation-safety.md)。
+这些动作怎样与互联网预训练和跨机器人数据结合，见 [VLA 与数据谱系](vla-data-lineage.md)；运行时怎样拒绝过期或危险动作，见[规划、评测与安全](planning-evaluation-safety.md)。
 
 动作分布、轨迹与策略目标的组合练习见[强化学习手撕实现](../practice/reinforcement-learning.md)。
 

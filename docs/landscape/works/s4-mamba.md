@@ -4,7 +4,7 @@
 
 ## HiPPO：状态可以是在线投影
 
-[HiPPO](https://proceedings.neurips.cc/paper/2020/hash/102f0bb6efb3a6128a3c750dd16729be-Abstract.html)把“记住历史”写成在线函数逼近：状态系数追踪过去信号在一组基函数上的投影。它提供了一种原则化设计长时记忆矩阵的方法，而不只是随机挑选 RNN transition。
+[HiPPO](https://proceedings.neurips.cc/paper/2020/hash/102f0bb6efb3a6128a3c750dd16729be-Abstract.html) 把“记住历史”写成在线函数逼近：状态系数追踪过去信号在一组基函数上的投影。它提供了一种原则化设计长时记忆矩阵的方法，而不只是随机挑选 RNN transition。
 
 连续状态空间模型写作
 
@@ -30,7 +30,7 @@ y_t=\sum_{j=0}^{t}K_jx_{t-j},\qquad
 K_j=C\bar A^j\bar B.
 $$
 
-[S4](https://arxiv.org/abs/2111.00396)利用结构化 $A$ 和高效 kernel，使很长序列上的并行训练成为现实。下面用标量对角情形验证 recurrence 与 convolution 等价：
+[S4](https://arxiv.org/abs/2111.00396) 利用结构化 $A$ 和高效 kernel，使很长序列上的并行训练成为现实。下面用标量对角情形验证 recurrence 与 convolution 等价：
 
 ```python
 import torch
@@ -60,7 +60,7 @@ assert torch.allclose(scan, conv, atol=1e-6)
 
 ## Mamba：参数由输入生成
 
-[Mamba](https://arxiv.org/abs/2312.00752)让 $\Delta,B,C$ 依赖输入：
+[Mamba](https://arxiv.org/abs/2312.00752) 让 $\Delta,B,C$ 依赖输入：
 
 $$
 h_t=\bar A(\Delta_t)h_{t-1}+\bar B(\Delta_t,B_t)x_t,
@@ -103,7 +103,7 @@ chunk equivalence 和 reset 是服务系统必须保持的状态语义。若 chu
 
 ## Mamba-2 与 SSD
 
-[Mamba-2](https://arxiv.org/abs/2405.21060)通过 structured state space duality，把一类 SSM 映射到半可分序列矩阵，并设计更适合大矩阵乘的 block 算法。它说明 attention 与 SSM 在代数结构上有交汇区，不意味着两类模型在状态容量、softmax 归一化和任意参数下等价。
+[Mamba-2](https://arxiv.org/abs/2405.21060) 通过 structured state space duality，把一类 SSM 映射到半可分序列矩阵，并设计更适合大矩阵乘的 block 算法。它说明 attention 与 SSM 在代数结构上有交汇区，不意味着两类模型在状态容量、softmax 归一化和任意参数下等价。
 
 ## 证据与后续边界
 

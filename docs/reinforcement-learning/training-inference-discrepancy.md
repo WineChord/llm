@@ -27,7 +27,7 @@ r_t^{\mathrm{update}}
 }.
 $$
 
-它描述 learner 相对冻结 old policy 的变化，是 [PPO](trust-region-ppo.md)和许多 GRPO 变体中的局部更新坐标。
+它描述 learner 相对冻结 old policy 的变化，是 [PPO](trust-region-ppo.md) 和许多 GRPO 变体中的局部更新坐标。
 
 同一参数版本的 train–rollout discrepancy ratio 为
 
@@ -153,7 +153,7 @@ $$
 
 长序列上的乘积方差会迅速恶化。现代 LLM trainer 因而常用 token-level surrogate、clipping、gate 或归一化 sequence ratio。它们是有条件的低方差近似，不应在没有 mismatch/staleness 诊断时被称为“等价的 on-policy objective”。
 
-[Stabilizing Reinforcement Learning with LLMs](https://arxiv.org/abs/2512.01374)把 token-level formulation 与两种偏移明确连接：engine discrepancy 决定同版本分布是否一致，policy staleness 决定 rollout 相对 current learner 有多旧。二者都小，才更接近局部一阶近似成立的区域。
+[Stabilizing Reinforcement Learning with LLMs](https://arxiv.org/abs/2512.01374) 把 token-level formulation 与两种偏移明确连接：engine discrepancy 决定同版本分布是否一致，policy staleness 决定 rollout 相对 current learner 有多旧。二者都小，才更接近局部一阶近似成立的区域。
 
 ## TIS：校正 engine mismatch {#tis}
 

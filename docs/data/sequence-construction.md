@@ -136,7 +136,7 @@ $$
 
 ## Source-aware packing 与 sample-level mask
 
-[DeepSeek-V4](../landscape/works/deepseek-v4.md#pretraining)沿用 source-aware packing，并为 packed sample 保留 sample-level attention mask。其目的不是只减少 padding：
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#pretraining) 沿用 source-aware packing，并为 packed sample 保留 sample-level attention mask。其目的不是只减少 padding：
 
 - 同源、相近长度文档更容易形成少截断的 pack；
 - segment mask 阻止后一个样本读取前一个无关样本；

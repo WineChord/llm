@@ -121,13 +121,13 @@ else:
     raise AssertionError("unmatched score and value rows must be rejected")
 ```
 
-分块大小和遍历顺序可以改变，输出语义不应改变；mask 后的 $-\infty$ 也不得污染状态。这个 Python reference 用于定义算法，不代表 GPU kernel：生产实现还需处理 batch/head、累加 dtype、causal tile 跳过、GQA 映射和 backward 重放。与朴素 softmax 的更多逐块对照见[Tensor 原语](../practice/tensor-primitives.md)。
+分块大小和遍历顺序可以改变，输出语义不应改变；mask 后的 $-\infty$ 也不得污染状态。这个 Python reference 用于定义算法，不代表 GPU kernel：生产实现还需处理 batch/head、累加 dtype、causal tile 跳过、GQA 映射和 backward 重放。与朴素 softmax 的更多逐块对照见 [Tensor 原语](../practice/tensor-primitives.md)。
 
 ## FlashAttention 的稳定基础
 
-[FlashAttention](https://arxiv.org/abs/2205.14135)把 $Q$、$K$、$V$ 切成片上 tile，使用 online softmax 立即消费局部 score，从而避免将完整矩阵写回 HBM。它优化的是 IO，不是近似线性 attention。
+[FlashAttention](https://arxiv.org/abs/2205.14135) 把 $Q$、$K$、$V$ 切成片上 tile，使用 online softmax 立即消费局部 score，从而避免将完整矩阵写回 HBM。它优化的是 IO，不是近似线性 attention。
 
-[FlashAttention-2](https://arxiv.org/abs/2307.08691)进一步减少非矩阵乘法工作，并调整 thread block 和 warp 的任务划分。两代工作的稳定结论是：
+[FlashAttention-2](https://arxiv.org/abs/2307.08691) 进一步减少非矩阵乘法工作，并调整 thread block 和 warp 的任务划分。两代工作的稳定结论是：
 
 - attention 性能必须同时分析 FLOPs 与 HBM transaction；
 - tile shape 由 head dimension、dtype、mask 和片上资源共同决定；
@@ -136,9 +136,9 @@ else:
 
 ## 2024–2026 的硬件协同前沿
 
-[FlashAttention-3](https://arxiv.org/abs/2407.08608)针对 Hopper 引入 TMA、warp specialization，以及 GEMM、softmax 间更深的异步流水，并研究 FP8 路径。它证明了新硬件异步能力的重要性，但实现结论与 Hopper 的执行和存储机制紧密相关。
+[FlashAttention-3](https://arxiv.org/abs/2407.08608) 针对 Hopper 引入 TMA、warp specialization，以及 GEMM、softmax 间更深的异步流水，并研究 FP8 路径。它证明了新硬件异步能力的重要性，但实现结论与 Hopper 的执行和存储机制紧密相关。
 
-[FlashAttention-4](https://arxiv.org/abs/2603.05451)进一步研究不对称硬件上算法流水与 kernel 调度的协同设计。截至 2026 年 7 月，它应作为前沿机制和论文证据介绍，不能被写成所有平台已经默认采用的稳定 API。
+[FlashAttention-4](https://arxiv.org/abs/2603.05451) 进一步研究不对称硬件上算法流水与 kernel 调度的协同设计。截至 2026 年 7 月，它应作为前沿机制和论文证据介绍，不能被写成所有平台已经默认采用的稳定 API。
 
 生产文档应分开三层：
 
@@ -165,11 +165,11 @@ $$
 - backward 的状态重算或保存策略；
 - gate 下界、累加 dtype 与边界 state 的固定语义。
 
-[Kimi Linear](https://github.com/MoonshotAI/Kimi-Linear)公开了 Kimi Delta Attention（KDA）及其算法实现；[FlashKDA](https://github.com/MoonshotAI/FlashKDA)则是面向 CUTLASS 的官方 kernel 入口。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露 K3 在 69 个 KDA 层中使用 gate 下界 $g_{\min}=-5$，并保留 24 个 Gated MLA 层。这个下界和层数是模型语义，不能在 kernel 调优时更改；通用实现应把 recurrent/chunkwise 输出、梯度和极长序列数值漂移分别对齐。架构与系统如何配合见 [Kimi K3](../landscape/works/kimi-k3.md)。
+[Kimi Linear](https://github.com/MoonshotAI/Kimi-Linear) 公开了 Kimi Delta Attention（KDA）及其算法实现；[FlashKDA](https://github.com/MoonshotAI/FlashKDA) 则是面向 CUTLASS 的官方 kernel 入口。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露 K3 在 69 个 KDA 层中使用 gate 下界 $g_{\min}=-5$，并保留 24 个 Gated MLA 层。这个下界和层数是模型语义，不能在 kernel 调优时更改；通用实现应把 recurrent/chunkwise 输出、梯度和极长序列数值漂移分别对齐。架构与系统如何配合见 [Kimi K3](../landscape/works/kimi-k3.md)。
 
 ## 压缩稀疏 Attention 的多段 Kernel
 
-[DeepSeek-V4 CSA](../landscape/works/deepseek-compressed-attention.md)不是一个可由普通 FlashAttention 参数化完成的 kernel。一次 query 至少经过：
+[DeepSeek-V4 CSA](../landscape/works/deepseek-compressed-attention.md) 不是一个可由普通 FlashAttention 参数化完成的 kernel。一次 query 至少经过：
 
 ```text
 token compression
@@ -183,7 +183,7 @@ token compression
 
 压缩器逐 channel 对两个相邻块共 $2m$ 个候选做 softmax；indexer 用多头 ReLU dot-product 的加权和排序；core attention 才使用被选中的 entry。任一阶段的 layout 改变都会传递到下一阶段，单独优化 score GEMM 可能被 top-$k$、gather 或 ragged MQA 吞掉。
 
-V4 还要求 batch invariance：同一序列在不同 batch 组合中保持相同输出。短 attention 由单 SM 完成全序列，较长尾部才走多 SM，并固定 accumulation 语义；sparse backward 则让每个 SM 先写独立 buffer，再按确定顺序归约。代价是额外 buffer 与部分 shape 下放弃最快 split-K。完整系统取舍见[V4 系统闭环](../landscape/works/tilelang-mega-moe.md#batch-invariant-attention)。
+V4 还要求 batch invariance：同一序列在不同 batch 组合中保持相同输出。短 attention 由单 SM 完成全序列，较长尾部才走多 SM，并固定 accumulation 语义；sparse backward 则让每个 SM 先写独立 buffer，再按确定顺序归约。代价是额外 buffer 与部分 shape 下放弃最快 split-K。完整系统取舍见 [V4 系统闭环](../landscape/works/tilelang-mega-moe.md#batch-invariant-attention)。
 
 ## Prefill 与 decode 是两种 kernel
 
@@ -204,7 +204,7 @@ decode 更容易受 KV 带宽、间接寻址和 launch 控制。适合 prefill �
 - variable-length / ragged attention；
 - prefix reuse 或 tree verification attention。
 
-[FlashInfer](https://arxiv.org/abs/2501.01005)系统化讨论了 LLM serving 中 attention 的多形态 kernel 与调度问题；其[官方实现](https://github.com/flashinfer-ai/flashinfer)可用于核对版本相关接口，而不是作为算法定义的唯一来源。
+[FlashInfer](https://arxiv.org/abs/2501.01005) 系统化讨论了 LLM serving 中 attention 的多形态 kernel 与调度问题；其[官方实现](https://github.com/flashinfer-ai/flashinfer)可用于核对版本相关接口，而不是作为算法定义的唯一来源。
 
 ## Paged 与 ragged KV
 
@@ -225,7 +225,7 @@ $$
 - cache dtype 和 scale metadata；
 - 请求取消后的异步 page 生命周期。
 
-间接寻址会减少连续性和预取机会，但避免了大规模连续预留和迁移。连续虚拟地址方案与 paged tensor 方案的机制差异见 [vAttention](https://arxiv.org/abs/2405.04437)和 [PagedAttention](https://arxiv.org/abs/2309.06180)。
+间接寻址会减少连续性和预取机会，但避免了大规模连续预留和迁移。连续虚拟地址方案与 paged tensor 方案的机制差异见 [vAttention](https://arxiv.org/abs/2405.04437) 和 [PagedAttention](https://arxiv.org/abs/2309.06180)。
 
 ragged batch 不应通过盲目 padding 恢复矩形。可使用 cumulative sequence length 描述每条序列的区间，但 offset dtype、空序列和跨边界访问都属于正确性契约。
 
@@ -237,7 +237,7 @@ mask 可能包含 causal、sliding window、document boundary、prefix-LM 或块
 - tile 内 score modifier 处理剩余逐元素规则；
 - 编译 cache key 包含 mask 语义和 shape 类别。
 
-[PyTorch FlexAttention](https://docs.pytorch.org/docs/main/nn.attention.flex_attention.html)提供了这类可编程 attention 的官方接口示例。其可表达性不保证任意规则都高效；mask 不能在 block 级剪枝时，性能可能接近 dense attention。
+[PyTorch FlexAttention](https://docs.pytorch.org/docs/main/nn.attention.flex_attention.html) 提供了这类可编程 attention 的官方接口示例。其可表达性不保证任意规则都高效；mask 不能在 block 级剪枝时，性能可能接近 dense attention。
 
 ## Backward 与重计算
 
@@ -292,7 +292,7 @@ attention kernel 至少固定：
 7. 分开报告 prefill、decode、不同 page size、长度分布和并发度。
 8. 在 graph capture、请求取消与 cache COW 后重复 correctness test，检查异步生命周期错误。
 
-kernel 层结论应回到[性能成本模型](performance-model.md)核对 Amdahl 上限，并与[GPU 执行模型](gpu-execution.md)中的 tile、流水和资源约束一起解释。
+kernel 层结论应回到[性能成本模型](performance-model.md)核对 Amdahl 上限，并与 [GPU 执行模型](gpu-execution.md)中的 tile、流水和资源约束一起解释。
 
 ## 稀疏注意力的三段融合 {#glm-sparse-kernels}
 

@@ -54,7 +54,7 @@
 
 ## DeepSeek 家族与 V4
 
-[DeepSeek 演化](landscape/deepseek-timeline.md)区分架构、训练、推理、权重与产品节点；[DeepSeek-V4 总深读](landscape/works/deepseek-v4.md)连接 mHC、CSA / HCA、Muon、MegaMoE、长上下文后训练和评测协议。公式与实现分别进入[压缩注意力](landscape/works/deepseek-compressed-attention.md)、[mHC](landscape/works/manifold-hyper-connections.md)、[On-Policy Distillation](landscape/works/on-policy-distillation.md)和[系统闭环](landscape/works/tilelang-mega-moe.md)；[103 项引用图谱](landscape/deepseek-v4-reference-map.md)保留完整的一跳文献角色。
+[DeepSeek 演化](landscape/deepseek-timeline.md)区分架构、训练、推理、权重与产品节点；[DeepSeek-V4 总深读](landscape/works/deepseek-v4.md)连接 mHC、CSA / HCA、Muon、MegaMoE、长上下文后训练和评测协议。公式与实现分别进入[压缩注意力](landscape/works/deepseek-compressed-attention.md)、[mHC](landscape/works/manifold-hyper-connections.md)、[On-Policy Distillation](landscape/works/on-policy-distillation.md) 和[系统闭环](landscape/works/tilelang-mega-moe.md)；[103 项引用图谱](landscape/deepseek-v4-reference-map.md)保留完整的一跳文献角色。
 
 - DeepSeek-AI et al., [DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence](https://arxiv.org/abs/2606.19348)
 - DeepSeek-AI, [DeepSeek-V4 official model collection](https://huggingface.co/collections/deepseek-ai/deepseek-v4)
@@ -66,7 +66,7 @@
 
 ## Kimi 家族与 K3
 
-[Kimi 技术谱系](landscape/kimi-timeline.md)区分各节点的报告、权重、代码、API、许可证与发布日期；[K3 工作深读](landscape/works/kimi-k3.md)连接结构、训练、系统和评测；[150 项引用图谱](landscape/kimi-k3-reference-map.md)进一步标明每项文献是直接来源、前身、并行工作、benchmark 还是比较对象。KDA、depth mixing、latent routing 与 expert parallel 分别见[Kimi Linear 与 FlashKDA](landscape/works/kimi-linear-flashkda.md)、[Attention Residuals](landscape/works/attention-residuals.md)、[Stable LatentMoE 与 Quantile Balancing](landscape/works/latentmoe-quantile-balancing.md)和[MoonEP](landscape/works/moonep.md)；视觉与音频分支另见[Kimi 家族的多模态路线](multimodal/kimi.md)。
+[Kimi 技术谱系](landscape/kimi-timeline.md)区分各节点的报告、权重、代码、API、许可证与发布日期；[K3 工作深读](landscape/works/kimi-k3.md)连接结构、训练、系统和评测；[150 项引用图谱](landscape/kimi-k3-reference-map.md)进一步标明每项文献是直接来源、前身、并行工作、benchmark 还是比较对象。KDA、depth mixing、latent routing 与 expert parallel 分别见 [Kimi Linear 与 FlashKDA](landscape/works/kimi-linear-flashkda.md)、[Attention Residuals](landscape/works/attention-residuals.md)、[Stable LatentMoE 与 Quantile Balancing](landscape/works/latentmoe-quantile-balancing.md) 和 [MoonEP](landscape/works/moonep.md)；视觉与音频分支另见 [Kimi 家族的多模态路线](multimodal/kimi.md)。
 
 - Kimi Team, [Kimi k1.5: Scaling Reinforcement Learning with LLMs](https://arxiv.org/abs/2501.12599)
 - Kimi Team, [Kimi-VL Technical Report](https://arxiv.org/abs/2504.07491)
@@ -81,7 +81,7 @@
 
 ## GLM 家族与 GLM-5
 
-[GLM 演化](landscape/glm-timeline.md)区分论文、模型、权重、代码、API 与后续版本；[GLM-5 总深读](landscape/works/glm-5.md)覆盖报告的架构、数据、训练、Agentic RL、环境、硬件和评测；[63 项引用图谱](landscape/glm-5-reference-map.md)保留正文实际使用文献的角色。[架构](landscape/works/glm-5-architecture.md)、[IndexCache](landscape/works/indexcache.md)、[slime](landscape/works/slime-async-agentic-rl.md)与 [Agentic Engineering](landscape/works/glm-agentic-engineering.md)分别展开可复用机制。
+[GLM 演化](landscape/glm-timeline.md)区分论文、模型、权重、代码、API 与后续版本；[GLM-5 总深读](landscape/works/glm-5.md)覆盖报告的架构、数据、训练、Agentic RL、环境、硬件和评测；[63 项引用图谱](landscape/glm-5-reference-map.md)保留正文实际使用文献的角色。[架构](landscape/works/glm-5-architecture.md)、[IndexCache](landscape/works/indexcache.md)、[slime](landscape/works/slime-async-agentic-rl.md) 与 [Agentic Engineering](landscape/works/glm-agentic-engineering.md) 分别展开可复用机制。
 
 - Du et al., [GLM: General Language Model Pretraining with Autoregressive Blank Infilling](https://arxiv.org/abs/2103.10360)
 - Zeng et al., [GLM-130B: An Open Bilingual Pre-trained Model](https://arxiv.org/abs/2210.02414)
@@ -94,7 +94,7 @@
 
 ## 多模态与生成
 
-对应[多模态与生成](multimodal/index.md)、[共同表示](multimodal/foundations/signals-tokenization.md)、[视觉理解](multimodal/vision/representation-grounding.md)、[图像生成](multimodal/generative-modeling.md)、[音频](multimodal/audio/representations-understanding.md)、[视频](multimodal/video/understanding-long-context.md)和[Any-to-Any 系统](multimodal/omni/any-to-any.md)。
+对应[多模态与生成](multimodal/index.md)、[共同表示](multimodal/foundations/signals-tokenization.md)、[视觉理解](multimodal/vision/representation-grounding.md)、[图像生成](multimodal/generative-modeling.md)、[音频](multimodal/audio/representations-understanding.md)、[视频](multimodal/video/understanding-long-context.md)和 [Any-to-Any 系统](multimodal/omni/any-to-any.md)。
 
 - Dosovitskiy et al., [An Image is Worth 16x16 Words](https://arxiv.org/abs/2010.11929)
 - Radford et al., [Learning Transferable Visual Models From Natural Language Supervision](https://arxiv.org/abs/2103.00020)
@@ -123,7 +123,7 @@
 
 ## 世界模型与具身智能
 
-对应[世界模型](world-models/index.md)、[潜在动力学与规划](world-models/dynamics-planning.md)、[表示预测与生成式世界](world-models/predictive-generative-worlds.md)、[具身智能](embodied/index.md)与[VLA 数据谱系](embodied/vla-data-lineage.md)。
+对应[世界模型](world-models/index.md)、[潜在动力学与规划](world-models/dynamics-planning.md)、[表示预测与生成式世界](world-models/predictive-generative-worlds.md)、[具身智能](embodied/index.md)与 [VLA 数据谱系](embodied/vla-data-lineage.md)。
 
 - Sutton, [Integrated Architectures for Learning, Planning, and Reacting Based on Approximating Dynamic Programming](https://doi.org/10.1016/B978-1-55860-141-3.50030-4)
 - Ha & Schmidhuber, [World Models](https://arxiv.org/abs/1803.10122)
@@ -179,7 +179,7 @@
 
 ## 语言模型反馈与策略学习
 
-对应[反馈制度](reinforcement-learning/feedback-regimes.md)、[推理 RL 配方地图](reinforcement-learning/reasoning-rl-recipes.md)、[GAE](reinforcement-learning/advantage-estimation-gae.md)、[PPO](reinforcement-learning/trust-region-ppo.md)、[GRPO](reinforcement-learning/grpo.md)、[Ratio 与 Gate](reinforcement-learning/ratio-clipping-gating.md)、[在线 RL](training/online-rl.md)与[语言模型信用分配](reinforcement-learning/credit-assignment.md)。
+对应[反馈制度](reinforcement-learning/feedback-regimes.md)、[推理 RL 配方地图](reinforcement-learning/reasoning-rl-recipes.md)、[GAE](reinforcement-learning/advantage-estimation-gae.md)、[PPO](reinforcement-learning/trust-region-ppo.md)、[GRPO](reinforcement-learning/grpo.md)、[Ratio 与 Gate](reinforcement-learning/ratio-clipping-gating.md)、[在线 RL](training/online-rl.md) 与[语言模型信用分配](reinforcement-learning/credit-assignment.md)。
 
 - Ouyang et al., [Training Language Models to Follow Instructions with Human Feedback](https://arxiv.org/abs/2203.02155)
 - Bai et al., [Constitutional AI](https://arxiv.org/abs/2212.08073)
@@ -231,7 +231,7 @@
 
 ## 训练与推理系统
 
-对应[训练系统](systems/index.md)、[并行策略](systems/model-parallelism.md)、[注意力 kernel](systems/attention-kernels.md)与[推理服务](inference/index.md)。
+对应[训练系统](systems/index.md)、[并行策略](systems/model-parallelism.md)、[注意力 kernel](systems/attention-kernels.md) 与[推理服务](inference/index.md)。
 
 - Shoeybi et al., [Megatron-LM](https://arxiv.org/abs/1909.08053)
 - Rajbhandari et al., [ZeRO](https://arxiv.org/abs/1910.02054)
@@ -287,7 +287,7 @@
 
 ## Agent 与多模态评测
 
-对应[Agent 与工具评测](evaluation/agent-tool-evaluation.md)和[多模态评测](evaluation/multimodal-evaluation.md)。
+对应 [Agent 与工具评测](evaluation/agent-tool-evaluation.md)和[多模态评测](evaluation/multimodal-evaluation.md)。
 
 - Jimenez et al., [SWE-bench](https://arxiv.org/abs/2310.06770)
 - Zhou et al., [WebArena](https://arxiv.org/abs/2307.13854)

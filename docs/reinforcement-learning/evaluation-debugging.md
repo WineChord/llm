@@ -191,7 +191,7 @@ PPO 与 GRPO 的显存不同、RLOO 与 PPO 的 rollout 数不同、异步系统
 - 训练 reward 与最终 outcome 同时画曲线；
 - 多 seed 或重复 rollout 给出不确定性。
 
-可执行断言见[手撕强化学习](../practice/reinforcement-learning.md)、[训练目标](../practice/training-objectives.md)与[评测工具](../practice/evaluation-tooling.md)。多轮系统指标继续见[Agentic RL 评测与安全](../agentic-rl/evaluation-safety.md)。
+可执行断言见[手撕强化学习](../practice/reinforcement-learning.md)、[训练目标](../practice/training-objectives.md)与[评测工具](../practice/evaluation-tooling.md)。多轮系统指标继续见 [Agentic RL 评测与安全](../agentic-rl/evaluation-safety.md)。
 
 ## Reference {#reference}
 

@@ -60,13 +60,13 @@ $$
 
 ### 2. 减少数据搬运
 
-- [FlashAttention](https://arxiv.org/abs/2205.14135)用 tiling 与 online softmax 减少 attention 的 HBM 往返；
+- [FlashAttention](https://arxiv.org/abs/2205.14135) 用 tiling 与 online softmax 减少 attention 的 HBM 往返；
 - fused norm、activation、dequant 和 sampling 减少中间 tensor；
 - PagedAttention 降低预留与复制；
 - weight-only / activation / KV 量化减少不同路径上的字节；
 - P/D 共置或分离应按 KV 传输是否可隐藏来选择。
 
-融合越大不一定越快：register spill、动态 shape、编译时间和 graph break 都可能抵消收益。kernel 细节见[Kernel 与性能](../systems/kernels-performance.md)。
+融合越大不一定越快：register spill、动态 shape、编译时间和 graph break 都可能抵消收益。kernel 细节见 [Kernel 与性能](../systems/kernels-performance.md)。
 
 IO-aware exact attention 的转折见 [FlashAttention 深读](../landscape/works/flashattention.md)；分页 KV 与 block table 的执行语义见 [vLLM / PagedAttention 深读](../landscape/works/vllm-pagedattention.md)。
 

@@ -208,7 +208,7 @@ else:
 - full forward 与 chunked prefill；
 - 训练权重加载、weight tying 和词表扩展。
 
-结构推导见 [Transformer](../architecture/transformer.md)与 [Decoder Block](../architecture/decoder-block.md)，cache 的物理管理见[手撕推理引擎](inference-engine.md)。
+结构推导见 [Transformer](../architecture/transformer.md) 与 [Decoder Block](../architecture/decoder-block.md)，cache 的物理管理见[手撕推理引擎](inference-engine.md)。
 
 ## Reference {#reference}
 

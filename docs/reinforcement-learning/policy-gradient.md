@@ -249,7 +249,7 @@ loss reduction: token / sequence / action span
 - **把所有 timeout 当 terminal**：本可继续的状态失去 bootstrap，回报系统性偏低。
 - **跨 prompt 直接比较 raw reward**：难度差异主导梯度，需有合适 baseline 或分层。
 - **标准化后声称 estimator 未变**：组标准差、长度均值和样本过滤都会改变权重。
-- **使用过时轨迹却不校正**：上述推导是 on-policy；异步数据见[Off-policy 校正](off-policy-correction.md)。
+- **使用过时轨迹却不校正**：上述推导是 on-policy；异步数据见 [Off-policy 校正](off-policy-correction.md)。
 - **只提高采样 reward**：策略可能利用 reward 漏洞；独立评测与诊断见[强化学习评测与调试](evaluation-debugging.md)。
 
 ## 从 REINFORCE 向后走

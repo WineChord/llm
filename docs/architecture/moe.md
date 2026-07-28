@@ -24,12 +24,12 @@ top-$k$ 是离散选择；未被选中的专家通常不接收主任务梯度。
 
 ## 细粒度与共享专家
 
-将一个大 FFN 拆成更多小专家，可以用更丰富的组合表达相近激活参数量；代价是路由元数据、kernel 粒度和通信消息更碎。共享专家对所有 token 激活，承担通用变换；路由专家则学习条件化分工。[DeepSeekMoE](https://arxiv.org/abs/2401.06066)是细粒度与共享专家组合的代表。
+将一个大 FFN 拆成更多小专家，可以用更丰富的组合表达相近激活参数量；代价是路由元数据、kernel 粒度和通信消息更碎。共享专家对所有 token 激活，承担通用变换；路由专家则学习条件化分工。[DeepSeekMoE](https://arxiv.org/abs/2401.06066) 是细粒度与共享专家组合的代表。
 
 ## LatentMoE：把路由压进窄通道
 
 普通 MoE 让每个被选专家接收完整 hidden width $d$；当 expert pool 和 top-$k$ 同时扩大时，dispatch
-bytes 与专家权重流量随之增长。[LatentMoE](https://arxiv.org/abs/2601.18089)把通用变换留在
+bytes 与专家权重流量随之增长。[LatentMoE](https://arxiv.org/abs/2601.18089) 把通用变换留在
 full-width shared experts，把条件化路由放进宽度 $\ell<d$ 的 latent path：
 
 $$
@@ -54,7 +54,7 @@ $d$ 维承载公共知识。低维路由不是免费容量：若 $\ell$ 太小�
 Stable LatentMoE 取 $d=7168$、$\ell=3584$，在 896 个 routed experts 中每 token 激活 16 个，并
 始终激活 2 个 full-width shared experts。它在 routed aggregate 与 up-projection 之间加入
 RMSNorm，使 $W_\uparrow$ 看到的尺度较少依赖本次选中了哪些专家及其 gate weight；再与
-[SiTU-GLU](decoder-block.md#situ-glu)和后文的 Quantile Balancing 共同处理极稀疏训练中的 activation
+[SiTU-GLU](decoder-block.md#situ-glu) 和后文的 Quantile Balancing 共同处理极稀疏训练中的 activation
 与负载问题。[LatentMoE 到 Stable LatentMoE 深读](../landscape/works/latentmoe-quantile-balancing.md)
 区分了原作与 K3 增量，并从 balanced assignment dual 推导 QB；完整模型实例见
 [Kimi K3](../landscape/works/kimi-k3.md)。
@@ -160,7 +160,7 @@ else: raise AssertionError("router/expert mismatch must fail")
 
 只优化语言建模损失时，router 可能把大量 token 送到少数专家。经典辅助项同时考察路由概率和实际分配，鼓励专家接收接近均匀的负载；但辅助梯度也可能干扰主目标。
 
-[Auxiliary-Loss-Free Load Balancing](https://arxiv.org/abs/2408.15664)在 top-$k$ 前为每个专家增加动态 bias，根据近期负载更新 bias，而不让均衡信号直接反传到主 router score。它减少一种干扰来源，却没有消除容量、局部拥塞和跨节点流量问题。
+[Auxiliary-Loss-Free Load Balancing](https://arxiv.org/abs/2408.15664) 在 top-$k$ 前为每个专家增加动态 bias，根据近期负载更新 bias，而不让均衡信号直接反传到主 router score。它减少一种干扰来源，却没有消除容量、局部拥塞和跨节点流量问题。
 
 ### Quantile Balancing：从追赶负载到直接估计阈值 {#quantile-balancing}
 
@@ -277,7 +277,7 @@ local tokens
 
 ### DeepSeek-V4 的路由改动
 
-[DeepSeek-V4](../landscape/works/deepseek-v4.md#model-ledger)延续 DeepSeekMoE 的细粒度 routed experts 与 shared expert，但在 V3 配方上改了四处：
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#model-ledger) 延续 DeepSeekMoE 的细粒度 routed experts 与 shared expert，但在 V3 配方上改了四处：
 
 - affinity 从 $\operatorname{Sigmoid}(z)$改成 $\sqrt{\operatorname{Softplus}(z)}$；
 - 保留 auxiliary-loss-free bias balancing，同时加入很小的 sequence-wise balance loss，防止单条长序列内部极端失衡；
@@ -286,7 +286,7 @@ local tokens
 
 Flash 与 Pro 都使用 1 个 shared expert、256 / 384 个 routed experts、top-6；expert hidden 分别为 2048 / 3072。Hash 层仍是 MoE 计算，只是 expert ID 不由可学习 router 决定；它降低早期路由不稳定，不代表这些层会自动得到语义专家分工。
 
-报告没有给出这些改动各自的规模消融，也没有公开 sequence loss 的完整归约细节。系统侧的 wave dispatch、pull-based activation 与通信阈值见[MegaMoE](../landscape/works/tilelang-mega-moe.md#wave-pipeline)。
+报告没有给出这些改动各自的规模消融，也没有公开 sequence loss 的完整归约细节。系统侧的 wave dispatch、pull-based activation 与通信阈值见 [MegaMoE](../landscape/works/tilelang-mega-moe.md#wave-pipeline)。
 
 ## 推理
 
@@ -308,7 +308,7 @@ training token distribution
 quality, throughput, tail latency and memory
 ```
 
-[Switch Transformer](https://arxiv.org/abs/2101.03961)展示了 top-1 稀疏路由，[DeepSeek-V3](https://arxiv.org/abs/2412.19437)则把细粒度专家、无辅助损失均衡和系统配方结合。替代序列架构见[稀疏与替代架构](moe-alternatives.md)，分布式实现见[模型并行](../systems/model-parallelism.md)。
+[Switch Transformer](https://arxiv.org/abs/2101.03961) 展示了 top-1 稀疏路由，[DeepSeek-V3](https://arxiv.org/abs/2412.19437) 则把细粒度专家、无辅助损失均衡和系统配方结合。替代序列架构见[稀疏与替代架构](moe-alternatives.md)，分布式实现见[模型并行](../systems/model-parallelism.md)。
 
 ## Reference {#reference}
 

@@ -29,7 +29,7 @@ M_{n,b}
 \right).
 $$
 
-Window、hop、FFT 大小、Mel bins 和归一化都是模型接口。[Whisper](https://arxiv.org/abs/2212.04356)是从 log-Mel 输入进行大规模弱监督语音识别与翻译的代表。
+Window、hop、FFT 大小、Mel bins 和归一化都是模型接口。[Whisper](https://arxiv.org/abs/2212.04356) 是从 log-Mel 输入进行大规模弱监督语音识别与翻译的代表。
 
 ### 连续语义特征
 
@@ -45,7 +45,7 @@ Projector 或 resampler 再接入 LLM。连续特征适合理解、ASR 和检索
 
 ### 离散 codec token
 
-Neural codec 把音频压缩为一个或多个码本流。[EnCodec](https://arxiv.org/abs/2210.13438)使用 residual vector quantization（RVQ）。
+Neural codec 把音频压缩为一个或多个码本流。[EnCodec](https://arxiv.org/abs/2210.13438) 使用 residual vector quantization（RVQ）。
 
 ## Residual Vector Quantization
 
@@ -115,7 +115,7 @@ assert indices.shape == (2, 2) and residual.norm() < latent.norm()
 
 ## 语义与声学 token
 
-[AudioLM](https://arxiv.org/abs/2209.03143)把长程语义 token 与细粒度声学 token 分层建模。语义流控制内容和长期结构，声学流恢复音色与局部细节。
+[AudioLM](https://arxiv.org/abs/2209.03143) 把长程语义 token 与细粒度声学 token 分层建模。语义流控制内容和长期结构，声学流恢复音色与局部细节。
 
 分层表示有利于降低高层序列长度，但会引入条件误差传播：
 
@@ -150,7 +150,7 @@ $$
 
 ## 音频语言建模
 
-[MusicGen](https://arxiv.org/abs/2306.05284)展示了基于压缩离散表示的条件音乐生成。更一般地，音频 token 自回归目标为
+[MusicGen](https://arxiv.org/abs/2306.05284) 展示了基于压缩离散表示的条件音乐生成。更一般地，音频 token 自回归目标为
 
 $$
 p(z\mid c)
@@ -175,7 +175,7 @@ $$
 \text{TTS}.
 $$
 
-其优点是每层可独立验证；缺点是 ASR 丢失韵律和非语言信息，串联延迟也较高。[SeamlessM4T](https://arxiv.org/abs/2308.11596)研究了多语言、多任务语音与文本翻译。
+其优点是每层可独立验证；缺点是 ASR 丢失韵律和非语言信息，串联延迟也较高。[SeamlessM4T](https://arxiv.org/abs/2308.11596) 研究了多语言、多任务语音与文本翻译。
 
 端到端 speech-to-speech 可以在共享表示中保留声学条件，但内容正确性、说话人保持、延迟与安全更难分层诊断。
 
@@ -203,7 +203,7 @@ L_{\mathrm{decode}}
 L_{\mathrm{playback}}.
 $$
 
-[Moshi](https://arxiv.org/abs/2410.00037)及其[官方实现](https://github.com/kyutai-labs/moshi)公开了全双工 spoken dialogue 的多流建模路线。全双工系统必须分别维护用户和系统音频流，并处理：
+[Moshi](https://arxiv.org/abs/2410.00037) 及其[官方实现](https://github.com/kyutai-labs/moshi)公开了全双工 spoken dialogue 的多流建模路线。全双工系统必须分别维护用户和系统音频流，并处理：
 
 - voice activity detection；
 - turn-taking 与重叠说话；

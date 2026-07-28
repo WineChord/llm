@@ -4,7 +4,7 @@
 
 本节关注 inference-time policy，而不是把所有“推理能力”归因于更长文字。
 
-从 Chain-of-Thought、self-consistency 到 verifier-guided search，再到用可验证奖励更新策略，关键变化是“计算预算由谁分配、结果由谁判断”。[推理、搜索与验证](../landscape/lineages/reasoning-verification.md)给出这条脉络；[DeepSeek-R1](../landscape/works/deepseek-r1.md)则用于辨析预训练能力、搜索、强化学习与蒸馏各自贡献了什么。
+从 Chain-of-Thought、self-consistency 到 verifier-guided search，再到用可验证奖励更新策略，关键变化是“计算预算由谁分配、结果由谁判断”。[推理、搜索与验证](../landscape/lineages/reasoning-verification.md)给出这条脉络；[DeepSeek-R1](../landscape/works/deepseek-r1.md) 则用于辨析预训练能力、搜索、强化学习与蒸馏各自贡献了什么。
 
 ## 三层对象
 
@@ -56,4 +56,4 @@ $$
 
 “思考更久”不是实现规范。可比较的对象是明确的计算图、预算和停止条件。
 
-[DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md)与 [GLM](../landscape/families/glm.md) 家族包含不同的 reasoning checkpoint、搜索/验证路线与服务模式；比较时必须先分开训练后的策略能力、测试时预算、外部 verifier 和工具系统。
+[DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md) 与 [GLM](../landscape/families/glm.md) 家族包含不同的 reasoning checkpoint、搜索/验证路线与服务模式；比较时必须先分开训练后的策略能力、测试时预算、外部 verifier 和工具系统。

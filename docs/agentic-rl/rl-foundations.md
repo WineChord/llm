@@ -40,7 +40,7 @@ s_{t+1}\sim P(\cdot\mid s_t,a_t),
 o_{t+1}\sim\Omega(\cdot\mid s_{t+1}).
 $$
 
-模型只看到 $h_t$，真实文件、权限、网页或用户状态可能不可见，因此更接近 [POMDP](../reinforcement-learning/decision-processes.md)。一次 tool call 持续时间不同，又可用 [SMDP 与 option](../reinforcement-learning/models-planning-hierarchy.md)描述。
+模型只看到 $h_t$，真实文件、权限、网页或用户状态可能不可见，因此更接近 [POMDP](../reinforcement-learning/decision-processes.md)。一次 tool call 持续时间不同，又可用 [SMDP 与 option](../reinforcement-learning/models-planning-hierarchy.md) 描述。
 
 ## 六个对象怎样变化
 
@@ -66,7 +66,7 @@ $$
 - 并发 actor 的修改；
 - 用户后续行为。
 
-摘要、retrieval 与 memory 是 belief-state engineering。它们提高可用信息，不证明信息充分。[长时任务](long-horizon.md)讨论上下文压缩与恢复，[CompactionRL](../landscape/works/sao-compactionrl.md#compactionrl)则把 summary 本身作为可训练 action。
+摘要、retrieval 与 memory 是 belief-state engineering。它们提高可用信息，不证明信息充分。[长时任务](long-horizon.md)讨论上下文压缩与恢复，[CompactionRL](../landscape/works/sao-compactionrl.md#compactionrl) 则把 summary 本身作为可训练 action。
 
 ## Observation 不参与 policy gradient
 

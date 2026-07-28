@@ -29,7 +29,7 @@ $$
 
 堆叠卷积逐渐扩大感受野，适合密集视觉和多尺度特征。[AlexNet](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks)、ResNet 与特征金字塔共同奠定了现代视觉感知骨架。
 
-[Vision Transformer](https://arxiv.org/abs/2010.11929)改用 patch token 与全局 self-attention。它减少了手工视觉结构，使架构更容易与语言主干复用，但二维局部性需要从数据、位置编码或层级结构中重新学得。CNN 与 ViT 不是简单的“旧—新”替代关系：小数据、密集预测、分辨率外推和部署成本会改变选择。
+[Vision Transformer](https://arxiv.org/abs/2010.11929) 改用 patch token 与全局 self-attention。它减少了手工视觉结构，使架构更容易与语言主干复用，但二维局部性需要从数据、位置编码或层级结构中重新学得。CNN 与 ViT 不是简单的“旧—新”替代关系：小数据、密集预测、分辨率外推和部署成本会改变选择。
 
 ## 监督信号决定表示看见什么
 
@@ -52,13 +52,13 @@ $$
 - 通过增强后的多视图一致性学习不变表示；
 - 遮蔽部分图像，在像素或表示空间预测缺失区域。
 
-[MAE](https://arxiv.org/abs/2111.06377)用高遮蔽率重建像素 patch；[DINO](https://arxiv.org/abs/2104.14294)与 [DINOv2](https://arxiv.org/abs/2304.07193)通过教师—学生自蒸馏学习具有较强密集结构的表示；[I-JEPA](https://arxiv.org/abs/2301.08243)则在表示空间预测目标区域，减少对低层像素细节的执着。
+[MAE](https://arxiv.org/abs/2111.06377) 用高遮蔽率重建像素 patch；[DINO](https://arxiv.org/abs/2104.14294) 与 [DINOv2](https://arxiv.org/abs/2304.07193) 通过教师—学生自蒸馏学习具有较强密集结构的表示；[I-JEPA](https://arxiv.org/abs/2301.08243) 则在表示空间预测目标区域，减少对低层像素细节的执着。
 
 这些目标都叫“自监督”，但充分统计量不同。像素重建更关注局部外观，跨视图一致性强调增强不变性，表示预测追求可预测的语义结构；应按下游任务比较，而不是只看预训练 loss。
 
 ### 语言监督
 
-[CLIP](../../landscape/works/clip.md)用图文对比学习开放语义空间。对 batch 中图像 $i$ 与文本 $j$：
+[CLIP](../../landscape/works/clip.md) 用图文对比学习开放语义空间。对 batch 中图像 $i$ 与文本 $j$：
 
 $$
 s_{ij}
@@ -68,7 +68,7 @@ $$
 
 对称对比目标让匹配图文靠近、其他组合远离。它把自然语言变成分类、检索和过滤接口，却主要约束全局相似度。若训练 caption 只描述主体，模型不必精确编码计数、方位和小物体。
 
-[SigLIP](https://arxiv.org/abs/2303.15343)把 batch 内配对改为 pairwise sigmoid 目标，降低全局 softmax 对 batch 规模和跨设备归一化的依赖。目标变化影响优化与负样本语义，不意味着空间 grounding 自动解决。
+[SigLIP](https://arxiv.org/abs/2303.15343) 把 batch 内配对改为 pairwise sigmoid 目标，降低全局 softmax 对 batch 规模和跨设备归一化的依赖。目标变化影响优化与负样本语义，不意味着空间 grounding 自动解决。
 
 ## 从图像级 token 到区域证据
 
@@ -88,7 +88,7 @@ $$
 | point | 应点击或关注哪里 | 对尺度与坐标变换敏感 |
 | text span + region | 哪段答案来自哪里 | 需要语言与空间共同对齐 |
 
-[DETR](https://arxiv.org/abs/2005.12872)用一组 object query 与二分匹配做集合预测；[Segment Anything](https://arxiv.org/abs/2304.02643)把点、框和 mask 作为可提示分割接口。开放词表检测与分割进一步把语言表示带入密集预测，但语言相似不等于像素边界准确。
+[DETR](https://arxiv.org/abs/2005.12872) 用一组 object query 与二分匹配做集合预测；[Segment Anything](https://arxiv.org/abs/2304.02643) 把点、框和 mask 作为可提示分割接口。开放词表检测与分割进一步把语言表示带入密集预测，但语言相似不等于像素边界准确。
 
 ## 多图与交错图文
 

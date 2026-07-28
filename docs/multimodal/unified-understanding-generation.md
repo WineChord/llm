@@ -41,11 +41,11 @@ $$
 p(s)=\prod_{t=1}^{T}p(s_t\mid s_{<t}).
 $$
 
-[Chameleon](https://arxiv.org/abs/2405.09818)展示了 early-fusion token 模型；[Emu3](https://arxiv.org/abs/2409.18869)以 next-token prediction 统一视觉理解与生成。离散化简化主干目标，但 tokenizer 重建误差成为生成上限，图像 token 也显著增加序列长度。
+[Chameleon](https://arxiv.org/abs/2405.09818) 展示了 early-fusion token 模型；[Emu3](https://arxiv.org/abs/2409.18869) 以 next-token prediction 统一视觉理解与生成。离散化简化主干目标，但 tokenizer 重建误差成为生成上限，图像 token 也显著增加序列长度。
 
 ## 解耦表示、共享主干
 
-[Janus](https://arxiv.org/abs/2410.13848)及其[官方实现](https://github.com/deepseek-ai/Janus)采用独立理解/生成视觉路径并共享自回归主干。该设计保留任务专用表示，同时让高层语言状态共享。
+[Janus](https://arxiv.org/abs/2410.13848) 及其[官方实现](https://github.com/deepseek-ai/Janus)采用独立理解/生成视觉路径并共享自回归主干。该设计保留任务专用表示，同时让高层语言状态共享。
 
 “共享主干”仍需要说明：
 
@@ -57,7 +57,7 @@ $$
 
 ## 自回归与 diffusion 混合
 
-[Transfusion](https://arxiv.org/abs/2408.11039)在同一序列中对离散文本使用 next-token loss，对连续媒体块使用 diffusion loss。[Show-o](https://arxiv.org/abs/2408.12528)及其[官方实现](https://github.com/showlab/Show-o)探索自回归理解与离散 diffusion 生成的统一。
+[Transfusion](https://arxiv.org/abs/2408.11039) 在同一序列中对离散文本使用 next-token loss，对连续媒体块使用 diffusion loss。[Show-o](https://arxiv.org/abs/2408.12528) 及其[官方实现](https://github.com/showlab/Show-o)探索自回归理解与离散 diffusion 生成的统一。
 
 抽象联合目标为
 
@@ -143,7 +143,7 @@ loss = modality_loss(
 torch.testing.assert_close(loss, torch.tensor(12.))
 ```
 
-这里的布尔矩阵是小序列真值，不应在长序列上直接物化；生产 kernel 要把 task/segment/position metadata 编译成等价 mask。模态权重也不能替代 batch mixture 审计。逐元素实验见[多模态原语：Context–target attention mask](../practice/multimodal.md#contexttarget-attention-mask)与[按模态归一的 loss](../practice/multimodal.md#loss)。
+这里的布尔矩阵是小序列真值，不应在长序列上直接物化；生产 kernel 要把 task/segment/position metadata 编译成等价 mask。模态权重也不能替代 batch mixture 审计。逐元素实验见[多模态原语：Context–target attention mask](../practice/multimodal.md#contexttarget-attention-mask) 与[按模态归一的 loss](../practice/multimodal.md#loss)。
 
 ## 模态平衡
 
@@ -224,7 +224,7 @@ $$
 
 ## 继续深入
 
-token、位置和可见性契约见[空间、时间、位置与 Mask](foundations/position-time-masks.md)；系统如何把文本、图像、音频、视频与流式输出调度在一起，见[Any-to-Any 系统](omni/any-to-any.md)；生成目标的独立推导见[图像生成总览](generative-modeling.md)。
+token、位置和可见性契约见[空间、时间、位置与 Mask](foundations/position-time-masks.md)；系统如何把文本、图像、音频、视频与流式输出调度在一起，见 [Any-to-Any 系统](omni/any-to-any.md)；生成目标的独立推导见[图像生成总览](generative-modeling.md)。
 
 ## Reference {#reference}
 

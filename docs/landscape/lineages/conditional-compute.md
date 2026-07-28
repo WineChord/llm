@@ -4,7 +4,7 @@
 
 ## 早期混合专家：先学会分工
 
-[Adaptive Mixtures of Local Experts](https://www.cs.toronto.edu/~hinton/mixex.html)在 1991 年已经使用 gating network 为不同样本分配专家。早期目标主要是让局部模型专业化，并不一定跳过未选专家的计算。它建立了两个一直延续的对象：
+[Adaptive Mixtures of Local Experts](https://www.cs.toronto.edu/~hinton/mixex.html) 在 1991 年已经使用 gating network 为不同样本分配专家。早期目标主要是让局部模型专业化，并不一定跳过未选专家的计算。它建立了两个一直延续的对象：
 
 $$
 g(x)=\operatorname{softmax}(W_rx),\qquad
@@ -15,7 +15,7 @@ gating 决定“谁负责”，expert 决定“怎样变换”。若所有专家
 
 ## 稀疏门控：只执行 Top-K
 
-[Sparsely-Gated MoE](https://arxiv.org/abs/1701.06538)把 noisy top-$k$ gating 放进超大模型，只执行少数专家：
+[Sparsely-Gated MoE](https://arxiv.org/abs/1701.06538) 把 noisy top-$k$ gating 放进超大模型，只执行少数专家：
 
 $$
 y=\sum_{e\in\operatorname{TopK}(g(x))}
@@ -30,11 +30,11 @@ $$
 - kernel 上不执行未选专家；
 - 集群上路由与通信成本没有吞掉稀疏收益。
 
-完整路由实现和 overflow 语义见[Sparse MoE 深读](../works/sparse-moe.md)。
+完整路由实现和 overflow 语义见 [Sparse MoE 深读](../works/sparse-moe.md)。
 
 ## GShard：路由问题变成分布式编译问题
 
-[GShard](https://arxiv.org/abs/2006.16668)把稀疏专家与自动分片结合，使超大多语言模型能够跨大量设备训练。此时一个 token 的路径不再只是函数选择，而是数据移动：
+[GShard](https://arxiv.org/abs/2006.16668) 把稀疏专家与自动分片结合，使超大多语言模型能够跨大量设备训练。此时一个 token 的路径不再只是函数选择，而是数据移动：
 
 ```text
 token -> router -> dispatch permutation -> all-to-all
@@ -45,7 +45,7 @@ token -> router -> dispatch permutation -> all-to-all
 
 ## Switch：用 Top-1 换取简单性
 
-[Switch Transformer](https://arxiv.org/abs/2101.03961)选择 top-1 路由，减少每 token 专家计算和 combine 复杂度，并研究大规模训练的稳定性。它不证明 top-1 普遍优于 top-2；它展示的是在特定规模和系统约束下，牺牲组合表达可以换取更简单的路由路径。
+[Switch Transformer](https://arxiv.org/abs/2101.03961) 选择 top-1 路由，减少每 token 专家计算和 combine 复杂度，并研究大规模训练的稳定性。它不证明 top-1 普遍优于 top-2；它展示的是在特定规模和系统约束下，牺牲组合表达可以换取更简单的路由路径。
 
 负载均衡常使用 token fraction $f_e$ 与平均 router probability $p_e$：
 
@@ -58,7 +58,7 @@ $f_e$ 包含不可微的 top-$k$ 分配，$p_e$ 提供可微信号。辅助目�
 
 ## 专业化粒度继续变化
 
-[ST-MoE](https://arxiv.org/abs/2202.08906)继续研究训练稳定性与迁移；[DeepSeekMoE](https://arxiv.org/abs/2401.06066)把专家拆得更细并加入共享专家，使通用计算与路由专业化并存；后续无辅助损失均衡方法尝试减少均衡目标对主梯度的干扰。
+[ST-MoE](https://arxiv.org/abs/2202.08906) 继续研究训练稳定性与迁移；[DeepSeekMoE](https://arxiv.org/abs/2401.06066) 把专家拆得更细并加入共享专家，使通用计算与路由专业化并存；后续无辅助损失均衡方法尝试减少均衡目标对主梯度的干扰。
 
 这些变化都在重新选择三件事：
 
@@ -81,7 +81,7 @@ $$
 \text{tail latency}.
 $$
 
-详细系统路径见[MoE 系统](../../systems/moe-systems.md)，训练放置见[模型并行](../../systems/model-parallelism.md)，推理侧还要结合[调度与 Goodput](../../inference/scheduling-goodput.md)。
+详细系统路径见 [MoE 系统](../../systems/moe-systems.md)，训练放置见[模型并行](../../systems/model-parallelism.md)，推理侧还要结合[调度与 Goodput](../../inference/scheduling-goodput.md)。
 
 ## 条件计算并未终结稠密模型
 
@@ -93,7 +93,7 @@ MoE 的优势依赖足够大规模、合理路由和高效通信。小模型、�
 - expert placement、网络和 batch 形态；
 - 质量、吞吐、显存与尾延迟。
 
-这条谱系的核心不是“稀疏替代稠密”，而是把容量扩展的成本从矩阵乘转移到路由与系统。机制总览见[Mixture of Experts](../../architecture/moe.md)，邻近的另一条效率路线见[从显式寻址到有限状态](linear-time-sequence-models.md)。
+这条谱系的核心不是“稀疏替代稠密”，而是把容量扩展的成本从矩阵乘转移到路由与系统。机制总览见 [Mixture of Experts](../../architecture/moe.md)，邻近的另一条效率路线见[从显式寻址到有限状态](linear-time-sequence-models.md)。
 
 ## Reference {#reference}
 

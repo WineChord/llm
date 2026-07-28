@@ -31,9 +31,9 @@ K_{\Delta t,\Delta i,\Delta j,c,c'}
 x_{t+\Delta t,i+\Delta i,j+\Delta j,c}.
 $$
 
-[I3D](https://arxiv.org/abs/1705.07750)把图像卷积核扩展到时间维；[SlowFast](https://arxiv.org/abs/1812.03982)用低帧率通道建模语义、用高帧率轻量通道捕捉快速运动。这里形成了一个持续至今的设计原则：外观和运动需要不同时间带宽。
+[I3D](https://arxiv.org/abs/1705.07750) 把图像卷积核扩展到时间维；[SlowFast](https://arxiv.org/abs/1812.03982) 用低帧率通道建模语义、用高帧率轻量通道捕捉快速运动。这里形成了一个持续至今的设计原则：外观和运动需要不同时间带宽。
 
-Transformer 之后，视频可以被写成时空 token。[TimeSformer](https://arxiv.org/abs/2102.05095)比较了空间与时间 attention 的分解方式；[ViViT](https://arxiv.org/abs/2103.15691)系统化研究 tubelet 与 factorized encoder。全时空注意力表达直接，但 token 数为
+Transformer 之后，视频可以被写成时空 token。[TimeSformer](https://arxiv.org/abs/2102.05095) 比较了空间与时间 attention 的分解方式；[ViViT](https://arxiv.org/abs/2103.15691) 系统化研究 tubelet 与 factorized encoder。全时空注意力表达直接，但 token 数为
 
 $$
 N
@@ -47,14 +47,14 @@ $$
 
 视频标注昂贵，自监督学习主要利用时间连续性与遮蔽预测。
 
-[VideoMAE](https://arxiv.org/abs/2203.12602)以很高的 tubelet 遮蔽率重建像素，迫使模型从可见时空上下文恢复缺失内容。高遮蔽率有效的一部分原因是相邻帧高度冗余；如果遮蔽策略让模型总能从相邻像素复制，预训练也可能只学到局部捷径。
+[VideoMAE](https://arxiv.org/abs/2203.12602) 以很高的 tubelet 遮蔽率重建像素，迫使模型从可见时空上下文恢复缺失内容。高遮蔽率有效的一部分原因是相邻帧高度冗余；如果遮蔽策略让模型总能从相邻像素复制，预训练也可能只学到局部捷径。
 
-[V-JEPA](https://arxiv.org/abs/2404.08471)不重建像素，而是在表示空间预测被遮蔽目标。它更关注可预测的语义与运动状态，避免花容量恢复难以预测的纹理。两类目标不能只凭预训练 loss 比较：
+[V-JEPA](https://arxiv.org/abs/2404.08471) 不重建像素，而是在表示空间预测被遮蔽目标。它更关注可预测的语义与运动状态，避免花容量恢复难以预测的纹理。两类目标不能只凭预训练 loss 比较：
 
 - 像素重建更容易检查重建内容，却可能过度关注低层细节；
 - 表示预测更抽象，但目标 encoder、collapse 避免与下游可解释性成为新契约。
 
-[V-JEPA 2](https://ai.meta.com/research/publications/v-jepa-2-self-supervised-video-models-enable-understanding-prediction-and-planning/)进一步把大规模视频表示学习与动作条件预测、机器人规划连接起来。这种连接是否构成“世界模型”，取决于动作介入、闭环规划和真实转移，而不是仅凭视频 backbone 名称。
+[V-JEPA 2](https://ai.meta.com/research/publications/v-jepa-2-self-supervised-video-models-enable-understanding-prediction-and-planning/) 进一步把大规模视频表示学习与动作条件预测、机器人规划连接起来。这种连接是否构成“世界模型”，取决于动作介入、闭环规划和真实转移，而不是仅凭视频 backbone 名称。
 
 ## 采样决定模型能否看到事件
 

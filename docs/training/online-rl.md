@@ -2,9 +2,9 @@
 
 在线强化学习从当前或近期策略采样，再根据 reward、verifier 或环境终态更新策略。它能探索离线数据中不存在的行为，也带来非平稳数据、昂贵 rollout、策略滞后和奖励投机。
 
-[InstructGPT](../landscape/works/instructgpt.md)适合核对经典 RLHF 中 SFT、reward model 与 PPO 的角色；[DeepSeek-R1](../landscape/works/deepseek-r1.md)则展示可验证奖励、group-relative 更新与蒸馏之间必须分开的证据边界。两者之间的演进见[后训练与对齐](../landscape/lineages/training-alignment.md)。
+[InstructGPT](../landscape/works/instructgpt.md) 适合核对经典 RLHF 中 SFT、reward model 与 PPO 的角色；[DeepSeek-R1](../landscape/works/deepseek-r1.md) 则展示可验证奖励、group-relative 更新与蒸馏之间必须分开的证据边界。两者之间的演进见[后训练与对齐](../landscape/lineages/training-alignment.md)。
 
-本页只保留 online rollout 的数据闭环。算法选择先看[推理 RL 配方地图](../reinforcement-learning/reasoning-rl-recipes.md)；PPO、GAE、GRPO 与分布校正的 canonical 推导分别见[PPO](../reinforcement-learning/trust-region-ppo.md)、[Advantage 与 GAE](../reinforcement-learning/advantage-estimation-gae.md)、[GRPO](../reinforcement-learning/grpo.md)和[训推分布与策略滞后](../reinforcement-learning/training-inference-discrepancy.md)。
+本页只保留 online rollout 的数据闭环。算法选择先看[推理 RL 配方地图](../reinforcement-learning/reasoning-rl-recipes.md)；PPO、GAE、GRPO 与分布校正的 canonical 推导分别见 [PPO](../reinforcement-learning/trust-region-ppo.md)、[Advantage 与 GAE](../reinforcement-learning/advantage-estimation-gae.md)、[GRPO](../reinforcement-learning/grpo.md) 和[训推分布与策略滞后](../reinforcement-learning/training-inference-discrepancy.md)。
 
 ## 策略与轨迹契约
 

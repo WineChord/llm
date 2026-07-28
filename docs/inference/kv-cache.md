@@ -2,7 +2,7 @@
 
 自回归 decode 在第 $t$ 步只产生少量新 query，却要访问此前所有 token 的 key 与 value。缓存历史 K/V 可以避免重复执行 projection，也把推理的主要约束从计算转向显存容量、读带宽和状态管理。长上下文服务中，KV 往往比单个请求的 activation 大得多；如果只计算“每 token 字节数”而忽略分页、所有权和临时 buffer，容量规划仍会失真。
 
-连续张量为何在动态请求下产生外部碎片、PagedAttention 怎样借用虚拟内存式间接寻址，见[vLLM / PagedAttention](../landscape/works/vllm-pagedattention.md)；它在完整服务演进中的位置见[推理运行时与服务](../landscape/lineages/inference-serving.md)。
+连续张量为何在动态请求下产生外部碎片、PagedAttention 怎样借用虚拟内存式间接寻址，见 [vLLM / PagedAttention](../landscape/works/vllm-pagedattention.md)；它在完整服务演进中的位置见[推理运行时与服务](../landscape/lineages/inference-serving.md)。
 
 ## 容量模型
 
@@ -38,7 +38,7 @@ $$
 
 ## 连续布局为什么会失效
 
-若为每条请求一次性预留最大长度 $T_{\max}$，长度为 $T_i$ 的请求会浪费 $T_{\max}-T_i$ 个 slot；请求增长、取消和不同长度混排还会造成外部碎片。[PagedAttention](https://arxiv.org/abs/2309.06180)把逻辑 token 区间映射到固定大小物理 block，使逻辑连续与物理连续解耦：
+若为每条请求一次性预留最大长度 $T_{\max}$，长度为 $T_i$ 的请求会浪费 $T_{\max}-T_i$ 个 slot；请求增长、取消和不同长度混排还会造成外部碎片。[PagedAttention](https://arxiv.org/abs/2309.06180) 把逻辑 token 区间映射到固定大小物理 block，使逻辑连续与物理连续解耦：
 
 $$
 \text{logical block }j
@@ -60,7 +60,7 @@ $$
 
 小 block 降低尾部浪费，却增加 block table、分配频率和 kernel 查表；大 block 的访问更规整，却让短请求和频繁抢占更昂贵。应使用真实长度分布比较“有效 KV 字节 / 已分配 KV 字节”，而不是只比较理论容量。
 
-[vAttention](https://arxiv.org/abs/2405.04437)展示了另一条精确路线：利用虚拟内存让逻辑 KV 保持连续，并按需映射物理页。分页张量和虚拟内存都不改变模型语义，但依赖不同的 allocator、kernel 和运行时边界；不能只凭论文中的单机结果断言某种布局对所有 GPU、页大小和负载更优。
+[vAttention](https://arxiv.org/abs/2405.04437) 展示了另一条精确路线：利用虚拟内存让逻辑 KV 保持连续，并按需映射物理页。分页张量和虚拟内存都不改变模型语义，但依赖不同的 allocator、kernel 和运行时边界；不能只凭论文中的单机结果断言某种布局对所有 GPU、页大小和负载更优。
 
 ## 物理布局
 
@@ -162,7 +162,7 @@ assert refs == {7: 1, 9: 1}
 
 真实 COW 必须在发布新 block table 前复制旧尾块中已经提交的 K/V 与量化 scale；这个 reference 只展示所有权转换。GPU event、并发 allocator、OOM 回滚和取消幂等仍属于生产边界，不能仅靠 Python 引用计数保证。
 
-运行时状态机、block table 与抢占见[推理运行时](runtime.md)；跨 worker 的布局转换与安装见[Prefill–Decode 分离](disaggregation.md)。
+运行时状态机、block table 与抢占见[推理运行时](runtime.md)；跨 worker 的布局转换与安装见 [Prefill–Decode 分离](disaggregation.md)。
 
 ## 精确节省与有损压缩
 
@@ -177,13 +177,13 @@ assert refs == {7: 1, 9: 1}
 | Window / eviction | 近似 | 将容量限制在窗口内 | 丢失历史可见性 |
 | 摘要、低秩、token merge | 近似 | 更激进压缩 | 改变信息和模型行为 |
 
-[KIVI](https://arxiv.org/abs/2402.02750)按 key 和 value 的不同统计特征设计非对称低比特量化；[KVQuant](https://arxiv.org/abs/2401.18079)研究逐通道量化、pre-RoPE key 等设计。它们是质量—容量权衡，不能与精确分页混称为“无损 KV 优化”。[StreamingLLM](https://arxiv.org/abs/2309.17453)、[H2O](https://arxiv.org/abs/2306.14048)与 [PyramidKV](https://arxiv.org/abs/2406.02069)进一步改变保留 token 的集合，必须以任务和长上下文质量验证。
+[KIVI](https://arxiv.org/abs/2402.02750) 按 key 和 value 的不同统计特征设计非对称低比特量化；[KVQuant](https://arxiv.org/abs/2401.18079) 研究逐通道量化、pre-RoPE key 等设计。它们是质量—容量权衡，不能与精确分页混称为“无损 KV 优化”。[StreamingLLM](https://arxiv.org/abs/2309.17453)、[H2O](https://arxiv.org/abs/2306.14048) 与 [PyramidKV](https://arxiv.org/abs/2406.02069) 进一步改变保留 token 的集合，必须以任务和长上下文质量验证。
 
 量化格式、scale 粒度和真实 kernel 路径见[量化](quantization.md)；前缀复用、缓存键和多层缓存见[缓存复用](cache-reuse.md)。
 
 ## DeepSeek-V4 的异构 Cache
 
-[DeepSeek-V4](../landscape/works/deepseek-v4.md#heterogeneous-kv)的 CSA / HCA 让“每层一组同构 KV page”不再成立。同一请求同时包含：
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#heterogeneous-kv) 的 CSA / HCA 让“每层一组同构 KV page”不再成立。同一请求同时包含：
 
 - 最近 128 token 的 SWA KV；
 - 尚未凑满 $m=4$ 或 $m'=128$ 的未压缩 tail；
@@ -193,7 +193,7 @@ assert refs == {7: 1, 9: 1}
 
 报告把 SWA 与 tail 放进 state cache，把完整 compressed entries 放进 classical block cache，并按 $\operatorname{lcm}(m,m')$对齐物理块。query 对 CSA 先经过 indexer 间接寻址，对 HCA 则遍历全部重压缩项；普通 PagedAttention 的同形 layer、固定 token/block 关系和直接 KV 寻址假设都需要扩展。
 
-因果完成条件是 cache schema 的一部分：当前未闭合压缩块不能提前发布成全局 entry，局部 token 由 SWA 路径承接。完整 layout 与磁盘恢复见[V4 系统闭环](../landscape/works/tilelang-mega-moe.md#hybrid-kv-layout)。
+因果完成条件是 cache schema 的一部分：当前未闭合压缩块不能提前发布成全局 entry，局部 token 由 SWA 路径承接。完整 layout 与磁盘恢复见 [V4 系统闭环](../landscape/works/tilelang-mega-moe.md#hybrid-kv-layout)。
 
 ## 正确性契约
 

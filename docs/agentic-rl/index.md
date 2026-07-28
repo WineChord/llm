@@ -79,4 +79,4 @@ task sampler
 
 基础后训练见[后训练与偏好学习](../training/post-training.md)，应用层 agent 见[工具与智能体](../applications/agents.md)。
 
-三条家族案例分别提供不同切面：[DeepSeek](../landscape/families/deepseek.md)连接可验证推理、蒸馏与可恢复长轨迹，[Kimi](../landscape/families/kimi.md)连接 partial rollout、多模态 Agent 与系统状态，[GLM](../landscape/families/glm.md)连接异步训练、环境构造和 Agentic Engineering。它们用于验证本节接口，不替代通用定义。
+三条家族案例分别提供不同切面：[DeepSeek](../landscape/families/deepseek.md) 连接可验证推理、蒸馏与可恢复长轨迹，[Kimi](../landscape/families/kimi.md) 连接 partial rollout、多模态 Agent 与系统状态，[GLM](../landscape/families/glm.md) 连接异步训练、环境构造和 Agentic Engineering。它们用于验证本节接口，不替代通用定义。

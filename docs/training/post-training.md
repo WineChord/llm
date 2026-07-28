@@ -2,9 +2,9 @@
 
 后训练把基础模型的条件分布调整为可交互行为。它可以教授接口、改变回答排序、强化可验证解题和工具策略，却不能凭空补回预训练缺失的世界知识，也不能用一个 reward 覆盖正确性、帮助性、安全与成本。
 
-本页是稳定入口：目标推导和实现细节分别位于[监督微调](supervised-finetuning.md)、[知识蒸馏](distillation.md)、[奖励建模](reward-modeling.md)、[离线偏好优化](offline-preference.md)、[在线 RL](online-rl.md)与[推理后训练](reasoning-posttraining.md)。
+本页是稳定入口：目标推导和实现细节分别位于[监督微调](supervised-finetuning.md)、[知识蒸馏](distillation.md)、[奖励建模](reward-modeling.md)、[离线偏好优化](offline-preference.md)、[在线 RL](online-rl.md) 与[推理后训练](reasoning-posttraining.md)。
 
-若先建立历史坐标，可从[后训练与对齐](../landscape/lineages/training-alignment.md)观察示范、reward model、KL 约束、偏好目标与可验证奖励如何改变反馈闭环，再用 [InstructGPT](../landscape/works/instructgpt.md)、[DPO](../landscape/works/dpo.md)和 [DeepSeek-R1](../landscape/works/deepseek-r1.md)比较三种不同问题设定。
+若先建立历史坐标，可从[后训练与对齐](../landscape/lineages/training-alignment.md)观察示范、reward model、KL 约束、偏好目标与可验证奖励如何改变反馈闭环，再用 [InstructGPT](../landscape/works/instructgpt.md)、[DPO](../landscape/works/dpo.md) 和 [DeepSeek-R1](../landscape/works/deepseek-r1.md) 比较三种不同问题设定。
 
 ## 先看反馈接口
 

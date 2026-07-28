@@ -2,7 +2,7 @@
 
 模型规模、数据规模与训练计算共同决定预训练损失，但缩放规律是经验拟合，不是无条件的物理定律。
 
-[Scaling Laws 与 Chinchilla](../landscape/works/scaling-laws-chinchilla.md)重建了两项工作的实验问题、拟合口径和工程含义；[规模、数据与上下文](../landscape/lineages/scaling-and-context.md)则把它们放回 GPT-3、数据受限训练和长上下文演进中。
+[Scaling Laws 与 Chinchilla](../landscape/works/scaling-laws-chinchilla.md) 重建了两项工作的实验问题、拟合口径和工程含义；[规模、数据与上下文](../landscape/lineages/scaling-and-context.md)则把它们放回 GPT-3、数据受限训练和长上下文演进中。
 
 ## 训练计算的近似
 
@@ -39,7 +39,7 @@ N_\star\propto C^{\frac{\beta}{\alpha+\beta}},
 D_\star\propto C^{\frac{\alpha}{\alpha+\beta}}.
 $$
 
-这说明“参数与 token 同比增长”不是先验原则，而是特定拟合中 $\alpha$ 与 $\beta$ 接近时的结果。只要数据分布、架构族、训练充分程度或计算口径改变，指数和最优分配就可能移动。[Scaling Laws 与 Chinchilla](../landscape/works/scaling-laws-chinchilla.md)给出从单轴拟合到 isoFLOP 曲线的完整推导。
+这说明“参数与 token 同比增长”不是先验原则，而是特定拟合中 $\alpha$ 与 $\beta$ 接近时的结果。只要数据分布、架构族、训练充分程度或计算口径改变，指数和最优分配就可能移动。[Scaling Laws 与 Chinchilla](../landscape/works/scaling-laws-chinchilla.md) 给出从单轴拟合到 isoFLOP 曲线的完整推导。
 
 ## $6ND$ 何时不够
 

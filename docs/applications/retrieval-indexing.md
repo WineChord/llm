@@ -108,7 +108,7 @@ s(q,d)=
 {\lVert f_q(q)\rVert_2\lVert f_d(d)\rVert_2}.
 $$
 
-[DPR](https://arxiv.org/abs/2004.04906)使用 in-batch negatives 训练开放域问答检索器。对 batch 中第 $i$ 个正例，常见损失为：
+[DPR](https://arxiv.org/abs/2004.04906) 使用 in-batch negatives 训练开放域问答检索器。对 batch 中第 $i$ 个正例，常见损失为：
 
 $$
 \mathcal L_i=-\log
@@ -149,13 +149,13 @@ assert torch.all(score[:-1] >= score[1:])
 
 分数必须由同一 embedding revision、同一归一化规则和同一可见候选集产生；稳定排序只定义相同分数时的 row-order tie-break。生产检索应先做权限约束，再用这个 oracle 测 ANN recall–latency 曲线，而不是在线全扫；更完整的零向量与候选对照见[手撕：检索与智能体 · 精确 dense retrieval](../practice/retrieval-agents.md#exact-dense-retrieval-reference)。
 
-[ColBERT](https://arxiv.org/abs/2004.12832)保留 token 级表示并用 late interaction：
+[ColBERT](https://arxiv.org/abs/2004.12832) 保留 token 级表示并用 late interaction：
 
 $$
 s(q,d)=\sum_{i\in q}\max_{j\in d}Q_i^\top D_j.
 $$
 
-它比单向量保存更多细粒度匹配信息，代价是索引和检索计算更大。[ColBERTv2](https://arxiv.org/abs/2112.01488)进一步研究了压缩与训练。
+它比单向量保存更多细粒度匹配信息，代价是索引和检索计算更大。[ColBERTv2](https://arxiv.org/abs/2112.01488) 进一步研究了压缩与训练。
 
 ## Hybrid retrieval
 
@@ -172,7 +172,7 @@ $$
 
 精确扫描 $N$ 个 $d$ 维向量的代价近似 $O(Nd)$。大规模服务常使用 ANN，以少量召回损失换延迟和内存。
 
-[HNSW](https://arxiv.org/abs/1603.09320)建立分层近邻图：上层稀疏图负责远距离导航，底层稠密图负责局部搜索。关键参数至少包括：
+[HNSW](https://arxiv.org/abs/1603.09320) 建立分层近邻图：上层稀疏图负责远距离导航，底层稠密图负责局部搜索。关键参数至少包括：
 
 - 构图连接数，影响内存和图质量；
 - 构图搜索宽度，影响写入成本；

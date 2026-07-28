@@ -64,7 +64,7 @@ $$
 
 CLIP 的目标奖励全局语义匹配，不要求精确计数、局部定位或关系推理。数据来自互联网，也会继承长尾不足、文字捷径与社会偏差。零样本迁移强并不意味着对分布外细粒度任务可靠；线性 probe、few-shot 与 fully supervised 结果也不能混为一类。
 
-后来 [ALIGN](https://arxiv.org/abs/2102.05918)继续探索噪声图文数据的规模，[SigLIP](https://arxiv.org/abs/2303.15343)把 batch softmax 改为独立 sigmoid pair loss，缓解全局 negative 归一化的部分约束。这些变化都应回到“正负样本怎样定义、跨设备怎样归一化”来理解。
+后来 [ALIGN](https://arxiv.org/abs/2102.05918) 继续探索噪声图文数据的规模，[SigLIP](https://arxiv.org/abs/2303.15343) 把 batch softmax 改为独立 sigmoid pair loss，缓解全局 negative 归一化的部分约束。这些变化都应回到“正负样本怎样定义、跨设备怎样归一化”来理解。
 
 ## 为什么它成为多模态基础件
 

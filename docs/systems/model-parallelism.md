@@ -2,7 +2,7 @@
 
 当一个模型层、完整模型或长序列无法在单设备上高效运行时，需要沿张量、层、序列或专家维度切分。组合并行的目标不是让并行度乘积等于 GPU 数，而是让每种通信匹配合适的互联和计算粒度。
 
-Megatron 的 tensor parallel 与 ZeRO 的状态分片解决的是不同复制对象。[分布式训练系统](../landscape/lineages/distributed-training-systems.md)给出从数据并行到多维并行的历史主线，[Megatron 与 ZeRO](../landscape/works/megatron-zero.md)则用最小张量账本展示二者怎样组合而不混淆。
+Megatron 的 tensor parallel 与 ZeRO 的状态分片解决的是不同复制对象。[分布式训练系统](../landscape/lineages/distributed-training-systems.md)给出从数据并行到多维并行的历史主线，[Megatron 与 ZeRO](../landscape/works/megatron-zero.md) 则用最小张量账本展示二者怎样组合而不混淆。
 
 ## Tensor Parallel
 
@@ -39,7 +39,7 @@ $$
 Y=\sum_iX_iW_i.
 $$
 
-局部结果需要 all-reduce 或 reduce-scatter。[Megatron-LM](https://arxiv.org/abs/1909.08053)通过组合 column/row parallel，使 Transformer MLP 和 attention 中的通信落在少数边界。
+局部结果需要 all-reduce 或 reduce-scatter。[Megatron-LM](https://arxiv.org/abs/1909.08053) 通过组合 column/row parallel，使 Transformer MLP 和 attention 中的通信落在少数边界。
 
 ### Tensor-parallel 线性层 {#tensor-parallel-linear-reference}
 
@@ -83,11 +83,11 @@ $$
 \frac{p-1}{m+p-1}.
 $$
 
-[GPipe](https://arxiv.org/abs/1811.06965)展示了这种批次流水。1F1B 在 warmup 后交错 forward/backward，降低在途 activation 峰值；interleaved schedule 让一个设备持有多个虚拟 stage，以更细粒度填空泡。
+[GPipe](https://arxiv.org/abs/1811.06965) 展示了这种批次流水。1F1B 在 warmup 后交错 forward/backward，降低在途 activation 峰值；interleaved schedule 让一个设备持有多个虚拟 stage，以更细粒度填空泡。
 
 ### 零空泡方向
 
-反向可分为输入梯度与参数梯度两部分。输入梯度位于关键路径，参数梯度通常有更灵活的调度空间。[Zero Bubble Pipeline Parallelism](https://arxiv.org/abs/2401.10241)利用这种分解搜索更紧凑的同步 schedule。所谓 zero bubble 依赖理想平衡、内存预算和 optimizer 同步条件，实际系统仍可能受 stage 不均、通信和 host launch 限制。
+反向可分为输入梯度与参数梯度两部分。输入梯度位于关键路径，参数梯度通常有更灵活的调度空间。[Zero Bubble Pipeline Parallelism](https://arxiv.org/abs/2401.10241) 利用这种分解搜索更紧凑的同步 schedule。所谓 zero bubble 依赖理想平衡、内存预算和 optimizer 同步条件，实际系统仍可能受 stage 不均、通信和 host launch 限制。
 
 ## Context Parallel
 
@@ -98,7 +98,7 @@ $$
 - 分层或局部—全局 pattern；
 - 与 sequence parallel、head parallel 混合。
 
-[Ring Attention](https://arxiv.org/abs/2310.01889)让 K/V block 沿环传递，并尝试用本地 block attention 覆盖通信。每个 query block 的 softmax 需要跨 block 保持全局最大值和归一化分母，不能独立 softmax 后简单相加。
+[Ring Attention](https://arxiv.org/abs/2310.01889) 让 K/V block 沿环传递，并尝试用本地 block attention 覆盖通信。每个 query block 的 softmax 需要跨 block 保持全局最大值和归一化分母，不能独立 softmax 后简单相加。
 
 ### 仿射状态的 context parallel
 
@@ -139,9 +139,9 @@ torch.testing.assert_close(mc @ x + bc, mb @ (ma @ x + ba) + bb)
 
 ### 压缩 Attention 的 context parallel
 
-[DeepSeek-V4 CSA/HCA](../landscape/works/deepseek-compressed-attention.md#hybrid-kv-layout)按固定 token block 生成 compressed entries，block 可能跨 context rank。V4 的协议先把每个 rank 尾部 $m$ 个元素作为 halo 传给下一 rank，本地生成固定数量、带 padding 的压缩项，再 all-gather，最后按全局因果可见性 fused select-and-pad。
+[DeepSeek-V4 CSA/HCA](../landscape/works/deepseek-compressed-attention.md#hybrid-kv-layout) 按固定 token block 生成 compressed entries，block 可能跨 context rank。V4 的协议先把每个 rank 尾部 $m$ 个元素作为 halo 传给下一 rank，本地生成固定数量、带 padding 的压缩项，再 all-gather，最后按全局因果可见性 fused select-and-pad。
 
-padding 不是任意对齐：query 只能访问已经完整闭合的压缩块；当前未完成块由 SWA 路径处理。如果各 rank 独立从本地起点分块，压缩边界、position bias 和 top-$k$ 候选都会随 CP degree 改变，模型语义不再保持。训练框架与 cache layout 见[V4 系统闭环](../landscape/works/tilelang-mega-moe.md)。
+padding 不是任意对齐：query 只能访问已经完整闭合的压缩块；当前未完成块由 SWA 路径处理。如果各 rank 独立从本地起点分块，压缩边界、position bias 和 top-$k$ 候选都会随 CP degree 改变，模型语义不再保持。训练框架与 cache layout 见 [V4 系统闭环](../landscape/works/tilelang-mega-moe.md)。
 
 ## Expert Parallel
 
@@ -153,7 +153,7 @@ MoE 将专家放在不同 rank，token 经 all-to-all dispatch 到目标专家�
 - token permutation、padding 和负载统计；
 - dispatch 与 expert GEMM 怎样重叠。
 
-路由与容量见[Mixture of Experts](../architecture/moe.md)。
+路由与容量见 [Mixture of Experts](../architecture/moe.md)。
 
 ## 组合成多维网格
 
@@ -194,7 +194,7 @@ $$
 - 注入 rank 失败并验证 checkpoint 恢复；
 - 分别报告计算、通信、空泡和未重叠时间。
 
-collective 语义见[集合通信与分片](collectives-sharding.md)，算子效率见[Kernel 与性能](kernels-performance.md)。
+collective 语义见[集合通信与分片](collectives-sharding.md)，算子效率见 [Kernel 与性能](kernels-performance.md)。
 
 ## Reference {#reference}
 

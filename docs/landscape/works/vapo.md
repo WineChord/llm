@@ -2,7 +2,7 @@
 
 [VAPO](https://arxiv.org/abs/2504.05118) 回答了一个与 DAPO 不同的问题：如果终局 reward 很稀疏、response 长度差异巨大，而 learned value 又容易在训练早期产生系统偏差，怎样让 value-based PPO 仍然工作？
 
-它不是 “length-adaptive GAE” 的另一个名字，而是七项组件组成的 recipe：
+它不是“length-adaptive GAE”的另一个名字，而是七项组件组成的 recipe：
 
 1. value model pretraining；
 2. actor 与 critic 使用不同的 GAE $\lambda$；
@@ -12,7 +12,7 @@
 6. positive-example LM loss；
 7. group sampling。
 
-前三项直接围绕 critic 与长期信用，后四项处理探索、长度权重与稀疏正样本。整套方法的历史位置见[推理策略优化谱系](../lineages/reasoning-policy-optimization.md)，GAE 的通用推导见[Advantage 估计](../../reinforcement-learning/advantage-estimation-gae.md)。
+前三项直接围绕 critic 与长期信用，后四项处理探索、长度权重与稀疏正样本。整套方法的历史位置见[推理策略优化谱系](../lineages/reasoning-policy-optimization.md)，GAE 的通用推导见 [Advantage 估计](../../reinforcement-learning/advantage-estimation-gae.md)。
 
 ## 为什么 value model 会在长 CoT 中失灵
 
@@ -202,7 +202,7 @@ $$
 - Clip-Higher 扩大正 advantage、低概率 token 的上侧活动区；
 - global token mean 防止长 response 内每个 token 被 $1/|y_i|$ 过度缩小。
 
-这两项来自 DAPO 路线，但 VAPO 的 advantage 由 critic/GAE 提供，而不是 group std-normalized outcome reward。相同 gate 不代表相同算法，见[Ratio、Clipping 与 Gate](../../reinforcement-learning/ratio-clipping-gating.md)和 [DAPO 深读](dapo.md)。
+这两项来自 DAPO 路线，但 VAPO 的 advantage 由 critic/GAE 提供，而不是 group std-normalized outcome reward。相同 gate 不代表相同算法，见 [Ratio、Clipping 与 Gate](../../reinforcement-learning/ratio-clipping-gating.md) 和 [DAPO 深读](dapo.md)。
 
 ## Positive-example LM loss：把稀有成功当示范
 
@@ -338,7 +338,7 @@ critic 可用性
 - positive NLL 对开放式 reward 或 noisy verifier 同样安全；
 - 七项消融差可当作互不干扰的独立因果效应。
 
-组件彼此耦合：去掉 value pretraining 会改变后续 GAE 质量，去掉 token loss会改变不同长度上的梯度，因此单项 ablation 只描述“从完整 recipe 移除该项”的条件效应。
+组件彼此耦合：去掉 value pretraining 会改变后续 GAE 质量，去掉 token loss 会改变不同长度上的梯度，因此单项 ablation 只描述“从完整 recipe 移除该项”的条件效应。
 
 ## 复现边界
 
@@ -364,7 +364,7 @@ verifier version and infrastructure-failure handling
 
 VAPO 仍主要处理单轮长 reasoning：trajectory 长，但状态通常是 prompt 加已生成 prefix。Agentic RL 增加外部 observation、工具调用、异步队列与 context compaction 后，时间轴会再次改变。
 
-[SAO](sao-compactionrl.md#sao)继承 VAPO 的 value pretraining、length-adaptive GAE 等思想，却为单轨迹异步系统加入 direct behavior ratio、critic 更新节奏和 Skip-Observation GAE；[CompactionRL](sao-compactionrl.md#compactionrl)则处理 context segment 被摘要切开的信用传播。
+[SAO](sao-compactionrl.md#sao) 继承 VAPO 的 value pretraining、length-adaptive GAE 等思想，却为单轨迹异步系统加入 direct behavior ratio、critic 更新节奏和 Skip-Observation GAE；[CompactionRL](sao-compactionrl.md#compactionrl) 则处理 context segment 被摘要切开的信用传播。
 
 这条连接说明 GAE 的 $\lambda$ 不是独立魔法参数。先定义 action step、observation、segment 与 behavior policy，再谈如何让 residual 穿过长轨迹。
 

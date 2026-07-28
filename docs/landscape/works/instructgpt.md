@@ -117,7 +117,7 @@ KL 的 sampled log-ratio 是 reward estimator，不是完整分布上的精确 K
 
 ## 公开实现边界
 
-[官方模型卡仓库](https://github.com/openai/following-instructions-human-feedback)记录了模型与数据说明；[summarize-from-feedback](https://github.com/openai/summarize-from-feedback)公开了更早的摘要反馈研究代码。二者都不是论文所用 InstructGPT 生产训练系统的完整开源实现。
+[官方模型卡仓库](https://github.com/openai/following-instructions-human-feedback)记录了模型与数据说明；[summarize-from-feedback](https://github.com/openai/summarize-from-feedback) 公开了更早的摘要反馈研究代码。二者都不是论文所用 InstructGPT 生产训练系统的完整开源实现。
 
 公开论文给出了阶段、目标和主要实验，但没有提供精确重建所需的全部 prompt 数据、标注操作、模型权重、训练基础设施与内部评测。因此教学实现应验证目标语义，不能声称复现论文模型。
 
@@ -128,7 +128,7 @@ KL 的 sampled log-ratio 是 reward estimator，不是完整分布上的精确 K
 1. 能否消去显式 reward model 与在线 rollout，直接使用固定偏好对——见 [DPO](dpo.md)；
 2. 在答案可执行验证的领域，能否用规则 reward 做在线探索——见 [DeepSeek-R1](deepseek-r1.md)。
 
-整条因果脉络见[从续写到偏好与在线学习](../lineages/training-alignment.md)。目标与系统细节分别见[监督微调](../../training/supervised-finetuning.md)、[奖励建模](../../training/reward-modeling.md)、[在线 RL](../../training/online-rl.md)和[评测协议](../../evaluation/language-model-evaluation.md)。
+整条因果脉络见[从续写到偏好与在线学习](../lineages/training-alignment.md)。目标与系统细节分别见[监督微调](../../training/supervised-finetuning.md)、[奖励建模](../../training/reward-modeling.md)、[在线 RL](../../training/online-rl.md) 和[评测协议](../../evaluation/language-model-evaluation.md)。
 
 ## Reference {#reference}
 

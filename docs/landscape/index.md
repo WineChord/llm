@@ -33,9 +33,9 @@
 
 - [GLM-5 总深读](works/glm-5.md)逐项覆盖 40 页报告的 13 幅图、13 张表、5 个编号公式、4 段 listing 与附录，并保留正文和配置之间的冲突；
 - [GLM-5 架构](works/glm-5-architecture.md)连接 MoE、MLA-256、Muon Split、Shared MTP 与 DSA；
-- [IndexCache 与 IndexShare](works/indexcache.md)解释为什么稀疏索引可以跨层共享，以及它和 KV / prefix cache 的边界；
-- [slime 与异步 Agentic RL](works/slime-async-agentic-rl.md)拆开 TITO、policy lag、直接重要性比、版本过滤和 KV-locality routing；
-- [GLM Agentic Engineering](works/glm-agentic-engineering.md)从 issue–PR 环境、terminal/search 数据走到上下文管理、slide reward 与运行式评测；
+- [IndexCache 与 IndexShare](works/indexcache.md) 解释为什么稀疏索引可以跨层共享，以及它和 KV / prefix cache 的边界；
+- [slime 与异步 Agentic RL](works/slime-async-agentic-rl.md) 拆开 TITO、policy lag、直接重要性比、版本过滤和 KV-locality routing；
+- [GLM Agentic Engineering](works/glm-agentic-engineering.md) 从 issue–PR 环境、terminal/search 数据走到上下文管理、slide reward 与运行式评测；
 - [GLM-5 引用图谱](glm-5-reference-map.md)按报告实际使用的 63 项引用追踪方法来源、系统实现、数据与 benchmark。
 
 ### 当一条模型家族汇合多条技术路线
@@ -44,12 +44,12 @@
 
 K3 是观察这种汇流的一个切面：
 
-- [Kimi Linear 与 FlashKDA](works/kimi-linear-flashkda.md)沿 fast weights、DeltaNet、KDA、chunkwise kernel 与 KCP 追踪有限状态如何落到 GPU；
-- [Kimi k1.5](works/kimi-k1-5.md)、[Kimi K2](works/kimi-k2.md)与[Kimi K2.5](works/kimi-k2-5.md)分别展开长程 RL、1T MoE / MuonClip，以及原生多模态与 Agent Swarm 的三次转折；
-- [Attention Residuals](works/attention-residuals.md)从 PreNorm dilution 推到 Full/Block AttnRes、online softmax 与 pipeline cache；
-- [Stable LatentMoE 与 Quantile Balancing](works/latentmoe-quantile-balancing.md)区分原始 LatentMoE 与 K3 的数值、激活和路由增量；
+- [Kimi Linear 与 FlashKDA](works/kimi-linear-flashkda.md) 沿 fast weights、DeltaNet、KDA、chunkwise kernel 与 KCP 追踪有限状态如何落到 GPU；
+- [Kimi k1.5](works/kimi-k1-5.md)、[Kimi K2](works/kimi-k2.md) 与 [Kimi K2.5](works/kimi-k2-5.md) 分别展开长程 RL、1T MoE / MuonClip，以及原生多模态与 Agent Swarm 的三次转折；
+- [Attention Residuals](works/attention-residuals.md) 从 PreNorm dilution 推到 Full/Block AttnRes、online softmax 与 pipeline cache；
+- [Stable LatentMoE 与 Quantile Balancing](works/latentmoe-quantile-balancing.md) 区分原始 LatentMoE 与 K3 的数值、激活和路由增量；
 - [K3 工作深读](works/kimi-k3.md)把模型结构、预训练、长上下文、post-training、系统和评测还原成相互制约的闭环；
-- [MoonEP](works/moonep.md)解释动态冗余 expert 如何在不改变路由语义时固定 rank 负载；
+- [MoonEP](works/moonep.md) 解释动态冗余 expert 如何在不改变路由语义时固定 rank 负载；
 - [K3 引用图谱](kimi-k3-reference-map.md)逐项解释技术报告 150 项文献在论证链中的角色，并区分直接来源、技术前身、并行工作、benchmark 与比较基线；
 - [Kimi-VL 深读](../multimodal/kimi-vl.md)解释原生分辨率视觉塔、稀疏语言主干与长视觉上下文；[Kimi 多模态分支](../multimodal/kimi.md)再梳理它与 K2.5、MoonViT-V2、Kimi-Audio 的关系，避免把家族经验误写成同一 checkpoint 的能力。
 
@@ -58,10 +58,10 @@ K3 是观察这种汇流的一个切面：
 [DeepSeek 家族总览](families/deepseek.md)先分开通用语言、代码、数学与证明、多模态、OCR、架构研究和开放系统组件；[DeepSeek 演化](deepseek-timeline.md)再从 DeepSeekMoE、MLA、无辅助损失路由和 Multi-Token Prediction 走到 V3、R1、V3.2 与 V4。V4 的关键变化并不是把 context length 单独调大，而是让表示压缩、残差拓扑、优化器、kernel、缓存、后训练和故障恢复共同适配长轨迹：
 
 - [DeepSeek-V4 总深读](works/deepseek-v4.md)把 15 幅图、14 张正式表、29 个编号公式、Algorithm 1 与附录 A–B 还原为一条可检查的因果链；
-- [CSA 与 HCA](works/deepseek-compressed-attention.md)解释时间压缩、Lightning Indexer、shared-KV MQA、inverse RoPE 与局部窗口如何共同保持因果性；
-- [mHC](works/manifold-hyper-connections.md)从 Hyper-Connections 走到 Birkhoff polytope 与 Sinkhorn projection，区分局部矩阵约束和完整网络稳定性；
-- [On-Policy Distillation](works/on-policy-distillation.md)分开轨迹分布、KL 方向、词表估计器和多教师调度；
-- [TileLang、MegaMoE 与 DSec](works/tilelang-mega-moe.md)沿 wave pipeline、batch invariance、异构 cache、token WAL 和 sandbox 恢复连接训练与部署；
+- [CSA 与 HCA](works/deepseek-compressed-attention.md) 解释时间压缩、Lightning Indexer、shared-KV MQA、inverse RoPE 与局部窗口如何共同保持因果性；
+- [mHC](works/manifold-hyper-connections.md) 从 Hyper-Connections 走到 Birkhoff polytope 与 Sinkhorn projection，区分局部矩阵约束和完整网络稳定性；
+- [On-Policy Distillation](works/on-policy-distillation.md) 分开轨迹分布、KL 方向、词表估计器和多教师调度；
+- [TileLang、MegaMoE 与 DSec](works/tilelang-mega-moe.md) 沿 wave pipeline、batch invariance、异构 cache、token WAL 和 sandbox 恢复连接训练与部署；
 - [V4 引用图谱](deepseek-v4-reference-map.md)逐项标注 103 项正文引用在家族前身、方法来源、系统实现和 benchmark 中承担的角色。
 
 ### 当稠密 attention 不再是唯一答案
@@ -70,8 +70,8 @@ K3 是观察这种汇流的一个切面：
 
 两篇工作深读把公式落到执行语义：
 
-- [Sparse MoE](works/sparse-moe.md)从 top-$k$ 路由约定走到 capacity、dispatch 和 expert parallel；
-- [S4 到 Mamba](works/s4-mamba.md)从 recurrence–convolution duality 走到 input-dependent selective scan。
+- [Sparse MoE](works/sparse-moe.md) 从 top-$k$ 路由约定走到 capacity、dispatch 和 expert parallel；
+- [S4 到 Mamba](works/s4-mamba.md) 从 recurrence–convolution duality 走到 input-dependent selective scan。
 
 ### 从续写到偏好、搜索与验证
 
@@ -79,12 +79,12 @@ K3 是观察这种汇流的一个切面：
 
 关键工作不按算法热度排列，而按它改变的闭环环节阅读：
 
-- [InstructGPT](works/instructgpt.md)连接 demonstration、pairwise reward 与 online PPO；
-- [DPO](works/dpo.md)从 KL-regularized policy 推出离线 pair objective，却不提供在线探索；
-- [DeepSeek-R1](works/deepseek-r1.md)把规则奖励 RL、cold start、rejection sampling、二次对齐与蒸馏放进多阶段流程。
-- [DAPO](works/dapo.md)把 Clip-Higher、mixed-group sampling、global token reduction 与 overlong handling 组织成开放 RLVR 配方；
-- [VAPO](works/vapo.md)重新设计长推理中的 critic、GAE 与稀疏正样本利用；
-- [SAO 与 CompactionRL](works/sao-compactionrl.md)把长程 Agentic RL 的 group barrier 与 context exhaustion 拆成时间轴、空间轴，再连接 token-level correction、critic 与跨段信用。
+- [InstructGPT](works/instructgpt.md) 连接 demonstration、pairwise reward 与 online PPO；
+- [DPO](works/dpo.md) 从 KL-regularized policy 推出离线 pair objective，却不提供在线探索；
+- [DeepSeek-R1](works/deepseek-r1.md) 把规则奖励 RL、cold start、rejection sampling、二次对齐与蒸馏放进多阶段流程。
+- [DAPO](works/dapo.md) 把 Clip-Higher、mixed-group sampling、global token reduction 与 overlong handling 组织成开放 RLVR 配方；
+- [VAPO](works/vapo.md) 重新设计长推理中的 critic、GAE 与稀疏正样本利用；
+- [SAO 与 CompactionRL](works/sao-compactionrl.md) 把长程 Agentic RL 的 group barrier 与 context exhaustion 拆成时间轴、空间轴，再连接 token-level correction、critic 与跨段信用。
 
 ### 从单卡计算到分布式状态
 
@@ -102,18 +102,18 @@ K3 是观察这种汇流的一个切面：
 
 [从“看懂”到“生成”](lineages/multimodal-generation.md)把视觉语言对齐与生成建模视作两股汇流，而不把“支持图片”当成统一技术标签：
 
-- [CLIP](works/clip.md)让自然语言成为开放视觉接口；
-- [Flamingo、BLIP-2 与 LLaVA](works/visual-language-bridges.md)展示冻结模型之间三种不同的桥；
-- [从 DDPM 到 DiT 与 Flow](works/diffusion-dit-flow.md)拆开表示、backbone 与概率路径。
+- [CLIP](works/clip.md) 让自然语言成为开放视觉接口；
+- [Flamingo、BLIP-2 与 LLaVA](works/visual-language-bridges.md) 展示冻结模型之间三种不同的桥；
+- [从 DDPM 到 DiT 与 Flow](works/diffusion-dit-flow.md) 拆开表示、backbone 与概率路径。
 
 [从参数记忆到可行动系统](lineages/retrieval-agents.md)则沿外部记忆、工具调用和环境轨迹扩展模型边界：
 
-- [RAG](works/rag.md)把检索文档写成生成中的隐变量；
-- [ReAct 与 Toolformer](works/react-toolformer.md)分别从推理轨迹和训练数据回答“何时调用工具”。
+- [RAG](works/rag.md) 把检索文档写成生成中的隐变量；
+- [ReAct 与 Toolformer](works/react-toolformer.md) 分别从推理轨迹和训练数据回答“何时调用工具”。
 
 ### 评测对象为何越来越大
 
-[从困惑度到运行中的评测](lineages/evaluation.md)解释测量对象怎样从 token likelihood 扩展到多任务协议、生成式裁判、人类偏好和 Agent 终态。[HELM 与 Chatbot Arena](works/helm-arena.md)展示两次关键转折：先把 scenario、adaptation、metric 和输出记录组成透明协议，再让开放式交互进入动态成对比较。
+[从困惑度到运行中的评测](lineages/evaluation.md)解释测量对象怎样从 token likelihood 扩展到多任务协议、生成式裁判、人类偏好和 Agent 终态。[HELM 与 Chatbot Arena](works/helm-arena.md) 展示两次关键转折：先把 scenario、adaptation、metric 和输出记录组成透明协议，再让开放式交互进入动态成对比较。
 
 评测没有位于历史的末尾。每当模型新增上下文、检索、工具或搜索预算，协议都必须记录新的自由度，否则系统改动会伪装成 checkpoint 能力。
 

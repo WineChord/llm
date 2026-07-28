@@ -1,6 +1,6 @@
 # BERT
 
-[BERT](https://arxiv.org/abs/1810.04805)于 2018 年 10 月首次公开，正式发表于 [NAACL 2019](https://aclanthology.org/N19-1423/)。它针对的矛盾不是“Transformer 不能编码文本”，而是当时强势的自回归预训练只能让每个位置使用单侧上下文；许多理解任务却希望一个 token 的表示同时结合左右证据。
+[BERT](https://arxiv.org/abs/1810.04805) 于 2018 年 10 月首次公开，正式发表于 [NAACL 2019](https://aclanthology.org/N19-1423/)。它针对的矛盾不是“Transformer 不能编码文本”，而是当时强势的自回归预训练只能让每个位置使用单侧上下文；许多理解任务却希望一个 token 的表示同时结合左右证据。
 
 作者公开了 [TensorFlow 代码与预训练模型](https://github.com/google-research/bert)。该仓库明确说明，公开的预训练数据代码能生成论文描述的数据，但并非论文所用内部 C++ 程序的完全相同实现，且原始程序还有额外复杂度。复现时应分别记录论文配方、公开脚本和实际生成的数据。
 
@@ -98,7 +98,7 @@ BERT 不为每个任务重新设计 backbone。句级任务读取 `[CLS]` 表示
 
 BERT 系统展示了深层双向 Transformer 表示可以通过大规模无标注预训练迁移到多类理解任务；它没有证明 MLM、NSP 或 encoder-only 在所有任务上最优。
 
-后来的 RoBERTa 等工作通过更长训练、更大数据、动态 masking 和去除 NSP 重估配方，说明 BERT 的关键遗产应拆成“双向 corruption 预训练”和“一套具体 2018 recipe”。历史页保留后者，canonical 目标页则比较可迁移机制。三类预训练信息流见[预训练目标与信息流](../lineages/pretraining-objectives.md)。通用机制见 [Transformer](../../architecture/transformer.md)与[语言建模](../../foundations/language-modeling.md)，mask 与损失实现约束见[概率、损失与梯度](../../foundations/probability-objectives.md)和[手撕：训练目标](../../practice/training-objectives.md)。
+后来的 RoBERTa 等工作通过更长训练、更大数据、动态 masking 和去除 NSP 重估配方，说明 BERT 的关键遗产应拆成“双向 corruption 预训练”和“一套具体 2018 recipe”。历史页保留后者，canonical 目标页则比较可迁移机制。三类预训练信息流见[预训练目标与信息流](../lineages/pretraining-objectives.md)。通用机制见 [Transformer](../../architecture/transformer.md) 与[语言建模](../../foundations/language-modeling.md)，mask 与损失实现约束见[概率、损失与梯度](../../foundations/probability-objectives.md)和[手撕：训练目标](../../practice/training-objectives.md)。
 
 ## Reference {#reference}
 

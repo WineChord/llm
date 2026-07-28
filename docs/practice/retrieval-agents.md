@@ -415,7 +415,7 @@ assert loop_calls == ["alpha"]
 - memory：过期、冲突、跨租户和注入写入；
 - security：不可信文档诱导外发或扩大权限。
 
-机制说明见[RAG](../applications/rag.md)、[工具调用](../applications/tool-use.md)、[运行时](../applications/agent-runtime.md)和[智能体安全](../applications/agent-security.md)。
+机制说明见 [RAG](../applications/rag.md)、[工具调用](../applications/tool-use.md)、[运行时](../applications/agent-runtime.md)和[智能体安全](../applications/agent-security.md)。
 
 ## Reference {#reference}
 

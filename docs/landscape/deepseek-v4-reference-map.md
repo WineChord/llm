@@ -68,7 +68,7 @@ CSA 与 HCA 共同使用 shared $K=V$ MQA、partial RoPE、learnable attention s
 | HCA | 约每 128 token 压成一个非重叠条目 | 对全部压缩条目做 dense attention | 提供便宜、稳定的全局概览 |
 | SWA | 最近 token 保持未压缩 | 固定局部窗口 | 补偿压缩块内部的细粒度信息 |
 
-一层前溯可以连接 [Sparse Transformer](https://arxiv.org/abs/1904.10509)、[Longformer](https://arxiv.org/abs/2004.05150)、[BigBird](https://arxiv.org/abs/2007.14062)和 [Compressive Transformer](https://arxiv.org/abs/1911.05507)，但这些只是稀疏模式与时间压缩的历史背景；报告没有把 CSA / HCA 归因于其中任一工作。
+一层前溯可以连接 [Sparse Transformer](https://arxiv.org/abs/1904.10509)、[Longformer](https://arxiv.org/abs/2004.05150)、[BigBird](https://arxiv.org/abs/2007.14062) 和 [Compressive Transformer](https://arxiv.org/abs/1911.05507)，但这些只是稀疏模式与时间压缩的历史背景；报告没有把 CSA / HCA 归因于其中任一工作。
 
 mHC 的数学背景还包括 [Deep Residual Learning](https://arxiv.org/abs/1512.03385)、Birkhoff polytope 和 [Sinkhorn–Knopp 矩阵缩放](https://doi.org/10.2140/pjm.1967.21.343)。这些节点解释“identity path、doubly stochastic、non-expansive 与乘法闭包”，但不属于 V4 的 103 项正式书目。
 
@@ -88,7 +88,7 @@ mHC 的数学背景还包括 [Deep Residual Learning](https://arxiv.org/abs/1512
 - **[77] [Microscaling Data Formats](https://arxiv.org/abs/2310.10537)**：定义 MXFP4 等 microscaling 格式，支撑 expert weights 与 CSA indexer QK path 的低精度表示。
 - **[102] [How to Synthesize Text Data without Model Collapse?](https://arxiv.org/abs/2412.14689)**：为过滤批量自动生成、模板化 web 内容提供数据质量动机。
 
-优化链不能简化成“把 AdamW 换成 Muon”。V4 的实际边界是按参数语义分组：二维 hidden weights 使用 Muon，其他参数继续使用 AdamW；MoE expert 的 up、gate、down 矩阵仍按逻辑矩阵分别正交化；ZeRO 只负责把这些完整逻辑单元分配给不同 rank。理论上可继续阅读 [Shampoo](https://proceedings.mlr.press/v80/gupta18a.html)与 polar decomposition，但它们属于 Muon 的一跳数学背景，不是报告直接引用。
+优化链不能简化成“把 AdamW 换成 Muon”。V4 的实际边界是按参数语义分组：二维 hidden weights 使用 Muon，其他参数继续使用 AdamW；MoE expert 的 up、gate、down 矩阵仍按逻辑矩阵分别正交化；ZeRO 只负责把这些完整逻辑单元分配给不同 rank。理论上可继续阅读 [Shampoo](https://proceedings.mlr.press/v80/gupta18a.html) 与 polar decomposition，但它们属于 Muon 的一跳数学背景，不是报告直接引用。
 
 后训练的两段式结构则是：
 

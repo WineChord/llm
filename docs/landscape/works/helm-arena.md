@@ -4,7 +4,7 @@
 
 ## HELM：先把测量矩阵写出来
 
-[HELM](https://arxiv.org/abs/2211.09110)不只增加 benchmark，而是定义 scenario、adaptation 与 metric 的组合。它强调覆盖率与多指标：准确率之外，还观察校准、鲁棒性、公平、偏差、毒性和效率，并公开 prompt 与 completion 以便审计。
+[HELM](https://arxiv.org/abs/2211.09110) 不只增加 benchmark，而是定义 scenario、adaptation 与 metric 的组合。它强调覆盖率与多指标：准确率之外，还观察校准、鲁棒性、公平、偏差、毒性和效率，并公开 prompt 与 completion 以便审计。
 
 这项工作的思想价值在于承认评测资源有限。完整任务空间无法穷尽，因此应先写出 taxonomy，再说明本轮覆盖了哪里、遗漏了哪里。一个稠密但边界清楚的矩阵，比每个模型各选最有利的任务更能支持横向比较。
 
@@ -23,7 +23,7 @@ runtime + failure handling
 
 ## 从标准答案到生成式裁判
 
-开放式对话没有唯一 reference。[MT-Bench 与 LLM-as-a-Judge](https://arxiv.org/abs/2306.05685)研究让强模型按 rubric 对回答评分或做 pairwise 比较，并系统讨论位置偏差、冗长度偏差与自我增强偏差。
+开放式对话没有唯一 reference。[MT-Bench 与 LLM-as-a-Judge](https://arxiv.org/abs/2306.05685) 研究让强模型按 rubric 对回答评分或做 pairwise 比较，并系统讨论位置偏差、冗长度偏差与自我增强偏差。
 
 成对偏好可用 Bradley–Terry 模型表示。模型 $i$ 相对 $j$ 的胜率为
 
@@ -48,7 +48,7 @@ assert rating.grad[1] > 0
 
 ## Chatbot Arena：把用户问题带进协议
 
-[Chatbot Arena](https://arxiv.org/abs/2403.04132)让用户在匿名模型之间做成对选择，再用统计模型聚合排名。它补足静态题库难以覆盖的真实交互分布，也引入新的条件：
+[Chatbot Arena](https://arxiv.org/abs/2403.04132) 让用户在匿名模型之间做成对选择，再用统计模型聚合排名。它补足静态题库难以覆盖的真实交互分布，也引入新的条件：
 
 - 谁会访问平台、提出什么语言和主题的问题；
 - 哪些模型被配对、流量怎样分配；
@@ -77,6 +77,6 @@ RAG、工具和 Agent 让评测对象包含外部服务，推理时搜索让预�
 
 ## Reference {#reference}
 
-- [HELM 论文](https://arxiv.org/abs/2211.09110)与[stanford-crfm/helm](https://github.com/stanford-crfm/helm)；
-- [MT-Bench / LLM-as-a-Judge 论文](https://arxiv.org/abs/2306.05685)与[FastChat LLM judge implementation](https://github.com/lm-sys/FastChat/tree/main/fastchat/llm_judge)；
+- [HELM 论文](https://arxiv.org/abs/2211.09110)与 [stanford-crfm/helm](https://github.com/stanford-crfm/helm)；
+- [MT-Bench / LLM-as-a-Judge 论文](https://arxiv.org/abs/2306.05685)与 [FastChat LLM judge implementation](https://github.com/lm-sys/FastChat/tree/main/fastchat/llm_judge)；
 - [Chatbot Arena 论文](https://arxiv.org/abs/2403.04132)与承载其早期公开实现的 [FastChat](https://github.com/lm-sys/FastChat)；当前项目入口见 [LMArena](https://lmarena.ai/)。

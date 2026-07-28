@@ -138,7 +138,7 @@ reward model 是有限数据上的函数逼近，而 policy optimization 会主�
 
 ## 与 RLAIF、Constitutional AI 的关系
 
-把反馈者换成模型不会改变闭环结构，只会改变反馈生成机制。RLAIF 可以扩大规模、固定 rubric，也会继承 judge 的偏差、prompt 敏感性和自我偏好。[Constitutional AI](https://arxiv.org/abs/2212.08073)还加入 critique/revision 与原则驱动的反馈生产；原则、judge 与最终人类目标仍需分别评测。
+把反馈者换成模型不会改变闭环结构，只会改变反馈生成机制。RLAIF 可以扩大规模、固定 rubric，也会继承 judge 的偏差、prompt 敏感性和自我偏好。[Constitutional AI](https://arxiv.org/abs/2212.08073) 还加入 critique/revision 与原则驱动的反馈生产；原则、judge 与最终人类目标仍需分别评测。
 
 ## 最小评测矩阵
 
@@ -151,7 +151,7 @@ reward model 是有限数据上的函数逼近，而 policy optimization 会主�
 7. 成本：反馈小时、rollout token、训练 token 和失败重跑；
 8. 版本隔离：训练 RM 与最终 judge 不共享泄漏路径。
 
-策略目标见[KL 正则化控制](kl-regularized-control.md)，在线 estimator 见[在线 RL](../training/online-rl.md)，整个历史脉络见[从续写到偏好与在线学习](../landscape/lineages/training-alignment.md)。
+策略目标见 [KL 正则化控制](kl-regularized-control.md)，在线 estimator 见[在线 RL](../training/online-rl.md)，整个历史脉络见[从续写到偏好与在线学习](../landscape/lineages/training-alignment.md)。
 
 ## Reference {#reference}
 

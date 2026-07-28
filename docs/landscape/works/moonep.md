@@ -26,7 +26,7 @@ $$
 
 即使长期平均 $\mathbb E[L_r]$ 接近 $SK$，某一步的 $\max_r L_r$ 仍可能很大。同步训练要等最慢 rank 完成 dispatch、expert GEMM 和 combine；在线 decode 的小 token batch 又更容易让个别 expert 形成 skinny GEMM。更麻烦的是，$L_r$ 每步变化会让通信 split、临时张量和 grouped GEMM shape 同时变化，产生 host 同步、allocator 碎片和 graph 复用困难。
 
-因此“加一个 load-balancing loss”并不等于系统问题消失。辅助目标会改变模型学习，而系统仍需为极端 batch 留容量；capacity factor、padding 或 token drop 又分别浪费计算或改变模型语义。router 与 MoE 层的数学边界见[稀疏 MoE](../../architecture/moe.md)，dispatch、placement 与 grouped GEMM 的系统契约见[MoE 系统](../../systems/moe-systems.md)。
+因此“加一个 load-balancing loss”并不等于系统问题消失。辅助目标会改变模型学习，而系统仍需为极端 batch 留容量；capacity factor、padding 或 token drop 又分别浪费计算或改变模型语义。router 与 MoE 层的数学边界见[稀疏 MoE](../../architecture/moe.md)，dispatch、placement 与 grouped GEMM 的系统契约见 [MoE 系统](../../systems/moe-systems.md)。
 
 ## Perfect balance 的目标
 
@@ -146,7 +146,7 @@ Zero-copy 会把生命周期约束变得更严格：返回 view 与通信 buffer
 
 ## 与 Kimi K3 的关系
 
-[Kimi K3](kimi-k3.md)采用 896 个 routed expert、每个 token 激活 16 个 routed expert，并用 Quantile Balancing 改善 router 负载；MoonEP 位于它的系统侧，处理即使经过模型级平衡后仍会出现的 step-level rank skew。两层作用不同：
+[Kimi K3](kimi-k3.md) 采用 896 个 routed expert、每个 token 激活 16 个 routed expert，并用 Quantile Balancing 改善 router 负载；MoonEP 位于它的系统侧，处理即使经过模型级平衡后仍会出现的 step-level rank skew。两层作用不同：
 
 ```text
 router balancing

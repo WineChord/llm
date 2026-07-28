@@ -1,7 +1,7 @@
 # Kimi K2：1T MoE、MuonClip 与 Agentic 训练系统
 
-[Kimi K2](https://arxiv.org/abs/2507.20534)处在 Kimi 技术谱系的转折点；它与专门模型、机制论文、系统组件和 Agent 工具的关系见[Kimi 家族总览](../families/kimi.md)。它继承
-[Kimi k1.5](kimi-k1-5.md)的长推理 RL，却把主要问题从“怎样生成更长的 reasoning”推进到“怎样训练
+[Kimi K2](https://arxiv.org/abs/2507.20534) 处在 Kimi 技术谱系的转折点；它与专门模型、机制论文、系统组件和 Agent 工具的关系见 [Kimi 家族总览](../families/kimi.md)。它继承
+[Kimi k1.5](kimi-k1-5.md) 的长推理 RL，却把主要问题从“怎样生成更长的 reasoning”推进到“怎样训练
 一个 1T 级稀疏模型，并让它在真实工具环境中持续行动”。因此报告的主线不是单个 benchmark，而是三个
 闭环：
 
@@ -9,8 +9,8 @@
 - 15.5T token 如何借 rephrasing 与 sparsity scaling 提高单位 token 的用途；
 - training engine、inference engine、工具环境和长尾 trajectory 如何在同一 RL iteration 内交接。
 
-这些接口后来分别通向 [Kimi K2.5](kimi-k2-5.md)的原生多模态与 Agent Swarm，以及
-[Kimi K3](kimi-k3.md)的 hybrid attention、Stable LatentMoE 与百万 token Agentic RL。
+这些接口后来分别通向 [Kimi K2.5](kimi-k2-5.md) 的原生多模态与 Agent Swarm，以及
+[Kimi K3](kimi-k3.md) 的 hybrid attention、Stable LatentMoE 与百万 token Agentic RL。
 
 ## 模型账本：大的是容量，不是每 token 计算
 
@@ -194,8 +194,8 @@ $1.69\times$、$1.39\times$、$1.15\times$ FLOPs。K2 最终选择 384 experts�
 - 每 expert token 数减少后，GEMM shape 可能失去硬件效率。
 
 因此 scaling law 是“在作者系统与受控模型族内，质量怎样随 sparsity 变化”，不是只要继续增加专家就
-必然免费变强。K3 后来用 [Stable LatentMoE](latentmoe-quantile-balancing.md)和
-[Quantile Balancing](latentmoe-quantile-balancing.md#quantile-balancing)重新处理更高稀疏度下的
+必然免费变强。K3 后来用 [Stable LatentMoE](latentmoe-quantile-balancing.md) 和
+[Quantile Balancing](latentmoe-quantile-balancing.md#quantile-balancing) 重新处理更高稀疏度下的
 activation 与路由问题。
 
 ### 为什么只保留 64 个 attention heads
@@ -349,9 +349,9 @@ K2 的贡献不是简单把 MoE 扩到 1T。它显示了四个跨层耦合：
 4. on-policy RL 的迭代速度取决于 train/inference resharding 和可恢复 environment，而不只取决于
    policy loss。
 
-下一步的 [Kimi K2.5](kimi-k2-5.md)保留 K2 backbone，却把视觉从适配层提升为 15T 级 joint training，
-并让 orchestrator 学会并行拆分；[Kimi K3](kimi-k3.md)则进一步替换 token、depth 与 channel 三条
-信息流。沿家族全局关系可回到[Kimi 技术谱系](../kimi-timeline.md)。
+下一步的 [Kimi K2.5](kimi-k2-5.md) 保留 K2 backbone，却把视觉从适配层提升为 15T 级 joint training，
+并让 orchestrator 学会并行拆分；[Kimi K3](kimi-k3.md) 则进一步替换 token、depth 与 channel 三条
+信息流。沿家族全局关系可回到 [Kimi 技术谱系](../kimi-timeline.md)。
 
 ## Reference {#reference}
 

@@ -84,7 +84,7 @@ GLM-4.5 是清晰的架构分界点：主干转向稀疏 MoE，并把 reasoning�
 - thinking / non-thinking 双模式；
 - 以 [slime](https://github.com/THUDM/slime) 支撑异步 rollout 与大规模 Agentic RL。
 
-4.6 与 4.7 更像同一公开架构上的连续 checkpoint：4.6 把 context 从 128K 扩到 200K并强化 coding / tool use；4.7 增强 interleaved thinking，引入 preserved thinking 与 turn-level thinking。它们的模型卡仍引用 GLM-4.5 报告，所以“能力更新已公开”和“完整训练配方已重新披露”是两件事。
+4.6 与 4.7 更像同一公开架构上的连续 checkpoint：4.6 把 context 从 128K 扩到 200K 并强化 coding / tool use；4.7 增强 interleaved thinking，引入 preserved thinking 与 turn-level thinking。它们的模型卡仍引用 GLM-4.5 报告，所以“能力更新已公开”和“完整训练配方已重新披露”是两件事。
 
 ## 第五阶段：GLM-5 把注意力、规模与 Agentic RL 合流
 
@@ -113,7 +113,7 @@ GLM-5.2 再把最大 context 推到 1M，并公开两项可定位的新设计：
 - **IndexShare**：每四个稀疏注意力层共享一套 indexer 结果，降低长上下文下的索引开销；
 - **MTP 更新**：在多步草稿中共享 index 与 KV，引入 rejection sampling 和端到端 total-variation loss，提高推测解码接受长度。
 
-这两项披露来自 5.2 技术博客和模型卡，而不是 2 月发布的 GLM-5 报告。后续的 [IndexCache](https://arxiv.org/abs/2603.12201)、[Bebop](https://arxiv.org/abs/2606.12370)、[Single-Rollout Asynchronous Optimization](https://arxiv.org/abs/2607.07508) 与 [CompactionRL](https://arxiv.org/abs/2607.05378)可以解释长上下文服务和长程 RL 的进一步演化，但它们是报告之后的上下文节点，不能伪装成 GLM-5 正文引用。
+这两项披露来自 5.2 技术博客和模型卡，而不是 2 月发布的 GLM-5 报告。后续的 [IndexCache](https://arxiv.org/abs/2603.12201)、[Bebop](https://arxiv.org/abs/2606.12370)、[Single-Rollout Asynchronous Optimization](https://arxiv.org/abs/2607.07508) 与 [CompactionRL](https://arxiv.org/abs/2607.05378) 可以解释长上下文服务和长程 RL 的进一步演化，但它们是报告之后的上下文节点，不能伪装成 GLM-5 正文引用。
 
 ## 如何阅读下一次更新
 

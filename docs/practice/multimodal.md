@@ -53,7 +53,7 @@ def clip_loss(image_embedding, text_embedding, logit_scale):
     return (F.cross_entropy(logits, labels) + F.cross_entropy(logits.T, labels)) / 2
 ```
 
-[CLIP](https://arxiv.org/abs/2103.00020)的 in-batch negatives 会把重复 caption 或同义图像当假负例。[SigLIP](https://arxiv.org/abs/2303.15343)对全部图文 pair 使用独立 sigmoid loss。令 $y_{ij}=1$ 表示匹配 pair，否则 $y_{ij}=-1$：
+[CLIP](https://arxiv.org/abs/2103.00020) 的 in-batch negatives 会把重复 caption 或同义图像当假负例。[SigLIP](https://arxiv.org/abs/2303.15343) 对全部图文 pair 使用独立 sigmoid loss。令 $y_{ij}=1$ 表示匹配 pair，否则 $y_{ij}=-1$：
 
 $$
 \mathcal L_{\mathrm{SigLIP}}
@@ -217,7 +217,7 @@ def vector_quantize(latent, codebook):
     return straight_through, index.view(latent.shape[:-1]), quantized
 ```
 
-commitment、codebook update 与重建 loss 仍需显式实现。监控 code usage、perplexity 与 dead code，不能只看重建 loss。[VQ-VAE](https://arxiv.org/abs/1711.00937)给出完整目标。
+commitment、codebook update 与重建 loss 仍需显式实现。监控 code usage、perplexity 与 dead code，不能只看重建 loss。[VQ-VAE](https://arxiv.org/abs/1711.00937) 给出完整目标。
 
 ## DDPM forward 与 CFG
 
@@ -239,7 +239,7 @@ def classifier_free_guidance(unconditional, conditional, scale):
     return unconditional + scale * (conditional - unconditional)
 ```
 
-`scale=0` 返回 unconditional，`scale=1` 返回 conditional。$\epsilon$、$x_0$ 与 $v$ 参数化不可混用；noise schedule 与 sampler 也必须配套。[DDPM](https://arxiv.org/abs/2006.11239)给出前向与反向过程。
+`scale=0` 返回 unconditional，`scale=1` 返回 conditional。$\epsilon$、$x_0$ 与 $v$ 参数化不可混用；noise schedule 与 sampler 也必须配套。[DDPM](https://arxiv.org/abs/2006.11239) 给出前向与反向过程。
 
 ## Flow Euler sampler
 
@@ -263,7 +263,7 @@ result = euler_flow(lambda x, t: torch.ones_like(x) * 3, x0, steps=8)
 torch.testing.assert_close(result, torch.tensor([5.0]))
 ```
 
-时间方向与训练 target velocity 写反会得到完全错误的采样器。[Flow Matching](https://arxiv.org/abs/2210.02747)给出相应连续路径框架。
+时间方向与训练 target velocity 写反会得到完全错误的采样器。[Flow Matching](https://arxiv.org/abs/2210.02747) 给出相应连续路径框架。
 
 ## Residual Vector Quantization
 
@@ -292,7 +292,7 @@ def residual_vector_quantize(latent, codebooks):
     return reconstruction.to(latent.dtype), torch.stack(indices, dim=-1)
 ```
 
-音频模型还需定义多 codebook delayed pattern、帧率、streaming state 与丢包恢复。[EnCodec](https://arxiv.org/abs/2210.13438)是 RVQ 音频 codec 的重要实例。
+音频模型还需定义多 codebook delayed pattern、帧率、streaming state 与丢包恢复。[EnCodec](https://arxiv.org/abs/2210.13438) 是 RVQ 音频 codec 的重要实例。
 
 ## Video tubelet
 

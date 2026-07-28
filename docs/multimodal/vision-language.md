@@ -2,7 +2,7 @@
 
 视觉语言模型需要解决三个独立问题：怎样把像素变成视觉 token，怎样与语言空间对齐，以及怎样在对话、定位与生成中保持空间信息。把 vision encoder 接到 LLM 只是接口起点。
 
-这条路线可从 [CLIP](../landscape/works/clip.md)的开放词表对齐开始，再比较 [Flamingo、BLIP-2 与 LLaVA](../landscape/works/visual-language-bridges.md)怎样在冻结主干、视觉压缩和指令数据之间作出不同选择；完整脉络见[多模态理解与生成](../landscape/lineages/multimodal-generation.md)。
+这条路线可从 [CLIP](../landscape/works/clip.md) 的开放词表对齐开始，再比较 [Flamingo、BLIP-2 与 LLaVA](../landscape/works/visual-language-bridges.md) 怎样在冻结主干、视觉压缩和指令数据之间作出不同选择；完整脉络见[多模态理解与生成](../landscape/lineages/multimodal-generation.md)。
 
 ## Vision Transformer
 
@@ -18,7 +18,7 @@ $$
 z_i=W_px_i+e_i,
 $$
 
-其中 $e_i$ 是位置表示。[Vision Transformer](https://arxiv.org/abs/2010.11929)展示了将 patch 序列交给 Transformer 编码的基本路线。
+其中 $e_i$ 是位置表示。[Vision Transformer](https://arxiv.org/abs/2010.11929) 展示了将 patch 序列交给 Transformer 编码的基本路线。
 
 更小的 patch 或更高分辨率都会增加 $N$。若视觉 token 直接进入语言主干，prefill attention 与 KV 成本随 token 数增长，分辨率不能脱离系统预算讨论。
 
@@ -48,11 +48,11 @@ assert tokens.shape == (2, 6, 48)
 torch.testing.assert_close(unpatchify(tokens, 3, 8, 12, 4), image)
 ```
 
-这个核不做 resize、padding、position embedding 或线性投影；dynamic tiling 还必须把原图坐标、tile 顺序与有效区域随 token 一起保存。可运行的分块实验见[多模态原语：ViT patchify](../practice/multimodal.md#vit-patchify)，固定 token 预算则见同页的[Fixed-query resampler](../practice/multimodal.md#fixed-query-resampler)。
+这个核不做 resize、padding、position embedding 或线性投影；dynamic tiling 还必须把原图坐标、tile 顺序与有效区域随 token 一起保存。可运行的分块实验见[多模态原语：ViT patchify](../practice/multimodal.md#vit-patchify)，固定 token 预算则见同页的 [Fixed-query resampler](../practice/multimodal.md#fixed-query-resampler)。
 
 ## 对比式视觉—文本对齐
 
-[CLIP](https://arxiv.org/abs/2103.00020)分别编码一批图像和文本，并使匹配 pair 的相似度高于不匹配 pair。归一化 embedding 为 $u_i,v_j$，温度为 $\tau$：
+[CLIP](https://arxiv.org/abs/2103.00020) 分别编码一批图像和文本，并使匹配 pair 的相似度高于不匹配 pair。归一化 embedding 为 $u_i,v_j$，温度为 $\tau$：
 
 $$
 s_{ij}=\frac{u_i^\top v_j}{\tau}.
@@ -82,7 +82,7 @@ $$
 H_v=P(Z_v)\in\mathbb{R}^{N\times d}.
 $$
 
-[LLaVA](https://arxiv.org/abs/2304.08485)是 vision encoder、projector 与语言模型进行视觉指令微调的代表路线。接口简单，但所有视觉信息都要通过有限 token 和主干后续层解释。
+[LLaVA](https://arxiv.org/abs/2304.08485) 是 vision encoder、projector 与语言模型进行视觉指令微调的代表路线。接口简单，但所有视觉信息都要通过有限 token 和主干后续层解释。
 
 ### Resampler
 
@@ -162,7 +162,7 @@ tile 顺序与二维位置必须可恢复；否则模型看到的是一串局部
 
 - [信号、表示与 Token 化](foundations/signals-tokenization.md)固定 patch、动态分辨率与 token budget；
 - [对齐、桥接与融合](foundations/alignment-fusion.md)比较 projector、resampler、cross-attention 与 early fusion；
-- [视觉表示、感知与 Grounding](vision/representation-grounding.md)把全局语义推进到区域、坐标和证据；
+- [视觉表示、感知与 Grounding](vision/representation-grounding.md) 把全局语义推进到区域、坐标和证据；
 - [空间智能与三维表示](vision/spatial-3d.md)继续处理深度、多视角、坐标系和场景记忆。
 
 ## Reference {#reference}

@@ -64,7 +64,7 @@ V_\phi(h_t)-\widehat V_t
 \right]^2.
 $$
 
-两个目标可以共享网络 trunk，但 target 的梯度边界必须清楚：bootstrap target 通常停止梯度，否则 critic 会通过目标分支追逐自身。完整双边界推导见[Advantage 估计与 GAE](advantage-estimation-gae.md#boundaries)。
+两个目标可以共享网络 trunk，但 target 的梯度边界必须清楚：bootstrap target 通常停止梯度，否则 critic 会通过目标分支追逐自身。完整双边界推导见 [Advantage 估计与 GAE](advantage-estimation-gae.md#boundaries)。
 
 ## $n$-step return 与 GAE
 
@@ -179,7 +179,7 @@ except ValueError: pass
 else: raise AssertionError("terminal transitions cannot continue the trace")
 ```
 
-正常 transition 的两个 mask 都为真，真实 terminal 都为假；有真实 final observation 的 truncation 则 `bootstrap=True, trace=False`。这个实现假设 batch 中每条轨迹已经按时间对齐。padding 位置必须在外层用有效步 mask 排除，不能仅靠把 reward 置零；否则 padding 上的 value、loss 分母和递推仍可能污染结果。完整推导与边界测试见[Advantage 估计与 GAE](advantage-estimation-gae.md)。
+正常 transition 的两个 mask 都为真，真实 terminal 都为假；有真实 final observation 的 truncation 则 `bootstrap=True, trace=False`。这个实现假设 batch 中每条轨迹已经按时间对齐。padding 位置必须在外层用有效步 mask 排除，不能仅靠把 reward 置零；否则 padding 上的 value、loss 分母和递推仍可能污染结果。完整推导与边界测试见 [Advantage 估计与 GAE](advantage-estimation-gae.md)。
 
 packed trajectory、bootstrap 与 valid-step mask 的组合实现见[手撕：LLM 策略优化 · GAE](../practice/llm-policy-optimization.md#gae)。
 

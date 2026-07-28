@@ -2,7 +2,7 @@
 
 Verifier 判断候选或状态，reward shaping 决定怎样把判断变成时间序列上的学习信号。两者不能合并：一个准确的终局 verifier 可能仍然只提供稀疏 reward；一个密集过程分数也可能改变最优策略。
 
-本页负责 verifier taxonomy、过程/终局信号的 shaping 语义及攻击面，不重复定义完整 RLVR 训练闭环。任务采样、reward → advantage、policy update 与在线分布演化见[RLVR](rlvr.md)。
+本页负责 verifier taxonomy、过程/终局信号的 shaping 语义及攻击面，不重复定义完整 RLVR 训练闭环。任务采样、reward → advantage、policy update 与在线分布演化见 [RLVR](rlvr.md)。
 
 ## 四类信号角色
 
@@ -76,7 +76,7 @@ R_t^{\mathrm{increment}}
 =q_t-q_{t-1}.
 $$
 
-但只有当 $q_t$ 真能作为同一量的累计势函数时，这种 prefix-score increment 才有清楚语义。生成式 judge 在不同 prefix 上的 score 未必可比较，差分可能放大噪声。这里不用 “difference reward” 一词：该术语在 multi-agent RL 中通常指用全局 reward 与移除某个 agent 贡献后的 counterfactual reward 之差，概念不同。
+但只有当 $q_t$ 真能作为同一量的累计势函数时，这种 prefix-score increment 才有清楚语义。生成式 judge 在不同 prefix 上的 score 未必可比较，差分可能放大噪声。这里不用“difference reward”一词：该术语在 multi-agent RL 中通常指用全局 reward 与移除某个 agent 贡献后的 counterfactual reward 之差，概念不同。
 
 ## Credit granularity
 
@@ -166,7 +166,7 @@ policy proposes
 7. 禁止 verifier 访问 policy 私有状态或训练标签。
 8. 保存每个 reward 分量与 evidence，不只保存总分。
 
-[RLVR](rlvr.md)负责可验证反馈进入 rollout → reward → advantage → policy update 的端到端范式，[语言模型信用分配](credit-assignment.md)关注 reward 怎样传播，[搜索与验证](../reasoning/search-verification.md)关注推理时算法。
+[RLVR](rlvr.md) 负责可验证反馈进入 rollout → reward → advantage → policy update 的端到端范式，[语言模型信用分配](credit-assignment.md)关注 reward 怎样传播，[搜索与验证](../reasoning/search-verification.md)关注推理时算法。
 
 ## Reference {#reference}
 

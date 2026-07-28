@@ -202,7 +202,7 @@ calibrator training/test split
 
 ## 正确性与攻击失效
 
-- **token probability当回答概率**：多 token、自由生成和工具任务语义不同。
+- **token probability 当回答概率**：多 token、自由生成和工具任务语义不同。
 - **ECE 单值无 bin 信息**：实现不可比较。
 - **只在回答样本校准**：abstention coverage 被隐藏。
 - **开发集拟合后仍在开发集报告**：过拟合。

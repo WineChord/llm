@@ -18,7 +18,7 @@ Encoder $E$ 决定保留什么，prior 学习什么，decoder $D$ 决定哪些�
 
 ## 连续潜变量：VAE 把压缩写成概率模型
 
-[VAE](https://arxiv.org/abs/1312.6114)假设
+[VAE](https://arxiv.org/abs/1312.6114) 假设
 
 $$
 p_\theta(x,z)=p(z)p_\theta(x\mid z),
@@ -70,7 +70,7 @@ Rate 太小，decoder 忽略 $z$，出现 posterior collapse；rate 太大，lat
 
 ## 离散化：VQ-VAE 学一个可复用的视觉词表
 
-[VQ-VAE](https://arxiv.org/abs/1711.00937)令 encoder 在每个空间位置输出 $z_e\in\mathbb R^d$，再从码本
+[VQ-VAE](https://arxiv.org/abs/1711.00937) 令 encoder 在每个空间位置输出 $z_e\in\mathbb R^d$，再从码本
 
 $$
 \mathcal E=\{e_1,\ldots,e_K\}
@@ -112,7 +112,7 @@ $$
 
 ## 层级码本与 residual quantization
 
-[VQ-VAE-2](https://arxiv.org/abs/1906.00446)用多尺度 latent：上层描述全局结构，下层补局部细节。另一种做法是 residual vector quantization（RVQ）。第 $m$ 层量化上一层残差：
+[VQ-VAE-2](https://arxiv.org/abs/1906.00446) 用多尺度 latent：上层描述全局结构，下层补局部细节。另一种做法是 residual vector quantization（RVQ）。第 $m$ 层量化上一层残差：
 
 $$
 r^{(0)}=z_e,
@@ -138,11 +138,11 @@ $$
 R=N\sum_{m=1}^{M}\log_2K_m\quad\text{bits}.
 $$
 
-这使系统可以通过截断后几层降低 bitrate；[SoundStream](https://arxiv.org/abs/2107.03312)与 [EnCodec](https://arxiv.org/abs/2210.13438)把这一思想用于音频 codec。图像和音频共享同一个数学骨架，但时间序列的码率单位通常是 bit/s，图像则更常报告 bit/pixel 或 token/image，不能直接比较一个“token 数”。
+这使系统可以通过截断后几层降低 bitrate；[SoundStream](https://arxiv.org/abs/2107.03312) 与 [EnCodec](https://arxiv.org/abs/2210.13438) 把这一思想用于音频 codec。图像和音频共享同一个数学骨架，但时间序列的码率单位通常是 bit/s，图像则更常报告 bit/pixel 或 token/image，不能直接比较一个“token 数”。
 
 ## 感知质量为何需要另一种距离
 
-逐像素 $L_1/L_2$ 把一个像素的平移视为大量独立错误，却未必对应人眼感知。[VQGAN](https://arxiv.org/abs/2012.09841)组合：
+逐像素 $L_1/L_2$ 把一个像素的平移视为大量独立错误，却未必对应人眼感知。[VQGAN](https://arxiv.org/abs/2012.09841) 组合：
 
 $$
 \mathcal L_{\mathrm{AE}}
@@ -166,7 +166,7 @@ Perceptual loss 在预训练网络特征中比较结构，patch discriminator �
 
 ## Latent diffusion 为什么偏爱连续空间
 
-[Latent Diffusion](https://arxiv.org/abs/2112.10752)使用带感知压缩的连续 latent：
+[Latent Diffusion](https://arxiv.org/abs/2112.10752) 使用带感知压缩的连续 latent：
 
 $$
 z=sE(x),
@@ -192,13 +192,13 @@ U-Net 或 DiT 的 token 数与 attention 成本显著下降。这里的 scale $s
 
 ## 从重建 latent 到语义 latent
 
-经典 autoencoder 从零学习表示，并以重建为主。[Diffusion Transformers with Representation Autoencoders](https://arxiv.org/abs/2510.11690)把预训练视觉 representation encoder 与训练出的 decoder 组合，让 diffusion 在更语义化、通常也更高维的 latent 上工作。这个方向改变了旧假设：
+经典 autoencoder 从零学习表示，并以重建为主。[Diffusion Transformers with Representation Autoencoders](https://arxiv.org/abs/2510.11690) 把预训练视觉 representation encoder 与训练出的 decoder 组合，让 diffusion 在更语义化、通常也更高维的 latent 上工作。这个方向改变了旧假设：
 
 > latent 不必尽可能窄；若它已经含有稳定语义，prior 可能更容易学习，只是 backbone 必须能处理更宽的通道和不同统计。
 
-高维 latent 也带来新问题：噪声 schedule 是否仍合适、patch embedding 是否成为瓶颈、decoder 能否恢复纹理、表示模型的数据偏差是否被带入生成。[Scaling Diffusion Transformers with Representation Autoencoders](https://arxiv.org/abs/2601.16208)属于快速演进中的后续工作；截至 2026-07-28，涉及其规模与效果的结论应按作者报告理解，并以对应版本、训练配置和公开评测为边界。
+高维 latent 也带来新问题：噪声 schedule 是否仍合适、patch embedding 是否成为瓶颈、decoder 能否恢复纹理、表示模型的数据偏差是否被带入生成。[Scaling Diffusion Transformers with Representation Autoencoders](https://arxiv.org/abs/2601.16208) 属于快速演进中的后续工作；截至 2026-07-28，涉及其规模与效果的结论应按作者报告理解，并以对应版本、训练配置和公开评测为边界。
 
-离散 tokenizer 同样在尝试更短序列。[MAGVIT-v2](https://arxiv.org/abs/2310.05737)研究可服务于视觉生成的 lookup-free quantization，[Finite Scalar Quantization](https://arxiv.org/abs/2309.15505)把向量量化改为若干标量级别的笛卡尔积，[TiTok](https://arxiv.org/abs/2406.07550)探索把图像压成一维短 token 序列。这些方法减少 prior 的序列长度，但不能只报 token 数：码本容量、decoder 规模与 reconstruction quality 必须一起看。
+离散 tokenizer 同样在尝试更短序列。[MAGVIT-v2](https://arxiv.org/abs/2310.05737) 研究可服务于视觉生成的 lookup-free quantization，[Finite Scalar Quantization](https://arxiv.org/abs/2309.15505) 把向量量化改为若干标量级别的笛卡尔积，[TiTok](https://arxiv.org/abs/2406.07550) 探索把图像压成一维短 token 序列。这些方法减少 prior 的序列长度，但不能只报 token 数：码本容量、decoder 规模与 reconstruction quality 必须一起看。
 
 ## 最小 RVQ：把 shape、梯度与残差写清楚
 
@@ -293,7 +293,7 @@ $$
 
 比较 tokenizer 时应让 decoder 规模、输入分辨率和训练数据透明。若一个方案用更大的 decoder“补画”细节，另一个追求逐像素保真，单一 reconstruction FID 并不构成公平结论。
 
-离散 prior 的历史与顺序见[似然、对抗学习与视觉 Token](history-autoregressive-gan.md)；连续 latent 上的 diffusion 见[Latent Diffusion、DiT 与 Flow](latent-dit-flow.md)；音频 codec 的时间码率与流式协议见[音频生成与流式合成](../audio/generation-streaming.md)。
+离散 prior 的历史与顺序见[似然、对抗学习与视觉 Token](history-autoregressive-gan.md)；连续 latent 上的 diffusion 见 [Latent Diffusion、DiT 与 Flow](latent-dit-flow.md)；音频 codec 的时间码率与流式协议见[音频生成与流式合成](../audio/generation-streaming.md)。
 
 VQ、RVQ、重建与码本退化测试见[多模态手撕实现](../../practice/multimodal.md)。
 

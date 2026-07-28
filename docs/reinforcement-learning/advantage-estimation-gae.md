@@ -330,7 +330,7 @@ $\lambda$ 增大通常减少对局部 critic 的依赖，也让更远 reward 噪
 
 - critic 在某类状态上系统性偏高时，较短 trace 会继承局部 bias；
 - episode 很长、reward 极稀疏时，较长 trace 的 variance 和数值范围可能迅速增加；
-- policy lag 使 residual 对应的 value、reward 与当前策略不一致，调小 $\lambda$ 不能替代[Off-policy 校正](off-policy-correction.md)；
+- policy lag 使 residual 对应的 value、reward 与当前策略不一致，调小 $\lambda$ 不能替代 [Off-policy 校正](off-policy-correction.md)；
 - value pretraining、actor/critic 更新频率和 target normalization 都会改变同一 $\lambda$ 的表现；
 - response 长度、turn 数与 segment 数不同，固定 $\gamma\lambda$ 会给不同任务不同的有效信用半衰期。
 

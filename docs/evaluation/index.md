@@ -2,7 +2,7 @@
 
 评测估计的是“某个可识别系统，在某个冻结分布和协议下的行为”。分数不是模型名的永久属性；checkpoint、模板、工具、推理预算、评分器或数据版本变化后，测量对象已经改变。
 
-评测史反复在“覆盖更广”和“协议更可信”之间摆动。[评测体系的演进](../landscape/lineages/evaluation.md)从 perplexity、静态任务集走到 HELM 的多指标 scenario、动态人类偏好与可执行环境；[HELM、MT-Bench 与 Chatbot Arena](../landscape/works/helm-arena.md)进一步拆解三个常被混在一起的对象：基准设计、模型裁判和在线成对比较。
+评测史反复在“覆盖更广”和“协议更可信”之间摆动。[评测体系的演进](../landscape/lineages/evaluation.md)从 perplexity、静态任务集走到 HELM 的多指标 scenario、动态人类偏好与可执行环境；[HELM、MT-Bench 与 Chatbot Arena](../landscape/works/helm-arena.md) 进一步拆解三个常被混在一起的对象：基准设计、模型裁判和在线成对比较。
 
 ## 评测对象
 
@@ -142,4 +142,4 @@ contamination and threat-model audit
 raw-record location and known limitations
 ```
 
-[DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md)与 [GLM](../landscape/families/glm.md) 家族页把模型、API、harness、工具预算与作者报告值分列，适合作为版本化评测的具体案例；跨家族结论仍须回到同一报告卡重跑。
+[DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md) 与 [GLM](../landscape/families/glm.md) 家族页把模型、API、harness、工具预算与作者报告值分列，适合作为版本化评测的具体案例；跨家族结论仍须回到同一报告卡重跑。

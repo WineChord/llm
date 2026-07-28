@@ -2,7 +2,7 @@
 
 Agentic RL 不是把 PPO、GRPO 或 DPO 接到更长的文本上。模型的动作会改变后续观察，工具执行有真实成本，任务可能只在很久以后给出结果，而 rollout 时长又常呈长尾分布。算法选择因此应从训练契约出发：反馈从哪里来，数据由谁产生，哪些 token 是动作，奖励怎样回传，以及 rollout 与 learner 如何协同。
 
-经典策略梯度、Bellman 递推、GAE 和重要性采样的完整推导分别见[策略梯度](../reinforcement-learning/policy-gradient.md)、[Actor–Critic](../reinforcement-learning/actor-critic.md)、[多步回报与 GAE](../reinforcement-learning/multistep-traces.md)和 [Off-policy 校正](../reinforcement-learning/off-policy-correction.md)。本页关心的是另一件事：面对一个具体的 agent 训练任务，应怎样组合这些工具。
+经典策略梯度、Bellman 递推、GAE 和重要性采样的完整推导分别见[策略梯度](../reinforcement-learning/policy-gradient.md)、[Actor–Critic](../reinforcement-learning/actor-critic.md)、[多步回报与 GAE](../reinforcement-learning/multistep-traces.md) 和 [Off-policy 校正](../reinforcement-learning/off-policy-correction.md)。本页关心的是另一件事：面对一个具体的 agent 训练任务，应怎样组合这些工具。
 
 ## 六个先于算法名的问题
 
@@ -41,11 +41,11 @@ $$
 =-\sum_t m_t\log\pi_\theta(a_t\mid h_t),
 $$
 
-其中 $m_t$ 只覆盖示范中的可学习动作。它适合建立格式、工具协议和基本任务能力，也能为后续 RL 提供更好的初始状态分布。它的上限受示范覆盖约束：只模仿成功轨迹不会自动学会失败恢复，也不会主动发现示范之外的更优策略。[模仿学习与 Offline RL](../reinforcement-learning/offline-imitation.md)进一步讨论 covariate shift。
+其中 $m_t$ 只覆盖示范中的可学习动作。它适合建立格式、工具协议和基本任务能力，也能为后续 RL 提供更好的初始状态分布。它的上限受示范覆盖约束：只模仿成功轨迹不会自动学会失败恢复，也不会主动发现示范之外的更优策略。[模仿学习与 Offline RL](../reinforcement-learning/offline-imitation.md) 进一步讨论 covariate shift。
 
 ### 相对判断比绝对打分可靠
 
-[DPO](https://arxiv.org/abs/2305.18290)直接使用偏好对 $(y_w,y_l)$。令
+[DPO](https://arxiv.org/abs/2305.18290) 直接使用偏好对 $(y_w,y_l)$。令
 
 $$
 s_\theta(x,y)
@@ -196,7 +196,7 @@ RLOO 的 baseline 不包含当前样本；GRPO 的标准化进一步让不同 pr
 - summary token 是否由 policy 采样并参与优化；
 - segment 数是否改变一条 episode 的总体权重。
 
-[CompactionRL](../landscape/works/sao-compactionrl.md#compactionrl)处理的是这种跨段表示与信用问题，不是异步调度本身。若任务天然含子目标，还可以把高层 option 与低层执行拆开，但子目标边界、终止条件和两层 reward 都需要独立定义，详见[模型、规划与层级决策](../reinforcement-learning/models-planning-hierarchy.md)。
+[CompactionRL](../landscape/works/sao-compactionrl.md#compactionrl) 处理的是这种跨段表示与信用问题，不是异步调度本身。若任务天然含子目标，还可以把高层 option 与低层执行拆开，但子目标边界、终止条件和两层 reward 都需要独立定义，详见[模型、规划与层级决策](../reinforcement-learning/models-planning-hierarchy.md)。
 
 ## Critic：用 value 计算，还是用额外 rollout 比较
 
@@ -239,7 +239,7 @@ $$
 5. 对过旧或无法重建的轨迹明确丢弃，而不是静默混入；
 6. 将环境故障与策略失败分开。
 
-[IMPALA](https://arxiv.org/abs/1802.01561) 的 V-trace 是经典异步 actor–learner 校正；[AReaL](https://arxiv.org/abs/2505.24298)讨论了大模型 RL 的异步训练系统；[SAO](../landscape/works/sao-compactionrl.md#sao)进一步面向长尾 agent rollout，使用单 rollout、critic 与 token 级行为概率控制更新。异步解决的是调度等待，不会自动解决稀疏奖励、状态覆盖或长时信用。若没有 wall-clock、利用率和 staleness 的共同证据，不能把训练步数提升解释成系统更快。
+[IMPALA](https://arxiv.org/abs/1802.01561) 的 V-trace 是经典异步 actor–learner 校正；[AReaL](https://arxiv.org/abs/2505.24298) 讨论了大模型 RL 的异步训练系统；[SAO](../landscape/works/sao-compactionrl.md#sao) 进一步面向长尾 agent rollout，使用单 rollout、critic 与 token 级行为概率控制更新。异步解决的是调度等待，不会自动解决稀疏奖励、状态覆盖或长时信用。若没有 wall-clock、利用率和 staleness 的共同证据，不能把训练步数提升解释成系统更快。
 
 ## 各方法的决策边界
 
@@ -253,7 +253,7 @@ $$
 
 ### PPO
 
-[PPO](https://arxiv.org/abs/1707.06347)以旧策略概率比和 clipped surrogate 限制单批更新：
+[PPO](https://arxiv.org/abs/1707.06347) 以旧策略概率比和 clipped surrogate 限制单批更新：
 
 $$
 L^{\mathrm{clip}}

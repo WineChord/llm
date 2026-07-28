@@ -4,7 +4,7 @@
 三个更难的问题：有限状态怎样改写而不被旧关联污染，训练怎样摆脱逐 token 串行，跨设备又怎样传递一个
 会被后续 token 继续变换的状态。
 
-[Kimi Linear](https://arxiv.org/abs/2510.26692)把这三问连成一条路线：从 fast-weight memory 的
+[Kimi Linear](https://arxiv.org/abs/2510.26692) 把这三问连成一条路线：从 fast-weight memory 的
 在线学习解释出发，以 Kimi Delta Attention（KDA）结合逐通道遗忘与 delta correction，再用专门的
 chunkwise 算法落到矩阵乘。后续 [Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)
 给 log-decay 加下界，使 diagonal tile 也能走 dense GEMM；[FlashKDA](https://github.com/MoonshotAI/FlashKDA)
@@ -59,7 +59,7 @@ $$
 
 若状态已经把 $k_t$ 映射到 $v_t$，误差为零；若预测错误，只沿当前 key 方向纠正。这个 rank-1
 Householder-style transition 让 associative memory 从无条件相关性累加变成在线回归。
-[Parallelizing Linear Transformers with the Delta Rule](https://arxiv.org/abs/2406.06484)进一步给出
+[Parallelizing Linear Transformers with the Delta Rule](https://arxiv.org/abs/2406.06484) 进一步给出
 sequence-parallel 的 WY representation，说明 delta rule 并不必然等于串行训练。
 
 下面的小例子锁定 overwrite 与 chunk state 语义。对单位正交 key、$\beta=1$，第二次写同一 key
@@ -195,7 +195,7 @@ $$
 ## Kimi Linear 为什么仍然是 hybrid
 
 KDA 把无限历史压成每 head 的 $d_k\times d_v$ state，精确随机寻址能力仍弱于保存全部 K/V。
-[Kimi Linear](https://arxiv.org/abs/2510.26692)因此采用层间混合，而不是宣称有限状态已经替代
+[Kimi Linear](https://arxiv.org/abs/2510.26692) 因此采用层间混合，而不是宣称有限状态已经替代
 softmax attention：
 
 ```text
@@ -289,7 +289,7 @@ $1.17\times$–$1.43\times$。它没有覆盖 backward、不同 GPU、不同 hea
 ### 当前公开实现的硬边界
 
 设计文档说内部数学使用 SM80 MMA instruction path，不能据此推断公开包支持 Ampere。
-截至 2026-07-28，[FlashKDA README](https://github.com/MoonshotAI/FlashKDA#requirements)给出的
+截至 2026-07-28，[FlashKDA README](https://github.com/MoonshotAI/FlashKDA#requirements) 给出的
 实际支持合同更窄：
 
 | 项目 | 当前公开合同 |
@@ -376,7 +376,7 @@ assert not torch.allclose(left[1] + right[1], whole[1])
 ```
 
 实数代数中的 composition 是精确的；浮点实现还会受矩阵乘次序、state dtype 与 scan tree 影响。
-[FLA PR #691](https://github.com/fla-org/flash-linear-attention/pull/691)公开的跨设备实现用一次
+[FLA PR #691](https://github.com/fla-org/flash-linear-attention/pull/691) 公开的跨设备实现用一次
 all-gather 交换 transition 与 zero-state fragments；把 PR 中表示 head dimensions 的 $K,V$ 分别记作
 $d_k,d_v$ 后，通信量约为 $\mathrm{CP}\times H\times d_k\times(d_k+d_v)$，并为 ShortConv 增加前一 rank 尾部 token 的 halo。
 该 PR 的单组 H800、32K、CP=4 benchmark 优于其 all-to-all baseline，但 PR 同时明确列出 output

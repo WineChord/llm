@@ -32,7 +32,7 @@ $$
 v_t=\beta_2v_{t-1}+(1-\beta_2)g_t^2.
 $$
 
-经 bias correction 后，[AdamW](https://arxiv.org/abs/1711.05101)把 weight decay 与自适应更新解耦：
+经 bias correction 后，[AdamW](https://arxiv.org/abs/1711.05101) 把 weight decay 与自适应更新解耦：
 
 $$
 \theta_{t+1}
@@ -84,7 +84,7 @@ O\approx UV^\top,
 M=U\Sigma V^\top.
 $$
 
-实际实现通常不显式做完整 SVD，而使用 Newton–Schulz 迭代等低成本近似。[Muon is Scalable for LLM Training](https://arxiv.org/abs/2502.16982)强调 weight decay 与按参数调整更新尺度对扩展到更大训练的重要性。
+实际实现通常不显式做完整 SVD，而使用 Newton–Schulz 迭代等低成本近似。[Muon is Scalable for LLM Training](https://arxiv.org/abs/2502.16982) 强调 weight decay 与按参数调整更新尺度对扩展到更大训练的重要性。
 
 Muon 通常只应用于隐藏层的二维矩阵；embedding、norm、bias 和标量参数仍使用 AdamW 或其他优化器。因此“使用 Muon”实际上是混合优化器与参数路由规则。
 
@@ -151,7 +151,7 @@ torch.testing.assert_close(per_head_polar(scaled.reshape(6, 8), 3), update, atol
 
 ### DeepSeek-V4：Hybrid Newton–Schulz 与矩阵所有权 {#deepseek-v4-muon}
 
-[DeepSeek-V4](../landscape/works/deepseek-v4.md#muon)也把 Muon 用于大多数二维 hidden weights，但它不是 K3 Per-Head Muon 的复刻。对归一化动量矩阵 $M_0=M/\lVert M\rVert_F$，V4 使用
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#muon) 也把 Muon 用于大多数二维 hidden weights，但它不是 K3 Per-Head Muon 的复刻。对归一化动量矩阵 $M_0=M/\lVert M\rVert_F$，V4 使用
 
 $$
 M_k=aM_{k-1}
@@ -161,7 +161,7 @@ $$
 
 十次迭代分两段：前八步取 $(a,b,c)=(3.4445,-4.7750,2.0315)$快速把奇异值推近 1，最后两步取 $(2,-1.5,0.5)$稳定到 polar factor 附近。embedding、prediction head、RMSNorm，以及 mHC 的 static bias / gate 仍归 AdamW；所以参数路由仍是算法的一部分。
 
-V4 还把 ZeRO 分片边界对齐到完整逻辑矩阵：用 knapsack 把矩阵分配给 rank，MoE 的 up、gate、down 分别组织，但不在一次正交化内部任意切开。梯度经 stochastic BF16 all-to-all 到 owner，再在本地 FP32 累加。详见[V4 系统闭环](../landscape/works/tilelang-mega-moe.md)。
+V4 还把 ZeRO 分片边界对齐到完整逻辑矩阵：用 knapsack 把矩阵分配给 rank，MoE 的 up、gate、down 分别组织，但不在一次正交化内部任意切开。梯度经 stochastic BF16 all-to-all 到 owner，再在本地 FP32 累加。详见 [V4 系统闭环](../landscape/works/tilelang-mega-moe.md)。
 
 V4 的 query 与 compressed KV 逐 head RMSNorm，因而没有沿用 scalable Muon 中的 QK-Clip。这个选择只说明该架构已有另一条 logit 范围控制路径，不能推广成 Muon 普遍不需要 QK-Clip。
 

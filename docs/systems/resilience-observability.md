@@ -82,7 +82,7 @@ $$
 - expert 或 sequence 负载不平衡；
 - 异步 checkpoint staging 抢占 CPU / 网络。
 
-只看平均 GPU utilization 会把这些原因混在一起。[NVIDIA DCGM profiling](https://docs.nvidia.com/datacenter/dcgm/latest/learn/modules/profiling.html)与[诊断工具](https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/dcgm-diagnostics.html)可提供设备级证据，但仍需与模型 phase 和分布式 trace 对齐。
+只看平均 GPU utilization 会把这些原因混在一起。[NVIDIA DCGM profiling](https://docs.nvidia.com/datacenter/dcgm/latest/learn/modules/profiling.html) 与[诊断工具](https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/dcgm-diagnostics.html)可提供设备级证据，但仍需与模型 phase 和分布式 trace 对齐。
 
 ## 状态机与故障域
 
@@ -114,9 +114,9 @@ $$
 
 ## 重试、弹性与冗余
 
-[TorchElastic agent](https://docs.pytorch.org/docs/stable/elastic/agent.html)提供 worker group 的失败检测和重启语义；它不会自动证明数据游标、optimizer 或自定义外部状态的一致性。
+[TorchElastic agent](https://docs.pytorch.org/docs/stable/elastic/agent.html) 提供 worker group 的失败检测和重启语义；它不会自动证明数据游标、optimizer 或自定义外部状态的一致性。
 
-[TorchFT](https://github.com/pytorch/torchft)探索训练中的容错与副本协调；[NVIDIA Resiliency Extension](https://github.com/NVIDIA/nvidia-resiliency-ext)提供 fault detection、straggler detection 与进程管理等能力。采用这些机制前仍需回答：
+[TorchFT](https://github.com/pytorch/torchft) 探索训练中的容错与副本协调；[NVIDIA Resiliency Extension](https://github.com/NVIDIA/nvidia-resiliency-ext) 提供 fault detection、straggler detection 与进程管理等能力。采用这些机制前仍需回答：
 
 - 哪些状态被复制；
 - 复制在何时达到一致；

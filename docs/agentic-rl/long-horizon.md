@@ -24,7 +24,7 @@ $$
 
 自然语言摘要适合压缩背景，不应成为环境事实的唯一来源。恢复任务时要重新读取关键文件、git 状态、进程或远端对象。
 
-环境 checkpoint 与语义记忆承担不同职责：checkpoint 恢复“机器当时是什么状态”，ledger/摘要恢复“任务为何走到这里”。长时 agent 应把两者用不可变 ID 绑定，但不能用摘要替代进程、文件或应用数据库。[AgentENV](https://github.com/kvcache-ai/AgentENV)提供了 microVM pause/resume/fork 的公开实现入口；K3 报告则展示了把这种可恢复环境用于跨模拟天、数千工具调用的训练实例。
+环境 checkpoint 与语义记忆承担不同职责：checkpoint 恢复“机器当时是什么状态”，ledger/摘要恢复“任务为何走到这里”。长时 agent 应把两者用不可变 ID 绑定，但不能用摘要替代进程、文件或应用数据库。[AgentENV](https://github.com/kvcache-ai/AgentENV) 提供了 microVM pause/resume/fork 的公开实现入口；K3 报告则展示了把这种可恢复环境用于跨模拟天、数千工具调用的训练实例。
 
 ## 层级规划
 
@@ -55,7 +55,7 @@ next action
 
 应删除重复工具输出、已否定假设和无关探索，但保留否定结论本身，防止再次走回同一路径。
 
-如果摘要由 policy 自己生成、后续执行以摘要重建状态，并让摘要 token 也接受任务终态奖励，压缩就从运行时整理进入了训练目标。[CompactionRL](../landscape/works/sao-compactionrl.md#compactionrl)展示了这种接口，同时用全局 token mean 和跨 segment 的 GAE 折扣近似修复可变分段造成的优化偏差。
+如果摘要由 policy 自己生成、后续执行以摘要重建状态，并让摘要 token 也接受任务终态奖励，压缩就从运行时整理进入了训练目标。[CompactionRL](../landscape/works/sao-compactionrl.md#compactionrl) 展示了这种接口，同时用全局 token mean 和跨 segment 的 GAE 折扣近似修复可变分段造成的优化偏差。
 
 ## 失败恢复
 
@@ -93,7 +93,7 @@ next action
 - 恢复点数量；
 - 外部状态变化。
 
-[METR time horizon](https://metr.org/time-horizons/)用固定成功率下可完成任务时长描述能力变化。这个指标仍依赖任务分布、人类基线和 agent scaffold，不能解释为模型拥有等长的自主工作能力。
+[METR time horizon](https://metr.org/time-horizons/) 用固定成功率下可完成任务时长描述能力变化。这个指标仍依赖任务分布、人类基线和 agent scaffold，不能解释为模型拥有等长的自主工作能力。
 
 ## 工程 harness
 
@@ -109,7 +109,7 @@ system prompt、工具命名、context compactor、skills、memory 与 subagent 
 
 [Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)描述了一套可实例化多种 coding/agent scaffold 的训练 harness。它提示我们不要把某个终端界面的得分直接归因于模型；具体组件和内部实现并未完整公开。长上下文、partial rollout、persistent environment 如何接成一个系统，见 [Kimi K3](../landscape/works/kimi-k3.md)。
 
-Coding 场景见[Coding Agent](../applications/coding-agents.md)，训练侧状态见[训练系统](training-systems.md)。
+Coding 场景见 [Coding Agent](../applications/coding-agents.md)，训练侧状态见[训练系统](training-systems.md)。
 
 ## Keep-recent 与层级重启 {#glm-context-management}
 

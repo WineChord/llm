@@ -125,7 +125,7 @@ GUI Agent 的 observation 是截图/视频，action 作用于真实环境。[OSW
 - 未授权读取、发送、写入和删除；
 - 文本声明与真实界面状态是否一致。
 
-详细终态协议见[Agent 与工具评测](agent-tool-evaluation.md)。
+详细终态协议见 [Agent 与工具评测](agent-tool-evaluation.md)。
 
 ## 时延与成本拆分
 

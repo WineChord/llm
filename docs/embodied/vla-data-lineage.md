@@ -13,7 +13,7 @@ $$
 
 ## VLA 之前：端到端控制并不新
 
-[ALVINN](https://proceedings.neurips.cc/paper_files/paper/1988/file/812b4ba287f5ee0bc9d43bbf5bbe87fb-Paper.pdf)已经用神经网络从道路传感输入预测车辆转向。[End-to-End Deep Visuomotor Policies](https://www.jmlr.org/papers/v17/15-522.html)通过 guided policy search 把视觉感知接到电机控制；[QT-Opt](https://arxiv.org/abs/1806.10293)则用超过 58 万次真实抓取尝试训练闭环 Q-function，论文报告了其抓取协议中的规模收益。
+[ALVINN](https://proceedings.neurips.cc/paper_files/paper/1988/file/812b4ba287f5ee0bc9d43bbf5bbe87fb-Paper.pdf) 已经用神经网络从道路传感输入预测车辆转向。[End-to-End Deep Visuomotor Policies](https://www.jmlr.org/papers/v17/15-522.html) 通过 guided policy search 把视觉感知接到电机控制；[QT-Opt](https://arxiv.org/abs/1806.10293) 则用超过 58 万次真实抓取尝试训练闭环 Q-function，论文报告了其抓取协议中的规模收益。
 
 这些工作已经面对今天仍存在的问题：
 
@@ -26,15 +26,15 @@ $$
 
 ## 先学表示，再学动作
 
-[R3M](https://arxiv.org/abs/2203.12601)从 Ego4D 视频中用时间对比、视频语言对齐与表示正则预训练视觉 encoder，再冻结或适配到机器人任务。它说明人类视频可以提供对象、运动和 affordance 先验；但人手与机器人夹爪、第一视角与外部相机、人体运动与机器人 action space 之间仍有 embodiment gap。
+[R3M](https://arxiv.org/abs/2203.12601) 从 Ego4D 视频中用时间对比、视频语言对齐与表示正则预训练视觉 encoder，再冻结或适配到机器人任务。它说明人类视频可以提供对象、运动和 affordance 先验；但人手与机器人夹爪、第一视角与外部相机、人体运动与机器人 action space 之间仍有 embodiment gap。
 
-[Gato](https://arxiv.org/abs/2205.06175)把文本、图像、游戏动作和机器人轨迹都编码为序列，由一个 Transformer 跨任务建模。它的重要历史意义是通用 sequence interface，而不是证明同一套 action semantics 已经跨 embodiment 统一。
+[Gato](https://arxiv.org/abs/2205.06175) 把文本、图像、游戏动作和机器人轨迹都编码为序列，由一个 Transformer 跨任务建模。它的重要历史意义是通用 sequence interface，而不是证明同一套 action semantics 已经跨 embodiment 统一。
 
-[PaLM-E](https://arxiv.org/abs/2303.03378)把视觉和连续传感器 embedding 注入语言模型，展示 embodied reasoning 与语言知识的结合。它主要建立多模态语义接口，并非一个通用高频低层控制器。
+[PaLM-E](https://arxiv.org/abs/2303.03378) 把视觉和连续传感器 embedding 注入语言模型，展示 embodied reasoning 与语言知识的结合。它主要建立多模态语义接口，并非一个通用高频低层控制器。
 
 ## RT-1：机器人控制成为 token prediction
 
-[RT-1](https://arxiv.org/abs/2212.06817)使用自然语言调制的视觉 encoder、TokenLearner 与 decoder-only Transformer，把动作各维离散成 256 个 bin。论文数据来自 13 台 Everyday Robots 平台，覆盖 13 万余 episode 和 700 多项任务。
+[RT-1](https://arxiv.org/abs/2212.06817) 使用自然语言调制的视觉 encoder、TokenLearner 与 decoder-only Transformer，把动作各维离散成 256 个 bin。论文数据来自 13 台 Everyday Robots 平台，覆盖 13 万余 episode 和 700 多项任务。
 
 其目标可写为
 
@@ -53,7 +53,7 @@ RT-1 的成功率和泛化数字是论文作者在该机器人、任务、背景
 
 ## RT-2：把 Web 语义带进动作空间
 
-[RT-2](https://proceedings.mlr.press/v229/zitkovich23a.html)把机器人动作表示为 VLM 可以输出的文本 token，并在 Web 视觉语言任务与机器人轨迹上 co-finetune：
+[RT-2](https://proceedings.mlr.press/v229/zitkovich23a.html) 把机器人动作表示为 VLM 可以输出的文本 token，并在 Web 视觉语言任务与机器人轨迹上 co-finetune：
 
 $$
 \mathcal L
@@ -76,7 +76,7 @@ $$
 
 ## Open X-Embodiment：先统一数据入口
 
-[Open X-Embodiment](https://arxiv.org/abs/2310.08864)联合 21 个机构、22 种 robot embodiment，把 60 个数据集整理到统一格式。论文口径为 527 个 skills、160,266 个 tasks，并展示跨机器人联合训练的正迁移。
+[Open X-Embodiment](https://arxiv.org/abs/2310.08864) 联合 21 个机构、22 种 robot embodiment，把 60 个数据集整理到统一格式。论文口径为 527 个 skills、160,266 个 tasks，并展示跨机器人联合训练的正迁移。
 
 统一 RLDS/数据字段解决的是“怎样读进来”，没有自动解决：
 
@@ -91,7 +91,7 @@ $$
 
 ## Octo：模块化的开放 generalist policy
 
-[Octo](https://arxiv.org/abs/2405.12213)在约 80 万条 Open X 机器人轨迹上训练 93M 参数的 Transformer policy，支持语言或目标图像条件、多相机输入和 diffusion action head。模块化 attention 与 readout 让新传感器、动作空间和形态可以用小规模目标数据适配。
+[Octo](https://arxiv.org/abs/2405.12213) 在约 80 万条 Open X 机器人轨迹上训练 93M 参数的 Transformer policy，支持语言或目标图像条件、多相机输入和 diffusion action head。模块化 attention 与 readout 让新传感器、动作空间和形态可以用小规模目标数据适配。
 
 [官方仓库](https://github.com/octo-models/octo)为 MIT 代码，提供 93M/27M checkpoint、训练与 finetuning 示例。仓库说明预训练 action chunk 长度为 4；执行整块还是只执行第一步仍由 runtime 决定。
 
@@ -99,7 +99,7 @@ Octo 的开放性提高了可检查性，但跨新机器人依然通常需要 fi
 
 ## OpenVLA：开放 7B VLM 到机器人策略
 
-[OpenVLA](https://proceedings.mlr.press/v270/kim25c.html)以 Prismatic VLM 为基础，融合 DINOv2 与 SigLIP 视觉特征、Llama-2 语言主干，并在 970K Open X 轨迹上训练 7B VLA。它继续使用离散动作 token，把大规模 VLM 表示接到机器人控制。
+[OpenVLA](https://proceedings.mlr.press/v270/kim25c.html) 以 Prismatic VLM 为基础，融合 DINOv2 与 SigLIP 视觉特征、Llama-2 语言主干，并在 970K Open X 轨迹上训练 7B VLA。它继续使用离散动作 token，把大规模 VLM 表示接到机器人控制。
 
 许可必须分层写：
 
@@ -128,13 +128,13 @@ $$
 
 [$\pi_{0.5}$](https://arxiv.org/abs/2504.16054)进一步联合异构机器人数据、high-level subtask prediction、视觉语言数据等，论文重点是 open-world generalization 与 knowledge insulation：既让 Web 知识进入策略，也减少机器人训练对通用语义的破坏。
 
-截至 2026-07-28，[openpi](https://github.com/Physical-Intelligence/openpi)公开 π0、π0-FAST 与 π0.5 的代码、基础 checkpoint 和若干机器人 finetune 示例。仓库称基础模型在 10K+ 小时机器人数据上预训练；这是当前仓库说明，不应倒写成 2024 年 π0 原论文已经披露的固定数据总量。代码为 Apache-2.0，并另有 Gemma 许可文件。
+截至 2026-07-28，[openpi](https://github.com/Physical-Intelligence/openpi) 公开 π0、π0-FAST 与 π0.5 的代码、基础 checkpoint 和若干机器人 finetune 示例。仓库称基础模型在 10K+ 小时机器人数据上预训练；这是当前仓库说明，不应倒写成 2024 年 π0 原论文已经披露的固定数据总量。代码为 Apache-2.0，并另有 Gemma 许可文件。
 
 ## FAST：让自回归动作重新适合高频控制
 
-[FAST](https://arxiv.org/abs/2501.09747)先以 DCT 把动作块变到频域，再量化并用 BPE 压缩。论文报告它使 autoregressive VLA 能处理逐时间步 binning 难以建模的高频灵巧任务；FAST+ 是在一百万条真实机器人动作序列上训练的通用 tokenizer。
+[FAST](https://arxiv.org/abs/2501.09747) 先以 DCT 把动作块变到频域，再量化并用 BPE 压缩。论文报告它使 autoregressive VLA 能处理逐时间步 binning 难以建模的高频灵巧任务；FAST+ 是在一百万条真实机器人动作序列上训练的通用 tokenizer。
 
-它与 π0 的 flow head形成两种取舍：
+它与 π0 的 flow head 形成两种取舍：
 
 | 接口 | 优势 | 代价 |
 | --- | --- | --- |
@@ -145,7 +145,7 @@ $$
 
 ## GR00T：VLM 与高频动作系统分工
 
-[GR00T N1](https://arxiv.org/abs/2503.14734)使用双系统结构：
+[GR00T N1](https://arxiv.org/abs/2503.14734) 使用双系统结构：
 
 - System 2 VLM 编码语言和视觉语义；
 - System 1 diffusion Transformer 通过 flow matching 生成连续动作块；
@@ -167,11 +167,11 @@ $$
 
 ## Gemini Robotics：闭源双层路线
 
-[Gemini Robotics 1.5](https://deepmind.google/en/models/gemini-robotics/gemini-robotics/)是 Google DeepMind 的 VLA，官方页面强调语义泛化、interactivity、dexterity 与多 embodiment；截至核验日期状态为 private preview，公开分数属于发布方在其协议中的报告。
+[Gemini Robotics 1.5](https://deepmind.google/en/models/gemini-robotics/gemini-robotics/) 是 Google DeepMind 的 VLA，官方页面强调语义泛化、interactivity、dexterity 与多 embodiment；截至核验日期状态为 private preview，公开分数属于发布方在其协议中的报告。
 
-[Gemini Robotics On-Device](https://deepmind.google/models/gemini-robotics/gemini-robotics-on-device/)面向本地低延迟运行和开发者 finetune，但状态仍是 private preview/trusted tester。
+[Gemini Robotics On-Device](https://deepmind.google/models/gemini-robotics/gemini-robotics-on-device/) 面向本地低延迟运行和开发者 finetune，但状态仍是 private preview/trusted tester。
 
-[Gemini Robotics-ER 1.6](https://deepmind.google/models/model-cards/gemini-robotics-er-1-6/)于 2026-04-20 发布模型卡，是基于 Gemini 3 Flash 的 embodied-reasoning VLM，接受文本、图像、音频和视频并可做工具调用与高层推理。它不是直接输出低层动作的 VLA。将 ER 作为高层 planner、VLA 作为低层 policy，是当前官方展示的双模型路线。
+[Gemini Robotics-ER 1.6](https://deepmind.google/models/model-cards/gemini-robotics-er-1-6/) 于 2026-04-20 发布模型卡，是基于 Gemini 3 Flash 的 embodied-reasoning VLM，接受文本、图像、音频和视频并可做工具调用与高层推理。它不是直接输出低层动作的 VLA。将 ER 作为高层 planner、VLA 作为低层 policy，是当前官方展示的双模型路线。
 
 闭源 preview 可以说明产品边界和发布方评测，不能承担训练数据、实现细节或独立复现结论。
 

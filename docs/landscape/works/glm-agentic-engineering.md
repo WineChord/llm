@@ -28,7 +28,7 @@ $$
 
 其中 $R$ 是仓库与依赖，$c_0$ 是初始 commit，$I$ 是任务说明，$S$ 是允许的工具与状态转移，$V$ 是 verifier，$B$ 是步骤、token、时间和提交预算。
 
-GLM-5 的软件工程环境管线以真实 issue–pull request 对为起点，先用规则和模型过滤，再借助 [RepoLaunch](https://arxiv.org/abs/2505.23419)分析安装流程、构建可执行镜像、生成测试命令，并从日志中提取：
+GLM-5 的软件工程环境管线以真实 issue–pull request 对为起点，先用规则和模型过滤，再借助 [RepoLaunch](https://arxiv.org/abs/2505.23419) 分析安装流程、构建可执行镜像、生成测试命令，并从日志中提取：
 
 - **Fail-to-Pass（F2P）**：修复前失败、正确修复后应通过；
 - **Pass-to-Pass（P2P）**：修改前后都应继续通过，防止回归。
@@ -224,7 +224,7 @@ GLM-5 的内部 CC-Bench-V2 覆盖 frontend、backend 与 long-horizon chained c
 3. **偏好判断**：视觉、美学、交互质量；
 4. **人工仲裁**：处理 judge disagreement 与边界样本。
 
-能写成程序的条件不应交给生成式 judge；必须用模型判断的部分要报告 judge 版本、prompt、重复采样、一致率和人类校准。通用方法见[生成式 Judge](../../evaluation/generative-judges.md)与[Agent 工具评测](../../evaluation/agent-tool-evaluation.md)。
+能写成程序的条件不应交给生成式 judge；必须用模型判断的部分要报告 judge 版本、prompt、重复采样、一致率和人类校准。通用方法见[生成式 Judge](../../evaluation/generative-judges.md) 与 [Agent 工具评测](../../evaluation/agent-tool-evaluation.md)。
 
 ## 部署不是训练的附注 {#deployment}
 
@@ -234,7 +234,7 @@ Agentic engineering 依赖长上下文、MoE、稀疏注意力和多轮 KV 复�
 
 - 常规 attention/MLP 使用 W8A8；
 - MoE experts 使用 W4A8；
-- 用 [QuaRot](https://arxiv.org/abs/2404.00456)旋转抑制 outlier，并用 `Flex_AWQ_SSZ` 校准 scale。
+- 用 [QuaRot](https://arxiv.org/abs/2404.00456) 旋转抑制 outlier，并用 `Flex_AWQ_SSZ` 校准 scale。
 
 这里必须保留参数计数口径：架构表的 744B 包含 MTP，却排除 embedding 与 output layer；芯片章节把部署对象写成约 750B，公开权重索引求和则约为 753.864B。它们不是三种模型尺寸，而是架构统计、工程近似与完整权重统计的差别；每 token 激活参数约为 40B。逐项账本见 [GLM-5 模型账本](glm-5.md#model-ledger)。报告没有公开完整量化校准集、逐任务回归和低层配置，不能据文字复现同等精度。
 
@@ -252,7 +252,7 @@ Agentic engineering 依赖长上下文、MoE、稀疏注意力和多轮 KV 复�
 - FlashComm 隐藏 AllReduce；
 - MTP 提高每轮产生的 token 数。
 
-报告声称单节点性能可比双 GPU 国际集群、长序列部署成本下降 $50\%$，但没有给出设备型号对齐、服务等级目标、并发、输入输出长度、功耗、软件版本与完整成本模型。因此这是作者报告的系统结果，不是可移植的性价比定律。通用拆解见[量化](../../inference/quantization.md)、[注意力 Kernel](../../systems/attention-kernels.md)与[GPU 执行](../../systems/gpu-execution.md)。
+报告声称单节点性能可比双 GPU 国际集群、长序列部署成本下降 $50\%$，但没有给出设备型号对齐、服务等级目标、并发、输入输出长度、功耗、软件版本与完整成本模型。因此这是作者报告的系统结果，不是可移植的性价比定律。通用拆解见[量化](../../inference/quantization.md)、[注意力 Kernel](../../systems/attention-kernels.md) 与 [GPU 执行](../../systems/gpu-execution.md)。
 
 ## 一条任务应怎样被审计 {#audit}
 

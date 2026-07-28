@@ -103,4 +103,4 @@ tokenizer、模板、截断、packing、attention mask、loss mask 与 position 
 
 数据随后进入[预训练](../training/pretraining.md)、[监督微调](../training/supervised-finetuning.md)或[后训练](../training/post-training.md)。目标函数和采样实现的最小验证入口见[训练目标实现](../practice/training-objectives.md)，统计与污染审计入口见[评测工具](../practice/evaluation-tooling.md)。
 
-[DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md)与 [GLM](../landscape/families/glm.md) 的公开配方可以作为披露层级案例：某一版本报告了总 token 或课程阶段，不等于训练语料来源、混合权重、重复暴露与数据治理已经公开。
+[DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md) 与 [GLM](../landscape/families/glm.md) 的公开配方可以作为披露层级案例：某一版本报告了总 token 或课程阶段，不等于训练语料来源、混合权重、重复暴露与数据治理已经公开。

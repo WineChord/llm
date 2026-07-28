@@ -61,16 +61,16 @@ PreNorm 的代价是 residual magnitude 会随层输出累加。AttnRes 论文�
 | mHC | $m$ 个并行 streams | 是，受 manifold constraint | 恢复 identity 性质并稳定扩展 |
 | AttnRes | 逐层或逐 block 来源 | 是，softmax over depth | 显式选择早期表示 |
 
-[DeepNet](https://arxiv.org/abs/2203.00555)通过 DeepNorm 的 residual scaling 与配套初始化把
+[DeepNet](https://arxiv.org/abs/2203.00555) 通过 DeepNorm 的 residual scaling 与配套初始化把
 Transformer 扩到 1,000 层；它解决更新尺度与梯度稳定，却仍把历史压在单一递推 state。
 
-[DenseFormer](https://arxiv.org/abs/2402.02622)在每个 block 后做 Depth-Weighted-Average，让后层
+[DenseFormer](https://arxiv.org/abs/2402.02622) 在每个 block 后做 Depth-Weighted-Average，让后层
 直接访问此前 representations；权重是训练得到、推理后固定的 scalars，所以不同 token 在同一深度使用
-相同 mixing。[MUDDFormer](https://arxiv.org/abs/2502.12170)进一步按 token 生成动态 dense weights，
+相同 mixing。[MUDDFormer](https://arxiv.org/abs/2502.12170) 进一步按 token 生成动态 dense weights，
 并把 Q、K、V 与 residual stream 分开，表达更细，但连接生成与多路 materialization 也更复杂。
 
-[Hyper-Connections](https://arxiv.org/abs/2409.19606)不保存所有历史层，而把 residual state 扩成
-$m$ 个并行 streams，以动态 mixing matrix 读写；[mHC](https://arxiv.org/abs/2512.24880)再把 mixing
+[Hyper-Connections](https://arxiv.org/abs/2409.19606) 不保存所有历史层，而把 residual state 扩成
+$m$ 个并行 streams，以动态 mixing matrix 读写；[mHC](https://arxiv.org/abs/2512.24880) 再把 mixing
 投影到受约束 manifold，以恢复 identity mapping 并控制大规模训练的不稳定。它们扩大的是递推 state，
 AttnRes 改变的是访问模式：保留可寻址的历史来源并做 depth-wise softmax。两类机制理论上可以组合，
 但 state、I/O 与初始化都会随之改变。
@@ -170,7 +170,7 @@ u=\sum_i e^{s_i-m}v_i.
 $$
 
 两个不相交 source groups 的 $(m,z,u)$ 可按
-[online softmax](https://arxiv.org/abs/1805.02867)精确合并，无需重新读取 Phase 1 的 values。
+[online softmax](https://arxiv.org/abs/1805.02867) 精确合并，无需重新读取 Phase 1 的 values。
 
 ### Depth attention 与 online merge reference {#attnres-online-merge}
 

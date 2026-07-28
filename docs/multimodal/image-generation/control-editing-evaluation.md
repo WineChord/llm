@@ -41,7 +41,7 @@ $$
 \nabla_x\log p(c\mid x),
 $$
 
-沿 classifier 认为更符合条件的方向修改 score。[Classifier-Free Guidance](https://arxiv.org/abs/2207.12598)把条件与无条件预测放到同一网络：
+沿 classifier 认为更符合条件的方向修改 score。[Classifier-Free Guidance](https://arxiv.org/abs/2207.12598) 把条件与无条件预测放到同一网络：
 
 $$
 \hat y
@@ -67,7 +67,7 @@ $$
 
 ## 图像编辑从“加多少噪声”开始
 
-[SDEdit](https://arxiv.org/abs/2108.01073)先把输入图像扰动到中间噪声层级，再反向生成：
+[SDEdit](https://arxiv.org/abs/2108.01073) 先把输入图像扰动到中间噪声层级，再反向生成：
 
 $$
 x_t
@@ -99,7 +99,7 @@ $$
 
 ## 文字条件编辑：改 token 还是改 attention
 
-[Prompt-to-Prompt](https://arxiv.org/abs/2208.01626)观察到 text-to-image diffusion 的 cross-attention map 携带词到空间的对应关系。对原 prompt 与编辑 prompt，在若干层/时刻复用或替换 attention，可在改变词语时保留构图。
+[Prompt-to-Prompt](https://arxiv.org/abs/2208.01626) 观察到 text-to-image diffusion 的 cross-attention map 携带词到空间的对应关系。对原 prompt 与编辑 prompt，在若干层/时刻复用或替换 attention，可在改变词语时保留构图。
 
 若
 
@@ -118,7 +118,7 @@ $$
 
 ### Textual Inversion
 
-[Textual Inversion](https://arxiv.org/abs/2208.01618)冻结生成模型，只为少量参考图学习新 token embedding $v_\star$。优化近似为
+[Textual Inversion](https://arxiv.org/abs/2208.01618) 冻结生成模型，只为少量参考图学习新 token embedding $v_\star$。优化近似为
 
 $$
 v_\star
@@ -132,11 +132,11 @@ $$
 
 ### DreamBooth
 
-[DreamBooth](https://arxiv.org/abs/2208.12242)用罕见 identifier 与 class noun 微调模型，并用 class prior preservation 缓解语言漂移。容量更强，也更容易过拟合少量视角、把参考背景绑进主体，或改变基础模型对整个类别的分布。
+[DreamBooth](https://arxiv.org/abs/2208.12242) 用罕见 identifier 与 class noun 微调模型，并用 class prior preservation 缓解语言漂移。容量更强，也更容易过拟合少量视角、把参考背景绑进主体，或改变基础模型对整个类别的分布。
 
 ### IP-Adapter
 
-[IP-Adapter](https://arxiv.org/abs/2308.06721)把图像条件与文本 cross-attention 解耦。简化表示为
+[IP-Adapter](https://arxiv.org/abs/2308.06721) 把图像条件与文本 cross-attention 解耦。简化表示为
 
 $$
 \operatorname{Attn}_{\mathrm{total}}
@@ -153,7 +153,7 @@ $$
 
 ## 空间控制：把 dense condition 接入冻结主干
 
-[ControlNet](https://arxiv.org/abs/2302.05543)复制预训练 diffusion backbone 的部分编码路径，并通过零初始化卷积把控制残差接回冻结主干。抽象地：
+[ControlNet](https://arxiv.org/abs/2302.05543) 复制预训练 diffusion backbone 的部分编码路径，并通过零初始化卷积把控制残差接回冻结主干。抽象地：
 
 $$
 h_{\mathrm{out}}
@@ -167,7 +167,7 @@ $$
 
 其中 $Z_1,Z_2$ 初始输出为零。训练开始时系统近似原模型，控制分支再逐步学会偏移，这降低了小数据直接破坏 backbone 的风险。
 
-[T2I-Adapter](https://arxiv.org/abs/2302.08453)以更轻的 adapter 提取条件特征并注入冻结生成模型。两者的共同思想不是某个具体卷积层，而是：
+[T2I-Adapter](https://arxiv.org/abs/2302.08453) 以更轻的 adapter 提取条件特征并注入冻结生成模型。两者的共同思想不是某个具体卷积层，而是：
 
 > 保留大模型已学到的图像 prior，让新模块只学习“怎样沿条件方向修正中间特征”。
 
@@ -186,7 +186,7 @@ $$
 
 ## InstructPix2Pix：用合成监督学“怎么改”
 
-[InstructPix2Pix](https://arxiv.org/abs/2211.09800)构造“源图—编辑指令—目标图”数据，让模型同时条件于 source image 与 instruction。其双条件 guidance 可写成多个分支差分；关键并不是某一组固定系数，而是训练与推理必须拥有一致的条件 dropout 组合。
+[InstructPix2Pix](https://arxiv.org/abs/2211.09800) 构造“源图—编辑指令—目标图”数据，让模型同时条件于 source image 与 instruction。其双条件 guidance 可写成多个分支差分；关键并不是某一组固定系数，而是训练与推理必须拥有一致的条件 dropout 组合。
 
 合成编辑对能扩大覆盖，却会继承 teacher 的偏差：
 
@@ -238,7 +238,7 @@ torch.testing.assert_close(edited[:, :, 0, 1], torch.zeros(1, 2))
 
 ### 分布质量
 
-[FID](https://arxiv.org/abs/1706.08500)比较 Inception 特征的 Gaussian 均值与协方差：
+[FID](https://arxiv.org/abs/1706.08500) 比较 Inception 特征的 Gaussian 均值与协方差：
 
 $$
 \operatorname{FID}
@@ -251,15 +251,15 @@ $$
 \right).
 $$
 
-它依赖特征网络、sample 数与预处理，小样本估计有偏。[KID](https://arxiv.org/abs/1801.01401)使用 kernel MMD 的无偏估计，但同样继承 embedding 的盲区。二者都不直接判断 prompt 是否满足。
+它依赖特征网络、sample 数与预处理，小样本估计有偏。[KID](https://arxiv.org/abs/1801.01401) 使用 kernel MMD 的无偏估计，但同样继承 embedding 的盲区。二者都不直接判断 prompt 是否满足。
 
 ### 覆盖与真实性应分开
 
-[Improved Precision and Recall](https://arxiv.org/abs/1904.06991)在 feature manifold 中分别估计 sample quality 与 mode coverage。生成器可以 precision 高而 recall 低；精选样图通常只展示前者。
+[Improved Precision and Recall](https://arxiv.org/abs/1904.06991) 在 feature manifold 中分别估计 sample quality 与 mode coverage。生成器可以 precision 高而 recall 低；精选样图通常只展示前者。
 
 ### 文本遵循不是一个 cosine
 
-[CLIPScore](https://arxiv.org/abs/2104.08718)用图文 embedding 相似度提供 reference-free 信号，但对计数、否定、空间关系和文字拼写并不可靠。[GenEval](https://arxiv.org/abs/2310.11513)把对象、数量、颜色、位置等拆成组合任务，仍依赖 detector 的能力边界。最好把评测写成能力矩阵，而不是用一个总分替代所有语义。
+[CLIPScore](https://arxiv.org/abs/2104.08718) 用图文 embedding 相似度提供 reference-free 信号，但对计数、否定、空间关系和文字拼写并不可靠。[GenEval](https://arxiv.org/abs/2310.11513) 把对象、数量、颜色、位置等拆成组合任务，仍依赖 detector 的能力边界。最好把评测写成能力矩阵，而不是用一个总分替代所有语义。
 
 ### 编辑需要双目标
 
@@ -310,7 +310,7 @@ $$
 
 排查顺序应从接口开始：先单独关闭每个条件，做 scale sweep，再测试 pairwise interaction；随后固定噪声比较 source/control/prompt 的 counterfactual。直接看最终成图很难知道是哪条通道真正生效。
 
-Diffusion prediction 与 CFG 的数学基础见[Diffusion 与 Score](diffusion-score.md)；latent、DiT 与 flow sampler 的接口见[Latent Diffusion、DiT 与 Flow](latent-dit-flow.md)；个性化所依赖的表示上限见[Autoencoder 与视觉 Tokenizer](autoencoders-tokenizers.md)。
+Diffusion prediction 与 CFG 的数学基础见 [Diffusion 与 Score](diffusion-score.md)；latent、DiT 与 flow sampler 的接口见 [Latent Diffusion、DiT 与 Flow](latent-dit-flow.md)；个性化所依赖的表示上限见 [Autoencoder 与视觉 Tokenizer](autoencoders-tokenizers.md)。
 
 条件 mask、CFG 与编辑区域不变量的组合测试见[多模态手撕实现](../../practice/multimodal.md)。
 

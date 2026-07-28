@@ -23,7 +23,7 @@ $\mathcal S_l$ 是序列混合器，$\mathcal C_l$ 是 dense MLP 或稀疏 exper
 6. dense 或 MoE 参数容量；
 7. 训练与增量推理状态。
 
-完整计算图见 [Transformer](transformer.md)与 [Decoder Block](decoder-block.md)。
+完整计算图见 [Transformer](transformer.md) 与 [Decoder Block](decoder-block.md)。
 
 ## 序列混合家族
 
@@ -50,7 +50,7 @@ $\mathcal S_l$ 是序列混合器，$\mathcal C_l$ 是 dense MLP 或稀疏 exper
 
 ## 参数稀疏
 
-[Mixture of Experts](moe.md)通过 token-dependent routing 激活部分 expert：
+[Mixture of Experts](moe.md) 通过 token-dependent routing 激活部分 expert：
 
 $$
 y_t=\sum_{i\in\operatorname{TopK}(p_t)}p_{t,i}E_i(x_t).
@@ -87,6 +87,6 @@ $$
 7. 收益来自结构、数据、训练时长还是更大预算；
 8. 哪些结果只有作者报告，哪些已有开放实现或复现。
 
-最小代码从[张量原语](../practice/tensor-primitives.md)、[完整 Transformer](../practice/transformer-from-scratch.md)与[递推记忆](../practice/sequence-models.md)进入。
+最小代码从[张量原语](../practice/tensor-primitives.md)、[完整 Transformer](../practice/transformer-from-scratch.md) 与[递推记忆](../practice/sequence-models.md)进入。
 
-具体结构怎样与整套模型共同演进，可对照 [DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md)与 [GLM](../landscape/families/glm.md) 的家族地图；模型名只提供案例，定义与比较口径仍以本章为准。
+具体结构怎样与整套模型共同演进，可对照 [DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md) 与 [GLM](../landscape/families/glm.md) 的家族地图；模型名只提供案例，定义与比较口径仍以本章为准。

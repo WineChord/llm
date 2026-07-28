@@ -38,7 +38,7 @@ z\in\mathbb R^{B\times C\times H'\times W'},
 H'=H/f,\quad W'=W/f,
 $$
 
-那么主要生成计算从 $HW$ 个像素位置转移到 $H'W'=HW/f^2$ 个 latent 位置。[Latent Diffusion](https://arxiv.org/abs/2112.10752)的关键不只是“用 VAE 省显存”，而是寻找一种 perceptual compression：丢掉难以察觉的像素级冗余，同时保留构图与语义。
+那么主要生成计算从 $HW$ 个像素位置转移到 $H'W'=HW/f^2$ 个 latent 位置。[Latent Diffusion](https://arxiv.org/abs/2112.10752) 的关键不只是“用 VAE 省显存”，而是寻找一种 perceptual compression：丢掉难以察觉的像素级冗余，同时保留构图与语义。
 
 这带来明确上限：
 
@@ -74,7 +74,7 @@ $$
 N=\frac{H'}{P}\frac{W'}{P}.
 $$
 
-[DiT](https://arxiv.org/abs/2212.09748)系统比较 Transformer 去噪 backbone，并发现增加模型计算量与生成质量之间存在清晰趋势。这里的 DiT 仍然是<strong>双向处理当前 noisy latent 的回归器</strong>，不是按 token 自回归生成的语言模型。
+[DiT](https://arxiv.org/abs/2212.09748) 系统比较 Transformer 去噪 backbone，并发现增加模型计算量与生成质量之间存在清晰趋势。这里的 DiT 仍然是<strong>双向处理当前 noisy latent 的回归器</strong>，不是按 token 自回归生成的语言模型。
 
 <div markdown="block">
 <figure class="paper-figure paper-figure--wide" id="dit-figure-03" data-paper-source="dit" data-paper-asset="dit-figure-03" markdown="1">
@@ -123,7 +123,7 @@ $$
 
 AdaLN-Zero 把最后的 modulation/gate 初始化为零，使初始网络接近恒等映射，深层训练更稳定。`zero initialization` 指特定输出投影或 gate，不是把整个 block 权重清零。
 
-文本还可通过 cross-attention 注入。[PixArt-$\alpha$](https://arxiv.org/abs/2310.00426)展示训练分解、强文本 encoder 与高质量数据的重要性；[Stable Diffusion 3](https://arxiv.org/abs/2403.03206)的 MMDiT 让文本与图像各保留 stream-specific 参数，再在 joint attention 中交换信息。不同条件接口不能只凭“是否 joint”排序：还要看文本 token 长度、位置编码、条件 dropout 与训练数据。
+文本还可通过 cross-attention 注入。[PixArt-$\alpha$](https://arxiv.org/abs/2310.00426)展示训练分解、强文本 encoder 与高质量数据的重要性；[Stable Diffusion 3](https://arxiv.org/abs/2403.03206) 的 MMDiT 让文本与图像各保留 stream-specific 参数，再在 joint attention 中交换信息。不同条件接口不能只凭“是否 joint”排序：还要看文本 token 长度、位置编码、条件 dropout 与训练数据。
 
 ## Flow matching：直接学习运输速度
 
@@ -141,7 +141,7 @@ u_t
 \dot\alpha(t)z_0+\dot\beta(t)z_1.
 $$
 
-[Flow Matching](https://arxiv.org/abs/2210.02747)训练网络回归：
+[Flow Matching](https://arxiv.org/abs/2210.02747) 训练网络回归：
 
 $$
 \mathcal L_{\mathrm{FM}}
@@ -175,7 +175,7 @@ $$
 
 ## Rectified flow 在“拉直”什么
 
-[Rectified Flow](https://arxiv.org/abs/2209.03003)从任意 coupling 的直线插值学习 flow，并可通过 reflow：用当前模型把 base sample 映到 generated sample，再将这些配对用于下一轮训练。目标是让 individual trajectories 更直，使少步 Euler 的截断误差下降。
+[Rectified Flow](https://arxiv.org/abs/2209.03003) 从任意 coupling 的直线插值学习 flow，并可通过 reflow：用当前模型把 base sample 映到 generated sample，再将这些配对用于下一轮训练。目标是让 individual trajectories 更直，使少步 Euler 的截断误差下降。
 
 要区分三个“直”：
 
@@ -185,7 +185,7 @@ $$
 
 第一条不自动推出后两条。Coupling、模型容量、条件 guidance 与训练误差都会让轨迹弯曲。
 
-[SiT](https://arxiv.org/abs/2401.08740)用 stochastic interpolants 统一讨论 diffusion 与 flow 类目标。更一般地，设
+[SiT](https://arxiv.org/abs/2401.08740) 用 stochastic interpolants 统一讨论 diffusion 与 flow 类目标。更一般地，设
 
 $$
 z_t=\alpha(t)z_{\mathrm{data}}+\sigma(t)\epsilon,
@@ -289,7 +289,7 @@ assert not quadratic.requires_grad
 
 ## 一步与少步：把轨迹压进更短映射
 
-[Progressive Distillation](https://arxiv.org/abs/2202.00512)让 student 用一步模仿 teacher 的两步，并反复把采样步数减半。[Consistency Models](https://arxiv.org/abs/2303.01469)要求同一 probability-flow trajectory 上任意点映射到一致终点：
+[Progressive Distillation](https://arxiv.org/abs/2202.00512) 让 student 用一步模仿 teacher 的两步，并反复把采样步数减半。[Consistency Models](https://arxiv.org/abs/2303.01469) 要求同一 probability-flow trajectory 上任意点映射到一致终点：
 
 $$
 f_\theta(z_t,t)
@@ -299,7 +299,7 @@ f_{\theta^-}(z_s,s),
 z_t,z_s\ \text{位于同一轨迹}.
 $$
 
-[Latent Consistency Models](https://arxiv.org/abs/2310.04378)把一致性学习带入 latent text-to-image；[Adversarial Diffusion Distillation](https://arxiv.org/abs/2311.17042)引入 adversarial objective 改善少步感知质量。少步方法应分别报告：
+[Latent Consistency Models](https://arxiv.org/abs/2310.04378) 把一致性学习带入 latent text-to-image；[Adversarial Diffusion Distillation](https://arxiv.org/abs/2311.17042) 引入 adversarial objective 改善少步感知质量。少步方法应分别报告：
 
 - 是否依赖一个更昂贵 teacher；
 - 一步、两步、四步质量；
@@ -307,11 +307,11 @@ $$
 - 新 prompt、强 CFG 与领域外分布的退化；
 - 训练总成本，而非只报推理延迟。
 
-[MeanFlow](https://arxiv.org/abs/2505.13447)学习时间区间上的平均速度而非只估计瞬时速度，目标是让大步更新更直接。截至 2026-07-28，这类快速演进结果应按作者报告、公开代码版本与披露评测理解；“单步”也要确认是否把 text encoder、latent 初始化和 decoder 排除在计时之外。
+[MeanFlow](https://arxiv.org/abs/2505.13447) 学习时间区间上的平均速度而非只估计瞬时速度，目标是让大步更新更直接。截至 2026-07-28，这类快速演进结果应按作者报告、公开代码版本与披露评测理解；“单步”也要确认是否把 text encoder、latent 初始化和 decoder 排除在计时之外。
 
 ## 表示空间还在变化
 
-[Diffusion Transformers with Representation Autoencoders](https://arxiv.org/abs/2510.11690)把传统重建 VAE encoder 替换为预训练 representation encoder，再训练 decoder。语义更强、通道更宽的 latent 可能降低 prior 的建模难度，也改变 DiT 的输入统计、patch projection 和 noise schedule。[Scaling Diffusion Transformers with Representation Autoencoders](https://arxiv.org/abs/2601.16208)继续探索这一方向；相关规模与效果截至 2026-07-28 仍应以作者披露的具体版本为边界。
+[Diffusion Transformers with Representation Autoencoders](https://arxiv.org/abs/2510.11690) 把传统重建 VAE encoder 替换为预训练 representation encoder，再训练 decoder。语义更强、通道更宽的 latent 可能降低 prior 的建模难度，也改变 DiT 的输入统计、patch projection 和 noise schedule。[Scaling Diffusion Transformers with Representation Autoencoders](https://arxiv.org/abs/2601.16208) 继续探索这一方向；相关规模与效果截至 2026-07-28 仍应以作者披露的具体版本为边界。
 
 这使“压得越小越好”不再成立。真正目标是端到端 Pareto：
 
@@ -371,7 +371,7 @@ $$
 | 规模规律 | 参数、训练 FLOPs、token 数、数据量分别控制 |
 | 系统 | NFE、text encoder/decoder 在内的端到端延迟、吞吐、显存 |
 
-Diffusion 与 score 的推导见[Diffusion 与 Score](diffusion-score.md)；latent 本身的量化与重建边界见[Autoencoder 与视觉 Tokenizer](autoencoders-tokenizers.md)；可控条件、编辑与组合评测见[可控生成、编辑与评测](control-editing-evaluation.md)。
+Diffusion 与 score 的推导见 [Diffusion 与 Score](diffusion-score.md)；latent 本身的量化与重建边界见 [Autoencoder 与视觉 Tokenizer](autoencoders-tokenizers.md)；可控条件、编辑与组合评测见[可控生成、编辑与评测](control-editing-evaluation.md)。
 
 CFG、flow 积分与退化步长测试见[多模态手撕实现](../../practice/multimodal.md)。
 

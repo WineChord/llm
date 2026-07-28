@@ -4,7 +4,7 @@ RAG 经常被描述成“检索几段文档，再拼进 prompt”。这概括了
 
 ## 前一站：从参数知识到可检索记忆
 
-预训练模型能在参数中保存事实，但更新一个事实通常意味着继续训练，答案也没有天然 provenance。[REALM](https://arxiv.org/abs/2002.08909)在预训练中引入 latent retriever，[DPR](https://arxiv.org/abs/2004.04906)用独立 question/passage encoder 与 in-batch negatives 训练开放域问答检索器。
+预训练模型能在参数中保存事实，但更新一个事实通常意味着继续训练，答案也没有天然 provenance。[REALM](https://arxiv.org/abs/2002.08909) 在预训练中引入 latent retriever，[DPR](https://arxiv.org/abs/2004.04906) 用独立 question/passage encoder 与 in-batch negatives 训练开放域问答检索器。
 
 DPR 的分数通常写成
 
@@ -69,7 +69,7 @@ query -> retrieve -> rerank -> pack -> generate -> cite -> verify
 
 ## FiD 与“让生成器自己融合”
 
-[Fusion-in-Decoder](https://arxiv.org/abs/2007.01282)分别编码多个 passage，再让 decoder 在 cross-attention 中融合。它避免把所有 passage 在 encoder 输入端完全拼接，却把计算压力转移到 decoder 可见的 encoder states。增加候选文档可能提高 retrieval coverage，也会近似线性增加 encoder 工作与 decoder cross-attention memory；若额外候选主要是噪声，最终答案质量并不随数量单调提高。
+[Fusion-in-Decoder](https://arxiv.org/abs/2007.01282) 分别编码多个 passage，再让 decoder 在 cross-attention 中融合。它避免把所有 passage 在 encoder 输入端完全拼接，却把计算压力转移到 decoder 可见的 encoder states。增加候选文档可能提高 retrieval coverage，也会近似线性增加 encoder 工作与 decoder cross-attention memory；若额外候选主要是噪声，最终答案质量并不随数量单调提高。
 
 “塞更多上下文”从来不是免费的正确性策略。无关文档会稀释注意力，冲突文档需要时间与来源判断，长上下文还可能把答案放进模型不敏感的位置。
 
@@ -86,7 +86,7 @@ query -> retrieve -> rerank -> pack -> generate -> cite -> verify
 
 ## 它留下的方向
 
-RAG 把“模型知道什么”改写成“模型、索引和运行时共同能访问什么”。随后工具调用把外部状态从只读文档扩展到可执行动作，Agent 又把一次检索扩展为多步轨迹。下一篇[ReAct 与 Toolformer](react-toolformer.md)正从这里开始；整条历史见[从参数记忆到可行动系统](../lineages/retrieval-agents.md)。
+RAG 把“模型知道什么”改写成“模型、索引和运行时共同能访问什么”。随后工具调用把外部状态从只读文档扩展到可执行动作，Agent 又把一次检索扩展为多步轨迹。下一篇 [ReAct 与 Toolformer](react-toolformer.md) 正从这里开始；整条历史见[从参数记忆到可行动系统](../lineages/retrieval-agents.md)。
 
 ## Reference {#reference}
 

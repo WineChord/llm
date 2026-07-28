@@ -8,7 +8,7 @@
 
 三者的训练目标、采样路径和失败模式不同，不能只按最终样例比较。
 
-[DDPM、DiT 与 Flow Matching](../landscape/works/diffusion-dit-flow.md)把去噪目标、Transformer backbone 和连续向量场放在同一组符号下比较；它们与视觉语言理解路线的汇合位置见[多模态理解与生成](../landscape/lineages/multimodal-generation.md)。
+[DDPM、DiT 与 Flow Matching](../landscape/works/diffusion-dit-flow.md) 把去噪目标、Transformer backbone 和连续向量场放在同一组符号下比较；它们与视觉语言理解路线的汇合位置见[多模态理解与生成](../landscape/lineages/multimodal-generation.md)。
 
 <figure class="concept-figure" id="generative-modeling-paths" markdown="1">
 
@@ -36,7 +36,7 @@ k^\star
 z_q=e_{k^\star}.
 $$
 
-[VQ-VAE](https://arxiv.org/abs/1711.00937)的典型目标包含重建、码本和 commitment：
+[VQ-VAE](https://arxiv.org/abs/1711.00937) 的典型目标包含重建、码本和 commitment：
 
 $$
 L
@@ -85,7 +85,7 @@ assert z.grad is not None and codebook.grad is not None
 
 `z_st` 的数值等于码本向量，但对 decoder loss 的局部导数按恒等映射流向 `z_e`；codebook 与 commitment 两项各自 detach，避免错误地互相追逐。生产 tokenizer 还要监控 code usage、dead code、EMA 更新约定和 padding/特殊 code。
 
-[VQGAN](https://arxiv.org/abs/2012.09841)加入感知与对抗目标，提高重建的感知质量。重建更锐利不一定意味着码本更适合语义建模；tokenizer 需同时评估 reconstruction、code usage 与下游生成。
+[VQGAN](https://arxiv.org/abs/2012.09841) 加入感知与对抗目标，提高重建的感知质量。重建更锐利不一定意味着码本更适合语义建模；tokenizer 需同时评估 reconstruction、code usage 与下游生成。
 
 ## 离散自回归与 masked generation
 
@@ -100,11 +100,11 @@ $$
 
 优点是与语言模型、交错图文和受约束解码统一；缺点是生成步数随视觉 token 数增长，且 raster 顺序对二维局部性不友好。
 
-[MaskGIT](https://arxiv.org/abs/2202.04200)并行预测被 mask 的图像 token，并迭代保留高置信位置。迭代 masked generation 需要明确每步 remask schedule、置信度和最终未填位置处理。
+[MaskGIT](https://arxiv.org/abs/2202.04200) 并行预测被 mask 的图像 token，并迭代保留高置信位置。迭代 masked generation 需要明确每步 remask schedule、置信度和最终未填位置处理。
 
 ## Diffusion 前向过程
 
-[DDPM](https://arxiv.org/abs/2006.11239)定义逐步加噪。记
+[DDPM](https://arxiv.org/abs/2006.11239) 定义逐步加噪。记
 
 $$
 \alpha_t=1-\beta_t,
@@ -140,11 +140,11 @@ $$
 
 ## DDIM 与采样
 
-[DDIM](https://arxiv.org/abs/2010.02502)构造与 DDPM 共享训练边缘分布的非马尔可夫采样路径，可减少采样步数并控制随机性。少步不自动保持质量；时间步子集、参数化和 discretization 都会改变误差。
+[DDIM](https://arxiv.org/abs/2010.02502) 构造与 DDPM 共享训练边缘分布的非马尔可夫采样路径，可减少采样步数并控制随机性。少步不自动保持质量；时间步子集、参数化和 discretization 都会改变误差。
 
 ## Latent diffusion
 
-[Latent Diffusion](https://arxiv.org/abs/2112.10752)先用 autoencoder 压缩图像：
+[Latent Diffusion](https://arxiv.org/abs/2112.10752) 先用 autoencoder 压缩图像：
 
 $$
 z=E(x),
@@ -154,7 +154,7 @@ $$
 
 再在 latent $z$ 上扩散。空间压缩降低计算，但 decoder 重建误差构成上限。实现必须固定 autoencoder 版本、latent scale、通道布局和像素归一化。
 
-[DiT](https://arxiv.org/abs/2212.09748)使用 Transformer 处理 latent patches，并通过时间和条件调制 block。其“Transformer”是去噪 backbone，不等于自回归语言模型。
+[DiT](https://arxiv.org/abs/2212.09748) 使用 Transformer 处理 latent patches，并通过时间和条件调制 block。其“Transformer”是去噪 backbone，不等于自回归语言模型。
 
 ## Conditioning
 
@@ -186,7 +186,7 @@ $$
 \frac{dx_t}{dt}=v_\theta(x_t,t,c).
 $$
 
-[Flow Matching](https://arxiv.org/abs/2210.02747)直接回归选定概率路径的条件向量场。对简单线性插值：
+[Flow Matching](https://arxiv.org/abs/2210.02747) 直接回归选定概率路径的条件向量场。对简单线性插值：
 
 $$
 x_t=(1-t)x_0+tx_1,
@@ -203,7 +203,7 @@ L_{\mathrm{FM}}
 \|v_\theta(x_t,t,c)-u_t\|_2^2.
 $$
 
-[Rectified Flow](https://arxiv.org/abs/2209.03003)研究把耦合路径变直以减少积分误差。训练不需要完整解 ODE，推理仍需 solver：
+[Rectified Flow](https://arxiv.org/abs/2209.03003) 研究把耦合路径变直以减少积分误差。训练不需要完整解 ODE，推理仍需 solver：
 
 $$
 x_{t+\Delta t}
@@ -258,7 +258,7 @@ assert not end.requires_grad
 
 ## 少步与一致性
 
-[Consistency Models](https://arxiv.org/abs/2303.01469)学习同一概率流轨迹上不同点映射到一致输出，可支持一步或少步生成。应分别报告：
+[Consistency Models](https://arxiv.org/abs/2303.01469) 学习同一概率流轨迹上不同点映射到一致输出，可支持一步或少步生成。应分别报告：
 
 - 是否从预训练 diffusion 蒸馏；
 - 一步、少步和多步质量；
@@ -325,10 +325,10 @@ $$
 
 本页保留三条生成路线的共同符号与稳定入口：
 
-- [从像素概率到 GAN](image-generation/history-autoregressive-gan.md)补齐 likelihood、adversarial game 与离散 AR 的历史；
-- [Autoencoder 与视觉 Tokenizer](image-generation/autoencoders-tokenizers.md)讨论压缩、码本和 decoder 上限；
-- [Diffusion 与 Score](image-generation/diffusion-score.md)统一离散加噪、score、SDE 与 prediction type；
-- [Latent Diffusion、DiT 与 Flow](image-generation/latent-dit-flow.md)连接生成空间、backbone、概率路径和少步采样；
+- [从像素概率到 GAN](image-generation/history-autoregressive-gan.md) 补齐 likelihood、adversarial game 与离散 AR 的历史；
+- [Autoencoder 与视觉 Tokenizer](image-generation/autoencoders-tokenizers.md) 讨论压缩、码本和 decoder 上限；
+- [Diffusion 与 Score](image-generation/diffusion-score.md) 统一离散加噪、score、SDE 与 prediction type；
+- [Latent Diffusion、DiT 与 Flow](image-generation/latent-dit-flow.md) 连接生成空间、backbone、概率路径和少步采样；
 - [条件控制、编辑与评测](image-generation/control-editing-evaluation.md)分开条件遵循、局部编辑、身份保持、质量与系统成本。
 
 ## Reference {#reference}

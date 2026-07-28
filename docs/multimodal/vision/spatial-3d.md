@@ -93,9 +93,9 @@ LiDAR、结构光和 ToF 直接测量距离，提供更稳定尺度，却有稀�
 | implicit field | 连续查询、紧凑 | 渲染/优化成本 |
 | Gaussian primitives | 快速可微渲染 | 几何与编辑语义需额外约束 |
 
-[PointNet](https://arxiv.org/abs/1612.00593)用对称聚合处理无序点集，[PointNet++](https://arxiv.org/abs/1706.02413)进一步建立局部层级。点的排列不应改变结果，但采样密度、坐标尺度和局部邻域仍决定表示。
+[PointNet](https://arxiv.org/abs/1612.00593) 用对称聚合处理无序点集，[PointNet++](https://arxiv.org/abs/1706.02413)进一步建立局部层级。点的排列不应改变结果，但采样密度、坐标尺度和局部邻域仍决定表示。
 
-[NeRF](https://arxiv.org/abs/2003.08934)用神经场表示位置与方向到密度、颜色的映射，并沿光线体渲染：
+[NeRF](https://arxiv.org/abs/2003.08934) 用神经场表示位置与方向到密度、颜色的映射，并沿光线体渲染：
 
 $$
 C(r)
@@ -114,7 +114,7 @@ $$
 
 它擅长从已知视角图像重建可渲染场景，但经典逐场景优化、静态假设和视角外推限制了实时交互。
 
-[3D Gaussian Splatting](https://arxiv.org/abs/2308.04079)用带位置、协方差、颜色与透明度的显式 Gaussian primitives，实现高质量实时渲染。渲染速度不等于物理可交互性；碰撞、材质、对象身份和可编辑拓扑仍需额外表示。
+[3D Gaussian Splatting](https://arxiv.org/abs/2308.04079) 用带位置、协方差、颜色与透明度的显式 Gaussian primitives，实现高质量实时渲染。渲染速度不等于物理可交互性；碰撞、材质、对象身份和可编辑拓扑仍需额外表示。
 
 ## 从重建到语义场景
 

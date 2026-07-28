@@ -40,7 +40,7 @@ $$
 
 ## ZeRO 的三个阶段
 
-[ZeRO](https://arxiv.org/abs/1910.02054)逐步消除数据并行副本中的冗余状态：
+[ZeRO](https://arxiv.org/abs/1910.02054) 逐步消除数据并行副本中的冗余状态：
 
 | 阶段 | 分片对象 | 前向需要的主要额外通信 |
 | --- | --- | --- |
@@ -139,7 +139,7 @@ $$
 
 或 Newton–Schulz 迭代，得到的不是完整矩阵上的同一算子，除非每一步额外重建全局 Gram 量或完整矩阵。分片单位因此必须跟随算子语义，而不能只追求字节均匀。
 
-[DeepSeek-V4](../landscape/works/deepseek-v4.md#muon)采用的折中是把每个逻辑矩阵完整分配给一个 data-parallel rank，再以 knapsack 近似平衡状态容量；报告中的 dense 路径把每个 rank 限制在至多五个矩阵，padding 通常低于 10%。对 MoE 参数，系统按 down、up、gate projection 跨层拼接相同角色的矩阵，但不切断任一逻辑矩阵；相同 shape 才组成 batch。梯度同步使用 all-to-all 搬运 shard，再在拥有该矩阵的 rank 上以 FP32 求和，避免低精度 ring/tree reduction 改变结果。
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#muon) 采用的折中是把每个逻辑矩阵完整分配给一个 data-parallel rank，再以 knapsack 近似平衡状态容量；报告中的 dense 路径把每个 rank 限制在至多五个矩阵，padding 通常低于 10%。对 MoE 参数，系统按 down、up、gate projection 跨层拼接相同角色的矩阵，但不切断任一逻辑矩阵；相同 shape 才组成 batch。梯度同步使用 all-to-all 搬运 shard，再在拥有该矩阵的 rank 上以 FP32 求和，避免低精度 ring/tree reduction 改变结果。
 
 这不是“Muon 必须这样实现”的定理，而是三种成本的明确交换：
 

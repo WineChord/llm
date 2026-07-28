@@ -29,7 +29,7 @@ DeepSeek LLM ─→ DeepSeekMoE ─→ V2 / V2.5 ─→ V3 ─→ V3.1 / V3.2 �
 
 ### 第一段历史：专门分支先于统一旗舰
 
-[DeepSeek-Coder](https://arxiv.org/abs/2401.14196)把仓库级代码、Fill-in-the-Middle 与长上下文纳入预训练，[DeepSeekMath](https://arxiv.org/abs/2402.03300)从代码底座继续训练数学数据并提出 GRPO，[DeepSeek-Prover](https://arxiv.org/abs/2405.14333)再把自然语言数学转进 Lean 证明。这里形成的不是三个孤立 benchmark 模型，而是一条逐步收紧反馈的链：
+[DeepSeek-Coder](https://arxiv.org/abs/2401.14196) 把仓库级代码、Fill-in-the-Middle 与长上下文纳入预训练，[DeepSeekMath](https://arxiv.org/abs/2402.03300) 从代码底座继续训练数学数据并提出 GRPO，[DeepSeek-Prover](https://arxiv.org/abs/2405.14333) 再把自然语言数学转进 Lean 证明。这里形成的不是三个孤立 benchmark 模型，而是一条逐步收紧反馈的链：
 
 $$
 \text{自然语言或代码监督}
@@ -39,11 +39,11 @@ $$
 \text{proof assistant 的形式验证}.
 $$
 
-反馈越精确，训练信号越可靠；与此同时，任务分布也越窄，环境、编译器或证明器的版本依赖越强。后来 [R1](../works/deepseek-r1.md)把可验证奖励扩展到更大的通用推理模型，[Prover-V2](https://arxiv.org/abs/2504.21801)则沿另一条路继续研究子目标分解与形式证明。
+反馈越精确，训练信号越可靠；与此同时，任务分布也越窄，环境、编译器或证明器的版本依赖越强。后来 [R1](../works/deepseek-r1.md) 把可验证奖励扩展到更大的通用推理模型，[Prover-V2](https://arxiv.org/abs/2504.21801) 则沿另一条路继续研究子目标分解与形式证明。
 
 ### 第二段历史：V2 同时改写容量和服务成本
 
-[DeepSeekMoE](https://arxiv.org/abs/2401.06066)将专家细粒度拆分，并保留共享专家；[DeepSeek-V2](https://arxiv.org/abs/2405.04434)把这条条件计算路线与 Multi-head Latent Attention（MLA）合并。对 token 表示 $h$，MoE 层可抽象为
+[DeepSeekMoE](https://arxiv.org/abs/2401.06066) 将专家细粒度拆分，并保留共享专家；[DeepSeek-V2](https://arxiv.org/abs/2405.04434) 把这条条件计算路线与 Multi-head Latent Attention（MLA）合并。对 token 表示 $h$，MoE 层可抽象为
 
 $$
 y=E_{\mathrm{shared}}(h)+
@@ -54,7 +54,7 @@ $$
 
 ### 第三段历史：V3 把训练系统写进模型配方
 
-[DeepSeek-V3](https://arxiv.org/abs/2412.19437)延续 MLA 与细粒度 MoE，又加入 auxiliary-loss-free balancing、Multi-Token Prediction、FP8 训练和 DualPipe。这里每项机制都要读两层：
+[DeepSeek-V3](https://arxiv.org/abs/2412.19437) 延续 MLA 与细粒度 MoE，又加入 auxiliary-loss-free balancing、Multi-Token Prediction、FP8 训练和 DualPipe。这里每项机制都要读两层：
 
 | 模型层问题 | 系统层的必要条件 |
 | --- | --- |
@@ -67,7 +67,7 @@ $$
 
 ### 第四段历史：R1 把“产生推理”拆成多阶段闭环
 
-[DeepSeek-R1](../works/deepseek-r1.md)最重要的辨析不是某个最终分数，而是四种作用不同的训练对象：
+[DeepSeek-R1](../works/deepseek-r1.md) 最重要的辨析不是某个最终分数，而是四种作用不同的训练对象：
 
 1. R1-Zero 从 base model 直接用可验证 reward 做 RL，用于观察能力如何在缺少 reasoning SFT 时出现；
 2. cold-start 数据改善语言混杂、可读性与格式；
@@ -93,7 +93,7 @@ I_t=\operatorname{TopK}_{i<t}s(q_t,k_i),\qquad
 y_t=\operatorname{Attn}(q_t,K_{I_t},V_{I_t}).
 $$
 
-[V4](../works/deepseek-v4.md)进一步先压缩时间轴，再选择远程历史，并用 HCA 提供低成本全局概览、SWA 保留局部细节。百万 token 由此不再只是位置编码或 context length 配置，而是压缩误差、异构 cache、context parallel、持久前缀、抢占恢复、sandbox 状态与长程评测的共同问题。结构细节见 [CSA / HCA](../works/deepseek-compressed-attention.md)，残差路径见 [mHC](../works/manifold-hyper-connections.md)，多专家能力合并见 [On-Policy Distillation](../works/on-policy-distillation.md)，端到端系统见 [TileLang、MegaMoE 与 DSec](../works/tilelang-mega-moe.md)。
+[V4](../works/deepseek-v4.md) 进一步先压缩时间轴，再选择远程历史，并用 HCA 提供低成本全局概览、SWA 保留局部细节。百万 token 由此不再只是位置编码或 context length 配置，而是压缩误差、异构 cache、context parallel、持久前缀、抢占恢复、sandbox 状态与长程评测的共同问题。结构细节见 [CSA / HCA](../works/deepseek-compressed-attention.md)，残差路径见 [mHC](../works/manifold-hyper-connections.md)，多专家能力合并见 [On-Policy Distillation](../works/on-policy-distillation.md)，端到端系统见 [TileLang、MegaMoE 与 DSec](../works/tilelang-mega-moe.md)。
 
 ## 公开产物账本 {#release-ledger}
 
@@ -111,7 +111,7 @@ $$
 | 2024-05 | [DeepSeek-V2](https://arxiv.org/abs/2405.04434)，[Lite 与主模型权重](https://github.com/deepseek-ai/DeepSeek-V2) | MLA、DeepSeekMoE 与 128K 语境下的结构—成本关系 | 后续 V2.5 的对齐数据和线上 checkpoint 可由 V2 报告补齐 |
 | 2024-05—08 | [Prover](https://arxiv.org/abs/2405.14333) → [Prover-V1.5](https://arxiv.org/abs/2408.08152) | synthetic formal data、proof-assistant feedback、RMaxTS；V1.5 公开 7B Base / SFT / RL | 搜索时 pass rate 等于单次模型能力 |
 | 2024-06 | [DeepSeek-Coder-V2](https://arxiv.org/abs/2406.11931)，[Lite / 236B Base 与 Instruct](https://github.com/deepseek-ai/DeepSeek-Coder-V2) | 在 V2 架构上融合代码、数学与通用能力 | 线上 `deepseek-coder` 的每次更新都有独立技术报告 |
-| 2024-09—12 | [V2.5](https://api-docs.deepseek.com/news/news0905/)及 V2.5-1210 | 通用与代码服务合并、产品 checkpoint 连续更新 | API alias 是稳定 checkpoint ID |
+| 2024-09—12 | [V2.5](https://api-docs.deepseek.com/news/news0905/) 及 V2.5-1210 | 通用与代码服务合并、产品 checkpoint 连续更新 | API alias 是稳定 checkpoint ID |
 | 2024-10—2025-01 | [Janus](https://arxiv.org/abs/2410.13848)、[JanusFlow](https://arxiv.org/abs/2411.07975)、[Janus-Pro](https://arxiv.org/abs/2501.17811) | 理解/生成表示解耦、autoregression 与 rectified flow 的两种统一方式、数据与规模升级 | 三者的 encoder、生成目标与权重可以互换 |
 | 2024-11 | [R1-Lite-Preview](https://api-docs.deepseek.com/news/news1120/) | 在线预览公开了长 reasoning 与 inference scaling 现象 | 当时已经发布权重、训练代码或完整 R1 报告 |
 | 2024-12 | [DeepSeek-VL2](https://arxiv.org/abs/2412.10302)，[Tiny / Small / 主模型](https://github.com/deepseek-ai/DeepSeek-VL2) | dynamic tiling 与 MoE 语言主干 | 视觉 token 更少必然带来更低端到端时延 |
@@ -126,7 +126,7 @@ $$
 | 2026-01 | [Engram](https://arxiv.org/abs/2601.07372)，[代码与 checkpoint](https://github.com/deepseek-ai/Engram) | conditional memory / lookup 是独立于 MoE 的稀疏轴 | V4 已经采用 Engram；V4 报告只把它放在后续方向 |
 | 2026-04-24 | [V4 Preview 发布](https://api-docs.deepseek.com/news/news260424/)与 [Flash / Pro、Base / post-trained 集合](https://huggingface.co/collections/deepseek-ai/deepseek-v4) | 284B / 13B 与 1.6T / 49B 两种规模、1M context、开放权重与两个新 API model ID | 发布说明等同于完整训练配方；模型集合的后续文件修订等同于新基础代际 |
 | 2026-04-26 | [DeepSeek-V4 技术报告](https://arxiv.org/abs/2606.19348) | CSA / HCA、mHC、Muon、OPD、FP4 / FP8 混合权重、训练与评测的报告口径 | 报告披露了训练数据配比、总 FLOPs、硬件规模和全部 RL 环境；报告日也不能覆盖权重与 API 的独立 revision |
-| 2026-07 | [DSpark](https://arxiv.org/abs/2607.05147)，[DeepSpec](https://github.com/deepseek-ai/DeepSpec)与 V4 DSpark attachments | semi-autoregressive drafter、confidence-scheduled verification 及训练/评测框架 | DSpark 改变了 V4 base model，或论文速度可脱离并发与验证协议复用 |
+| 2026-07 | [DSpark](https://arxiv.org/abs/2607.05147)，[DeepSpec](https://github.com/deepseek-ai/DeepSpec) 与 V4 DSpark attachments | semi-autoregressive drafter、confidence-scheduled verification 及训练/评测框架 | DSpark 改变了 V4 base model，或论文速度可脱离并发与验证协议复用 |
 
 API 名称尤其容易误导。官方变更记录显示，`deepseek-chat` 曾依次路由到 V2、V2.5、V3、V3.1、V3.2，`deepseek-reasoner` 也曾从 R1 更新到后续 hybrid model；V4 发布时又给出 `deepseek-v4-pro` 与 `deepseek-v4-flash` 新标识，并宣布旧 alias 的退役时间。历史实验若只写 alias、不记录请求日期、实际模型标识和模板，就无法复现。
 
@@ -154,7 +154,7 @@ API 名称尤其容易误导。官方变更记录显示，`deepseek-chat` 曾依
 3. 记录衍生底座，例如 R1-Distill-Qwen 与 R1-Distill-Llama 还受其底座关系影响；
 4. 不用 GitHub 页面自动识别出的仓库 license 覆盖模型卡中的单独条款。
 
-可直接核验的代表性入口包括 [R1 LICENSE](https://github.com/deepseek-ai/DeepSeek-R1/blob/main/LICENSE)、V3 的 [code license](https://github.com/deepseek-ai/DeepSeek-V3/blob/main/LICENSE-CODE)与 [model license](https://github.com/deepseek-ai/DeepSeek-V3/blob/main/LICENSE-MODEL)、[V3.2-Exp LICENSE](https://github.com/deepseek-ai/DeepSeek-V3.2-Exp/blob/main/LICENSE)、V4 [Flash](https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash/blob/main/LICENSE)与 [Pro](https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/LICENSE) 的模型文件，以及 [Math-V2](https://github.com/deepseek-ai/DeepSeek-Math-V2/blob/main/LICENSE)、[Engram](https://github.com/deepseek-ai/Engram/blob/main/LICENSE)和 [OCR-2](https://github.com/deepseek-ai/DeepSeek-OCR-2/blob/main/LICENSE.txt) 的仓库许可。许可证可能随 revision 变化，实际使用仍须锁定所下载工件并自行完成合规判断；这里不是法律意见。
+可直接核验的代表性入口包括 [R1 LICENSE](https://github.com/deepseek-ai/DeepSeek-R1/blob/main/LICENSE)、V3 的 [code license](https://github.com/deepseek-ai/DeepSeek-V3/blob/main/LICENSE-CODE) 与 [model license](https://github.com/deepseek-ai/DeepSeek-V3/blob/main/LICENSE-MODEL)、[V3.2-Exp LICENSE](https://github.com/deepseek-ai/DeepSeek-V3.2-Exp/blob/main/LICENSE)、V4 [Flash](https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash/blob/main/LICENSE) 与 [Pro](https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/LICENSE) 的模型文件，以及 [Math-V2](https://github.com/deepseek-ai/DeepSeek-Math-V2/blob/main/LICENSE)、[Engram](https://github.com/deepseek-ai/Engram/blob/main/LICENSE) 和 [OCR-2](https://github.com/deepseek-ai/DeepSeek-OCR-2/blob/main/LICENSE.txt) 的仓库许可。许可证可能随 revision 变化，实际使用仍须锁定所下载工件并自行完成合规判断；这里不是法律意见。
 
 ### 官方 GitHub 组织的公开仓库快照
 
@@ -166,7 +166,7 @@ API 名称尤其容易误导。官方变更记录显示，`deepseek-chat` 曾依
 | Kernel、通信、数据与训练/服务系统 | [open-infra-index](https://github.com/deepseek-ai/open-infra-index)、[DeepGEMM](https://github.com/deepseek-ai/DeepGEMM)、[DeepEP](https://github.com/deepseek-ai/DeepEP)、[FlashMLA](https://github.com/deepseek-ai/FlashMLA)、[smallpond](https://github.com/deepseek-ai/smallpond)、[profile-data](https://github.com/deepseek-ai/profile-data)、[EPLB](https://github.com/deepseek-ai/EPLB)、[DualPipe](https://github.com/deepseek-ai/DualPipe)、[3FS](https://github.com/deepseek-ai/3FS)、[LPLB](https://github.com/deepseek-ai/LPLB)、[TileKernels](https://github.com/deepseek-ai/TileKernels)、[DeepSpec](https://github.com/deepseek-ai/DeepSpec) | 这些是模型谱系的系统证据或邻接工具，不应全部改写成某个 checkpoint 的组成部分 |
 | 独立研究与聚合目录 | [DreamCraft3D](https://github.com/deepseek-ai/DreamCraft3D)、[awesome-deepseek-coder](https://github.com/deepseek-ai/awesome-deepseek-coder)、[awesome-deepseek-integration](https://github.com/deepseek-ai/awesome-deepseek-integration)、[awesome-deepseek-agent](https://github.com/deepseek-ai/awesome-deepseek-agent) | DreamCraft3D 是独立 3D 生成研究；三个 `awesome-*` 是链接集合，不是官方兼容性认证或模型实现 |
 
-这张表也解释了几个“没有单独仓库”的节点：DeepSeek-Prover V1 主要由论文与模型发布定义，V1.5 才有独立组织仓库；auxiliary-loss-free balancing、mHC、Muon scaling 与 [DualPath](https://arxiv.org/abs/2602.21548)首先是论文或报告节点，相关实现可能散落在 V3/V4、TileKernels 或内部系统中，不能因为作者隶属相同就假设存在完整 reference implementation。
+这张表也解释了几个“没有单独仓库”的节点：DeepSeek-Prover V1 主要由论文与模型发布定义，V1.5 才有独立组织仓库；auxiliary-loss-free balancing、mHC、Muon scaling 与 [DualPath](https://arxiv.org/abs/2602.21548) 首先是论文或报告节点，相关实现可能散落在 V3/V4、TileKernels 或内部系统中，不能因为作者隶属相同就假设存在完整 reference implementation。
 
 官方 [Hugging Face 模型目录](https://huggingface.co/deepseek-ai/models)还包含 Base、Chat/Instruct、RL、Distill、精度变体、DSpark drafter 与附件 checkpoint。它是下载对象的动态事实源；本页按“模型族与训练阶段”归并，不把量化副本、draft attachment 或同一模型的上传修订误当成新的基础模型代际。
 

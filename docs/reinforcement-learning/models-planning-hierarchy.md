@@ -34,7 +34,7 @@ real transition
 
 ## Dyna：真实经验与规划更新共享接口
 
-[Dyna](https://doi.org/10.1016/B978-1-55860-141-3.50030-4)把一次真实 transition 同时用于：
+[Dyna](https://doi.org/10.1016/B978-1-55860-141-3.50030-4) 把一次真实 transition 同时用于：
 
 1. 更新 value/policy；
 2. 更新环境模型；
@@ -165,7 +165,7 @@ LLM context 记录观察历史；它不是动力学模型。摘要、memory 或 
 6. 环境不可逆或高风险时，model prediction 不授权真实执行。
 7. imagined data 与真实 data 分开统计，不用混合 loss 掩盖来源。
 
-最小 Dyna 与 option backup 见[手撕强化学习](../practice/reinforcement-learning.md)；多轮环境契约见[Agentic RL](../agentic-rl/index.md)。
+最小 Dyna 与 option backup 见[手撕强化学习](../practice/reinforcement-learning.md)；多轮环境契约见 [Agentic RL](../agentic-rl/index.md)。
 
 ## Reference {#reference}
 

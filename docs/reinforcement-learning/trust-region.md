@@ -308,7 +308,7 @@ TRPO 的动机来自一类策略改进下界：真实性能差可以由旧策略
 
 ## 与 PPO 的关系：共同动机，不同约束
 
-[PPO](trust-region-ppo.md)保留旧策略 ratio 与局部更新思想，却不再通过 Fisher、CG 和 line search 解显式 KL 约束。PPO-Clip 使用
+[PPO](trust-region-ppo.md) 保留旧策略 ratio 与局部更新思想，却不再通过 Fisher、CG 和 line search 解显式 KL 约束。PPO-Clip 使用
 
 $$
 \min
@@ -359,7 +359,7 @@ LLM 后训练至少要分开四个身份：
 
 标准 on-policy TRPO 假定 $\mu^{\mathrm{rollout}}=\pi_{\mathrm{old}}^{\mathrm{train}}$。在异步队列、量化推理、MoE routing 或 sampling processor 存在时，这个等式必须验证，不能由 checkpoint ID 推断。
 
-相对 reference 的 KL 可以限制模型远离初始能力或风格，但不能证明当前 rollout 对 learner 仍是近似 on-policy；相对 old 的小步更新也不能保证长期不偏离 reference。两类 KL 的完整区分见[KL 正则化控制](kl-regularized-control.md)。异步 rollout 使 behavior policy 更旧时，还需进一步检查 support、policy lag 与[Off-policy 校正](off-policy-correction.md)。
+相对 reference 的 KL 可以限制模型远离初始能力或风格，但不能证明当前 rollout 对 learner 仍是近似 on-policy；相对 old 的小步更新也不能保证长期不偏离 reference。两类 KL 的完整区分见 [KL 正则化控制](kl-regularized-control.md)。异步 rollout 使 behavior policy 更旧时，还需进一步检查 support、policy lag 与 [Off-policy 校正](off-policy-correction.md)。
 
 ## 实现与诊断契约
 

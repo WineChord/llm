@@ -41,7 +41,7 @@ result = self_consistency(
 assert result["answer"] == "42" and result["votes"] == 2
 ```
 
-等价数学表达式、单位和自由文本不能只靠字符串规则合并，需要任务专用 canonicalizer 或 verifier。[Self-Consistency](https://arxiv.org/abs/2203.11171)展示了采样投票路线。
+等价数学表达式、单位和自由文本不能只靠字符串规则合并，需要任务专用 canonicalizer 或 verifier。[Self-Consistency](https://arxiv.org/abs/2203.11171) 展示了采样投票路线。
 
 ## Best-of-$N$
 

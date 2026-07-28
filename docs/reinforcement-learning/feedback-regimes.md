@@ -56,13 +56,13 @@ RLHF 在论文和工程语境中没有唯一、统一的外延。本站为避免
 - **strict RLHF**：人类比较训练显式 reward model，再由在线或周期式 policy-gradient optimization 更新 policy；SFT 常作为初始化，但不是定义中必需的梯度阶段；
 - **alignment from human feedback**：更宽的上位描述，包括 demonstration/SFT、critique、直接 preference loss、显式 RM + RL，以及人类参与的 policy selection。
 
-[InstructGPT](../landscape/works/instructgpt.md)式 SFT → reward model → PPO 是 strict RLHF 的代表性实现。DPO/IPO 可以使用同一种人类 preference 数据，但本站把它们记作 direct preference optimization，而不是 policy-gradient RLHF；需要涵盖二者时使用更宽的 alignment from human feedback。
+[InstructGPT](../landscape/works/instructgpt.md) 式 SFT → reward model → PPO 是 strict RLHF 的代表性实现。DPO/IPO 可以使用同一种人类 preference 数据，但本站把它们记作 direct preference optimization，而不是 policy-gradient RLHF；需要涵盖二者时使用更宽的 alignment from human feedback。
 
 ## RLAIF
 
 RLAIF 用模型产生偏好、critique 或 rubric score。若 AI feedback 训练 reward model，再用 PPO 更新 policy，训练路径是显式 RM + 在线 actor–critic；若直接对 AI 生成的 pair 做 DPO，则是离线或迭代式 direct preference optimization。两者共享反馈来源，不共享目标函数。
 
-[Constitutional AI](https://arxiv.org/abs/2212.08073)包含两条不同数据路径：
+[Constitutional AI](https://arxiv.org/abs/2212.08073) 包含两条不同数据路径：
 
 1. critique/revision 生成监督数据；
 2. 原则驱动的 AI preference 进入 RL 阶段。
@@ -150,7 +150,7 @@ training reward / preference
 - evaluator 是否参与训练；
 - 覆盖不到的目标与未知。
 
-[RLHF 数据闭环](rlhf-pipeline.md)展开人类反馈，[奖励建模](../training/reward-modeling.md)展开 learned reward，[Verifier 与 reward shaping](verifiers-reward-shaping.md)展开程序反馈。
+[RLHF 数据闭环](rlhf-pipeline.md)展开人类反馈，[奖励建模](../training/reward-modeling.md)展开 learned reward，[Verifier 与 reward shaping](verifiers-reward-shaping.md) 展开程序反馈。
 
 ## Reference {#reference}
 

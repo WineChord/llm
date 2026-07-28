@@ -15,7 +15,7 @@ $$
 
 ## 从单任务到能力面板
 
-[MMLU](https://arxiv.org/abs/2009.03300)用 57 个学科任务追问广泛知识与问题求解；[BIG-bench](https://arxiv.org/abs/2206.04615)通过大规模协作扩展任务空间，并观察不同任务随规模变化的形态；[HELM](https://arxiv.org/abs/2211.09110)则把焦点从“更多任务”转向“场景 × 指标 × 适配策略”的透明协议。
+[MMLU](https://arxiv.org/abs/2009.03300) 用 57 个学科任务追问广泛知识与问题求解；[BIG-bench](https://arxiv.org/abs/2206.04615) 通过大规模协作扩展任务空间，并观察不同任务随规模变化的形态；[HELM](https://arxiv.org/abs/2211.09110) 则把焦点从“更多任务”转向“场景 × 指标 × 适配策略”的透明协议。
 
 这里发生的关键变化，是分数不再脱离 harness：
 
@@ -24,11 +24,11 @@ $$
 =M(D,\theta,\text{prompt},\text{decoder},\text{parser},\text{budget}).
 $$
 
-同一个 checkpoint 只要更换 few-shot 示例、答案抽取规则或最大生成长度，就可能得到不同结果。[HELM 到 Chatbot Arena](../works/helm-arena.md)详细解释了为何评测对象从静态模型逐渐变成“模型加协议”。
+同一个 checkpoint 只要更换 few-shot 示例、答案抽取规则或最大生成长度，就可能得到不同结果。[HELM 到 Chatbot Arena](../works/helm-arena.md) 详细解释了为何评测对象从静态模型逐渐变成“模型加协议”。
 
 ## 开放式输出逼出新的裁判
 
-多轮对话、写作和代码很难用 exact match 评分。[MT-Bench 与 LLM-as-a-Judge](https://arxiv.org/abs/2306.05685)研究用强模型比较开放式答案，同时明确观察到位置、冗长度和自我偏好等偏差；[Chatbot Arena](https://arxiv.org/abs/2403.04132)把真实用户的成对偏好汇聚成排名。
+多轮对话、写作和代码很难用 exact match 评分。[MT-Bench 与 LLM-as-a-Judge](https://arxiv.org/abs/2306.05685) 研究用强模型比较开放式答案，同时明确观察到位置、冗长度和自我偏好等偏差；[Chatbot Arena](https://arxiv.org/abs/2403.04132) 把真实用户的成对偏好汇聚成排名。
 
 这不是“自动裁判替代人工”的终点。它把误差从答案解析移到裁判模型与采样人群：
 
@@ -48,7 +48,7 @@ $$
 {\sum_i \mathbf 1[\text{episode }i\text{ started}]},
 $$
 
-分母必须保留超时、工具异常、权限拒绝和预算耗尽。只统计“有最终文本的回合”会系统性抬高成功率。端到端契约见[Agent 与工具评测](../../evaluation/agent-tool-evaluation.md)和[生产可靠性](../../evaluation/production-reliability.md)。
+分母必须保留超时、工具异常、权限拒绝和预算耗尽。只统计“有最终文本的回合”会系统性抬高成功率。端到端契约见 [Agent 与工具评测](../../evaluation/agent-tool-evaluation.md)和[生产可靠性](../../evaluation/production-reliability.md)。
 
 ## 静态榜单为什么会老化
 
@@ -71,7 +71,7 @@ $$
 - 置信区间是否覆盖随机解码、题目差异和 judge 波动；
 - 结论是否越过了数据与场景支持的范围。
 
-完整执行流程见[语言模型评测协议](../../evaluation/language-model-evaluation.md)，各 benchmark 的任务与风险见[Benchmark Registry](../../evaluation/benchmark-registry.md)。
+完整执行流程见[语言模型评测协议](../../evaluation/language-model-evaluation.md)，各 benchmark 的任务与风险见 [Benchmark Registry](../../evaluation/benchmark-registry.md)。
 
 ## Reference {#reference}
 

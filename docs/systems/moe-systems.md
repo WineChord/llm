@@ -145,7 +145,7 @@ $$
 
 通信与 expert GEMM 的重叠只有在接收到一个可执行 chunk 后才能开始。过小 chunk 增加启动和调度开销，过大 chunk 又缩短重叠窗口。
 
-[DeepEP](https://github.com/deepseek-ai/DeepEP)提供了面向 MoE dispatch / combine 的官方实现，并区分训练吞吐与低延迟推理路径。它依赖具体互联、buffer 和通信语义，应按版本核对支持范围。
+[DeepEP](https://github.com/deepseek-ai/DeepEP) 提供了面向 MoE dispatch / combine 的官方实现，并区分训练吞吐与低延迟推理路径。它依赖具体互联、buffer 和通信语义，应按版本核对支持范围。
 
 ### 精确 rank 平衡与冗余 expert
 
@@ -172,13 +172,13 @@ $$
 
 问题交给一次协调调度。挑战是不同 $M_e$ 的 tile 数不均、权重地址不同，以及小 expert 无法填满 Tensor Core。
 
-[MegaBlocks](https://arxiv.org/abs/2211.15841)使用 block-sparse 计算避免因容量 padding 丢弃 token，并让稀疏结构映射到块级矩阵运算。它证明“无 token drop”可以与高效 kernel 共存，但实际收益取决于 block size、路由分布和硬件。
+[MegaBlocks](https://arxiv.org/abs/2211.15841) 使用 block-sparse 计算避免因容量 padding 丢弃 token，并让稀疏结构映射到块级矩阵运算。它证明“无 token drop”可以与高效 kernel 共存，但实际收益取决于 block size、路由分布和硬件。
 
 grouped 与 block-sparse 是两种实现策略，不改变 router 和归并的模型语义。切换 kernel 时应保持 token-expert assignment、权重与输出顺序一致。
 
 ### MegaMoE：以 expert wave 形成三段流水 {#mega-moe-wave-pipeline}
 
-[DeepSeek-V4](../landscape/works/deepseek-v4.md#mega-moe)不只把 dispatch 与 Linear-1、Linear-2 与 combine 两两重叠，而是把 expert 切成更小 wave。稳态时上一 wave 回传结果、当前 wave 做两次 GEMM、下一 wave 拉取 activation 同时发生；某一 wave 的 token 到齐即可启动，不等待整层。
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#mega-moe) 不只把 dispatch 与 Linear-1、Linear-2 与 combine 两两重叠，而是把 expert 切成更小 wave。稳态时上一 wave 回传结果、当前 wave 做两次 GEMM、下一 wave 拉取 activation 同时发生；某一 wave 的 token 到齐即可启动，不等待整层。
 
 若每个 token–expert pair 的计算为 $6hd$ FLOPs，FP8 dispatch 与 BF16 combine 共 $3h$ bytes，则通信可完全隐藏的理想阈值为
 
@@ -186,7 +186,7 @@ $$
 \frac{C}{B}\le\frac{6hd}{3h}=2d.
 $$
 
-V4-Pro 的 expert intermediate $d=3072$，因而对应 6144 FLOPs/Byte。这个 balance point 会随 dtype、实际 GEMM 利用率、拓扑和 power throttling 改变。报告相对其非融合基线测得一般推理 $1.50\text{–}1.73\times$、延迟敏感场景最高 $1.96\times$；公开 CUDA 实现进入 [DeepGEMM PR #304](https://github.com/deepseek-ai/DeepGEMM/pull/304)。完整系统语义见[MegaMoE、TileLang 与 DSec](../landscape/works/tilelang-mega-moe.md)。
+V4-Pro 的 expert intermediate $d=3072$，因而对应 6144 FLOPs/Byte。这个 balance point 会随 dtype、实际 GEMM 利用率、拓扑和 power throttling 改变。报告相对其非融合基线测得一般推理 $1.50\text{–}1.73\times$、延迟敏感场景最高 $1.96\times$；公开 CUDA 实现进入 [DeepGEMM PR #304](https://github.com/deepseek-ai/DeepGEMM/pull/304)。完整系统语义见 [MegaMoE、TileLang 与 DSec](../landscape/works/tilelang-mega-moe.md)。
 
 ## 负载平衡与模型质量
 
@@ -199,7 +199,7 @@ V4-Pro 的 expert intermediate $d=3072$，因而对应 6144 FLOPs/Byte。这个 
 - microbatch 合并；
 - 路由 bias 或局部性约束。
 
-这些机制不能只按吞吐评价。路由决策改变会影响模型输出；expert replication 若副本权重不同步，也会直接破坏正确性。[DeepSeek-V3](https://arxiv.org/abs/2412.19437)披露了 auxiliary-loss-free balancing、节点受限路由和训练系统的组合设计，适合作为 2024 年末的大规模实例，而非所有 MoE 的默认配置。
+这些机制不能只按吞吐评价。路由决策改变会影响模型输出；expert replication 若副本权重不同步，也会直接破坏正确性。[DeepSeek-V3](https://arxiv.org/abs/2412.19437) 披露了 auxiliary-loss-free balancing、节点受限路由和训练系统的组合设计，适合作为 2024 年末的大规模实例，而非所有 MoE 的默认配置。
 
 ## 与 TP、DP、PP、CP 组合
 
@@ -277,7 +277,7 @@ MoE 的理论激活 FLOPs 较低，不代表相同质量、相同延迟或相同
 7. 变更 EP / TP / DP 网格后恢复 checkpoint，逐 expert 核对 global ID 与 checksum。
 8. 在线推理同时测平均吞吐、TPOT 尾延迟、hot-expert 情况和质量差异。
 
-系统设计应先用[性能成本模型](performance-model.md)量化激活计算和通信，再按[GPU 执行模型](gpu-execution.md)检查小 GEMM 与 permutation 是否真正映射到硬件。token permutation、并行线性层与 checkpoint manifest 的紧凑 reference 见[手撕：分布式与容错](../practice/distributed-systems.md)。
+系统设计应先用[性能成本模型](performance-model.md)量化激活计算和通信，再按 [GPU 执行模型](gpu-execution.md)检查小 GEMM 与 permutation 是否真正映射到硬件。token permutation、并行线性层与 checkpoint manifest 的紧凑 reference 见[手撕：分布式与容错](../practice/distributed-systems.md)。
 
 ## Reference {#reference}
 

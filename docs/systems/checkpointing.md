@@ -57,7 +57,7 @@ $$
 
 若格式只用文件名中的 local rank 表示身份，就难以在 TP / PP / EP size 改变后安全 reshard。global parameter ID、expert ID 和 pipeline layer range 必须独立于当前 rank 编号。
 
-[PyTorch Distributed Checkpoint](https://docs.pytorch.org/docs/stable/distributed.checkpoint.html)提供分布式 state dict、planner 与跨 rank 保存 / 读取接口。具体格式仍需由调用方补齐数据游标、版本、外部状态和提交协议。
+[PyTorch Distributed Checkpoint](https://docs.pytorch.org/docs/stable/distributed.checkpoint.html) 提供分布式 state dict、planner 与跨 rank 保存 / 读取接口。具体格式仍需由调用方补齐数据游标、版本、外部状态和提交协议。
 
 ## Manifest
 
@@ -152,7 +152,7 @@ $$
 
 的额外 CPU 或其他稳定存储空间，除非采用更细粒度流水。保存中的 buffer 不能被下一训练 step 修改或 allocator 复用。
 
-[PyTorch 异步 checkpoint recipe](https://docs.pytorch.org/tutorials/recipes/distributed_async_checkpoint_recipe.html)明确把 state 搬到 CPU staging，再由后台 future 完成写入，并建议限制同时只有一个异步保存。若无界累积多个 future，CPU 内存、PCIe、网络和存储队列都可能失控。
+[PyTorch 异步 checkpoint recipe](https://docs.pytorch.org/tutorials/recipes/distributed_async_checkpoint_recipe.html) 明确把 state 搬到 CPU staging，再由后台 future 完成写入，并建议限制同时只有一个异步保存。若无界累积多个 future，CPU 内存、PCIe、网络和存储队列都可能失控。
 
 异步并不意味着零开销：
 
@@ -208,7 +208,7 @@ $$
 - data-parallel batch 与数据游标怎样保持 token 语义；
 - RNG 是按 global sample 还是按 rank 派生。
 
-跨拓扑恢复不应要求某个 rank 聚合完整模型，否则大模型会在 CPU 或单卡产生不可接受的峰值。更好的 planner 直接计算旧 shard 与新 shard range 的交集并流式传输。[ByteCheckpoint](https://arxiv.org/abs/2407.20143)研究了大规模训练中高效、弹性的分布式 checkpoint，可作为 2024 年的系统设计实例，而非通用格式标准。
+跨拓扑恢复不应要求某个 rank 聚合完整模型，否则大模型会在 CPU 或单卡产生不可接受的峰值。更好的 planner 直接计算旧 shard 与新 shard range 的交集并流式传输。[ByteCheckpoint](https://arxiv.org/abs/2407.20143) 研究了大规模训练中高效、弹性的分布式 checkpoint，可作为 2024 年的系统设计实例，而非通用格式标准。
 
 ## 保存间隔
 

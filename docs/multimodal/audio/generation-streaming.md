@@ -20,9 +20,9 @@ p(x_{1:T}\mid c)
 \prod_{t=1}^{T}p(x_t\mid x_{<t},c),
 $$
 
-其中 $c$ 可以是文本、音符、参考音色或视频。[WaveNet](https://arxiv.org/abs/1609.03499)用扩张因果卷积证明了逐样本神经生成可以获得高保真波形，但这一分解把所有时间尺度都压在同一个循环里：推理步数与样本数同阶，音乐结构也很难跨越数百万步维持。
+其中 $c$ 可以是文本、音符、参考音色或视频。[WaveNet](https://arxiv.org/abs/1609.03499) 用扩张因果卷积证明了逐样本神经生成可以获得高保真波形，但这一分解把所有时间尺度都压在同一个循环里：推理步数与样本数同阶，音乐结构也很难跨越数百万步维持。
 
-随后出现的关键转折不是简单地换一个网络，而是把“内容生成”与“波形实现”拆开。文本到语音系统先预测 Mel 频谱或其他声学特征，再由声码器还原波形；[Tacotron](https://arxiv.org/abs/1703.10135)展示了 attention-based 文本到频谱，[WaveGlow](https://arxiv.org/abs/1811.00002)用可逆流并行合成波形，[HiFi-GAN](https://arxiv.org/abs/2010.05646)则用多尺度、周期判别器直接约束听感相关结构。扩散声码器如 [DiffWave](https://arxiv.org/abs/2009.09761)把生成改写为逐步去噪，质量稳定但采样步数带来新的实时性压力。
+随后出现的关键转折不是简单地换一个网络，而是把“内容生成”与“波形实现”拆开。文本到语音系统先预测 Mel 频谱或其他声学特征，再由声码器还原波形；[Tacotron](https://arxiv.org/abs/1703.10135) 展示了 attention-based 文本到频谱，[WaveGlow](https://arxiv.org/abs/1811.00002) 用可逆流并行合成波形，[HiFi-GAN](https://arxiv.org/abs/2010.05646) 则用多尺度、周期判别器直接约束听感相关结构。扩散声码器如 [DiffWave](https://arxiv.org/abs/2009.09761) 把生成改写为逐步去噪，质量稳定但采样步数带来新的实时性压力。
 
 这条历史线留下一个至今有效的分层：
 
@@ -38,7 +38,7 @@ $$
 
 ## Codec token：把波形变成多码本序列
 
-神经音频 codec 让生成模型不必直接面对每个采样点。[SoundStream](https://arxiv.org/abs/2107.03312)和 [EnCodec](https://arxiv.org/abs/2210.13438)以 encoder、残差向量量化（RVQ）和 decoder 构成压缩通道。设 encoder 每隔 $h$ 个波形样本产生一个向量，frame rate 为
+神经音频 codec 让生成模型不必直接面对每个采样点。[SoundStream](https://arxiv.org/abs/2107.03312) 和 [EnCodec](https://arxiv.org/abs/2210.13438) 以 encoder、残差向量量化（RVQ）和 decoder 构成压缩通道。设 encoder 每隔 $h$ 个波形样本产生一个向量，frame rate 为
 
 $$
 f_c=\frac{f_s}{h}\quad\text{frames/s}.
@@ -60,7 +60,7 @@ $$
 
 因此“每秒多少 token”不能只报 $f_c$：一个时间帧可能同时含 $Q$ 个离散 token。前几层码本通常承担粗结构，后几层补细节；这不是可任意交换的 $Q$ 条独立文本序列。
 
-[AudioLM](https://arxiv.org/abs/2209.03143)进一步把语义 token 与声学 token 分层建模；[MusicGen](https://arxiv.org/abs/2306.05284)说明多码本可以用精心设计的 delay pattern 在单个自回归序列中生成。这样做的真正收益是对齐同一物理时刻的多个码本，同时避免每步串行生成 $Q$ 次。
+[AudioLM](https://arxiv.org/abs/2209.03143) 进一步把语义 token 与声学 token 分层建模；[MusicGen](https://arxiv.org/abs/2306.05284) 说明多码本可以用精心设计的 delay pattern 在单个自回归序列中生成。这样做的真正收益是对齐同一物理时刻的多个码本，同时避免每步串行生成 $Q$ 次。
 
 下面实现最小的 delay pattern。输入 `code[b, q, t]` 是 batch、码本、codec frame；输出 `stream[b, s, q]` 把第 $q$ 个码本右移 $q$ 步。`-1` 是尚未出现或已经结束的 padding，不是合法 token。
 
@@ -103,7 +103,7 @@ p(C\mid c)
 p(C_{s,q}\mid C_{<s,*},C_{s,<q},c),
 $$
 
-其中 $\mathcal A_s$ 是 delay 后第 $s$ 步实际有效的码本。自回归模型天然适合逐步输出、续写和复杂条件，但误差会沿时间累积；音乐中一次节拍漂移，可能在后续变成结构性错位。[Jukebox](https://arxiv.org/abs/2005.00341)以多层 VQ 表示和自回归 prior 生成长音乐，展示了层级离散建模的潜力，也暴露了采样成本与长程结构控制的困难。
+其中 $\mathcal A_s$ 是 delay 后第 $s$ 步实际有效的码本。自回归模型天然适合逐步输出、续写和复杂条件，但误差会沿时间累积；音乐中一次节拍漂移，可能在后续变成结构性错位。[Jukebox](https://arxiv.org/abs/2005.00341) 以多层 VQ 表示和自回归 prior 生成长音乐，展示了层级离散建模的潜力，也暴露了采样成本与长程结构控制的困难。
 
 ### 连续扩散与 flow
 
@@ -118,11 +118,11 @@ w(t)\left\|\epsilon_\theta(x_t,t,c)-\epsilon\right\|_2^2
 \right].
 $$
 
-[AudioLDM](https://arxiv.org/abs/2301.12503)把文本条件扩散移入音频 latent；[Voicebox](https://arxiv.org/abs/2306.15687)用非自回归 flow matching 处理语音补全与编辑；[F5-TTS](https://arxiv.org/abs/2410.06885)进一步以 flow matching 简化文本到语音的对齐假设。连续生成擅长全局修正与编辑，但传统全序列去噪要等最后一步才得到成品，无法天然满足低延迟播放。
+[AudioLDM](https://arxiv.org/abs/2301.12503) 把文本条件扩散移入音频 latent；[Voicebox](https://arxiv.org/abs/2306.15687) 用非自回归 flow matching 处理语音补全与编辑；[F5-TTS](https://arxiv.org/abs/2410.06885) 进一步以 flow matching 简化文本到语音的对齐假设。连续生成擅长全局修正与编辑，但传统全序列去噪要等最后一步才得到成品，无法天然满足低延迟播放。
 
 ### 语义计划与声学渲染
 
-长音频往往需要先决定“说什么/演奏什么”，再决定“如何发声”。[VALL-E](https://arxiv.org/abs/2301.02111)把 TTS 表述为 codec language modeling；[MusicLM](https://arxiv.org/abs/2301.11325)用层级序列协调文本语义与声学细节。分层能拉长规划跨度，却会产生接口失配：上层计划若丢掉时值、重音或和声信息，下层再逼真也只能忠实地渲染错误计划。
+长音频往往需要先决定“说什么/演奏什么”，再决定“如何发声”。[VALL-E](https://arxiv.org/abs/2301.02111) 把 TTS 表述为 codec language modeling；[MusicLM](https://arxiv.org/abs/2301.11325) 用层级序列协调文本语义与声学细节。分层能拉长规划跨度，却会产生接口失配：上层计划若丢掉时值、重音或和声信息，下层再逼真也只能忠实地渲染错误计划。
 
 因此三条路线并非按年份互相淘汰。实际系统常把离散模型用于语义或粗声学计划，把扩散/flow 或神经声码器用于高保真渲染；应该按接口逐层检查，而不是给整套系统贴一个“AR”或“diffusion”标签。
 
@@ -177,7 +177,7 @@ $$
 - <strong>播放缓冲</strong>：为抵抗抖动而主动增加的延迟；
 - <strong>中断延迟</strong>：用户 barge-in 后，旧声音何时真正停止。
 
-[Moshi](https://arxiv.org/abs/2410.00037)把多流 audio language modeling 用于全双工语音对话，说明“同时听和说”需要独立时钟、因果状态与重叠语音训练，而不是轮流调用 ASR、LLM 和 TTS。[Spirit-LM](https://arxiv.org/abs/2402.05755)把文本与语音 token 交织，展示了内容与表达信息在统一序列中的互补；它们仍需分别检验语义一致、音色稳定和重叠条件下的响应。
+[Moshi](https://arxiv.org/abs/2410.00037) 把多流 audio language modeling 用于全双工语音对话，说明“同时听和说”需要独立时钟、因果状态与重叠语音训练，而不是轮流调用 ASR、LLM 和 TTS。[Spirit-LM](https://arxiv.org/abs/2402.05755) 把文本与语音 token 交织，展示了内容与表达信息在统一序列中的互补；它们仍需分别检验语义一致、音色稳定和重叠条件下的响应。
 
 连续扩散/flow 也在向在线化发展：可用固定前缀、局部窗口、块因果 attention 或蒸馏把多步生成压缩到少数步。这里最容易犯的错误是让训练窗口看到未来，而部署窗口看不到；离线样例无缝，流式边界却产生爆音或音色跳变。
 
@@ -240,11 +240,11 @@ codec 帧 $i$ 对应的波形范围通常近似为 $[ih,(i+1)h)$，但有 paddin
 
 以下只记录截至 <strong>2026-07-28</strong> 可由论文或官方页面核验的公开信息。论文中的效果均视为<strong>作者报告</strong>，需要在相同数据、采样配置和硬件上复验；产品页面只视为<strong>产品披露</strong>，不据此推断未公开架构。
 
-- [Stable Audio Open](https://arxiv.org/abs/2407.14358)与后续 [Stable Audio 3](https://arxiv.org/abs/2605.17991)延续可变长度文本到音频的连续 latent 路线；后者的效率与质量结论是作者报告。
-- [SAME](https://arxiv.org/abs/2605.18613)研究语义对齐、高时间压缩率的音乐 autoencoder；其压缩率、重建与下游生成效果是作者报告。它改善的是生成底座的表示效率，本身不等同于完整的流式播放协议。
-- [Qwen3-TTS](https://arxiv.org/abs/2601.15621)公开了多语言可控 TTS 的技术报告；能力边界以该版本报告为准，不外推到同名在线产品的后续更新。
-- [HeartMuLa](https://arxiv.org/abs/2601.10547)研究开放音乐基础模型；数据、权重许可和生成内容使用范围仍须分别核对，不能由论文开放访问自动推出。
-- [Qwen3-Omni](https://arxiv.org/abs/2509.17765)报告了统一多模态理解与流式语音生成；这里把它作为作者报告的系统设计，不把产品体验反推为某种未披露声码器或训练配方。
+- [Stable Audio Open](https://arxiv.org/abs/2407.14358) 与后续 [Stable Audio 3](https://arxiv.org/abs/2605.17991) 延续可变长度文本到音频的连续 latent 路线；后者的效率与质量结论是作者报告。
+- [SAME](https://arxiv.org/abs/2605.18613) 研究语义对齐、高时间压缩率的音乐 autoencoder；其压缩率、重建与下游生成效果是作者报告。它改善的是生成底座的表示效率，本身不等同于完整的流式播放协议。
+- [Qwen3-TTS](https://arxiv.org/abs/2601.15621) 公开了多语言可控 TTS 的技术报告；能力边界以该版本报告为准，不外推到同名在线产品的后续更新。
+- [HeartMuLa](https://arxiv.org/abs/2601.10547) 研究开放音乐基础模型；数据、权重许可和生成内容使用范围仍须分别核对，不能由论文开放访问自动推出。
+- [Qwen3-Omni](https://arxiv.org/abs/2509.17765) 报告了统一多模态理解与流式语音生成；这里把它作为作者报告的系统设计，不把产品体验反推为某种未披露声码器或训练配方。
 
 这些工作共同指向“生成过程、codec 与交互协议联合设计”，而不是某一个离线 benchmark 的终局。判断新系统时，优先问它是否公开时钟、码率、采样步骤、首包、硬件、数据与对照协议。
 

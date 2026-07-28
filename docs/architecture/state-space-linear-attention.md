@@ -4,7 +4,7 @@
 
 代价是明确的：历史被压入有限状态后，不再拥有无损、任意位置的精确内容寻址。理解这一信息瓶颈，比只记住复杂度更重要。
 
-[线性时间序列模型](../landscape/lineages/linear-time-sequence-models.md)从 RNN、长卷积和结构化状态空间梳理到选择性递推；[LSTM](../landscape/works/lstm.md)给出门控有限状态的早期转折，[S4、Mamba 与 Mamba-2](../landscape/works/s4-mamba.md)进一步给出连续系统离散化、scan 等价和最小 selective recurrence。
+[线性时间序列模型](../landscape/lineages/linear-time-sequence-models.md)从 RNN、长卷积和结构化状态空间梳理到选择性递推；[LSTM](../landscape/works/lstm.md) 给出门控有限状态的早期转折，[S4、Mamba 与 Mamba-2](../landscape/works/s4-mamba.md) 进一步给出连续系统离散化、scan 等价和最小 selective recurrence。
 
 ## 统一递推
 
@@ -44,7 +44,7 @@ $$
 h_t=\bar Ah_{t-1}+\bar Bx_t.
 $$
 
-[S4](https://arxiv.org/abs/2111.00396)利用结构化状态矩阵和卷积/递推双重视角，使长序列训练与流式推理能够共享同一模型。实际实现通常不会显式计算一般矩阵指数，而会利用对角或特殊结构。
+[S4](https://arxiv.org/abs/2111.00396) 利用结构化状态矩阵和卷积/递推双重视角，使长序列训练与流式推理能够共享同一模型。实际实现通常不会显式计算一般矩阵指数，而会利用对角或特殊结构。
 
 ## 卷积与递推的等价
 
@@ -68,7 +68,7 @@ $$
 
 ## Selective SSM
 
-[Mamba](https://arxiv.org/abs/2312.00752)让离散化步长和输入、输出映射依赖当前 token：
+[Mamba](https://arxiv.org/abs/2312.00752) 让离散化步长和输入、输出映射依赖当前 token：
 
 $$
 \Delta_t=\operatorname{softplus}(W_\Delta x_t),
@@ -114,11 +114,11 @@ torch.testing.assert_close(torch.cat((left, right)), whole)
 torch.testing.assert_close(final_from_chunks, final)
 ```
 
-Python 循环是递推真值而非训练 kernel；并行 scan、chunk 内矩阵化、padding reset、门控参数化和低精度累积都应逐项与它对照。显式矩阵与 chunk 路径见[递推与记忆模型：Selective scan](../practice/sequence-models.md#selective-scan)和[Chunked scan](../practice/sequence-models.md#chunked-scan)。
+Python 循环是递推真值而非训练 kernel；并行 scan、chunk 内矩阵化、padding reset、门控参数化和低精度累积都应逐项与它对照。显式矩阵与 chunk 路径见[递推与记忆模型：Selective scan](../practice/sequence-models.md#selective-scan) 和 [Chunked scan](../practice/sequence-models.md#chunked-scan)。
 
 ## State Space Duality
 
-[Mamba-2](https://arxiv.org/abs/2405.21060)把一类结构化 SSM 与半可分矩阵联系起来。展开后，位置 $i$ 对位置 $j$ 的线性映射可写成
+[Mamba-2](https://arxiv.org/abs/2405.21060) 把一类结构化 SSM 与半可分矩阵联系起来。展开后，位置 $i$ 对位置 $j$ 的线性映射可写成
 
 $$
 M_{j,i}
@@ -174,7 +174,7 @@ $$
 
 ## Retention、衰减与 Delta Rule
 
-[RetNet](https://arxiv.org/abs/2307.08621)将带衰减的 retention 写成 parallel、recurrent 与 chunkwise 等价形式。一般状态可写为
+[RetNet](https://arxiv.org/abs/2307.08621) 将带衰减的 retention 写成 parallel、recurrent 与 chunkwise 等价形式。一般状态可写为
 
 $$
 S_t=\gamma_t\odot S_{t-1}+k_tv_t^\top.
@@ -276,7 +276,7 @@ $$
 - **双向泄漏**：训练使用未来信息，部署却按 causal state 推理。
 - **生态断层**：量化、并行、checkpoint 与服务 runtime 缺少对应实现。
 
-[Zoology](https://arxiv.org/abs/2312.04927)用受控任务展示了不同序列 mixer 在回忆能力上的结构性差异，适合作为“语言建模平均分数之外”的诊断依据。
+[Zoology](https://arxiv.org/abs/2312.04927) 用受控任务展示了不同序列 mixer 在回忆能力上的结构性差异，适合作为“语言建模平均分数之外”的诊断依据。
 
 ## 验证矩阵
 
@@ -293,7 +293,7 @@ $$
 
 ## KDA：逐通道遗忘与误差写入
 
-[Kimi Linear](https://arxiv.org/abs/2510.26692)把 channel-wise decay 与 delta rule 合成 Kimi Delta
+[Kimi Linear](https://arxiv.org/abs/2510.26692) 把 channel-wise decay 与 delta rule 合成 Kimi Delta
 Attention（KDA）。对单个 head，先让旧状态按 key channel 衰减，再用当前 key 对旧预测作误差写入：
 
 $$
@@ -363,7 +363,7 @@ $$
 
 门控制“本 token 从有限状态读出的哪些通道写回 residual stream”，与控制写入强度的
 $\beta_t$ 不是同一个门。K3 的主干按 **3 层 KDA + 1 层 Gated MLA** 重复，并让最后一层仍为
-全局注意力；完整组合见[Kimi K3](../landscape/works/kimi-k3.md)。
+全局注意力；完整组合见 [Kimi K3](../landscape/works/kimi-k3.md)。
 
 ### KDA recurrent reference {#kda-recurrence}
 
@@ -407,7 +407,7 @@ current-token read 和 chunk state 语义。生产实现还要分别校验 recur
 公开证据足以确认算法、实现接口与 K3 中的具体组合；还不能据此推出任意数据、规模和 runtime 上线性
 注意力都优于 full attention。应把关联回忆、长文推理和端到端吞吐继续作为独立验证轴。
 
-最小 selective scan、delta rule 与路径等价实验见[序列模型手撕实现](../practice/sequence-models.md)，与精确注意力的缓存比较见[KV Cache](../inference/kv-cache.md)。
+最小 selective scan、delta rule 与路径等价实验见[序列模型手撕实现](../practice/sequence-models.md)，与精确注意力的缓存比较见 [KV Cache](../inference/kv-cache.md)。
 
 ## Reference {#reference}
 

@@ -51,7 +51,7 @@ agent 轨迹长度重尾：简单任务几步结束，困难任务可能运行�
 
 不能简单截断所有长轨迹，因为尾部可能包含最终奖励和恢复行为。需要区分预算终止、环境故障和策略主动终止。
 
-部分 rollout 可以在一批轨迹达到预设完成比例后解除 barrier，把其余 episode 连同环境与采样状态暂停并在后续 iteration 恢复。这条路线降低 straggler 等待，却把 length-dependent selection 与跨版本 policy lag 带入训练；状态字段和校正边界见[在线 RL](../training/online-rl.md#partial-rollout)。[Kimi K3](../landscape/works/kimi-k3.md)提供了这一组合的完整实例。
+部分 rollout 可以在一批轨迹达到预设完成比例后解除 barrier，把其余 episode 连同环境与采样状态暂停并在后续 iteration 恢复。这条路线降低 straggler 等待，却把 length-dependent selection 与跨版本 policy lag 带入训练；状态字段和校正边界见[在线 RL](../training/online-rl.md#partial-rollout)。[Kimi K3](../landscape/works/kimi-k3.md) 提供了这一组合的完整实例。
 
 ## Policy lag
 
@@ -67,19 +67,19 @@ agent 轨迹长度重尾：简单任务几步结束，困难任务可能运行�
 
 参数热更新必须保证一个 episode 内模型版本是否允许变化；若允许，轨迹概率就不再来自单一 policy。
 
-[SAO](../landscape/works/sao-compactionrl.md#sao)进一步把 prompt 内的多 rollout 等待视为异步 barrier：单条轨迹完成后即可进入训练队列，但 learner 仍须保存真实 behavior log-probability、限制 policy lag，并审计 DIS 丢弃了哪些 token。
+[SAO](../landscape/works/sao-compactionrl.md#sao) 进一步把 prompt 内的多 rollout 等待视为异步 barrier：单条轨迹完成后即可进入训练队列，但 learner 仍须保存真实 behavior log-probability、限制 policy lag，并审计 DIS 丢弃了哪些 token。
 
 ## Token WAL 与抢占恢复
 
 百万 token trajectory 若在中途抢占后从头重采，长样本经历故障的概率更高，训练数据会产生 length-dependent selection bias；固定 seed 也只有在 batch-invariant、deterministic kernel 下才可能重放相同 token。
 
-[DeepSeek-V4](../landscape/works/deepseek-v4.md#rollout-resilience)为每个已提交 token 写 write-ahead log（WAL），抢占时同时保存外部 KV。正常恢复从最后一个 committed token 继续；KV 遭遇致命丢失时，才从已持久化 token 做 prefill 重建。提交边界必须发生在把 token 或工具动作暴露给环境之前，否则非幂等副作用可能执行成功却没有日志。
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#rollout-resilience) 为每个已提交 token 写 write-ahead log（WAL），抢占时同时保存外部 KV。正常恢复从最后一个 committed token 继续；KV 遭遇致命丢失时，才从已持久化 token 做 prefill 重建。提交边界必须发生在把 token 或工具动作暴露给环境之前，否则非幂等副作用可能执行成功却没有日志。
 
-V4 还把超长 trajectory 分成轻 metadata 与重 token fields：全局 shuffle、packing 和 dynamic minibatch 只搬 metadata，worker 临执行时再从 shared memory 取 token、mask、log-prob 等大字段，并在 minibatch 后释放。完整状态机见[V4 系统闭环](../landscape/works/tilelang-mega-moe.md#rollout-wal)。
+V4 还把超长 trajectory 分成轻 metadata 与重 token fields：全局 shuffle、packing 和 dynamic minibatch 只搬 metadata，worker 临执行时再从 shared memory 取 token、mask、log-prob 等大字段，并在 minibatch 后释放。完整状态机见 [V4 系统闭环](../landscape/works/tilelang-mega-moe.md#rollout-wal)。
 
 ## 可暂停的微虚拟机
 
-长时工具轨迹不仅要保存 token，还要保存进程、文件、网络模拟器和外部应用状态。[AgentENV](https://github.com/kvcache-ai/AgentENV)使用 Firecracker microVM、dirty-page 增量 checkpoint 与 pause/resume/fork，为这类环境提供了一个公开实现入口；Firecracker 的隔离和启动机制可从其 [NSDI 论文](https://www.usenix.org/conference/nsdi20/presentation/agache)核对。
+长时工具轨迹不仅要保存 token，还要保存进程、文件、网络模拟器和外部应用状态。[AgentENV](https://github.com/kvcache-ai/AgentENV) 使用 Firecracker microVM、dirty-page 增量 checkpoint 与 pause/resume/fork，为这类环境提供了一个公开实现入口；Firecracker 的隔离和启动机制可从其 [NSDI 论文](https://www.usenix.org/conference/nsdi20/presentation/agache)核对。
 
 [Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)报告 AgentENV 的最低 checkpoint/resume 延迟为 133/49 ms、约 $6.5\times$ memory overcommit，并累计运行 51,219,741 个 sandbox、1,505,678 个 image。这些是特定基础设施上的团队测量，不能替代目标集群基准。迁移时应重点验收：
 
@@ -142,7 +142,7 @@ V4 还把超长 trajectory 分成轻 metadata 与重 token fields：全局 shuff
 
 ## 开源系统入口
 
-[veRL](https://github.com/volcengine/verl)提供面向大语言模型 RL 的训练与 rollout 组织，可用于理解 actor、critic、reference、reward 和推理引擎如何分离。阅读框架时，优先追踪数据对象与版本边界，而非只记命令行参数。
+[veRL](https://github.com/volcengine/verl) 提供面向大语言模型 RL 的训练与 rollout 组织，可用于理解 actor、critic、reference、reward 和推理引擎如何分离。阅读框架时，优先追踪数据对象与版本边界，而非只记命令行参数。
 
 behavior version、old log-prob 与异步 batch 字段见[轨迹与策略契约](trajectory-contract.md)，分布式基础见[集合通信与状态分片](../systems/collectives-sharding.md)、[模型并行](../systems/model-parallelism.md)和[检查点与容错](../systems/checkpointing.md)。
 

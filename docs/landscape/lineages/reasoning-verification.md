@@ -184,7 +184,7 @@ RLVR 的优势是 reward 可重复执行、误差边界相对清楚；它的限�
 - RLVR 只在规格可执行的部分提供可靠 reward，不能自动覆盖事实综合、审美与开放式安全判断。
 - [DeepSeek-R1](../works/deepseek-r1.md) 展示了一套特定 base model、数据与评测下的公开配方，不构成完整生产训练复现。
 
-训练闭环的机制页见[推理后训练](../../training/reasoning-posttraining.md)，多步环境与动作信用见[Agentic RL 的搜索、过程奖励与验证](../../agentic-rl/search-verification.md)。
+训练闭环的机制页见[推理后训练](../../training/reasoning-posttraining.md)，多步环境与动作信用见 [Agentic RL 的搜索、过程奖励与验证](../../agentic-rl/search-verification.md)。
 
 ## Reference {#reference}
 

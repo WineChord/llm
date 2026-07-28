@@ -49,7 +49,7 @@ tokenizer / processor revision
 
 ## 从弱配对到交错序列
 
-[CLIP](https://arxiv.org/abs/2103.00020)与 [ALIGN](https://arxiv.org/abs/2102.05918)证明了大规模网页图文弱配对可以形成可迁移表示，也同时暴露了噪声、重复与 batch negatives 对目标的影响。
+[CLIP](https://arxiv.org/abs/2103.00020) 与 [ALIGN](https://arxiv.org/abs/2102.05918) 证明了大规模网页图文弱配对可以形成可迁移表示，也同时暴露了噪声、重复与 batch negatives 对目标的影响。
 
 图文 pair 只描述一个局部关系。网页、教材和长文档还包含：
 
@@ -58,11 +58,11 @@ tokenizer / processor revision
 - caption、图注、表格与正文的层级；
 - 跨页实体和章节结构。
 
-[Flamingo](https://arxiv.org/abs/2204.14198)使用交错图文语料训练 few-shot 多模态模型；[Multimodal C4](https://arxiv.org/abs/2304.06939)进一步系统化了从网页构建交错图文数据的过程。提取时若把 DOM 顺序、图注或重复导航文字处理错，模型学到的不是“长上下文”，而是稳定的错误邻接。
+[Flamingo](https://arxiv.org/abs/2204.14198) 使用交错图文语料训练 few-shot 多模态模型；[Multimodal C4](https://arxiv.org/abs/2304.06939) 进一步系统化了从网页构建交错图文数据的过程。提取时若把 DOM 顺序、图注或重复导航文字处理错，模型学到的不是“长上下文”，而是稳定的错误邻接。
 
-视觉指令数据又改变了监督形式。[LLaVA](https://arxiv.org/abs/2304.08485)展示了利用语言模型辅助构造视觉指令数据的路线。合成问题和回答可以扩大格式与推理覆盖，却不能恢复图像中本来没有的证据；生成器的事实错误、回答风格和拒答习惯也会被学生继承。
+视觉指令数据又改变了监督形式。[LLaVA](https://arxiv.org/abs/2304.08485) 展示了利用语言模型辅助构造视觉指令数据的路线。合成问题和回答可以扩大格式与推理覆盖，却不能恢复图像中本来没有的证据；生成器的事实错误、回答风格和拒答习惯也会被学生继承。
 
-统一模型进一步要求数据本身携带任务协议。[Chameleon](https://arxiv.org/abs/2405.09818)的混合模态自回归序列需要可靠的媒体边界与离散 token；[Qwen2.5-Omni](https://arxiv.org/abs/2503.20215)的流式音视频输入还需要真实时间对齐。两者都说明“把资产放进同一个样本”远远不够，sequence layout、position、mask 与输出目标也是数据的一部分。
+统一模型进一步要求数据本身携带任务协议。[Chameleon](https://arxiv.org/abs/2405.09818) 的混合模态自回归序列需要可靠的媒体边界与离散 token；[Qwen2.5-Omni](https://arxiv.org/abs/2503.20215) 的流式音视频输入还需要真实时间对齐。两者都说明“把资产放进同一个样本”远远不够，sequence layout、position、mask 与输出目标也是数据的一部分。
 
 ## 数据族对应不同能力
 
@@ -108,7 +108,7 @@ $$
 
 这只是记账近似。attention 的成本依赖序列长度，vision/audio encoder 有独立计算，MoE routing 与动态 padding 也使 $c_m$ 不恒定。但它足以说明：长视频样本概率很低，仍可能主导 token 和算力。
 
-[DataComp](https://arxiv.org/abs/2304.14108)在固定模型与训练预算下系统比较数据选择策略，强调数据质量不能脱离计算预算评估。多模态 mixture 也应采用同样的等预算思想，而不是只比较原始样本总量。
+[DataComp](https://arxiv.org/abs/2304.14108) 在固定模型与训练预算下系统比较数据选择策略，强调数据质量不能脱离计算预算评估。多模态 mixture 也应采用同样的等预算思想，而不是只比较原始样本总量。
 
 ## Loss reduction 是训练配方
 
@@ -190,7 +190,7 @@ torch.testing.assert_close(duplicated, total)
 
 因此每次阶段切换都应记录 optimizer 是否重置、learning rate 是否 warm up、哪些组件解冻、数据 replay 比例、位置参数和 loss mask 是否改变。
 
-[Kimi-VL](https://arxiv.org/abs/2504.07491)公开了 vision stage、alignment、joint pretraining、cooldown 和长上下文阶段，是观察这种状态转换的具体案例；它的一套配方不能直接外推为所有模型的固定顺序。
+[Kimi-VL](https://arxiv.org/abs/2504.07491) 公开了 vision stage、alignment、joint pretraining、cooldown 和长上下文阶段，是观察这种状态转换的具体案例；它的一套配方不能直接外推为所有模型的固定顺序。
 
 ## Packing 同时改变统计与系统
 
@@ -206,7 +206,7 @@ $$
 
 按长度分桶可以降低 padding，却会改变 batch 中样本分布；sequence packing 进一步把多个样本放入同一长序列，必须阻断跨样本 attention 与 loss。
 
-[NaViT](https://arxiv.org/abs/2307.06304)展示了不同分辨率图像的 packing；[FlashAttention](https://arxiv.org/abs/2205.14135)从 IO 角度降低 exact attention 的内存访问。两者解决的是不同层：
+[NaViT](https://arxiv.org/abs/2307.06304) 展示了不同分辨率图像的 packing；[FlashAttention](https://arxiv.org/abs/2205.14135) 从 IO 角度降低 exact attention 的内存访问。两者解决的是不同层：
 
 - packing 决定 token 如何组成 batch；
 - attention kernel 决定给定布局如何执行；
@@ -236,7 +236,7 @@ step and tail latency
 - gradient accumulation 中各模态出现频率是否一致；
 - loss numerator/denominator 在何时、按什么 group 汇总。
 
-[Megatron-LM](https://arxiv.org/abs/1909.08053)给出大规模 Transformer 模型并行的早期系统路径；多模态系统在此基础上还多出异构 encoder、变长媒体和不同输出 head，不能只复用语言模型的 batch accounting。
+[Megatron-LM](https://arxiv.org/abs/1909.08053) 给出大规模 Transformer 模型并行的早期系统路径；多模态系统在此基础上还多出异构 encoder、变长媒体和不同输出 head，不能只复用语言模型的 batch accounting。
 
 ## 数据加载器是可复现性边界
 

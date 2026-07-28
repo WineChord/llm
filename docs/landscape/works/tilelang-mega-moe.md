@@ -10,7 +10,7 @@ DeepSeek-V4 的系统章节不是一份“用了哪些库”的清单。它围�
 4. 推理端必须同时管理 SWA state、未完成压缩块、CSA/HCA 压缩项和 indexer key state；
 5. 长程 Agent rollout 会被抢占、跨越数十万环境，因而还需要 token WAL、外部 KV 与 DSec 沙箱。
 
-本页还原这些接口怎样咬合。[DeepSeek-V4 总深读](deepseek-v4.md#mega-moe)给出报告全貌；通用机制分别进入[GPU 执行模型](../../systems/gpu-execution.md)、[MoE 系统](../../systems/moe-systems.md)、[Attention Kernel](../../systems/attention-kernels.md)、[KV Cache](../../inference/kv-cache.md)和[Agentic RL 训练系统](../../agentic-rl/training-systems.md)。
+本页还原这些接口怎样咬合。[DeepSeek-V4 总深读](deepseek-v4.md#mega-moe)给出报告全貌；通用机制分别进入 [GPU 执行模型](../../systems/gpu-execution.md)、[MoE 系统](../../systems/moe-systems.md)、[Attention Kernel](../../systems/attention-kernels.md)、[KV Cache](../../inference/kv-cache.md) 和 [Agentic RL 训练系统](../../agentic-rl/training-systems.md)。
 
 ## 为什么低激活 MoE 仍可能被通信拖住
 
@@ -24,7 +24,7 @@ $$
 \rightarrow \text{combine}.
 $$
 
-只看总字节数会错过关键：all-to-all 的长尾、expert 负载差异和小 batch 会让通信与计算按阶段串行暴露。已有 [Comet](https://arxiv.org/abs/2502.19811)把 dispatch 与 Linear-1、Linear-2 与 combine 分别重叠；[FlashMoE](https://neurips.cc/virtual/2025/poster/119124)展示了更细粒度的 fused distributed MoE 路径。V4 的 MegaMoE 再把 expert 切成 wave：
+只看总字节数会错过关键：all-to-all 的长尾、expert 负载差异和小 batch 会让通信与计算按阶段串行暴露。已有 [Comet](https://arxiv.org/abs/2502.19811) 把 dispatch 与 Linear-1、Linear-2 与 combine 分别重叠；[FlashMoE](https://neurips.cc/virtual/2025/poster/119124) 展示了更细粒度的 fused distributed MoE 路径。V4 的 MegaMoE 再把 expert 切成 wave：
 
 ```text
 wave j-1:                  combine ───────▶
@@ -86,7 +86,7 @@ assert overlap_budget(3072, dispatch_bytes=2) == 4608
 
 ## TileLang：DSL 只是入口 {#host-codegen}
 
-[TileLang](https://github.com/tile-ai/tilelang)把 kernel 写成 tile 级数据流，让编译器负责 layout、pipeline 和底层代码生成。V4 报告强调了三项容易被“Python 写 kernel”口号遮住的工程：
+[TileLang](https://github.com/tile-ai/tilelang) 把 kernel 写成 tile 级数据流，让编译器负责 layout、pipeline 和底层代码生成。V4 报告强调了三项容易被“Python 写 kernel”口号遮住的工程：
 
 ### Host code generation
 
@@ -142,7 +142,7 @@ AdamW 的一阶、二阶状态天然按参数元素切分；Muon 的正交化把
 
 ## mHC、Pipeline Parallel 与重算
 
-[mHC](manifold-hyper-connections.md)把 residual stream 扩成 $n_{\mathrm{hc}}$ 条，并动态生成
+[mHC](manifold-hyper-connections.md) 把 residual stream 扩成 $n_{\mathrm{hc}}$ 条，并动态生成
 $A/B/C$。V4 用 fused kernel、选择性重算和修改后的 DualPipe 1F1B 接住额外状态；报告测得
 mHC 占 **overlapped 1F1B pipeline stage wall time** 的额外开销为 6.7%。这不是完整训练作业的
 统一“端到端增量”，也不能由 mHC 的小矩阵 FLOPs 单独推导。
@@ -158,7 +158,7 @@ V4 还在 TorchFX 图上做 tensor-level activation checkpointing：
 
 ## 压缩注意力怎样做 Context Parallel
 
-[CSA/HCA](deepseek-compressed-attention.md)的压缩块跨越 rank 边界时，不能让每个 rank 独立 padding，否则全局块划分会改变。V4 的两阶段协议是：
+[CSA/HCA](deepseek-compressed-attention.md) 的压缩块跨越 rank 边界时，不能让每个 rank 独立 padding，否则全局块划分会改变。V4 的两阶段协议是：
 
 1. 对压缩率 $r\in\{m,m'\}$ 的分支，每个 CP rank 把末尾 $r$ 个未压缩 KV entries
    作为 halo 发送给下一 rank；
@@ -198,7 +198,7 @@ V4 将 SWA 和 tail 放进 state cache，把已闭合 compressed entries 放进 
 3. **完全不保存**：从 prefix 尾部重算；对 $L$ 层模型，报告给出的充分恢复范围是最后
    $n_{\mathrm{win}}L$ 个 token，而不是“每层各自独立重放 $n_{\mathrm{win}}$ 个 token”。
 
-报告估计全量 SWA KV 约为 compressed cache 的 8 倍，因此第三种策略并非荒谬；但真实选择还取决于磁盘带宽、prefix 命中率、prefill 富余算力和恢复尾延迟。详见[Cache 复用](../../inference/cache-reuse.md)。
+报告估计全量 SWA KV 约为 compressed cache 的 8 倍，因此第三种策略并非荒谬；但真实选择还取决于磁盘带宽、prefix 命中率、prefill 富余算力和恢复尾延迟。详见 [Cache 复用](../../inference/cache-reuse.md)。
 
 ## Rollout 的 token WAL：为什么不能“失败就重采” {#rollout-wal}
 
@@ -233,7 +233,7 @@ generate token
 
 ## DSec：环境是 RL 状态的一部分 {#dsec}
 
-长程 Agent 训练不只保存模型侧 token，还要保存可执行世界。DSec 由 Rust 实现的 Apiserver、Edge 与 Watcher 协调，并用 [3FS](https://github.com/deepseek-ai/3FS)承载大规模镜像与状态。它按隔离成本提供四种 substrate：
+长程 Agent 训练不只保存模型侧 token，还要保存可执行世界。DSec 由 Rust 实现的 Apiserver、Edge 与 Watcher 协调，并用 [3FS](https://github.com/deepseek-ai/3FS) 承载大规模镜像与状态。它按隔离成本提供四种 substrate：
 
 | substrate | 适合 | 隔离与启动权衡 |
 | --- | --- | --- |
@@ -261,7 +261,7 @@ log，持久记录 command invocation 及其结果；它与模型侧 token WAL �
 ## 该怎样验证整条系统链
 
 - MegaMoE 同时报 steady-state throughput、p50/p99 latency、网络利用率、功耗与 expert skew；
-- TileLang 比较 compile time、host launch tax、kernel time和数值误差，不能只报 kernel 峰值；
+- TileLang 比较 compile time、host launch tax、kernel time 和数值误差，不能只报 kernel 峰值；
 - batch invariance 用同一请求在不同 batch size、排序与并发下逐 token 比较 logits；
 - fault recovery 注入 worker kill、KV 丢失、WAL 截断和非幂等工具调用；
 - cache 测试 prefix 不完整块、$\operatorname{lcm}(m,m')$ 边界、SWA 恢复与跨层索引；

@@ -2,7 +2,7 @@
 
 模型只能根据当前输入与参数产生 token。应用系统真正扩展的是三种边界：可见知识、可执行动作与可持续状态。RAG、tool use 和 agent 分别解决其中一部分，不能互相替代。
 
-[检索、工具与智能体](../landscape/lineages/retrieval-agents.md)从把知识写进参数的边界讲起：REALM 与 RAG 把检索器纳入生成系统，ReAct 把推理轨迹和环境动作交错，Toolformer 又尝试让工具调用进入自监督学习。若要落到算法与失败边界，可继续读 [RAG](../landscape/works/rag.md)和 [ReAct / Toolformer](../landscape/works/react-toolformer.md)。
+[检索、工具与智能体](../landscape/lineages/retrieval-agents.md)从把知识写进参数的边界讲起：REALM 与 RAG 把检索器纳入生成系统，ReAct 把推理轨迹和环境动作交错，Toolformer 又尝试让工具调用进入自监督学习。若要落到算法与失败边界，可继续读 [RAG](../landscape/works/rag.md) 和 [ReAct / Toolformer](../landscape/works/react-toolformer.md)。
 
 ## 三个扩展面
 
@@ -27,7 +27,7 @@ $$
 
 ## 检索链
 
-[RAG](rag.md)不是“向量库加 prompt”，而是一条可拆测的检索—生成链：
+[RAG](rag.md) 不是“向量库加 prompt”，而是一条可拆测的检索—生成链：
 
 1. [索引与召回](retrieval-indexing.md)决定候选证据是否进入集合；
 2. [重排与上下文工程](reranking-context.md)决定有限窗口里保留什么以及如何排序；
@@ -92,4 +92,4 @@ $$
 
 [评测与可靠性](../evaluation/index.md)给出协议设计，[手撕：检索与智能体](../practice/retrieval-agents.md)提供核心实现。
 
-工具协议、coding/research scaffold、环境训练与基础模型能力怎样分层，可对照 [DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md)和 [GLM](../landscape/families/glm.md) 的模型与 Agent 公开物；产品功能不能直接倒写成 checkpoint 架构。
+工具协议、coding/research scaffold、环境训练与基础模型能力怎样分层，可对照 [DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md) 和 [GLM](../landscape/families/glm.md) 的模型与 Agent 公开物；产品功能不能直接倒写成 checkpoint 架构。

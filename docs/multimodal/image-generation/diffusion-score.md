@@ -4,7 +4,7 @@ Diffusion 的直觉常被压缩成“加噪，再去噪”。这句话没有错�
 
 > 去噪器、噪声预测器与 score estimator 都在估计同一时刻数据分布的局部几何；不同 parameterization 只是用不同坐标表达它。
 
-这条路线并非突然出现。[Score Matching](https://www.jmlr.org/papers/v6/hyvarinen05a.html)先研究不需要归一化常数的密度梯度，[Denoising Score Matching](https://doi.org/10.1162/NECO_a_00142)把它化为加噪样本上的回归；扩散概率模型则构造一串逐渐变成简单先验的分布，并学习反向过程。把这些放在同一组符号中，DDPM、DDIM、score SDE 与许多 sampler 的差异会清楚得多。
+这条路线并非突然出现。[Score Matching](https://www.jmlr.org/papers/v6/hyvarinen05a.html) 先研究不需要归一化常数的密度梯度，[Denoising Score Matching](https://doi.org/10.1162/NECO_a_00142) 把它化为加噪样本上的回归；扩散概率模型则构造一串逐渐变成简单先验的分布，并学习反向过程。把这些放在同一组符号中，DDPM、DDIM、score SDE 与许多 sampler 的差异会清楚得多。
 
 ## Score 是密度的局部指北针
 
@@ -55,7 +55,7 @@ $$
 
 ## 离散扩散：把数据逐步推向 Gaussian
 
-[Diffusion Probabilistic Models](https://arxiv.org/abs/1503.03585)建立了逐步破坏与反向生成框架，[DDPM](https://arxiv.org/abs/2006.11239)给出后来最常用的 Gaussian parameterization。前向 Markov 链为
+[Diffusion Probabilistic Models](https://arxiv.org/abs/1503.03585) 建立了逐步破坏与反向生成框架，[DDPM](https://arxiv.org/abs/2006.11239) 给出后来最常用的 Gaussian parameterization。前向 Markov 链为
 
 $$
 q(x_t\mid x_{t-1})
@@ -112,7 +112,7 @@ p_\theta(x_{t-1}\mid x_t)
 \right).
 $$
 
-对变分下界展开后，各时刻主要对应 Gaussian KL。[DDPM](https://arxiv.org/abs/2006.11239)采用固定方差并重新加权，可得到常见的简化目标：
+对变分下界展开后，各时刻主要对应 Gaussian KL。[DDPM](https://arxiv.org/abs/2006.11239) 采用固定方差并重新加权，可得到常见的简化目标：
 
 $$
 \mathcal L_{\mathrm{simple}}
@@ -204,7 +204,7 @@ $$
 
 ## 从离散链到连续 SDE
 
-[Score-Based Generative Modeling through SDEs](https://arxiv.org/abs/2011.13456)把噪声层级写成连续时间过程：
+[Score-Based Generative Modeling through SDEs](https://arxiv.org/abs/2011.13456) 把噪声层级写成连续时间过程：
 
 $$
 dx=f(x,t)\,dt+g(t)\,dW_t.
@@ -236,7 +236,7 @@ $$
 
 ## DDIM：训练边缘不变，采样耦合可以改变
 
-[DDIM](https://arxiv.org/abs/2010.02502)构造与 DDPM 共享 $q(x_t\mid x_0)$ 的非 Markov 过程。给定 $\hat x_0$ 与 $\hat\epsilon$，一步可写为
+[DDIM](https://arxiv.org/abs/2010.02502) 构造与 DDPM 共享 $q(x_t\mid x_0)$ 的非 Markov 过程。给定 $\hat x_0$ 与 $\hat\epsilon$，一步可写为
 
 $$
 x_{t-1}
@@ -250,11 +250,11 @@ $$
 
 $\sigma_t=0$ 时轨迹确定，可跳过大量训练 timestep。少步采样的误差并非只由“步数少”决定，还取决于时间网格、prediction type、模型在高曲率区间的误差和 guidance。
 
-[DPM-Solver](https://arxiv.org/abs/2206.00927)进一步利用 diffusion ODE 的半线性结构构造高阶 solver；[EDM](https://arxiv.org/abs/2206.00364)系统化讨论数据预处理、噪声 parameterization、训练权重与 sampler。两者都提醒我们：模型与采样器不是可随意拼装的独立插件。
+[DPM-Solver](https://arxiv.org/abs/2206.00927) 进一步利用 diffusion ODE 的半线性结构构造高阶 solver；[EDM](https://arxiv.org/abs/2206.00364) 系统化讨论数据预处理、噪声 parameterization、训练权重与 sampler。两者都提醒我们：模型与采样器不是可随意拼装的独立插件。
 
 ## Classifier guidance 与 classifier-free guidance
 
-[ADM](https://arxiv.org/abs/2105.05233)使用外部 classifier 梯度修改 conditional score：
+[ADM](https://arxiv.org/abs/2105.05233) 使用外部 classifier 梯度修改 conditional score：
 
 $$
 \nabla_x\log p(x\mid c)
@@ -264,7 +264,7 @@ $$
 \nabla_x\log p(c\mid x).
 $$
 
-[Classifier-Free Guidance](https://arxiv.org/abs/2207.12598)在同一个网络中训练条件与空条件分支：
+[Classifier-Free Guidance](https://arxiv.org/abs/2207.12598) 在同一个网络中训练条件与空条件分支：
 
 $$
 \hat\epsilon_{\mathrm{cfg}}
@@ -370,7 +370,7 @@ CFG 不是免费的条件控制。它把预测推到训练分布外，常造成�
 | Semantics | 文字、计数、空间、属性绑定、组合 prompt |
 | System | NFE、端到端延迟、吞吐、峰值显存、decoder 成本 |
 
-Diffusion 怎样进入压缩 latent 与 Transformer，见[Latent Diffusion、DiT 与 Flow](latent-dit-flow.md)；表示层的重建上限见[Autoencoder 与视觉 Tokenizer](autoencoders-tokenizers.md)；控制条件如何注入与怎样公平评测见[可控生成、编辑与评测](control-editing-evaluation.md)。
+Diffusion 怎样进入压缩 latent 与 Transformer，见 [Latent Diffusion、DiT 与 Flow](latent-dit-flow.md)；表示层的重建上限见 [Autoencoder 与视觉 Tokenizer](autoencoders-tokenizers.md)；控制条件如何注入与怎样公平评测见[可控生成、编辑与评测](control-editing-evaluation.md)。
 
 加噪、prediction type 与 sampler 端点测试见[多模态手撕实现](../../practice/multimodal.md)。
 

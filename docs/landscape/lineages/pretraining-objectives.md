@@ -14,7 +14,7 @@ GPT、BERT 与 T5 不应被排成一条简单的替代链。它们共享 Transfo
 
 ## GPT：用因果预测承接无标注文本
 
-[OpenAI 2018 technical report](https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf)先在大量无标注文本上优化自回归目标：
+[OpenAI 2018 technical report](https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf) 先在大量无标注文本上优化自回归目标：
 
 $$
 \mathcal L_{\mathrm{CLM}}
@@ -29,7 +29,7 @@ $$
 
 ## BERT：把双向条件化变成可训练目标
 
-[BERT 2018 preprint](https://arxiv.org/abs/1810.04805)选择 Transformer encoder，并只在选中位置计算 masked language modeling：
+[BERT 2018 preprint](https://arxiv.org/abs/1810.04805) 选择 Transformer encoder，并只在选中位置计算 masked language modeling：
 
 $$
 \mathcal L_{\mathrm{MLM}}
@@ -42,7 +42,7 @@ $\tilde x$ 是破坏后的序列。原始配方选择约 15% token，其中 80% 
 
 ## T5：把任务也统一成文本生成
 
-[T5](https://arxiv.org/abs/1910.10683)于 2019 年首次公开，后发表于 [JMLR 2020](https://www.jmlr.org/papers/volume21/20-074/20-074.pdf)。它不只是提出一个更大模型，而是在统一实验框架中比较架构、无监督目标、数据和迁移方式，并采用 text-to-text 接口。
+[T5](https://arxiv.org/abs/1910.10683) 于 2019 年首次公开，后发表于 [JMLR 2020](https://www.jmlr.org/papers/volume21/20-074/20-074.pdf)。它不只是提出一个更大模型，而是在统一实验框架中比较架构、无监督目标、数据和迁移方式，并采用 text-to-text 接口。
 
 span corruption 从输入移除连续片段，以 sentinel token 标记缺口；decoder 按顺序生成被移除内容：
 

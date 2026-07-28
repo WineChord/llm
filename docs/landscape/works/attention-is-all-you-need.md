@@ -1,6 +1,6 @@
 # Attention Is All You Need
 
-[Attention Is All You Need](https://proceedings.neurips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html)发表于 NeurIPS 2017。它接住的不是“序列模型从未用过 attention”，而是更具体的矛盾：当时强大的 encoder–decoder 已用 attention 读取源端状态，但 encoder 与 decoder 内部仍依赖 recurrence 或 convolution，长依赖路径和时间串行限制了训练。
+[Attention Is All You Need](https://proceedings.neurips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html) 发表于 NeurIPS 2017。它接住的不是“序列模型从未用过 attention”，而是更具体的矛盾：当时强大的 encoder–decoder 已用 attention 读取源端状态，但 encoder 与 decoder 内部仍依赖 recurrence 或 convolution，长依赖路径和时间串行限制了训练。
 
 作者团队公开的历史实现位于 [Tensor2Tensor](https://github.com/tensorflow/tensor2tensor)。该仓库现已归档并弃用，适合核对当时的模型与训练接口，不应被当成现代 PyTorch 实现或某一论文 checkpoint 的无条件完全复现。
 
@@ -102,7 +102,7 @@ self-attention 缩短了信息路径，却留下三笔新债：
 
 Transformer 的持久影响不是一套不可更改的 2017 block。后来的 decoder-only 预训练、双向 encoder、视觉 patch、跨模态桥接、稀疏 attention 和高效 kernel 都保留了“query 寻址 key、读取 value”的接口，同时更改 norm、位置、FFN、head 共享与执行方式。
 
-前序矛盾见[从固定向量到内容寻址](../lineages/transduction-to-attention.md)。现代 block 的 canonical 推导见 [Transformer](../../architecture/transformer.md)、[Decoder Block](../../architecture/decoder-block.md)与[注意力和位置](../../architecture/attention-position.md)；精确 attention 的 IO 路线见 [FlashAttention](flashattention.md)，完整可执行模型和 KV 对照见[手撕：Decoder-only Transformer](../../practice/transformer-from-scratch.md)。
+前序矛盾见[从固定向量到内容寻址](../lineages/transduction-to-attention.md)。现代 block 的 canonical 推导见 [Transformer](../../architecture/transformer.md)、[Decoder Block](../../architecture/decoder-block.md) 与[注意力和位置](../../architecture/attention-position.md)；精确 attention 的 IO 路线见 [FlashAttention](flashattention.md)，完整可执行模型和 KV 对照见[手撕：Decoder-only Transformer](../../practice/transformer-from-scratch.md)。
 
 ## Reference {#reference}
 

@@ -33,7 +33,7 @@ $$
 
 ## RoPE
 
-[Rotary Position Embedding](https://arxiv.org/abs/2104.09864)把每两个通道视为二维平面，并对位置 $m$ 应用旋转：
+[Rotary Position Embedding](https://arxiv.org/abs/2104.09864) 把每两个通道视为二维平面，并对位置 $m$ 应用旋转：
 
 $$
 R_m(\theta_i)
@@ -94,7 +94,7 @@ rhs = (apply_rope(q[:1], [0]) * apply_rope(k[:1], [4])).sum()
 torch.testing.assert_close(lhs, rhs)
 ```
 
-真实模型还要固定 split-half/interleaved 约定、partial rotary dimension、batch broadcast、角度计算精度与 cache 中 K 的存储形态；仅凭公式无法保证 checkpoint 对齐。支持高维张量的实现见[张量原语：Rotary Position Embedding](../practice/tensor-primitives.md#rotary-position-embedding)，prefill/decode 的 position 与 mask 应同[Decoder-only Transformer：Attention](../practice/transformer-from-scratch.md#attention)联合测试。
+真实模型还要固定 split-half/interleaved 约定、partial rotary dimension、batch broadcast、角度计算精度与 cache 中 K 的存储形态；仅凭公式无法保证 checkpoint 对齐。支持高维张量的实现见[张量原语：Rotary Position Embedding](../practice/tensor-primitives.md#rotary-position-embedding)，prefill/decode 的 position 与 mask 应同 [Decoder-only Transformer：Attention](../practice/transformer-from-scratch.md#attention) 联合测试。
 
 不同通道使用不同角频率。常见定义为
 
@@ -115,7 +115,7 @@ $$
 
 ## ALiBi
 
-[ALiBi](https://arxiv.org/abs/2108.12409)不修改 hidden state，而在每个 head 的 score 上加入距离偏置：
+[ALiBi](https://arxiv.org/abs/2108.12409) 不修改 hidden state，而在每个 head 的 score 上加入距离偏置：
 
 $$
 s_{ij}
@@ -147,7 +147,7 @@ $$
 (t,h,w)
 $$
 
-三个坐标。[Qwen2-VL](https://arxiv.org/abs/2409.12191)的 M-RoPE 将旋转维度分配给时间、高度和宽度；文本片段则让这些坐标共同前进。
+三个坐标。[Qwen2-VL](https://arxiv.org/abs/2409.12191) 的 M-RoPE 将旋转维度分配给时间、高度和宽度；文本片段则让这些坐标共同前进。
 
 实现要明确：
 
@@ -161,13 +161,13 @@ $$
 
 ## 长度扩展
 
-设训练长度为 $L_0$、目标长度为 $L_1$。[Position Interpolation](https://arxiv.org/abs/2306.15595)把目标位置压回训练范围：
+设训练长度为 $L_0$、目标长度为 $L_1$。[Position Interpolation](https://arxiv.org/abs/2306.15595) 把目标位置压回训练范围：
 
 $$
 m'=m\frac{L_0}{L_1}.
 $$
 
-[YaRN](https://arxiv.org/abs/2309.00071)对不同频率采取更细粒度的插值与修正；[LongRoPE](https://arxiv.org/abs/2402.13753)搜索非均匀缩放并处理短上下文恢复。它们改变的是位置频谱，不会自动解决：
+[YaRN](https://arxiv.org/abs/2309.00071) 对不同频率采取更细粒度的插值与修正；[LongRoPE](https://arxiv.org/abs/2402.13753) 搜索非均匀缩放并处理短上下文恢复。它们改变的是位置频谱，不会自动解决：
 
 - full attention 的二次计算；
 - KV Cache 容量；

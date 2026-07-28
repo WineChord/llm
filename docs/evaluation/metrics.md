@@ -162,7 +162,7 @@ minimum coverage
 - 动态 benchmark 记录执行日期和不可变 snapshot。
 - 污染、跨语种释义和工具可访问性单独审计。
 
-具体注册字段见[Benchmark 注册表](benchmark-registry.md)，污染边界见[评测污染](contamination.md)。
+具体注册字段见 [Benchmark 注册表](benchmark-registry.md)，污染边界见[评测污染](contamination.md)。
 
 ## 正确性与失效
 

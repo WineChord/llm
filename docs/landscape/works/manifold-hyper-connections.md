@@ -112,7 +112,7 @@ $\lVert B_l\rVert_2=1$。此外，若 $B_1,B_2\in\mathcal M$，则 $B_1B_2$ 仍�
 1，故 $\mathcal M$ 对矩阵乘法封闭。深层直接 carry path 因而不会仅由这些 $B_l$ 的乘积产生
 谱范数爆炸。
 
-论文沿用 “manifold-constrained” 这一名称；严格地说，Birkhoff polytope 含边界和顶点，并非
+论文沿用“manifold-constrained”这一名称；严格地说，Birkhoff polytope 含边界和顶点，并非
 处处光滑的 manifold。实现上真正需要守住的是上述 doubly stochastic constraint，而不是名称
 本身。
 
@@ -177,7 +177,7 @@ $$
 A_l=\sigma(\widetilde A_l), \tag{6}
 $$
 
-output mapping使用
+output mapping 使用
 
 $$
 C_l=2\sigma(\widetilde C_l). \tag{7}
@@ -280,7 +280,7 @@ $$
 
 ### Residual scaling
 
-[DeepNet](https://arxiv.org/abs/2203.00555)等方法通过初始化或固定尺度控制 residual branch 与
+[DeepNet](https://arxiv.org/abs/2203.00555) 等方法通过初始化或固定尺度控制 residual branch 与
 identity branch 的相对强度。它们仍只有一条 residual stream；mHC 改变的是 residual topology，
 让多条 lanes 可以动态重排与混合。
 
@@ -291,7 +291,7 @@ DenseNet、DenseFormer 一类方法把多个历史层表示直接送给后层，
 
 ### Attention Residuals
 
-[Attention Residuals](attention-residuals.md)也让模型学习 depth mixing，但它显式对历史
+[Attention Residuals](attention-residuals.md) 也让模型学习 depth mixing，但它显式对历史
 block outputs 做 attention；mHC 则在每个子层边界更新固定四路 residual state。前者的 key/value
 来自不同深度位置，后者的 $A/B/C$ 在 lanes 间读、搬运和写回。两者都不是另一个方法的特例。
 
@@ -379,7 +379,7 @@ V4 还对 optimizer 做参数分流：mHC 的 static biases 与 gating factors �
   时，独立实现可能显著不同。
 - 后续 Birkhoff solver、隐式梯度或其他约束是相关改进路线，不属于已发布 V4 的实现事实。
 
-mHC 在完整模型中的位置见[DeepSeek-V4 深读](deepseek-v4.md)，家族继承关系见
+mHC 在完整模型中的位置见 [DeepSeek-V4 深读](deepseek-v4.md)，家族继承关系见
 [DeepSeek 演化案例](../deepseek-timeline.md)。标准 residual、PreNorm 和激活路径见
 [Decoder Block](../../architecture/decoder-block.md)。
 

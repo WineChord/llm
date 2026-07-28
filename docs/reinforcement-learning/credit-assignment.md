@@ -81,7 +81,7 @@ $$
 
 展开式中的每一项都带有沿途 mask 的乘积，因此 trace 不会跨越 episode terminal。time-limit truncation 是否令 $m_t=0$ 取决于环境契约：若后继状态仍有定义，通常应 bootstrap，而不是把 truncation 冒充 terminal。$\lambda\to1$ 接近 Monte Carlo，偏差较小而方差较大；$\lambda\to0$ 更依赖 critic。长序列中 $\gamma\lambda$ 的指数衰减会弱化远端信号，固定超参数未必适合跨度差异巨大的 response。
 
-完整推导见[多步回报与 GAE](multistep-traces.md)，critic 的训练耦合见[Actor–Critic](actor-critic.md)。
+完整推导见[多步回报与 GAE](multistep-traces.md)，critic 的训练耦合见 [Actor–Critic](actor-critic.md)。
 
 ## Observation 不等于 action
 
@@ -93,7 +93,7 @@ $$
 
 policy loss 只覆盖 $a_i$。value 可以在包含 $o_i$ 的 history 上预测，但不能因为 observation 有很多 token，就把折扣按 observation token 数机械延长。
 
-[SAO](../landscape/works/sao-compactionrl.md#sao)的 Skip-Observation GAE 直接在 action token 链之间递推；这是特定时间尺度约定。其他系统可能在 turn 级定义一步。两者都应明确 $\gamma$ 对应 token、action span 还是环境 turn。
+[SAO](../landscape/works/sao-compactionrl.md#sao) 的 Skip-Observation GAE 直接在 action token 链之间递推；这是特定时间尺度约定。其他系统可能在 turn 级定义一步。两者都应明确 $\gamma$ 对应 token、action span 还是环境 turn。
 
 ## Outcome reward 与 process reward
 
@@ -142,7 +142,7 @@ $$
 - summary 是否由 policy 采样；
 - reward 是否在各段重复，还是只保留一份。
 
-[CompactionRL](../landscape/works/sao-compactionrl.md#compactionrl)按后续优化 token 数对 local advantage 追加折扣。它恢复终局 reward 的 token-distance，但仍不是完整跨边界 GAE：后续每个 TD residual 并未全部回传。
+[CompactionRL](../landscape/works/sao-compactionrl.md#compactionrl) 按后续优化 token 数对 local advantage 追加折扣。它恢复终局 reward 的 token-distance，但仍不是完整跨边界 GAE：后续每个 TD residual 并未全部回传。
 
 ## 层级信用
 
@@ -175,7 +175,7 @@ $$
 7. 按 verifier 置信度和最终正确性构造四象限，审计高分错误轨迹。
 8. 对压缩或分段轨迹检查 reward 是否重复计数。
 
-对应的最小实现见[手撕强化学习](../practice/reinforcement-learning.md)和[Packed trajectory GAE](../practice/llm-policy-optimization.md#gae)。
+对应的最小实现见[手撕强化学习](../practice/reinforcement-learning.md)和 [Packed trajectory GAE](../practice/llm-policy-optimization.md#gae)。
 
 ## Reference {#reference}
 

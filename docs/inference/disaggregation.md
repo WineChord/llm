@@ -11,7 +11,7 @@ prefill 与 decode 的硬件行为不同：prefill 以较大的矩阵计算处�
 | Prefill | TTFT、prompt tokens/s | 高计算吞吐、大 GEMM、长序列并行 |
 | Decode | TPOT、并发与 KV 容量 | 高内存带宽、连续批处理、更多副本 |
 
-[DistServe](https://www.usenix.org/conference/osdi24/presentation/zhong-yinmin)展示了针对 TTFT/TPOT SLO 分别规划资源和并行的一条路线。
+[DistServe](https://www.usenix.org/conference/osdi24/presentation/zhong-yinmin) 展示了针对 TTFT/TPOT SLO 分别规划资源和并行的一条路线。
 
 ## 数据路径
 

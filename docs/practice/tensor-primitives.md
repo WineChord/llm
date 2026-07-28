@@ -231,7 +231,7 @@ for mass in (0., float("nan"), float("inf")):
     raise AssertionError("non-positive or non-finite softmax mass must fail")
 ```
 
-合并满足结合律的浮点近似版本，因此可以沿 key block 流式计算；不同合并顺序仍可能产生舍入差异。[FlashAttention](https://arxiv.org/abs/2205.14135)把这一思想与 IO-aware tiling 结合，系统实现见[Attention Kernel](../systems/attention-kernels.md)。
+合并满足结合律的浮点近似版本，因此可以沿 key block 流式计算；不同合并顺序仍可能产生舍入差异。[FlashAttention](https://arxiv.org/abs/2205.14135) 把这一思想与 IO-aware tiling 结合，系统实现见 [Attention Kernel](../systems/attention-kernels.md)。
 
 ## 验证清单
 
@@ -243,7 +243,7 @@ for mass in (0., float("nan"), float("inf")):
 - layout：连续与非连续 tensor；
 - partition：切 block 后合并与一次计算一致。
 
-这些原语怎样组成完整 block 见[手撕 Decoder-only Transformer](transformer-from-scratch.md)，数学推导见[Decoder Block](../architecture/decoder-block.md)。
+这些原语怎样组成完整 block 见[手撕 Decoder-only Transformer](transformer-from-scratch.md)，数学推导见 [Decoder Block](../architecture/decoder-block.md)。
 
 ## Reference {#reference}
 

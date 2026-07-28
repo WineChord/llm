@@ -48,7 +48,7 @@ assert torch.isfinite(feature).all()
 
 ### CTC
 
-[CTC](https://www.cs.toronto.edu/~graves/icml_2006.pdf)引入 blank，并对所有与目标文本一致的单调对齐求和：
+[CTC](https://www.cs.toronto.edu/~graves/icml_2006.pdf) 引入 blank，并对所有与目标文本一致的单调对齐求和：
 
 $$
 p(y\mid x)
@@ -75,13 +75,13 @@ $$
 
 RNN-T/Transducer 把声学时间与输出时间放在二维格上，适合在线识别。其延迟不仅由模型大小决定，还取决于 chunk、lookahead、endpoint 与 beam search。
 
-[Whisper](https://arxiv.org/abs/2212.04356)用大规模弱监督把多语言识别、翻译、语言识别和时间戳统一为序列任务。它说明数据规模与任务格式的重要性，也提醒我们：高层语言 decoder 可能生成声学输入中并不存在的词，尤其在静音、噪声与领域外输入上。
+[Whisper](https://arxiv.org/abs/2212.04356) 用大规模弱监督把多语言识别、翻译、语言识别和时间戳统一为序列任务。它说明数据规模与任务格式的重要性，也提醒我们：高层语言 decoder 可能生成声学输入中并不存在的词，尤其在静音、噪声与领域外输入上。
 
 ## 自监督语音表示
 
 无标注音频远多于精确转写。自监督学习让 encoder 先掌握局部声学与长程上下文，再用少量标注适配。
 
-[wav2vec 2.0](https://arxiv.org/abs/2006.11477)遮蔽连续 latent，并从量化候选中识别正确目标；[HuBERT](https://arxiv.org/abs/2106.07447)先对声学特征聚类，再预测被遮蔽位置的离散伪标签；[data2vec](https://arxiv.org/abs/2202.03555)则预测教师网络的上下文表示。
+[wav2vec 2.0](https://arxiv.org/abs/2006.11477) 遮蔽连续 latent，并从量化候选中识别正确目标；[HuBERT](https://arxiv.org/abs/2106.07447) 先对声学特征聚类，再预测被遮蔽位置的离散伪标签；[data2vec](https://arxiv.org/abs/2202.03555) 则预测教师网络的上下文表示。
 
 三者共同面对 collapse 与目标粒度：
 
@@ -102,9 +102,9 @@ RNN-T/Transducer 把声学时间与输出时间放在二维格上，适合在线
 - 音乐标签、节拍、和声与结构；
 - 音画对应和空间声源定位。
 
-[AudioSet](https://research.google.com/audioset/)提供大规模弱标注事件 ontology，但 clip-level 标签只说明一段时间内“可能出现”，不提供精确边界。模型若只学到场景共现，也可能在事件定位上失败。
+[AudioSet](https://research.google.com/audioset/) 提供大规模弱标注事件 ontology，但 clip-level 标签只说明一段时间内“可能出现”，不提供精确边界。模型若只学到场景共现，也可能在事件定位上失败。
 
-[CLAP](https://arxiv.org/abs/2206.04769)把音频与文本映射到共享空间，支持开放词汇检索和零样本分类。与 CLIP 一样，全局对齐不自动提供声源分离、精确时间 grounding 或因果解释。
+[CLAP](https://arxiv.org/abs/2206.04769) 把音频与文本映射到共享空间，支持开放词汇检索和零样本分类。与 CLIP 一样，全局对齐不自动提供声源分离、精确时间 grounding 或因果解释。
 
 当多个声源重叠时，理解任务可以先估计
 
@@ -112,7 +112,7 @@ $$
 x(t)=\sum_{k=1}^{K}s_k(t)+n(t),
 $$
 
-再对目标 $s_k$ 识别；也可以端到端输出事件。分离有助于可解释性，却会引入伪影并改变下游分布。[SAM Audio](https://ai.meta.com/research/publications/sam-audio-segment-anything-in-audio/)展示了文本、视觉和时间 span 共同提示通用音源分离的一种较新接口。
+再对目标 $s_k$ 识别；也可以端到端输出事件。分离有助于可解释性，却会引入伪影并改变下游分布。[SAM Audio](https://ai.meta.com/research/publications/sam-audio-segment-anything-in-audio/) 展示了文本、视觉和时间 span 共同提示通用音源分离的一种较新接口。
 
 ## 音频—语言对齐的粒度
 

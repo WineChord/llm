@@ -17,7 +17,7 @@ r+\gamma\max_{a'}Q(s',a')-Q(s,a)
 \right].
 $$
 
-[Dyna](https://doi.org/10.1016/B978-1-55860-141-3.50030-4)的关键不是某种特定神经网络，而是让两类数据进入同一更新接口：
+[Dyna](https://doi.org/10.1016/B978-1-55860-141-3.50030-4) 的关键不是某种特定神经网络，而是让两类数据进入同一更新接口：
 
 ```text
 real transition
@@ -37,7 +37,7 @@ real transition
 
 ## 从像素到 latent dynamics
 
-高维图像中直接预测每个像素既昂贵又容易被纹理支配。[World Models](https://arxiv.org/abs/1803.10122)把系统拆成：
+高维图像中直接预测每个像素既昂贵又容易被纹理支配。[World Models](https://arxiv.org/abs/1803.10122) 把系统拆成：
 
 $$
 z_t=E(o_t),
@@ -51,7 +51,7 @@ VAE 学视觉压缩，RNN 学 latent dynamics，小控制器可以在模型生�
 
 ### RSSM：确定性记忆与随机状态
 
-[PlaNet](https://arxiv.org/abs/1811.04551)中的 Recurrent State-Space Model（RSSM）把历史压进确定性状态 $h_t$，用随机变量 $z_t$ 表示当前不确定状态：
+[PlaNet](https://arxiv.org/abs/1811.04551) 中的 Recurrent State-Space Model（RSSM）把历史压进确定性状态 $h_t$，用随机变量 $z_t$ 表示当前不确定状态：
 
 $$
 h_t=f_\theta(h_{t-1},z_{t-1},a_{t-1}),
@@ -138,7 +138,7 @@ assert torch.allclose(plan[0], target, atol=.15)
 
 ## Dreamer：把搜索移到训练期
 
-[Dreamer](https://arxiv.org/abs/1912.01603)在 RSSM 的 latent imagination 中训练 actor 与 critic：
+[Dreamer](https://arxiv.org/abs/1912.01603) 在 RSSM 的 latent imagination 中训练 actor 与 critic：
 
 $$
 z_{t+1}\sim p_\theta(z_{t+1}\mid z_t,a_t),
@@ -157,15 +157,15 @@ V_\xi(z_t)
 \right].
 $$
 
-policy 不再在每个真实时间步运行 CEM，而是通过 imagined trajectory 学会快速给出动作。[DreamerV2](https://arxiv.org/abs/2010.02193)采用离散 latent 并在 Atari 上扩展；[DreamerV3](https://arxiv.org/abs/2301.04104)用更稳健的归一、损失与优化配方，以单套配置覆盖 150 多项作者评测任务。
+policy 不再在每个真实时间步运行 CEM，而是通过 imagined trajectory 学会快速给出动作。[DreamerV2](https://arxiv.org/abs/2010.02193) 采用离散 latent 并在 Atari 上扩展；[DreamerV3](https://arxiv.org/abs/2301.04104) 用更稳健的归一、损失与优化配方，以单套配置覆盖 150 多项作者评测任务。
 
-[DayDreamer](https://arxiv.org/abs/2206.14176)进一步报告了在真实机器人上在线学习的实验。这说明 latent imagination 不只适用于游戏，但不能把某些机器人任务上的样本效率外推为开放世界可靠性。
+[DayDreamer](https://arxiv.org/abs/2206.14176) 进一步报告了在真实机器人上在线学习的实验。这说明 latent imagination 不只适用于游戏，但不能把某些机器人任务上的样本效率外推为开放世界可靠性。
 
-2025 年公开的 [Dreamer 4](https://arxiv.org/abs/2509.24527)把因果视频 tokenizer、interactive dynamics 与 offline Minecraft 数据结合。论文报告了只用离线数据完成长程 Minecraft 目标的结果；截至 2026-07-28，[官方项目页](https://danijar.com/project/dreamer4/)可核对论文与演示，未确认有与论文完整训练栈对应的官方代码。第三方实现应标为复现尝试。
+2025 年公开的 [Dreamer 4](https://arxiv.org/abs/2509.24527) 把因果视频 tokenizer、interactive dynamics 与 offline Minecraft 数据结合。论文报告了只用离线数据完成长程 Minecraft 目标的结果；截至 2026-07-28，[官方项目页](https://danijar.com/project/dreamer4/)可核对论文与演示，未确认有与论文完整训练栈对应的官方代码。第三方实现应标为复现尝试。
 
 ## MuZero：不重建观察也能规划 {#muzero}
 
-[MuZero](https://www.nature.com/articles/s41586-020-03051-4)提出三部分：
+[MuZero](https://www.nature.com/articles/s41586-020-03051-4) 提出三部分：
 
 $$
 s^0=h_\theta(o_{\le t}),

@@ -13,7 +13,7 @@
 
 ## 早期分解：外观负责“是什么”，运动负责“怎样变”
 
-最早的神经视频生成沿用 GAN 的隐式分布学习，但很快发现单个 latent 难以同时控制身份与运动。[Video GAN](https://arxiv.org/abs/1609.02612)把前景运动和静态背景分开，[MoCoGAN](https://arxiv.org/abs/1707.04993)则把内容 latent 与随时间演化的 motion latent 分开：
+最早的神经视频生成沿用 GAN 的隐式分布学习，但很快发现单个 latent 难以同时控制身份与运动。[Video GAN](https://arxiv.org/abs/1609.02612) 把前景运动和静态背景分开，[MoCoGAN](https://arxiv.org/abs/1707.04993) 则把内容 latent 与随时间演化的 motion latent 分开：
 
 $$
 z_t=[z_{\mathrm{content}},z_{\mathrm{motion},t}],
@@ -23,7 +23,7 @@ $$
 
 这种分解很有启发性：不随时间改变的因素应共享状态，变化因素才逐帧更新。但 GAN 训练既要骗过逐帧判别器，又要骗过视频判别器；模式坍缩、长程漂移和有限分辨率很难同时解决。更根本地说，连续 latent 没有显式回答“一段已生成历史之后，下一个事件是什么”。
 
-离散 token 给出了另一种写法。[VideoGPT](https://arxiv.org/abs/2104.10157)先用 VQ-VAE 压缩视频，再自回归生成时空 token。设原视频为
+离散 token 给出了另一种写法。[VideoGPT](https://arxiv.org/abs/2104.10157) 先用 VQ-VAE 压缩视频，再自回归生成时空 token。设原视频为
 
 $$
 x\in\mathbb R^{B\times T\times H\times W\times C},
@@ -55,7 +55,7 @@ $$
 
 ## 扩散为何改变了视频生成
 
-[Video Diffusion Models](https://arxiv.org/abs/2204.03458)把图像扩散扩展到时空数据，并探索同时训练图像与视频。前向噪声仍可写成
+[Video Diffusion Models](https://arxiv.org/abs/2204.03458) 把图像扩散扩展到时空数据，并探索同时训练图像与视频。前向噪声仍可写成
 
 $$
 z_\tau=\alpha_\tau z_0+\sigma_\tau\epsilon,
@@ -79,7 +79,7 @@ $$
 
 区别不在公式，而在 $\epsilon_\theta$ 必须识别哪些变化是物体运动、镜头运动、遮挡，哪些只是逐帧噪声。扩散的全局迭代允许后续步骤同时修正许多帧，比严格逐 token 生成更容易维护短片的一致性。
 
-直接在像素视频上去噪代价极高，因此 latent diffusion 成为主线。[Latent Video Diffusion Models](https://arxiv.org/abs/2211.13221)在压缩时空表示上生成；[Stable Video Diffusion](https://arxiv.org/abs/2311.15127)系统讨论了数据筛选、图像预训练和高质量视频微调。这里形成了一个重要工程规律：
+直接在像素视频上去噪代价极高，因此 latent diffusion 成为主线。[Latent Video Diffusion Models](https://arxiv.org/abs/2211.13221) 在压缩时空表示上生成；[Stable Video Diffusion](https://arxiv.org/abs/2311.15127) 系统讨论了数据筛选、图像预训练和高质量视频微调。这里形成了一个重要工程规律：
 
 $$
 \text{图像空间先验}
@@ -101,7 +101,7 @@ u\in\mathbb R^{B\times T_p\times H_p\times W_p\times D},
 N=T_pH_pW_p.
 $$
 
-全时空 attention 的代价近似 $O(N^2)$，分辨率或时长翻倍都会迅速扩大成本。[Latte](https://arxiv.org/abs/2401.03048)系统研究了空间与时间 Transformer 的分解设计；常见实现包括：
+全时空 attention 的代价近似 $O(N^2)$，分辨率或时长翻倍都会迅速扩大成本。[Latte](https://arxiv.org/abs/2401.03048) 系统研究了空间与时间 Transformer 的分解设计；常见实现包括：
 
 - 先对每帧做空间 attention，再沿同一空间位置做时间 attention；
 - 局部窗口处理细节，稀疏全局 token 传递长程状态；
@@ -212,7 +212,7 @@ $$
 
 每生成一个 chunk，系统可以把关键实体、相机、动作结果和剩余目标压缩为显式 memory，再与局部视觉 cache 一同传给下一段。纯文本摘要省 token，却可能丢失外观；只保留视觉 KV cache 又难以纠正错误状态。两者组合时要记录 provenance，避免一个早期幻觉被后续当成硬条件。
 
-[Phenaki](https://arxiv.org/abs/2210.02399)以时序 token 和随时间变化的 prompt 研究长视频生成；[VideoPoet](https://arxiv.org/abs/2312.14125)把多种视频生成与编辑任务统一成 token 序列。近期的 [MAGI-1](https://arxiv.org/abs/2505.13211)与 [Self Forcing](https://arxiv.org/abs/2506.08009)分别探索自回归分块扩散和训练—推理暴露差异。它们给出的长时结果均属于作者报告；判断真正的长程能力仍需看连续生成协议、是否重采样最佳片段，以及状态错误随时长的增长曲线。
+[Phenaki](https://arxiv.org/abs/2210.02399) 以时序 token 和随时间变化的 prompt 研究长视频生成；[VideoPoet](https://arxiv.org/abs/2312.14125) 把多种视频生成与编辑任务统一成 token 序列。近期的 [MAGI-1](https://arxiv.org/abs/2505.13211) 与 [Self Forcing](https://arxiv.org/abs/2506.08009) 分别探索自回归分块扩散和训练—推理暴露差异。它们给出的长时结果均属于作者报告；判断真正的长程能力仍需看连续生成协议、是否重采样最佳片段，以及状态错误随时长的增长曲线。
 
 ## 视频、声音与世界状态
 
@@ -222,7 +222,7 @@ $$
 j(i)=\arg\min_j\left|\tau^a_j-\tau^v_i\right|.
 $$
 
-撞击声可以略晚于接触画面，背景音乐则只需场景级语义一致。评测若把所有音画关系都压成 clip-level 相似度，会错过口型漂移和事件提前。[MMAudio](https://arxiv.org/abs/2412.15322)研究了视频条件音频生成中的语义与同步对齐；它代表的是“由视频生成声音”，不等价于一个同时联合采样所有模态的世界模型。
+撞击声可以略晚于接触画面，背景音乐则只需场景级语义一致。评测若把所有音画关系都压成 clip-level 相似度，会错过口型漂移和事件提前。[MMAudio](https://arxiv.org/abs/2412.15322) 研究了视频条件音频生成中的语义与同步对齐；它代表的是“由视频生成声音”，不等价于一个同时联合采样所有模态的世界模型。
 
 视频预测也不自动等于世界模型。若系统只学
 
@@ -236,7 +236,7 @@ $$
 p(s_{t+1},r_t\mid s_t,a_t),
 $$
 
-并在规划与真实反馈中检验。[GameNGen](https://arxiv.org/abs/2408.14837)和 [Cosmos](https://arxiv.org/abs/2501.03575)将生成视频与可交互/物理世界建模联系起来；论文结果是作者报告，不能仅凭视觉逼真度推断可控性、因果性或长期规划价值。关于闭环状态、动作与规划的严格边界见[世界模型总览](../../world-models/index.md)。
+并在规划与真实反馈中检验。[GameNGen](https://arxiv.org/abs/2408.14837) 和 [Cosmos](https://arxiv.org/abs/2501.03575) 将生成视频与可交互/物理世界建模联系起来；论文结果是作者报告，不能仅凭视觉逼真度推断可控性、因果性或长期规划价值。关于闭环状态、动作与规划的严格边界见[世界模型总览](../../world-models/index.md)。
 
 ## 实现契约：一个视频不是一个四维数组就够了
 
@@ -302,11 +302,11 @@ FVD 等分布指标提供整体距离，但强依赖特征网络、clip 长度�
 
 以下内容核验至 <strong>2026-07-28</strong>。论文中的架构、规模和实验结论均作为<strong>作者报告</strong>；官方演示或服务页面只作为<strong>产品披露</strong>。对于未公开训练数据、模型结构、推理链路和上线版本差异，不从演示效果反向推断。
 
-- [Sora](https://openai.com/index/video-generation-models-as-world-simulators/)官方研究页面披露了以时空 patch 表示视频、生成不同时长和分辨率的思路；这是产品/研究披露，不足以重建未公开训练配方。
-- [Wan 2.1](https://arxiv.org/abs/2503.20314)、[HunyuanVideo](https://arxiv.org/abs/2412.03603)与 [CogVideoX](https://arxiv.org/abs/2408.06072)公开了各自的视频生成系统与实验。跨报告比较时必须对齐分辨率、时长、prompt、采样步数和人工协议。
-- [Diffusion Forcing](https://arxiv.org/abs/2407.01392)尝试让序列各 token 处在不同噪声水平，以连接生成、预测与规划；它提供了统一视角，但具体任务收益仍是相应实验设定下的作者报告。
-- [MOVA](https://arxiv.org/abs/2602.08794)研究可扩展、同步的视频—音频联合生成；其同步与质量结论是作者报告，不代表未披露版本的在线产品能力。[minWM](https://arxiv.org/abs/2605.30263)则公开了实时交互视频世界模型的全栈框架；应以论文中的动作接口和闭环实验为边界，不把“world model”名称直接等同于已验证的通用物理因果或规划能力。
-- [TempCache](https://arxiv.org/abs/2602.01801)探索视频扩散推理中的时间缓存复用。加速结果必须连同模型、分辨率、视频长度、采样器、误差容忍和硬件阅读，不能只比较单个倍速数字。
+- [Sora](https://openai.com/index/video-generation-models-as-world-simulators/) 官方研究页面披露了以时空 patch 表示视频、生成不同时长和分辨率的思路；这是产品/研究披露，不足以重建未公开训练配方。
+- [Wan 2.1](https://arxiv.org/abs/2503.20314)、[HunyuanVideo](https://arxiv.org/abs/2412.03603) 与 [CogVideoX](https://arxiv.org/abs/2408.06072) 公开了各自的视频生成系统与实验。跨报告比较时必须对齐分辨率、时长、prompt、采样步数和人工协议。
+- [Diffusion Forcing](https://arxiv.org/abs/2407.01392) 尝试让序列各 token 处在不同噪声水平，以连接生成、预测与规划；它提供了统一视角，但具体任务收益仍是相应实验设定下的作者报告。
+- [MOVA](https://arxiv.org/abs/2602.08794) 研究可扩展、同步的视频—音频联合生成；其同步与质量结论是作者报告，不代表未披露版本的在线产品能力。[minWM](https://arxiv.org/abs/2605.30263) 则公开了实时交互视频世界模型的全栈框架；应以论文中的动作接口和闭环实验为边界，不把“world model”名称直接等同于已验证的通用物理因果或规划能力。
+- [TempCache](https://arxiv.org/abs/2602.01801) 探索视频扩散推理中的时间缓存复用。加速结果必须连同模型、分辨率、视频长度、采样器、误差容忍和硬件阅读，不能只比较单个倍速数字。
 
 前沿系统越来越像联合工程：数据去重与字幕、时空 tokenizer、图像先验、条件编码、生成目标、并行/缓存、后处理和安全协议共同决定结果。新的模型名不会取消这些接口，反而更要求把每一层公开到足以复现的程度。
 

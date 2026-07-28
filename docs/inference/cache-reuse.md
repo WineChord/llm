@@ -2,7 +2,7 @@
 
 大量请求会重复 system prompt、few-shot 示例、共享文档或多轮对话前缀。若这些 token 的模型状态完全兼容，可以直接复用其 KV，跳过重复 prefill。难点不在“保存一个 hash”，而在确认语义身份、选择 worker、管理生命周期，并判断查找和搬运是否真的比重算便宜。
 
-分页与 block 所有权见[KV Cache](kv-cache.md)；本页只讨论精确前缀复用及其多层存储，不把有损 KV 淘汰混入同一概念。
+分页与 block 所有权见 [KV Cache](kv-cache.md)；本页只讨论精确前缀复用及其多层存储，不把有损 KV 淘汰混入同一概念。
 
 ## 收益模型
 
@@ -61,7 +61,7 @@ tenant and permission boundary
 
 ## 最长前缀查找
 
-精确复用需要找到 token 序列的最长兼容前缀。最简单的是固定 block hash 链；更灵活的是 radix tree。[SGLang](https://arxiv.org/abs/2312.07104)中的 RadixAttention 将共享前缀组织为 radix tree，并把节点与 KV 生命周期关联。
+精确复用需要找到 token 序列的最长兼容前缀。最简单的是固定 block hash 链；更灵活的是 radix tree。[SGLang](https://arxiv.org/abs/2312.07104) 中的 RadixAttention 将共享前缀组织为 radix tree，并把节点与 KV 生命周期关联。
 
 一个安全的命中流程是：
 
@@ -112,7 +112,7 @@ KV 可以驻留于 GPU、CPU、节点间内存或持久存储。层级越远，�
 | 远端内存 | 跨副本共享 | 网络、拓扑、隔离与 install |
 | 持久层 | 极长、低频或跨重启 | 序列化、版本和冷延迟 |
 
-[Mooncake](https://arxiv.org/abs/2407.00079)研究了把 KV Cache 作为分布式资源池的一条路线；[LMCache](https://github.com/LMCache/LMCache)提供了多层 KV 复用的公开实现。它们说明了可行的系统边界，不保证远程层对每个模型、网络和流量分布都有收益。
+[Mooncake](https://arxiv.org/abs/2407.00079) 研究了把 KV Cache 作为分布式资源池的一条路线；[LMCache](https://github.com/LMCache/LMCache) 提供了多层 KV 复用的公开实现。它们说明了可行的系统边界，不保证远程层对每个模型、网络和流量分布都有收益。
 
 多层查找可采用逐层探测，也可让目录直接返回位置。无论哪种方式，目录命中都不等于数据可用；只有版本校验、传输完成、checksum 通过并安装到目标 block 后，decode 才能开始。
 
@@ -137,7 +137,7 @@ KV 可以驻留于 GPU、CPU、节点间内存或持久存储。层级越远，�
 
 ### V4：压缩块持久化与 SWA 恢复
 
-[DeepSeek-V4](../landscape/works/deepseek-v4.md#on-disk-kv)的联合状态不是 recurrent state，而是 CSA/HCA compressed entries、Lightning Indexer 状态、未完成压缩 tail 与 SWA KV。只有完整闭合的压缩块可以直接持久化；tail 取决于后续 token，恢复时必须从原始 token 重建。
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#on-disk-kv) 的联合状态不是 recurrent state，而是 CSA/HCA compressed entries、Lightning Indexer 状态、未完成压缩 tail 与 SWA KV。只有完整闭合的压缩块可以直接持久化；tail 取决于后续 token，恢复时必须从原始 token 重建。
 
 SWA 有三种空间—恢复策略：
 
@@ -145,7 +145,7 @@ SWA 有三种空间—恢复策略：
 2. 每隔 $p$ 个 token 保存一次最近窗口的 checkpoint，命中后从最近 checkpoint 重算尾部；
 3. 完全不保存，为恢复各层末尾窗口，最多重算 prefix 最后 $n_{\mathrm{win}}L$ 个 token。
 
-第三种方案的 $n_{\mathrm{win}}L$ 是报告给出的最坏重算 token 上界，不是每层各自重放同一段后再简单相加的实现处方。报告估计全量 SWA KV 约为 compressed cache 的 8 倍，因此磁盘最省方案可能有意义；真实选择仍取决于命中率、存储带宽、prefill 余量与 p99 恢复延迟。具体 cache layout 见[V4 系统闭环](../landscape/works/tilelang-mega-moe.md#on-disk-kv)。
+第三种方案的 $n_{\mathrm{win}}L$ 是报告给出的最坏重算 token 上界，不是每层各自重放同一段后再简单相加的实现处方。报告估计全量 SWA KV 约为 compressed cache 的 8 倍，因此磁盘最省方案可能有意义；真实选择仍取决于命中率、存储带宽、prefill 余量与 p99 恢复延迟。具体 cache layout 见 [V4 系统闭环](../landscape/works/tilelang-mega-moe.md#on-disk-kv)。
 
 ## 路由、放置与逐出
 
@@ -164,7 +164,7 @@ $$
 -T_{\mathrm{cold},j}.
 $$
 
-[Preble](https://arxiv.org/abs/2407.00023)研究了分布式前缀复用中的路由与负载均衡。实际部署还要加入失败域、tenant 配额、adapter 驻留和 decode KV 余量。
+[Preble](https://arxiv.org/abs/2407.00023) 研究了分布式前缀复用中的路由与负载均衡。实际部署还要加入失败域、tenant 配额、adapter 驻留和 decode KV 余量。
 
 逐出策略不能只用 LRU。长前缀重算成本高，但也占用更多空间；共享节点可能被大量后代引用；租户配额和敏感数据还会要求主动清除。逐出前必须确认引用数为零，并等待全部 GPU event 完成。
 

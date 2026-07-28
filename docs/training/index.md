@@ -2,7 +2,7 @@
 
 训练不是一条从 loss 单调走向能力的流水线。每个阶段都重新定义数据分布、可训练参数、目标函数和评测边界；如果只记录“用了哪个算法”，就无法解释模型究竟学到了什么。
 
-从监督示范、偏好建模到在线策略优化，并不存在一条永远正确的固定流水线。[后训练与对齐](../landscape/lineages/training-alignment.md)把 InstructGPT、Constitutional AI、DPO 与可验证奖励放回各自的反馈接口；[强化学习](../reinforcement-learning/index.md)进一步展开序贯决策、策略优化和语言模型反馈，[推理、搜索与验证](../landscape/lineages/reasoning-verification.md)则说明 inference-time search 怎样反过来成为训练数据和奖励来源。关键转折可从 [InstructGPT](../landscape/works/instructgpt.md)、[DPO](../landscape/works/dpo.md)与 [DeepSeek-R1](../landscape/works/deepseek-r1.md)逐项深读。
+从监督示范、偏好建模到在线策略优化，并不存在一条永远正确的固定流水线。[后训练与对齐](../landscape/lineages/training-alignment.md)把 InstructGPT、Constitutional AI、DPO 与可验证奖励放回各自的反馈接口；[强化学习](../reinforcement-learning/index.md)进一步展开序贯决策、策略优化和语言模型反馈，[推理、搜索与验证](../landscape/lineages/reasoning-verification.md)则说明 inference-time search 怎样反过来成为训练数据和奖励来源。关键转折可从 [InstructGPT](../landscape/works/instructgpt.md)、[DPO](../landscape/works/dpo.md) 与 [DeepSeek-R1](../landscape/works/deepseek-r1.md) 逐项深读。
 
 ## 生命周期
 
@@ -110,4 +110,4 @@ reward 来源与 optimizer 的关系见[反馈制度](../reinforcement-learning/
 5. 数据、teacher、reference、reward、verifier 与 judge 的版本隔离；
 6. 失败样本、退化 slice 和未决假设，而不只保存汇总分数。
 
-从公开配方观察阶段怎样重新组合，可沿 [DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md)与 [GLM](../landscape/families/glm.md) 家族进入；各页会把 checkpoint、报告和未知训练细节分开。
+从公开配方观察阶段怎样重新组合，可沿 [DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md) 与 [GLM](../landscape/families/glm.md) 家族进入；各页会把 checkpoint、报告和未知训练细节分开。

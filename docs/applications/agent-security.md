@@ -22,7 +22,7 @@ user / document / web / email
 
 ## Prompt injection
 
-直接注入来自用户输入，间接注入来自网页、邮件、文档、代码注释或工具结果。[OWASP Prompt Injection](https://owasp.org/www-community/attacks/PromptInjection)总结了基本攻击面；[InjecAgent](https://arxiv.org/abs/2403.02691)与 [AgentDojo](https://arxiv.org/abs/2406.13352)提供了面向工具智能体的攻击与评测环境。
+直接注入来自用户输入，间接注入来自网页、邮件、文档、代码注释或工具结果。[OWASP Prompt Injection](https://owasp.org/www-community/attacks/PromptInjection) 总结了基本攻击面；[InjecAgent](https://arxiv.org/abs/2403.02691) 与 [AgentDojo](https://arxiv.org/abs/2406.13352) 提供了面向工具智能体的攻击与评测环境。
 
 防线应组合：
 
@@ -116,7 +116,7 @@ $$
 
 ## 安全评测
 
-[ToolEmu](https://arxiv.org/abs/2309.15817)研究用模拟器测试工具智能体风险。评测集要覆盖：
+[ToolEmu](https://arxiv.org/abs/2309.15817) 研究用模拟器测试工具智能体风险。评测集要覆盖：
 
 - 直接与间接 prompt injection；
 - 数据窃取和跨租户泄露；

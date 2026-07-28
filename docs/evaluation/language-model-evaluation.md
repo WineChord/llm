@@ -156,7 +156,7 @@ $$
 
 若 $n-c<k$，该题估计为 $1$。必须报告 $n$、$k$、temperature、top-$p$、stop、总 token、超时和 verifier。pass@10 与单次 greedy 不共享推理预算。
 
-Agent 任务还关心连续多次都成功的 pass$^k$，含义与“至少一次成功”相反，见[Agent 与工具评测](agent-tool-evaluation.md)。
+Agent 任务还关心连续多次都成功的 pass$^k$，含义与“至少一次成功”相反，见 [Agent 与工具评测](agent-tool-evaluation.md)。
 
 开放生成没有单一真值，可组合：
 
@@ -191,7 +191,7 @@ environment initial state
 
 LLM judge 受位置、长度、格式、家族偏好和注入影响。pairwise 结果至少执行候选顺序交换，并用人工双盲子集校准。guard 评测则同时报告危险输入识别、危险输出拦截和无害任务过度拒绝；只报 accuracy 会隐藏阈值 trade-off。
 
-具体协议见[生成式评测与 LLM Judge](generative-judges.md)和[安全评测](safety-evaluation.md)。
+具体协议见[生成式评测与 LLM Judge](generative-judges.md) 和[安全评测](safety-evaluation.md)。
 
 ## 污染与版本时间
 

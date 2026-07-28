@@ -118,16 +118,16 @@ scale 的 axis、尾 group 与零值语义在这里都是可测试契约。refer
 
 decode 常反复读取全部权重，weight-only 量化因此可能直接降低 HBM 流量。prefill 是否加速取决于低比特 GEMM 的实际吞吐；若 kernel 先把整块权重反量化到高精度并写回 HBM，收益会显著减小。
 
-- [GPTQ](https://arxiv.org/abs/2210.17323)用近似二阶信息逐层量化权重；
-- [AWQ](https://arxiv.org/abs/2306.00978)根据 activation 观察保护重要权重通道；
-- [SpQR](https://arxiv.org/abs/2306.03078)把异常权重与量化主体分离；
-- [AQLM](https://arxiv.org/abs/2401.06118)使用加性量化表示权重。
+- [GPTQ](https://arxiv.org/abs/2210.17323) 用近似二阶信息逐层量化权重；
+- [AWQ](https://arxiv.org/abs/2306.00978) 根据 activation 观察保护重要权重通道；
+- [SpQR](https://arxiv.org/abs/2306.03078) 把异常权重与量化主体分离；
+- [AQLM](https://arxiv.org/abs/2401.06118) 使用加性量化表示权重。
 
 它们的论文结果依赖模型、group、校准数据和实现。选择时应先问目标硬件是否有对应 kernel，再比较相同模型、相同数据和相同质量门槛。
 
 ## Weight–Activation
 
-activation 的 outlier 会让低比特范围被少数极值主导。[LLM.int8()](https://arxiv.org/abs/2208.07339)把异常维度保留为高精度路径；[SmoothQuant](https://arxiv.org/abs/2211.10438)利用离线等价缩放把量化难度从 activation 迁移到 weight。
+activation 的 outlier 会让低比特范围被少数极值主导。[LLM.int8()](https://arxiv.org/abs/2208.07339) 把异常维度保留为高精度路径；[SmoothQuant](https://arxiv.org/abs/2211.10438) 利用离线等价缩放把量化难度从 activation 迁移到 weight。
 
 对线性层 $Y=XW$，引入逐通道正数 $\alpha$：
 
@@ -170,7 +170,7 @@ high-precision exceptions and fallback counters
 
 ### DeepSeek-V4：expert 与 indexer 两条 FP4 路径
 
-[DeepSeek-V4](../landscape/works/deepseek-v4.md#fp4-qat)把 MXFP4 QAT 同时用于：
+[DeepSeek-V4](../landscape/works/deepseek-v4.md#fp4-qat) 把 MXFP4 QAT 同时用于：
 
 - MoE expert weights：FP32 master weight 先量化为 FP4，再解量化成 FP8 复用既有训练 kernel；
 - CSA Lightning Indexer 的 Q/K：cache、载入和 score matmul 都走 FP4；
@@ -189,7 +189,7 @@ KV 量化降低长上下文的容量和 decode 读取量，但误差会在每一
 - RoPE 前后的 key 分布不同；
 - residual window 可以让最近 token 保留高精度。
 
-[KIVI](https://arxiv.org/abs/2402.02750)采用 key per-channel、value per-token 的非对称设计；[KVQuant](https://arxiv.org/abs/2401.18079)研究逐通道和 pre-RoPE key 等选择。它们是近似方法，必须验证长上下文质量、cache kernel 和 metadata，而不能只看节省比例。
+[KIVI](https://arxiv.org/abs/2402.02750) 采用 key per-channel、value per-token 的非对称设计；[KVQuant](https://arxiv.org/abs/2401.18079) 研究逐通道和 pre-RoPE key 等选择。它们是近似方法，必须验证长上下文质量、cache kernel 和 metadata，而不能只看节省比例。
 
 ## Kernel 决定实际收益
 

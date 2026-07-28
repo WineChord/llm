@@ -2,7 +2,7 @@
 
 语言模型的在线强化学习最初容易被画成一个整齐的循环：采样一批回答，计算奖励，更新一次策略，再用新策略采下一批。这个图在短答案上尚可工作；一旦模型需要编译代码、操作终端、搜索网页，轨迹长度便会呈现长尾，环境还会发生超时、崩溃与网络抖动。此时最昂贵的不是某一次前向或反向，而是全局 barrier：最快的 GPU 必须等待最慢的环境。
 
-[slime](https://github.com/THUDM/slime)把问题重新表述为一个持续运行的数据系统：
+[slime](https://github.com/THUDM/slime) 把问题重新表述为一个持续运行的数据系统：
 
 ```text
 task service ──> rollout engine ──> trajectory gateway ──> learner
@@ -270,7 +270,7 @@ $$
 - worker 故障或扩缩容时有明确的 cache miss / remap 语义；
 - 负载均衡不能频繁迁移热点 rollout，否则局部性收益被抵消。
 
-它与 [vLLM 的 PagedAttention](vllm-pagedattention.md)、[prefix/cache reuse](../../inference/cache-reuse.md)解决的是相邻层次的问题：前者决定请求去哪台副本，后者决定副本内 KV 如何组织与复用。
+它与 [vLLM 的 PagedAttention](vllm-pagedattention.md)、[prefix/cache reuse](../../inference/cache-reuse.md) 解决的是相邻层次的问题：前者决定请求去哪台副本，后者决定副本内 KV 如何组织与复用。
 
 ## 从 GLM-5 到 GLM-5.2：系统仍在演进 {#glm-52}
 

@@ -1,6 +1,6 @@
 # Sparse MoE：只激活少数专家以后
 
-Mixture of Experts 的表面承诺很直接：模型可以拥有许多专家，但每个 token 只经过少数几个，于是容量增长快于激活计算。真正决定这项承诺能否成立的，是 [Sparsely-Gated MoE](https://arxiv.org/abs/1701.06538)、[GShard](https://arxiv.org/abs/2006.16668)与 [Switch Transformer](https://arxiv.org/abs/2101.03961)逐步暴露出的路由、容量和通信问题。Sparse MoE 不是一个单独 layer，而是一份从概率分配一直延伸到集群网络的契约。
+Mixture of Experts 的表面承诺很直接：模型可以拥有许多专家，但每个 token 只经过少数几个，于是容量增长快于激活计算。真正决定这项承诺能否成立的，是 [Sparsely-Gated MoE](https://arxiv.org/abs/1701.06538)、[GShard](https://arxiv.org/abs/2006.16668) 与 [Switch Transformer](https://arxiv.org/abs/2101.03961) 逐步暴露出的路由、容量和通信问题。Sparse MoE 不是一个单独 layer，而是一份从概率分配一直延伸到集群网络的契约。
 
 ## 从加权混合到条件执行
 
@@ -95,7 +95,7 @@ original token order
   -> restore token order
 ```
 
-理论激活 FLOPs 不包含路由元数据、padding capacity、跨机字节和同步等待。expert placement 若跨越慢链路，小消息 all-to-all 会让算力空闲。系统机制见[MoE 系统](../../systems/moe-systems.md)。
+理论激活 FLOPs 不包含路由元数据、padding capacity、跨机字节和同步等待。expert placement 若跨越慢链路，小消息 all-to-all 会让算力空闲。系统机制见 [MoE 系统](../../systems/moe-systems.md)。
 
 ## Switch：Top-1 的取舍
 
@@ -105,7 +105,7 @@ Switch 还突出 bfloat16、router 精度、初始化和 selective precision 等
 
 ## 细粒度与共享专家
 
-[DeepSeekMoE](https://arxiv.org/abs/2401.06066)把专家拆得更细，并设置始终激活的共享专家。共享分支承担通用变换，路由分支学习条件化专业化；更细粒度提供更多组合，也让 grouped GEMM、路由元数据和通信消息更碎。
+[DeepSeekMoE](https://arxiv.org/abs/2401.06066) 把专家拆得更细，并设置始终激活的共享专家。共享分支承担通用变换，路由分支学习条件化专业化；更细粒度提供更多组合，也让 grouped GEMM、路由元数据和通信消息更碎。
 
 这类设计要区分：
 
@@ -119,6 +119,6 @@ Switch 还突出 bfloat16、router 精度、初始化和 selective precision 等
 - [Sparse MoE 论文](https://arxiv.org/abs/1701.06538)；
 - [GShard 论文](https://arxiv.org/abs/2006.16668)；
 - [Switch Transformer 论文](https://arxiv.org/abs/2101.03961)与 [Mesh TensorFlow MoE 实现](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)；
-- [DeepSeekMoE 论文](https://arxiv.org/abs/2401.06066)与[deepseek-ai/DeepSeek-MoE](https://github.com/deepseek-ai/DeepSeek-MoE)。
+- [DeepSeekMoE 论文](https://arxiv.org/abs/2401.06066)与 [deepseek-ai/DeepSeek-MoE](https://github.com/deepseek-ai/DeepSeek-MoE)。
 
-代码仓库对应具体软件世代，不保证一条命令重建论文全部数据、硬件和训练运行。完整历史位置见[容量与激活计算怎样分开](../lineages/conditional-compute.md)，架构定义见[Mixture of Experts](../../architecture/moe.md)，紧凑 dispatch 实现见[分布式与容错](../../practice/distributed-systems.md)。
+代码仓库对应具体软件世代，不保证一条命令重建论文全部数据、硬件和训练运行。完整历史位置见[容量与激活计算怎样分开](../lineages/conditional-compute.md)，架构定义见 [Mixture of Experts](../../architecture/moe.md)，紧凑 dispatch 实现见[分布式与容错](../../practice/distributed-systems.md)。

@@ -18,7 +18,7 @@ $$
 
 ## 一维序列只是容器
 
-[Transformer](https://arxiv.org/abs/1706.03762)必须显式加入位置，因为 self-attention 本身对 token 排列是置换等变的。文本通常有自然顺序：
+[Transformer](https://arxiv.org/abs/1706.03762) 必须显式加入位置，因为 self-attention 本身对 token 排列是置换等变的。文本通常有自然顺序：
 
 $$
 p_{\text{text}}=i.
@@ -48,7 +48,7 @@ flatten 后，图像一行末尾与下一行开头在序列中相邻，但在二
 
 绝对位置 embedding 将坐标映射为向量并加到 token 上。固定表简单，却受最大长度和分辨率限制；插值可以适配新网格，但会改变训练时的频率与尺度。
 
-[RoFormer](https://arxiv.org/abs/2104.09864)提出 RoPE：将 query、key 的通道成对旋转，使注意力内积包含相对位移。对一维位置 $p$：
+[RoFormer](https://arxiv.org/abs/2104.09864) 提出 RoPE：将 query、key 的通道成对旋转，使注意力内积包含相对位移。对一维位置 $p$：
 
 $$
 \operatorname{RoPE}(x,p)
@@ -77,11 +77,11 @@ $$
 
 实现必须固定每个轴占用的通道、频率、坐标起点和文本 token 的坐标推进方式。名称都叫“2D/3D RoPE”，通道切分和时间缩放不同仍然是不兼容的 checkpoint 接口。
 
-[Qwen2-VL](https://arxiv.org/abs/2409.12191)用 M-RoPE 将视觉的时间、高度和宽度位置分解到不同维度；[Qwen2.5-Omni](https://arxiv.org/abs/2503.20215)进一步用时间对齐的多模态位置处理交错音视频。它们说明一个共同原则：跨模态同步应映射到共同物理时间，而不是强迫不同采样率共享 token index。
+[Qwen2-VL](https://arxiv.org/abs/2409.12191) 用 M-RoPE 将视觉的时间、高度和宽度位置分解到不同维度；[Qwen2.5-Omni](https://arxiv.org/abs/2503.20215) 进一步用时间对齐的多模态位置处理交错音视频。它们说明一个共同原则：跨模态同步应映射到共同物理时间，而不是强迫不同采样率共享 token index。
 
 ## 动态分辨率需要坐标契约
 
-[Vision Transformer](https://arxiv.org/abs/2010.11929)在固定 patch 网格上建立了基本视觉序列；[NaViT](https://arxiv.org/abs/2307.06304)则展示了可变分辨率图像的 sequence packing。动态输入必须保留：
+[Vision Transformer](https://arxiv.org/abs/2010.11929) 在固定 patch 网格上建立了基本视觉序列；[NaViT](https://arxiv.org/abs/2307.06304) 则展示了可变分辨率图像的 sequence packing。动态输入必须保留：
 
 ```text
 original width and height
@@ -121,7 +121,7 @@ $$
 
 而不只记录一个整数位置。字幕、声音事件和视频动作可按区间相交对齐；流式系统还要把算法 lookahead 加入“模型何时有资格输出”的定义。
 
-[VideoMAE](https://arxiv.org/abs/2203.12602)使用时空 tube masking 学习视频表示；mask 覆盖哪些 tube、target encoder 能看到什么，本身就是训练任务定义。把这种预训练 mask 与部署时的时间因果 mask 混为一谈，会把“恢复被遮挡内容”和“预测尚未发生的未来”误写成同一个问题。
+[VideoMAE](https://arxiv.org/abs/2203.12602) 使用时空 tube masking 学习视频表示；mask 覆盖哪些 tube、target encoder 能看到什么，本身就是训练任务定义。把这种预训练 mask 与部署时的时间因果 mask 混为一谈，会把“恢复被遮挡内容”和“预测尚未发生的未来”误写成同一个问题。
 
 假设音频每 20 ms 一个 token，视频每 40 ms 一帧。若二者都从 0 开始编号，`position=10` 分别表示 200 ms 与 400 ms。直接按 index 对齐会产生稳定但错误的音画偏移。
 
@@ -158,7 +158,7 @@ $$
 
 ### Diffusion 或 masked generation
 
-被加噪媒体块常允许块内双向交互，时间 $t$ 表示 noise level 而不是 token index。[Transfusion](https://arxiv.org/abs/2408.11039)在共享序列中分别处理文本 next-token 与连续图像 diffusion；一个 triangular mask 无法同时表达两种目标。
+被加噪媒体块常允许块内双向交互，时间 $t$ 表示 noise level 而不是 token index。[Transfusion](https://arxiv.org/abs/2408.11039) 在共享序列中分别处理文本 next-token 与连续图像 diffusion；一个 triangular mask 无法同时表达两种目标。
 
 ### 流式音视频
 
@@ -229,7 +229,7 @@ episode
 
 这些边界不是同一种 segment。两张图可以属于同一问答样本并允许跨图 attention，却拥有各自局部坐标；两个训练样本即使相邻打包也绝不能互相读取；同一 episode 的两个 chunk 可能共享 cache，但 reset 后必须清空状态。
 
-[Flamingo](https://arxiv.org/abs/2204.14198)处理交错图文时需要追踪文字位置可读取哪一组视觉条件；[Chameleon](https://arxiv.org/abs/2405.09818)的统一离散序列则把媒体边界写进 token 序列。两种设计都证明 special token 只是边界表示的一部分，仍需实际 attention 规则与 processor 保持一致。
+[Flamingo](https://arxiv.org/abs/2204.14198) 处理交错图文时需要追踪文字位置可读取哪一组视觉条件；[Chameleon](https://arxiv.org/abs/2405.09818) 的统一离散序列则把媒体边界写进 token 序列。两种设计都证明 special token 只是边界表示的一部分，仍需实际 attention 规则与 processor 保持一致。
 
 ## 实现契约
 

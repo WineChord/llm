@@ -219,13 +219,13 @@ value head 学的是当前 policy 继续生成时的期望未来回报，而 rew
 
 ## 常见误区
 
-1. **“Bellman equation 就是 value iteration。”** 前者是价值的固定点关系；后者是在已知模型上寻找固定点的一种算法。
-2. **“value 是 reward 的平滑版本。”** value 还依赖未来策略、转移、终止和 discount；同一 reward 函数在不同策略下产生不同 value。
-3. **“bootstrap target 是 ground truth。”** target 本身依赖估计值，参数漂移会改变监督信号。
-4. **“Bellman contraction 保证神经 TD 收敛。”** contraction 适用于精确函数空间中的算子；投影、非线性参数化和 off-policy 采样会改变动力学。
-5. **“最大 Q 就是无偏的最优价值估计。”** 对多个带噪估计取最大值通常产生 overestimation bias。
-6. **“截断和终止都令 $V(s_{t+1})=0$。”** 只有 MDP 真终态如此；外部截断通常仍有 continuation value。
-7. **“语言动作是 token，所以可以计算精确 $V^*$。”** token 分支与长 horizon 造成指数序列空间，环境 reward 也常不可查询。
+1. <strong>“Bellman equation 就是 value iteration。”</strong>前者是价值的固定点关系；后者是在已知模型上寻找固定点的一种算法。
+2. <strong>“value 是 reward 的平滑版本。”</strong>value 还依赖未来策略、转移、终止和 discount；同一 reward 函数在不同策略下产生不同 value。
+3. <strong>“bootstrap target 是 ground truth。”</strong>target 本身依赖估计值，参数漂移会改变监督信号。
+4. <strong>“Bellman contraction 保证神经 TD 收敛。”</strong>contraction 适用于精确函数空间中的算子；投影、非线性参数化和 off-policy 采样会改变动力学。
+5. <strong>“最大 Q 就是无偏的最优价值估计。”</strong>对多个带噪估计取最大值通常产生 overestimation bias。
+6. <strong>“截断和终止都令 $V(s_{t+1})=0$。”</strong>只有 MDP 真终态如此；外部截断通常仍有 continuation value。
+7. <strong>“语言动作是 token，所以可以计算精确 $V^*$。”</strong>token 分支与长 horizon 造成指数序列空间，环境 reward 也常不可查询。
 
 ## Reference {#reference}
 
