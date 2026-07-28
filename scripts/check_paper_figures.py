@@ -33,6 +33,8 @@ ARXIV_VERSION = re.compile(r"\d{4}\.\d{4,5}v\d+")
 SLUG = re.compile(r"[a-z0-9][a-z0-9-]*")
 PNG_NAME = re.compile(r"[a-z0-9][a-z0-9-]*\.png")
 MAX_ASSET_BYTES = 3 * 1024 * 1024
+QUIET_BORDER_PIXELS = 4
+NEAR_WHITE_CHANNEL_FLOOR = 250
 V1_MAX_PAGE_AREA_RATIO = 0.65
 V2_MAX_PAGE_AREA_RATIO = 0.85
 ALLOWED_PNG_CHUNKS = {
@@ -441,6 +443,126 @@ def png_info(path: Path) -> PngInfo:
     if "IDAT" not in chunks:
         raise ValueError("PNG 缺少 IDAT")
     return PngInfo(width, height, bit_depth, color_type, tuple(chunks))
+
+
+def paeth_predictor(left: int, above: int, upper_left: int) -> int:
+    estimate = left + above - upper_left
+    left_distance = abs(estimate - left)
+    above_distance = abs(estimate - above)
+    upper_left_distance = abs(estimate - upper_left)
+    if left_distance <= above_distance and left_distance <= upper_left_distance:
+        return left
+    if above_distance <= upper_left_distance:
+        return above
+    return upper_left
+
+
+def png_nonwhite_border_sides(
+    data: bytes,
+    *,
+    border: int = QUIET_BORDER_PIXELS,
+    channel_floor: int = NEAR_WHITE_CHANNEL_FLOOR,
+) -> tuple[str, ...]:
+    if not data.startswith(PNG_SIGNATURE):
+        raise ValueError("不是 PNG")
+    offset = len(PNG_SIGNATURE)
+    width = height = bit_depth = color_type = 0
+    compression = filter_method = interlace = -1
+    idat = bytearray()
+    while offset < len(data):
+        if offset + 12 > len(data):
+            raise ValueError("PNG chunk 被截断")
+        length = struct.unpack(">I", data[offset : offset + 4])[0]
+        kind = data[offset + 4 : offset + 8]
+        end = offset + 12 + length
+        if end > len(data):
+            raise ValueError("PNG chunk 长度越界")
+        payload = data[offset + 8 : offset + 8 + length]
+        if kind == b"IHDR":
+            if length != 13:
+                raise ValueError("PNG IHDR 长度无效")
+            (
+                width,
+                height,
+                bit_depth,
+                color_type,
+                compression,
+                filter_method,
+                interlace,
+            ) = struct.unpack(">IIBBBBB", payload)
+        elif kind == b"IDAT":
+            idat.extend(payload)
+        elif kind == b"IEND":
+            break
+        offset = end
+    if bit_depth != 8 or color_type != 2:
+        raise ValueError("静区检查仅支持 8-bit opaque RGB PNG")
+    if compression != 0 or filter_method != 0 or interlace != 0:
+        raise ValueError("静区检查要求标准压缩、标准过滤且非隔行 PNG")
+    if width < border * 2 or height < border * 2:
+        raise ValueError(f"图片不足以检查四边 {border}px 静区")
+    try:
+        filtered = zlib.decompress(bytes(idat))
+    except zlib.error as exc:
+        raise ValueError(f"PNG IDAT 无法解压：{exc}") from exc
+    bytes_per_pixel = 3
+    stride = width * bytes_per_pixel
+    expected = height * (stride + 1)
+    if len(filtered) != expected:
+        raise ValueError(
+            f"PNG scanline 长度 {len(filtered)} 与预期 {expected} 不一致"
+        )
+    previous = bytearray(stride)
+    cursor = 0
+    nonwhite: set[str] = set()
+    edge_bytes = border * bytes_per_pixel
+    for row_index in range(height):
+        filter_type = filtered[cursor]
+        cursor += 1
+        scanline = filtered[cursor : cursor + stride]
+        cursor += stride
+        reconstructed = bytearray(stride)
+        if filter_type == 0:
+            reconstructed[:] = scanline
+        elif filter_type in {1, 2, 3, 4}:
+            for index, value in enumerate(scanline):
+                left = (
+                    reconstructed[index - bytes_per_pixel]
+                    if index >= bytes_per_pixel
+                    else 0
+                )
+                above = previous[index]
+                upper_left = (
+                    previous[index - bytes_per_pixel]
+                    if index >= bytes_per_pixel
+                    else 0
+                )
+                if filter_type == 1:
+                    predictor = left
+                elif filter_type == 2:
+                    predictor = above
+                elif filter_type == 3:
+                    predictor = (left + above) // 2
+                else:
+                    predictor = paeth_predictor(left, above, upper_left)
+                reconstructed[index] = (value + predictor) & 0xFF
+        else:
+            raise ValueError(f"PNG scanline filter type {filter_type} 无效")
+        if row_index < border and any(
+            value < channel_floor for value in reconstructed
+        ):
+            nonwhite.add("top")
+        if row_index >= height - border and any(
+            value < channel_floor for value in reconstructed
+        ):
+            nonwhite.add("bottom")
+        if any(value < channel_floor for value in reconstructed[:edge_bytes]):
+            nonwhite.add("left")
+        if any(value < channel_floor for value in reconstructed[-edge_bytes:]):
+            nonwhite.add("right")
+        previous = reconstructed
+    order = ("top", "right", "bottom", "left")
+    return tuple(side for side in order if side in nonwhite)
 
 
 def version_is_bound(
@@ -1118,6 +1240,22 @@ def validate_asset(asset: AssetRecord, errors: list[str]) -> None:
         errors.append(
             f"{asset.file_path.relative_to(ROOT)}: 论文裁图必须是 8-bit opaque RGB PNG"
         )
+    elif source.artifact_kind != "standalone_raster":
+        try:
+            nonwhite_sides = png_nonwhite_border_sides(
+                asset.file_path.read_bytes()
+            )
+        except (OSError, ValueError) as exc:
+            errors.append(
+                f"{asset.file_path.relative_to(ROOT)}: 无法检查裁图静区：{exc}"
+            )
+        else:
+            if nonwhite_sides:
+                errors.append(
+                    f"{asset.file_path.relative_to(ROOT)}: PDF 裁图四边必须保留 "
+                    f"{QUIET_BORDER_PIXELS}px 近白静区；非白边："
+                    + ", ".join(nonwhite_sides)
+                )
     forbidden = sorted(set(info.chunks) & FORBIDDEN_METADATA_CHUNKS)
     unknown = sorted(set(info.chunks) - ALLOWED_PNG_CHUNKS)
     if forbidden or unknown:

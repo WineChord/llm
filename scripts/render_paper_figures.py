@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+from html import unescape
 import json
 import os
 from pathlib import Path, PurePath
@@ -27,6 +28,12 @@ ROOT = Path(__file__).resolve().parents[1]
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 SHA256 = re.compile(r"[0-9a-f]{64}")
 SAFE_NAME = re.compile(r"[a-z0-9][a-z0-9-]*\.png")
+PDF_WORD = re.compile(
+    r'<word\s+xMin="(?P<x0>[0-9.]+)"\s+yMin="(?P<y0>[0-9.]+)"\s+'
+    r'xMax="(?P<x1>[0-9.]+)"\s+yMax="(?P<y1>[0-9.]+)">'
+    r"(?P<text>.*?)</word>",
+    re.DOTALL,
+)
 KEPT_PNG_CHUNKS = {"IHDR", "PLTE", "IDAT", "IEND", "sRGB", "gAMA", "cHRM"}
 
 
@@ -154,6 +161,61 @@ def pdf_metadata(pdf: Path, page: int) -> tuple[int, float, float, int]:
         float(size_match.group(2)),
         rotation,
     )
+
+
+def validate_crop_does_not_split_pdf_text(
+    pdf: Path,
+    page: int,
+    crop: tuple[float, float, float, float],
+    page_box: tuple[float, float],
+    coordinate_space: str,
+) -> None:
+    x0, y0, x1, y1 = crop
+    if coordinate_space == "pdf-points-bottom-left":
+        y0, y1 = page_box[1] - y1, page_box[1] - y0
+    result = run_command(
+        [
+            command_path("pdftotext"),
+            "-f",
+            str(page),
+            "-l",
+            str(page),
+            "-bbox",
+            str(pdf),
+            "-",
+        ]
+    )
+    tolerance = 0.25
+    split_words: list[str] = []
+    for match in PDF_WORD.finditer(result.stdout):
+        word_box = tuple(
+            float(match.group(name)) for name in ("x0", "y0", "x1", "y1")
+        )
+        wx0, wy0, wx1, wy1 = word_box
+        overlaps = (
+            wx1 > x0 + tolerance
+            and wx0 < x1 - tolerance
+            and wy1 > y0 + tolerance
+            and wy0 < y1 - tolerance
+        )
+        contained = (
+            wx0 >= x0 - tolerance
+            and wx1 <= x1 + tolerance
+            and wy0 >= y0 - tolerance
+            and wy1 <= y1 + tolerance
+        )
+        if overlaps and not contained:
+            text = unescape(re.sub(r"<[^>]+>", "", match.group("text"))).strip()
+            split_words.append(
+                f"{text or '<empty>'} "
+                f"[{wx0:.2f},{wy0:.2f},{wx1:.2f},{wy1:.2f}]"
+            )
+    if split_words:
+        sample = "；".join(split_words[:5])
+        suffix = "；…" if len(split_words) > 5 else ""
+        raise RenderError(
+            f"第 {page} 页 crop 会截断 PDF 文字：{sample}{suffix}"
+        )
 
 
 def rewrite_png_without_metadata(source: Path, destination: Path) -> None:
@@ -473,6 +535,14 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                     raise RenderError(
                         f"{label}: PDF 页面旋转 {actual_rotation} "
                         f"与 manifest {rotation} 不一致"
+                    )
+                if rotation == 0:
+                    validate_crop_does_not_split_pdf_text(
+                        pdf_path,
+                        page,
+                        crop,
+                        page_box,
+                        coordinate_space,
                     )
                 pixel_crop = crop_pixels(crop, page_box, dpi, coordinate_space)
                 generated = temporary_root / "normalized" / asset["file"]

@@ -57,9 +57,9 @@
       "page": 21,
       "page_box_points": [612, 792],
       "rotation": 0,
-      "crop_box_points": [75, 55, 541, 323],
-      "pixel_size": [1942, 1117],
-      "sha256": "8a43ad2b2a942db2a2851ddc06011192c16afe00c41620ac678e9f727b95e913",
+      "crop_box_points": [67, 55, 541, 323],
+      "pixel_size": [1975, 1117],
+      "sha256": "3387628827499313547af80b3377d1a3276fcce6fe1d1a86969ea2f2e91f228b",
       "placements": [
         {
           "page": "docs/landscape/works/kimi-k2-5.md",
@@ -77,9 +77,9 @@
       "page": 23,
       "page_box_points": [612, 792],
       "rotation": 0,
-      "crop_box_points": [116, 77, 455, 225],
-      "pixel_size": [1412, 617],
-      "sha256": "72c9d8c9af7d58273a7db9156fb90b0aa4d60f7497177a46e83ff2d7766ee258",
+      "crop_box_points": [116, 77, 465, 225],
+      "pixel_size": [1454, 617],
+      "sha256": "b2c1bd83a6814787595b5455fbc55657667c1f119591d5609b49a2ac8e8d6c44",
       "placements": [
         {
           "page": "docs/landscape/works/kimi-k2-5.md",

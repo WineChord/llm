@@ -208,7 +208,7 @@ recurrent output 再经过 head-wise RMSNorm 和低秩 sigmoid output gate。全
 把顺序与 recency 的主要责任交给 KDA。
 
 <figure class="paper-figure paper-figure--portrait" id="kimi-linear-figure-03" data-paper-source="kimi-linear" data-paper-asset="kimi-linear-figure-03" markdown="1">
-[![Kimi Linear 以三组 KDA 层接一组 MLA 层构成混合主干，右侧分别展开稀疏 MoE 与 Kimi Delta Attention 的内部数据流](../../assets/papers/kimi-linear/figure-03-hybrid-architecture.png){ width="1492" height="1396" loading="lazy" decoding="async" }](../../assets/papers/kimi-linear/figure-03-hybrid-architecture.png)
+[![Kimi Linear 以三组 KDA 层接一组 MLA 层构成混合主干，右侧分别展开稀疏 MoE 与 Kimi Delta Attention 的内部数据流](../../assets/papers/kimi-linear/figure-03-hybrid-architecture.png){ width="1492" height="1542" loading="lazy" decoding="async" }](../../assets/papers/kimi-linear/figure-03-hybrid-architecture.png)
 <figcaption><strong>Figure 3 说明 3:1 不是一个只存在于配置表里的比例，而是两种记忆接口的周期性交接。</strong>KDA 层以固定状态承担大部分序列混合，MLA 层周期性恢复全局 token-to-token 寻址；两者之后都进入稀疏 MoE。右下角同时画出 decay、delta correction 与 output gate，正好对应正文中的递推公式。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-Linear/8c1d85eb6b5f8fcefb15758691b0ce50b0827ce3/tech_report.pdf#page=6">Kimi Linear: An Expressive, Efficient Attention Architecture, Figure 3, p. 6</a>；Copyright (c) 2025 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-Linear/blob/8c1d85eb6b5f8fcefb15758691b0ce50b0827ce3/LICENSE">MIT License</a>。</span></figcaption>
 </figure>
 

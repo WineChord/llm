@@ -37,9 +37,9 @@
       "page": 4,
       "page_box_points": [612, 792],
       "rotation": 0,
-      "crop_box_points": [73, 318, 540, 442],
-      "pixel_size": [1946, 517],
-      "sha256": "706f723307c3a0b7dde495ba5030d0e93dad38076af5bf22162dad15127c72c8",
+      "crop_box_points": [68, 316, 542, 452],
+      "pixel_size": [1975, 567],
+      "sha256": "b9149cdc1d27f14fb0f7e3bbcb94a4a2989c7d13420f01558f3d3ac96dbc4d23",
       "placements": [
         {
           "page": "docs/landscape/works/kimi-k2.md",

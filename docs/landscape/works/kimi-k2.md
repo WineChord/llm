@@ -138,7 +138,7 @@ Muon、weight decay、consistent update RMS matching 与这一步 QK-Clip 合在
 **MuonClip**。只实现 clipping 不能声称复现 MuonClip。
 
 <figure class="paper-figure paper-figure--wide" id="k2-figure-02" data-paper-source="kimi-k2" data-paper-asset="k2-figure-02" markdown="1">
-[![Kimi K2 训练中未使用 MuonClip 时最大 attention logit 持续上升至千量级，而启用 MuonClip 后被压回约三十的稳定区间](../../assets/papers/kimi-k2/figure-02-muonclip.png){ width="1946" height="517" loading="lazy" decoding="async" }](../../assets/papers/kimi-k2/figure-02-muonclip.png)
+[![Kimi K2 训练中未使用 MuonClip 时最大 attention logit 持续上升至千量级，而启用 MuonClip 后被压回约三十的稳定区间](../../assets/papers/kimi-k2/figure-02-muonclip.png){ width="1975" height="567" loading="lazy" decoding="async" }](../../assets/papers/kimi-k2/figure-02-muonclip.png)
 <figcaption><strong>MuonClip 处理的是会随训练继续积累的 logit 失稳，而不是把单次异常点抹平。</strong>Figure 2 左图显示普通 Muon 下最大 logit 近似持续加速增长；右图先在约 100 附近受控运行一段训练，再逐步下降到约 30 的区间。曲线支持这套配方的稳定性选择，但不能单独归因于 clipping 或外推一个架构无关阈值。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K2/1b4022bbb7187cf4011a8bdf0b4cd10e2daa26c4/tech_report.pdf#page=4">Kimi K2: Open Agentic Intelligence, Figure 2, p. 4</a>；Copyright (c) 2025 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K2/blob/1b4022bbb7187cf4011a8bdf0b4cd10e2daa26c4/LICENSE">Modified MIT License</a>。</span></figcaption>
 </figure>
 

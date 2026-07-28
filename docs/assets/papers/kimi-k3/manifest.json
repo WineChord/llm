@@ -117,9 +117,9 @@
       "page": 9,
       "page_box_points": [612, 792],
       "rotation": 0,
-      "crop_box_points": [103, 508, 519, 676],
-      "pixel_size": [1733, 700],
-      "sha256": "d575d32ae4385a1a755ab9c1657588c30150401042fb092d804b3063f0c60266",
+      "crop_box_points": [103, 500, 519, 676],
+      "pixel_size": [1733, 733],
+      "sha256": "888d409bc37e817628c16c6542b292eac2243ea94658c380b6eb907d48a25614",
       "placements": [
         {
           "page": "docs/multimodal/kimi.md",

@@ -96,7 +96,7 @@ K3 报告称 MoonViT-V2 约 401M 参数，从 next-token prediction 目标开始
 报告的消融显示，作者配方内从随机初始化开始的 vision encoder 优于先做视觉预训练再接语言模型的方案。最窄结论是：在其数据、backbone、优化器和预算下，end-to-end next-token objective 能形成更匹配语言主干的视觉表示。
 
 <figure class="paper-figure paper-figure--wide" id="k3-figure-06" data-paper-source="kimi-k3" data-paper-asset="k3-figure-06" markdown="1">
-[![Kimi K3 视觉塔在完整训练轨迹与第 14k 到 16k 步局部区间的梯度范数；从头训练的 MoonViT-V2 曲线整体低于 SigLIP 初始化的 MoonViT-3D，并出现更少的大幅尖峰](../assets/papers/kimi-k3/figure-06-vision-gradients.png){ width="1733" height="700" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-06-vision-gradients.png)
+[![Kimi K3 视觉塔在完整训练轨迹与第 14k 到 16k 步局部区间的梯度范数；从头训练的 MoonViT-V2 曲线整体低于 SigLIP 初始化的 MoonViT-3D，并出现更少的大幅尖峰](../assets/papers/kimi-k3/figure-06-vision-gradients.png){ width="1733" height="733" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-06-vision-gradients.png)
 <figcaption><strong>这里的证据是联合训练稳定性，而不是一条普适初始化定律。</strong>蓝线在完整轨迹上出现更多高梯度尖峰，局部放大后两条分布的基线差异也仍然可见；它支持作者配方中的从头 NTP 选择，却没有隔离数据、优化器或 backbone 的独立贡献。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=9">Kimi K3 Technical Report, Figure 6, p. 9</a>；© 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
 </figure>
 

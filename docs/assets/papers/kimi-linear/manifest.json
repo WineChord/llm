@@ -37,9 +37,9 @@
       "page": 6,
       "page_box_points": [612, 792],
       "rotation": 0,
-      "crop_box_points": [135, 70, 493, 405],
-      "pixel_size": [1492, 1396],
-      "sha256": "3c0ef7917e161250c3c8d452c56d03ac445595fe3352c08f68c85bcc625db304",
+      "crop_box_points": [135, 70, 493, 440],
+      "pixel_size": [1492, 1542],
+      "sha256": "4de1865109d8e583b86c3f58045b32aa73237a13632f68fb5787ff089e801b26",
       "placements": [
         {
           "page": "docs/landscape/works/kimi-linear-flashkda.md",

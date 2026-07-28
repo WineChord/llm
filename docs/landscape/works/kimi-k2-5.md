@@ -48,7 +48,7 @@ K2.5 的受控实验固定 visual / text token 总预算，只改变视觉注入
 early fusion 给共享 backbone 更长时间调整 cross-modal representation。
 
 <figure class="paper-figure paper-figure--wide" id="k25-figure-09" data-paper-source="kimi-k2-5" data-paper-asset="k25-figure-09" markdown="1">
-[![Kimi K2.5 在视觉知识、视觉推理、OCR、文本知识、文本推理和代码六类能力上比较早中晚视觉注入策略的训练曲线](../../assets/papers/kimi-k2-5/figure-09-early-fusion.png){ width="1942" height="1117" loading="lazy" decoding="async" }](../../assets/papers/kimi-k2-5/figure-09-early-fusion.png)
+[![Kimi K2.5 在视觉知识、视觉推理、OCR、文本知识、文本推理和代码六类能力上比较早中晚视觉注入策略的训练曲线](../../assets/papers/kimi-k2-5/figure-09-early-fusion.png){ width="1975" height="1117" loading="lazy" decoding="async" }](../../assets/papers/kimi-k2-5/figure-09-early-fusion.png)
 <figcaption><strong>真正有信息量的是六条能力曲线共同呈现的适应过程，而不只是最终排名。</strong>Figure 9 中 early 10:90 配方从训练开始持续接触视觉；mid 与 late 配方在视觉注入边界出现不同程度的跃迁与恢复。它支持固定预算下的长期共适应，却不能证明 10:90 是跨模型、跨数据的普适最优比例。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K2.5/3e60763b943e93c443287c383e0468ffe05b188f/tech_report.pdf#page=21">Kimi K2.5: Visual Agentic Intelligence, Figure 9, p. 21</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K2.5/blob/3e60763b943e93c443287c383e0468ffe05b188f/LICENSE">Modified MIT License</a>。</span></figcaption>
 </figure>
 
@@ -337,7 +337,7 @@ correction 依赖 token-in-token-out 与 rollout log-prob，这也是 agent fram
 原因。相关状态契约见[Agentic RL 训练系统](../../agentic-rl/training-systems.md)。
 
 <figure class="paper-figure paper-figure--wide" id="k25-figure-10" data-paper-source="kimi-k2-5" data-paper-asset="k25-figure-10" markdown="1">
-[![Kimi K2.5 统一 Agentic RL runtime 由 rollout manager、可插拔任务组件、递归核心循环、黑白盒环境、推理服务与训练服务组成](../../assets/papers/kimi-k2-5/figure-10-agentic-rl-runtime.png){ width="1412" height="617" loading="lazy" decoding="async" }](../../assets/papers/kimi-k2-5/figure-10-agentic-rl-runtime.png)
+[![Kimi K2.5 统一 Agentic RL runtime 由 rollout manager、可插拔任务组件、递归核心循环、黑白盒环境、推理服务与训练服务组成](../../assets/papers/kimi-k2-5/figure-10-agentic-rl-runtime.png){ width="1454" height="617" loading="lazy" decoding="async" }](../../assets/papers/kimi-k2-5/figure-10-agentic-rl-runtime.png)
 <figcaption><strong>Figure 10 的重点是把任务语义、环境语义和模型服务拆成稳定接口。</strong>Rollout Manager 只编排任务；core loop 可以递归调用；black-box 与 white-box 环境分别经 gateway 或 env pool 返回 observation；推理与训练服务之间还需处理 token 和 log-prob mismatch。并发规模只有在这些状态边界可恢复时才有意义。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K2.5/3e60763b943e93c443287c383e0468ffe05b188f/tech_report.pdf#page=23">Kimi K2.5: Visual Agentic Intelligence, Figure 10, p. 23</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K2.5/blob/3e60763b943e93c443287c383e0468ffe05b188f/LICENSE">Modified MIT License</a>。</span></figcaption>
 </figure>
 
