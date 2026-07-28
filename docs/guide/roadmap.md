@@ -97,13 +97,26 @@ LLM 横跨统计学习、模型结构、分布式系统和交互环境。先建�
 
 ### 多模态
 
-从[视觉语言模型](../multimodal/vision-language.md)和[融合训练](../multimodal/architecture-training.md)进入，再按任务分流：
+先把原始信号怎样进入模型讲清，再沿理解、生成和实时交互分流：
 
-- 理解与生成：[统一建模](../multimodal/unified-understanding-generation.md)与[生成模型](../multimodal/generative-modeling.md)；
-- 高分辨率与交互：[文档、图表、GUI 与 Grounding](../multimodal/document-gui-grounding.md)；
-- 时序信号：[音频与语音](../multimodal/audio-language-models.md)、[视频与世界模型](../multimodal/video-world-models.md)；
-- 动作：[具身智能](../multimodal/embodied-agents.md)；
-- 验证：[多模态原语](../practice/multimodal.md)与[多模态评测](../evaluation/multimodal-evaluation.md)。
+1. 从[信号、表示与 Token 化](../multimodal/foundations/signals-tokenization.md)进入[对齐、桥接与融合](../multimodal/foundations/alignment-fusion.md)，同时固定[空间、时间、位置与 Mask](../multimodal/foundations/position-time-masks.md)；
+2. 视觉侧依次阅读[视觉表示、感知与 Grounding](../multimodal/vision/representation-grounding.md)、[视觉语言模型](../multimodal/vision-language.md)和[空间智能与三维表示](../multimodal/vision/spatial-3d.md)；
+3. 生成侧从[图像生成总览](../multimodal/generative-modeling.md)进入[视觉 Tokenizer](../multimodal/image-generation/autoencoders-tokenizers.md)、[Diffusion 与 Score](../multimodal/image-generation/diffusion-score.md)、[DiT 与 Flow](../multimodal/image-generation/latent-dit-flow.md)；
+4. 连续媒体分别阅读[音频表示与理解](../multimodal/audio/representations-understanding.md)、[音频生成与流式](../multimodal/audio/generation-streaming.md)、[视频理解与长程记忆](../multimodal/video/understanding-long-context.md)和[视频生成](../multimodal/video/generation.md)；
+5. 最后用[统一理解与生成](../multimodal/unified-understanding-generation.md)与[Any-to-Any 系统](../multimodal/omni/any-to-any.md)连接多输入、多输出和实时状态。
+
+实现与验证沿[多模态原语](../practice/multimodal.md)和[多模态评测](../evaluation/multimodal-evaluation.md)回查。
+
+### 世界模型与具身智能
+
+这条路线把媒体预测推进到动作条件与闭环决策：
+
+1. 先用[世界模型总览](../world-models/index.md)区分 latent dynamics、JEPA、视频生成器和交互环境；
+2. 在[潜在动力学、想象与规划](../world-models/dynamics-planning.md)中连接 RSSM、Dreamer、MuZero、MPC 与 CEM；
+3. 在[表示预测与生成式世界](../world-models/predictive-generative-worlds.md)中比较 feature prediction、latent action 与可控视频；
+4. 进入[具身智能总览](../embodied/index.md)，再读[状态、动作与策略](../embodied/state-action-policies.md)；
+5. 沿[VLA、数据与跨本体学习](../embodied/vla-data-lineage.md)理解互联网知识、机器人轨迹和 embodiment gap；
+6. 最后用[规划、闭环评测与安全](../embodied/planning-evaluation-safety.md)检查控制频率、恢复、运行时监督和物理边界。
 
 ### 评测与可靠性
 

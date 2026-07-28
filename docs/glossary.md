@@ -16,6 +16,10 @@
 
 标记轨迹中哪些 token 或 span 由策略选择并进入 policy loss；observation、prompt 与 padding 通常不属于动作。
 
+**[Action chunk](embodied/state-action-policies.md)**
+
+策略一次预测的连续动作序列；chunk horizon、实际执行步数、控制频率与模型前向频率必须分开。
+
 **[Advantage](reinforcement-learning/actor-critic.md)**
 
 $A^\pi(s,a)=Q^\pi(s,a)-V^\pi(s)$，表示动作相对该状态下策略平均水平好多少；它不等于原始 reward。
@@ -47,6 +51,10 @@ $A^\pi(s,a)=Q^\pi(s,a)-V^\pi(s)$，表示动作相对该状态下策略平均水
 **[Autoregressive model](foundations/language-modeling.md)**
 
 按先前 token 条件化，将序列联合概率分解为逐 token 条件概率的模型。
+
+**[Any-to-Any](multimodal/omni/any-to-any.md)**
+
+接受多种模态输入并产生多种模态输出的系统目标；它不保证 encoder、主干、decoder、训练或 runtime 全部共享。
 
 **[Behavior policy](reinforcement-learning/training-inference-discrepancy.md)**
 
@@ -160,6 +168,14 @@ Compressed Sparse Attention，先把历史 token 压成重叠 block representati
 
 让学生模型学习教师的 logits、分布、表征、轨迹或偏好，以转移能力或压缩模型。
 
+**[Diffusion model](multimodal/image-generation/diffusion-score.md)**
+
+定义数据到噪声的前向扰动，并学习反向去噪、score 或等价参数化以生成样本的模型族；prediction type、schedule 与 sampler 必须配套。
+
+**[DiT](multimodal/image-generation/latent-dit-flow.md)**
+
+Diffusion Transformer，以 Transformer 作为去噪或向量场 backbone；它描述网络结构，不等同于某一种扩散时间参数化或 sampler。
+
 **Discount factor**
 
 $\gamma\in[0,1]$，控制未来 reward 在 return 中的相对权重；它也可表达任务时域，而不只是数值稳定技巧。
@@ -241,6 +257,10 @@ Heavily Compressed Attention，以更高时间压缩率保存全局历史寻址�
 **[Importance ratio](reinforcement-learning/training-inference-discrepancy.md)**
 
 两个分布对同一动作概率的比值；必须说明分子、分母、token/sequence 粒度与 sampling processor。
+
+**[JEPA](world-models/predictive-generative-worlds.md)**
+
+Joint-Embedding Predictive Architecture，在表示空间预测目标区域或未来状态，而不是要求逐像素重建；feature distance 是否适合决策仍需下游验证。
 
 **[KDA](landscape/works/kimi-k3.md#kda-recurrence)**
 
@@ -411,6 +431,22 @@ Proximal Policy Optimization，使用裁剪 surrogate objective 限制更新幅�
 不可信内容试图改变 Agent 的指令层级、工具调用或数据边界的攻击方式。
 
 ## Q–Z
+
+**[Residual Vector Quantization, RVQ](multimodal/audio-language-models.md#residual-vector-quantization)**
+
+用多个码本依次量化上一层残差，并把各层码向量相加重建表示；码本顺序不自动保证语义—声学分层。
+
+**[Tubelet](multimodal/video/understanding-long-context.md)**
+
+把连续帧中的局部时空立方体映射为一个视频 token；时间跨度、空间 patch 与原始帧率共同决定信息和 token 数。
+
+**[Vision-Language-Action model, VLA](embodied/vla-data-lineage.md)**
+
+把视觉、语言和机器人状态映射为动作的模型族；VLM planner、VLA policy、运行时监督和低层控制器是不同责任层。
+
+**[World model](world-models/index.md)**
+
+表示环境状态并预测其在动作条件下怎样转移、从而支持规划或策略学习的模型；无动作的视频生成器或未来帧预测器不自动满足这一含义。
 
 **[R3](reinforcement-learning/training-inference-discrepancy.md#r3)**
 

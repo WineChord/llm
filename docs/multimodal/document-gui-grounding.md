@@ -232,6 +232,10 @@ $$
 
 视觉 token 和动态分辨率见[多模态融合、位置与训练](architecture-training.md)，紧凑坐标与 mask 实现见[多模态手撕实现](../practice/multimodal.md)。
 
+## 继续深入
+
+[视觉表示、感知与 Grounding](vision/representation-grounding.md)给出从全局语义到区域证据的共同底座；涉及深度、多视角和机器人坐标时继续读[空间智能与三维表示](vision/spatial-3d.md)。文档、图表和界面执行应保留各自输入协议，不能用同一个 VQA 总分代替。
+
 ## Reference {#reference}
 
 - [OCR-free Document Understanding Transformer / Donut](https://arxiv.org/abs/2111.15664)

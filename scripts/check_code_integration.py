@@ -122,6 +122,27 @@ CANONICAL_PAGES = (
     "multimodal/generative-modeling.md",
     "multimodal/audio-language-models.md",
     "multimodal/video-world-models.md",
+    "multimodal/foundations/signals-tokenization.md",
+    "multimodal/foundations/alignment-fusion.md",
+    "multimodal/foundations/position-time-masks.md",
+    "multimodal/foundations/data-training-systems.md",
+    "multimodal/vision/representation-grounding.md",
+    "multimodal/vision/spatial-3d.md",
+    "multimodal/image-generation/history-autoregressive-gan.md",
+    "multimodal/image-generation/autoencoders-tokenizers.md",
+    "multimodal/image-generation/diffusion-score.md",
+    "multimodal/image-generation/latent-dit-flow.md",
+    "multimodal/image-generation/control-editing-evaluation.md",
+    "multimodal/audio/representations-understanding.md",
+    "multimodal/audio/generation-streaming.md",
+    "multimodal/video/understanding-long-context.md",
+    "multimodal/video/generation.md",
+    "multimodal/omni/any-to-any.md",
+    "world-models/dynamics-planning.md",
+    "world-models/predictive-generative-worlds.md",
+    "embodied/state-action-policies.md",
+    "embodied/vla-data-lineage.md",
+    "embodied/planning-evaluation-safety.md",
 )
 
 
@@ -287,7 +308,7 @@ def validate_source(errors: list[str]) -> tuple[int, int, dict[str, set[str]]]:
             errors.append(f"docs/{relative}: 核心实现没有默认展开")
         if not re.search(r"\bassert\b|torch\.testing\.", text):
             errors.append(f"docs/{relative}: 正文实现缺少可执行断言")
-        if "../practice/" not in text:
+        if "/practice/" not in text:
             errors.append(f"docs/{relative}: 缺少指向组合实验或完整测试的入口")
         page_identifiers: set[str] = set()
         for index, block in enumerate(blocks, 1):

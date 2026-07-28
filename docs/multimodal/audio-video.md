@@ -68,6 +68,14 @@ $$
 
 还应专门检查片段开头、中部、结尾，短事件与长事件，以及不同速度/帧率。随机裁切上的平均分无法发现“中部遗忘”或 chunk 边界失败。音频的 codec、RVQ 与流式协议见[音频语言模型](audio-language-models.md)，视频的 tubelet、未来预测与世界状态见[视频与世界模型](video-world-models.md)，最小 token packing 与 causal mask 练习见[多模态手撕实现](../practice/multimodal.md)。
 
+## 继续深入
+
+- [音频表示、Codec 与理解](audio/representations-understanding.md)处理波形、事件、语音和声源；
+- [音频生成、语音交互与流式](audio/generation-streaming.md)处理 codec LM、TTS、音乐、打断和全双工；
+- [视频理解与长程记忆](video/understanding-long-context.md)处理采样、时间证据和检索式观看；
+- [视频生成](video/generation.md)处理时空 latent、rollout drift 与音画同步；
+- [Any-to-Any 系统](omni/any-to-any.md)把多条时间流汇入同一个交互 runtime。
+
 ## Reference {#reference}
 
 - [AudioLM: A Language Modeling Approach to Audio Generation](https://arxiv.org/abs/2209.03143)

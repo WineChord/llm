@@ -185,6 +185,31 @@ perception/grounding/reasoning/generation
 - **生成自动分数替代人类**：属性绑定和细节错误被遗漏。
 - **只报模型推理时延**：解码、encoder 和后处理隐藏。
 
+## 世界模型与具身闭环
+
+世界模型不能只用下一帧或 feature prediction error 排序。决策链至少拆成：
+
+| 层级 | 评测对象 | 关键反事实 |
+| --- | --- | --- |
+| 状态 | 任务相关信息是否可恢复 | 隐藏或替换局部观察 |
+| 动力学 | 动作条件下的单步、多步预测 | 固定状态、交换动作 |
+| 不确定性 | OOD 状态和长 rollout 是否变宽 | 扩大 horizon 与动作范围 |
+| 规划 | 模型是否改善候选动作选择 | 与无模型、oracle model 对照 |
+| 闭环 | 成功、恢复与 model exploitation | 执行扰动、观测延迟 |
+
+生成式世界还要分开视觉逼真度、动作可控性、状态持久性、几何、实时性和闭环收益。详细协议见[世界模型总览](../world-models/index.md)与[表示预测和生成式世界](../world-models/predictive-generative-worlds.md)。
+
+具身评测的基本单位是带 reset、初态分布、硬件和时间限制的 trial，而不是离线 action token。至少同时报告：
+
+- task success、分阶段进展和恢复；
+- collision、constraint violation、intervention 与 unsafe success；
+- 新对象、指令、场景、任务和 embodiment 的逐轴泛化；
+- 观测到动作的端到端 latency、jitter、控制频率和过期动作；
+- 相机漂移、遮挡、丢帧、接触扰动和网络失败；
+- 机器人、控制器、action contract 与 reset protocol。
+
+不同机器人和任务集的成功率通常没有共同分母，不应排成一个 VLA 总榜。开放环 action MSE/NLL 可用于回归检查，不能替代闭环 success 与安全；完整矩阵见[规划、闭环评测与安全](../embodied/planning-evaluation-safety.md)。
+
 ## 何时拆成单模态评测
 
 若目标是定位 image encoder、ASR 或视频采样器的改动，应先做单组件评测，再做端到端多模态任务。将所有模态一次混合，只能得到总失败，无法判断感知、grounding、推理还是工具链问题。
@@ -221,3 +246,5 @@ judge 协议见[生成式评测与 LLM Judge](generative-judges.md)，污染与�
 - [OSWorld](https://arxiv.org/abs/2404.07972)
 - [VBench: Comprehensive Benchmark Suite for Video Generative Models](https://arxiv.org/abs/2311.17982)
 - [Fréchet Audio Distance](https://arxiv.org/abs/1812.08466)
+- [OpenEQA: Embodied Question Answering in the Era of Foundation Models](https://arxiv.org/abs/2404.05080)
+- [SimplerEnv: Simulated Manipulation Policy Evaluation Environments with Real-to-Sim Visual Transfer](https://arxiv.org/abs/2405.05941)

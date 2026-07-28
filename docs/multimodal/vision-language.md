@@ -158,6 +158,13 @@ tile 顺序与二维位置必须可恢复；否则模型看到的是一串局部
 
 更一般的融合方式见[多模态融合与训练](architecture-training.md)，生成式目标见[多模态生成模型](generative-modeling.md)。
 
+## 继续深入
+
+- [信号、表示与 Token 化](foundations/signals-tokenization.md)固定 patch、动态分辨率与 token budget；
+- [对齐、桥接与融合](foundations/alignment-fusion.md)比较 projector、resampler、cross-attention 与 early fusion；
+- [视觉表示、感知与 Grounding](vision/representation-grounding.md)把全局语义推进到区域、坐标和证据；
+- [空间智能与三维表示](vision/spatial-3d.md)继续处理深度、多视角、坐标系和场景记忆。
+
 ## Reference {#reference}
 
 - [An Image is Worth 16x16 Words](https://arxiv.org/abs/2010.11929)

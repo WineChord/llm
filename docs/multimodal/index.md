@@ -1,8 +1,8 @@
-# 多模态
+# 多模态与生成
 
-多模态模型把文本、图像、文档、音频、视频、传感器状态与动作映射到可共同计算的表示。核心问题不是模型能接受多少输入类型，而是信息怎样被编码、对齐、压缩、融合、监督和验证。
+多模态模型把文本、图像、文档、音频与视频映射到可共同计算的表示，也可以把共享状态重新解码为媒体。核心问题不是输入类型的数量，而是信息怎样被采样、编码、对齐、压缩、融合、生成和验证。
 
-[多模态理解与生成](../landscape/lineages/multimodal-generation.md)沿两条最初相对独立的路线展开：一条从对比式视觉—文本对齐走向可对话的视觉语言模型，另一条从离散表征和 diffusion 走向可扩展生成。关键接口可分别深读 [CLIP](../landscape/works/clip.md)、[Flamingo、BLIP-2 与 LLaVA](../landscape/works/visual-language-bridges.md)，以及 [DDPM、DiT 与 Flow Matching](../landscape/works/diffusion-dit-flow.md)。
+[多模态的历史](history.md)沿四条水流展开：可学习感知、语言对齐、可逆生成和环境交互。[从“看懂”到“生成”](../landscape/lineages/multimodal-generation.md)保留较短的工作谱系；[CLIP](../landscape/works/clip.md)、[视觉语言桥](../landscape/works/visual-language-bridges.md)与 [DDPM、DiT、Flow](../landscape/works/diffusion-dit-flow.md)则深入关键转折。
 
 ## 统一计算图
 
@@ -25,6 +25,14 @@ $$
 
 模型名称不能替代计算图。判断能力时，应追踪哪些参数共享、哪些表示可逆、哪些模态真正参与 loss，以及推理中是否调用外部工具。
 
+<figure class="concept-figure" id="multimodal-field-map" markdown="1">
+
+![图像、音频、视频与身体状态经过采样和表示，进入语义推理、生成或世界模型，输出语言、媒体与动作](../assets/diagrams/multimodal-computing-map.svg)
+
+<figcaption>统一接口位于中间，而不是起点或终点。采样与表示决定模型获得哪些证据；媒体 decoder、规划器和运行时决定输出能否可靠回到真实世界。</figcaption>
+
+</figure>
+
 ## 能力层次
 
 | 层次 | 目标 | 关键瓶颈 |
@@ -40,14 +48,21 @@ Caption、VQA、OCR、grounding、生成和行动不可互相替代。一个模�
 
 ## 阅读路径
 
-- [视觉语言模型](vision-language.md)：ViT、CLIP、视觉 token 与基本接入方式。
-- [融合、位置与训练](architecture-training.md)：projector、resampler、cross-attention、动态分辨率和训练契约。
-- [文档、图表、GUI 与 Grounding](document-gui-grounding.md)：版面、OCR、坐标和界面交互。
-- [理解与生成统一](unified-understanding-generation.md)：连续/离散表示、共享主干与多目标冲突。
-- [图像生成](generative-modeling.md)：VQ、diffusion、flow matching 与 conditioning。
-- [音频与语音](audio-language-models.md)：codec、语义/声学 token、流式与全双工。
-- [视频与世界模型](video-world-models.md)：时空 token、未来预测、长时一致性。
-- [具身智能与动作](embodied-agents.md)：VLA、动作表示、闭环控制与安全。
+### 先建立共同接口
+
+1. [信号、表示与 Token 化](foundations/signals-tokenization.md)：像素、波形、帧和状态怎样进入有限序列；
+2. [对齐、桥接与融合](foundations/alignment-fusion.md)：共享空间、projector、resampler、cross-attention 与 early fusion；
+3. [空间、时间、位置与 Mask](foundations/position-time-masks.md)：多轴位置、真实时间戳、同步和信息流；
+4. [多模态数据、训练与系统](foundations/data-training-systems.md)：数据 mixture、动态 shape、loss、并行与服务成本。
+
+### 再沿能力分流
+
+- **视觉理解**：[视觉表示、感知与 Grounding](vision/representation-grounding.md)先区分全局语义与空间证据，再进入[视觉语言模型](vision-language.md)和[文档、图表、GUI](document-gui-grounding.md)。
+- **图像生成**：[生成建模总览](generative-modeling.md)比较离散自回归、diffusion 与 flow，再沿 autoencoder、score、DiT 和编辑专题深读。
+- **声音**：[音频表示、Codec 与理解](audio/representations-understanding.md)从波形与事件开始，[音频生成、语音交互与流式](audio/generation-streaming.md)继续到 TTS、音乐、通用声音与全双工。
+- **视频**：[视频理解与长程记忆](video/understanding-long-context.md)处理采样、事件和证据，[视频生成](video/generation.md)处理运动、镜头、音画与长时一致性。
+- **全模态**：[理解与生成统一](unified-understanding-generation.md)研究共享表示和混合目标，[Any-to-Any 系统](omni/any-to-any.md)研究多输入、多输出和流式状态。
+- **世界与行动**：[世界模型](../world-models/index.md)要求动作条件与规划验证，[具身智能](../embodied/index.md)进一步落到动作协议、控制频率和物理安全。
 
 旧的[原生多模态与生成](native-generation.md)和[音频与视频](audio-video.md)页面继续作为稳定分流入口。
 

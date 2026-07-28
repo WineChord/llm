@@ -4,7 +4,7 @@
 
 ## 阅读
 
-- [学习路线](guide/roadmap.md)：从共同基础进入模型、训练、系统、推理、智能体或多模态。
+- [学习路线](guide/roadmap.md)：从共同基础进入模型、训练、系统、推理、智能体、多模态或世界与行动。
 - [技术谱系](landscape/index.md)：沿问题、转折和关键工作理解路线怎样形成。
 - [知识架构](guide/architecture.md)：理解各主题的边界与依赖。
 - [覆盖地图](guide/coverage.md)：在机制、实现、系统、评测和证据之间导航。
@@ -17,7 +17,9 @@
 | [基础](foundations/index.md) | token、概率、目标、上下文学习与缩放 |
 | [数据](data/index.md) | 来源、去重、混合、合成数据与训练序列 |
 | [模型结构](architecture/index.md) | Transformer、位置、注意力、MoE、递推与记忆 |
-| [多模态](multimodal/index.md) | 视觉、文档、GUI、音频、视频与生成 |
+| [多模态与生成](multimodal/index.md) | 视觉、音频、视频、全模态理解与媒体生成 |
+| [世界模型](world-models/index.md) | 状态、动力学、预测表征、想象与规划 |
+| [具身智能](embodied/index.md) | VLA、机器人数据、动作策略、闭环评测与安全 |
 | [训练与对齐](training/index.md) | 预训练、SFT、蒸馏、PEFT 与优化稳定性 |
 | [系统](systems/index.md) | 数值、GPU、kernel、并行、MoE 与容错 |
 | [推理与服务](inference/index.md) | 解码、KV、量化、调度、缓存与 P/D 分离 |

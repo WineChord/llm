@@ -94,7 +94,7 @@
 
 ## 多模态与生成
 
-对应[多模态](multimodal/index.md)、[统一理解与生成](multimodal/unified-understanding-generation.md)、[文档与 GUI](multimodal/document-gui-grounding.md)、[音频语言模型](multimodal/audio-language-models.md)和[视频与世界模型](multimodal/video-world-models.md)。
+对应[多模态与生成](multimodal/index.md)、[共同表示](multimodal/foundations/signals-tokenization.md)、[视觉理解](multimodal/vision/representation-grounding.md)、[图像生成](multimodal/generative-modeling.md)、[音频](multimodal/audio/representations-understanding.md)、[视频](multimodal/video/understanding-long-context.md)和[Any-to-Any 系统](multimodal/omni/any-to-any.md)。
 
 - Dosovitskiy et al., [An Image is Worth 16x16 Words](https://arxiv.org/abs/2010.11929)
 - Radford et al., [Learning Transferable Visual Models From Natural Language Supervision](https://arxiv.org/abs/2103.00020)
@@ -112,11 +112,33 @@
 - Lee et al., [Pix2Struct](https://arxiv.org/abs/2210.03347)
 - Cheng et al., [SeeClick: Harnessing GUI Grounding for Advanced Visual GUI Agents](https://arxiv.org/abs/2401.10935)
 - Radford et al., [Robust Speech Recognition via Large-Scale Weak Supervision / Whisper](https://arxiv.org/abs/2212.04356)
+- Baevski et al., [wav2vec 2.0](https://arxiv.org/abs/2006.11477)
+- Zeghidour et al., [SoundStream](https://arxiv.org/abs/2107.03312)
+- Défossez et al., [High Fidelity Neural Audio Compression / EnCodec](https://arxiv.org/abs/2210.13438)
 - Borsos et al., [AudioLM](https://arxiv.org/abs/2209.03143)
 - Wang et al., [Neural Codec Language Models are Zero-Shot Text to Speech Synthesizers / VALL-E](https://arxiv.org/abs/2301.02111)
+- Tong et al., [VideoMAE](https://arxiv.org/abs/2203.12602)
+- Bardes et al., [V-JEPA](https://arxiv.org/abs/2404.08471)
 - Kondratyuk et al., [VideoPoet](https://arxiv.org/abs/2312.14125)
+
+## 世界模型与具身智能
+
+对应[世界模型](world-models/index.md)、[潜在动力学与规划](world-models/dynamics-planning.md)、[表示预测与生成式世界](world-models/predictive-generative-worlds.md)、[具身智能](embodied/index.md)与[VLA 数据谱系](embodied/vla-data-lineage.md)。
+
+- Sutton, [Integrated Architectures for Learning, Planning, and Reacting Based on Approximating Dynamic Programming](https://doi.org/10.1016/B978-1-55860-141-3.50030-4)
+- Ha & Schmidhuber, [World Models](https://arxiv.org/abs/1803.10122)
+- Hafner et al., [Learning Latent Dynamics for Planning from Pixels / PlaNet](https://arxiv.org/abs/1811.04551)
+- Hafner et al., [Dream to Control: Learning Behaviors by Latent Imagination](https://arxiv.org/abs/1912.01603)
+- Schrittwieser et al., [Mastering Atari, Go, Chess and Shogi by Planning with a Learned Model / MuZero](https://www.nature.com/articles/s41586-020-03051-4)
+- Assran et al., [V-JEPA 2](https://arxiv.org/abs/2506.09985)
+- Bruce et al., [Genie: Generative Interactive Environments](https://arxiv.org/abs/2402.15391)
 - Driess et al., [PaLM-E](https://arxiv.org/abs/2303.03378)
-- Brohan et al., [RT-2](https://arxiv.org/abs/2307.15818)
+- Brohan et al., [RT-1](https://arxiv.org/abs/2212.06817)
+- Zitkovich et al., [RT-2](https://proceedings.mlr.press/v229/zitkovich23a.html)
+- Open X-Embodiment Collaboration, [Open X-Embodiment](https://arxiv.org/abs/2310.08864)
+- Octo Model Team, [Octo: An Open-Source Generalist Robot Policy](https://arxiv.org/abs/2405.12213)
+- Kim et al., [OpenVLA](https://proceedings.mlr.press/v270/kim25c.html)
+- Black et al., [π0: A Vision-Language-Action Flow Model for General Robot Control](https://arxiv.org/abs/2410.24164)
 
 ## 预训练、适配与压缩
 

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+  <title id="title">三条生成路径</title>
+  <desc id="desc">自回归、扩散和流匹配分别以离散序列、逐步去噪和连续速度场从简单表示生成数据。</desc>
+  <style>
+    :root{color-scheme:light dark}.bg{fill:#fff}.ink{fill:#172033}.muted{fill:#5b6577}.card{fill:#f8f9fb;stroke:#cbd1da}.blue{fill:#eaf2ff;stroke:#79a1dc}.amber{fill:#fff5df;stroke:#d7a84b}.green{fill:#e9f7f0;stroke:#6eaa89}.dot{fill:#657084}.line{stroke:#657084;stroke-width:2;fill:none;marker-end:url(#a)}text{font-family:"PingFang SC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.h{font-size:29px;font-weight:600}.t{font-size:21px;font-weight:600}.s{font-size:17px}.xs{font-size:15px}@media(prefers-color-scheme:dark){.bg{fill:#111318}.ink{fill:#edf0f6}.muted{fill:#b9c0ce}.card{fill:#191d25;stroke:#454d5b}.blue{fill:#182941;stroke:#6e98d5}.amber{fill:#302616;stroke:#c79a46}.green{fill:#172a22;stroke:#68a783}.line{stroke:#9da6b5}.dot{fill:#9da6b5}}}
+  </style>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#657084"/></marker></defs>
+  <rect class="bg" width="1200" height="680"/>
+  <text class="ink h" x="60" y="62">生成不是一条算法：三种问题写法</text>
+  <text class="muted s" x="60" y="94">三条路线都把条件映射为数据分布，但状态、训练监督与推理步不同</text>
+  <rect class="blue" x="60" y="140" rx="14" width="1080" height="132"/>
+  <text class="ink t" x="88" y="178">离散自回归 / masked token</text>
+  <text class="muted s" x="88" y="207">学习 token 条件概率；采样沿序列或并行 remask 逐步补全</text>
+  <circle class="dot" cx="596" cy="222" r="7"/><circle class="dot" cx="662" cy="222" r="7"/><circle class="dot" cx="728" cy="222" r="7"/><circle class="dot" cx="794" cy="222" r="7"/><circle class="dot" cx="860" cy="222" r="7"/><circle class="dot" cx="926" cy="222" r="7"/><circle class="dot" cx="992" cy="222" r="7"/>
+  <path class="line" d="M606 222H647"/><path class="line" d="M672 222H713"/><path class="line" d="M738 222H779"/><path class="line" d="M804 222H845"/><path class="line" d="M870 222H911"/><path class="line" d="M936 222H977"/>
+  <text class="ink xs" x="596" y="252" text-anchor="middle">z₁</text><text class="ink xs" x="992" y="252" text-anchor="middle">zₙ</text>
+  <rect class="amber" x="60" y="294" rx="14" width="1080" height="132"/>
+  <text class="ink t" x="88" y="332">Diffusion / score</text>
+  <text class="muted s" x="88" y="361">训练时随机选择噪声强度；推理时用匹配的 schedule 与 solver 逆转扰动</text>
+  <circle class="dot" cx="600" cy="377" r="20" opacity=".25"/><circle class="dot" cx="690" cy="377" r="18" opacity=".38"/><circle class="dot" cx="780" cy="377" r="16" opacity=".52"/><circle class="dot" cx="870" cy="377" r="14" opacity=".72"/><circle class="dot" cx="960" cy="377" r="12"/>
+  <path class="line" d="M625 377H664"/><path class="line" d="M713 377H757"/><path class="line" d="M801 377H849"/><path class="line" d="M890 377H943"/>
+  <text class="ink xs" x="600" y="411" text-anchor="middle">noise</text><text class="ink xs" x="960" y="411" text-anchor="middle">data</text>
+  <rect class="green" x="60" y="448" rx="14" width="1080" height="132"/>
+  <text class="ink t" x="88" y="486">Flow matching / rectified flow</text>
+  <text class="muted s" x="88" y="515">学习概率路径上的速度场；推理用 ODE 积分把 base distribution 运输到数据</text>
+  <path d="M590 546C690 475 815 609 985 525" fill="none" stroke="#6eaa89" stroke-width="4" marker-end="url(#a)"/>
+  <circle class="dot" cx="590" cy="546" r="9"/><circle class="dot" cx="985" cy="525" r="9"/>
+  <text class="ink xs" x="590" y="573" text-anchor="middle">t=0</text><text class="ink xs" x="985" y="556" text-anchor="middle">t=1</text>
+  <text class="ink s" x="600" y="628" text-anchor="middle">比较模型必须连同表示、参数化、条件接口、采样步与 decoder 一起比较</text>
+</svg>

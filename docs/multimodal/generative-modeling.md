@@ -10,6 +10,14 @@
 
 [DDPM、DiT 与 Flow Matching](../landscape/works/diffusion-dit-flow.md)把去噪目标、Transformer backbone 和连续向量场放在同一组符号下比较；它们与视觉语言理解路线的汇合位置见[多模态理解与生成](../landscape/lineages/multimodal-generation.md)。
 
+<figure class="concept-figure" id="generative-modeling-paths" markdown="1">
+
+![离散自回归、Diffusion 与 Flow Matching 从简单表示生成数据的三种路径](../assets/diagrams/generative-paths.svg)
+
+<figcaption>三条路线的差异首先在状态与推理协议：离散模型补 token，diffusion 逆转扰动，flow 积分速度场。backbone 同为 Transformer 并不会让目标与 sampler 自动等价。</figcaption>
+
+</figure>
+
 ## VQ 表示
 
 Encoder 产生连续 latent：
@@ -312,6 +320,16 @@ $$
 | 系统 | 采样步数、延迟、峰值显存与吞吐 |
 
 理解与生成怎样共享主干见[理解与生成统一](unified-understanding-generation.md)，音视频的离散表示见[音频与语音](audio-language-models.md)和[视频与世界模型](video-world-models.md)，最小 VQ、加噪、CFG 与 flow sampler 见[多模态手撕实现](../practice/multimodal.md)。
+
+## 继续深入
+
+本页保留三条生成路线的共同符号与稳定入口：
+
+- [从像素概率到 GAN](image-generation/history-autoregressive-gan.md)补齐 likelihood、adversarial game 与离散 AR 的历史；
+- [Autoencoder 与视觉 Tokenizer](image-generation/autoencoders-tokenizers.md)讨论压缩、码本和 decoder 上限；
+- [Diffusion 与 Score](image-generation/diffusion-score.md)统一离散加噪、score、SDE 与 prediction type；
+- [Latent Diffusion、DiT 与 Flow](image-generation/latent-dit-flow.md)连接生成空间、backbone、概率路径和少步采样；
+- [条件控制、编辑与评测](image-generation/control-editing-evaluation.md)分开条件遵循、局部编辑、身份保持、质量与系统成本。
 
 ## Reference {#reference}
 

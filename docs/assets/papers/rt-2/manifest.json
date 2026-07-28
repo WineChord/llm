@@ -1,0 +1,53 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "rt-2",
+    "title": "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control",
+    "canonical_url": "https://proceedings.mlr.press/v229/zitkovich23a.html",
+    "artifact_url": "https://proceedings.mlr.press/v229/zitkovich23a/zitkovich23a.pdf",
+    "artifact_sha256": "8f3d59bff529775c667091c8b1b8be090b6bec8bd8f90cbf54a15721f50ee3f1",
+    "version": {
+      "kind": "sha256_only",
+      "value": "8f3d59bff529775c667091c8b1b8be090b6bec8bd8f90cbf54a15721f50ee3f1"
+    },
+    "page_count": 19,
+    "license": {
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "credit": "Copyright © 2023 the authors",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "c8b66a37fc35fc19dabd5995045b8e190a6a6fcbf2d23007cd7c68deeec57846"
+    }
+  },
+  "render": {
+    "renderer": "pdftocairo",
+    "renderer_version": "26.07.0",
+    "dpi": 300,
+    "coordinate_space": "rendered-page-points-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "rt2-figure-01",
+      "file": "figure-01-vla-cofinetuning.png",
+      "kind": "diagram",
+      "source_label": "Figure 1",
+      "page": 2,
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [108, 69, 507, 220],
+      "pixel_size": [1663, 629],
+      "sha256": "249c6d90a0f1a8434896916da9052fb41d16e350e8ba33f69dbbd30b06fcea3a",
+      "placements": [
+        {
+          "page": "docs/embodied/vla-data-lineage.md",
+          "anchor": "rt2-figure-01",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

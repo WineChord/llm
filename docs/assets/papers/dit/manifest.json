@@ -1,0 +1,53 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "dit",
+    "title": "Scalable Diffusion Models with Transformers",
+    "canonical_url": "https://arxiv.org/abs/2212.09748",
+    "artifact_url": "https://arxiv.org/pdf/2212.09748v2",
+    "artifact_sha256": "5fbb0ec35e3ae76826240171ca63ed4c27de6cb43180367453019e9d28a8b076",
+    "version": {
+      "kind": "sha256_only",
+      "value": "5fbb0ec35e3ae76826240171ca63ed4c27de6cb43180367453019e9d28a8b076"
+    },
+    "page_count": 25,
+    "license": {
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "credit": "Copyright © 2023 William Peebles and Saining Xie",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "de25cf3fabdec305d1d925173ad7a58e65bbf8b085b80c167a236d7132ad309e"
+    }
+  },
+  "render": {
+    "renderer": "pdftocairo",
+    "renderer_version": "26.07.0",
+    "dpi": 300,
+    "coordinate_space": "rendered-page-points-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "dit-figure-03",
+      "file": "figure-03-architecture-conditioning.png",
+      "kind": "diagram",
+      "source_label": "Figure 3",
+      "page": 3,
+      "page_box_points": [612, 792],
+      "rotation": 0,
+      "crop_box_points": [48, 70, 564, 282],
+      "pixel_size": [2150, 883],
+      "sha256": "62eaa0c1d2c984d69864bc4c9c7ef06f58bb3d5b59a5e67e71ac2772eacc0dee",
+      "placements": [
+        {
+          "page": "docs/multimodal/image-generation/latent-dit-flow.md",
+          "anchor": "dit-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

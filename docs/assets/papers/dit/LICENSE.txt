@@ -1,0 +1,12 @@
+Scalable Diffusion Models with Transformers
+
+Copyright © 2023 William Peebles and Saining Xie.
+Licensed under the Creative Commons Attribution 4.0 International License:
+https://creativecommons.org/licenses/by/4.0/
+
+The accompanying PNG is a precise crop of Figure 3 from arXiv:2212.09748v2.
+The crop removes the caption and surrounding page content and is rasterized at
+300 DPI; the figure content is otherwise unchanged.
+
+Paper: https://arxiv.org/abs/2212.09748
+PDF: https://arxiv.org/pdf/2212.09748v2

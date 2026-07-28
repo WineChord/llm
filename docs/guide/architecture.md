@@ -2,14 +2,15 @@
 
 知识库按稳定对象组织：训练目标、数据分布、张量状态、计算图、环境状态和测量协议。模型名称、框架和榜单会变化，这些对象仍能连接新的证据。
 
-## 十二个问题域
+## 十三个问题域
 
 | 问题域 | 稳定对象 | 入口 |
 | --- | --- | --- |
 | 基础 | token、概率、目标、上下文学习、缩放 | [基础知识地图](../foundations/index.md) |
 | 数据 | 来源、谱系、过滤、混合、序列、反馈 | [数据工程](../data/index.md) |
 | 模型结构 | attention、位置、MLP、MoE、递推、记忆 | [模型结构](../architecture/index.md) |
-| 多模态 | encoder、投影、模态 token、生成与动作 | [多模态](../multimodal/index.md) |
+| 多模态与生成 | 信号、token、对齐、媒体理解与生成 | [多模态与生成](../multimodal/index.md) |
+| 世界与行动 | 状态、动力学、规划、动作与闭环 | [世界模型](../world-models/index.md)与[具身智能](../embodied/index.md) |
 | 训练与对齐 | optimizer、SFT、蒸馏、PEFT、checkpoint | [训练与对齐](../training/index.md) |
 | 系统 | dtype、kernel、通信、placement、checkpoint | [系统与基础设施](../systems/index.md) |
 | 推理与服务 | 解码、KV、缓存、调度、量化、集群 | [推理与服务](../inference/index.md) |
@@ -32,7 +33,7 @@
   -> 评测、门禁与反馈
 ```
 
-系统层贯穿训练和推理；多模态改变输入、结构和评测；推理时计算可以只发生在部署，也可以通过蒸馏、偏好或 RL 回到训练。技术谱系解释这些对象之间的历史转折，不替代机制定义。
+系统层贯穿训练和推理；多模态改变输入、表示、输出与评测；世界模型和具身智能把状态进一步连接到环境转移与动作。推理时计算可以只发生在部署，也可以通过蒸馏、偏好或 RL 回到训练。技术谱系解释这些对象之间的历史转折，不替代机制定义。
 
 ### 数据与目标
 
@@ -49,6 +50,8 @@
 ### 知识、行动与反馈
 
 [RAG](../applications/rag.md)连接外部证据，[工具调用](../applications/tool-use.md)连接外部动作，[智能体运行时](../applications/agent-runtime.md)维护状态。[搜索与验证](../reasoning/search-verification.md)产生推理时反馈；需要参数更新时进入[推理后训练](../training/reasoning-posttraining.md)，涉及环境转移与长时信用时继续进入 [Agentic RL](../agentic-rl/index.md)。
+
+[多模态表示](../multimodal/foundations/signals-tokenization.md)把像素、波形和视频变成模型状态；[世界模型](../world-models/index.md)预测动作条件下的状态转移；[具身策略](../embodied/state-action-policies.md)把目标与观察映射为可执行动作。三者必须通过坐标、时间、控制频率和安全监督形成闭环，不能把视频生成质量直接当作规划能力。
 
 ### 测量
 

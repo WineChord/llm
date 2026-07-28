@@ -1,0 +1,13 @@
+RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control
+
+Copyright © 2023 the authors.
+Published in Proceedings of Machine Learning Research 229.
+Licensed under the Creative Commons Attribution 4.0 International License:
+https://creativecommons.org/licenses/by/4.0/
+
+The accompanying PNG is a precise crop of Figure 1 from the cited paper.
+The crop removes surrounding page content and is rasterized at 300 DPI; the
+figure content is otherwise unchanged.
+
+Paper: https://proceedings.mlr.press/v229/zitkovich23a.html
+PDF: https://proceedings.mlr.press/v229/zitkovich23a/zitkovich23a.pdf

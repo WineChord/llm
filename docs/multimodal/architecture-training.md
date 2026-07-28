@@ -389,6 +389,10 @@ $\lambda$ 控制的是容量分配，不只是数值尺度。应监控每个目�
 
 可执行的 patchify、CLIP/SigLIP loss、resampler、模态 mask 与位置练习见[多模态手撕实现](../practice/multimodal.md)。文档和坐标见[文档、图表、GUI 与 Grounding](document-gui-grounding.md)，统一生成目标见[理解与生成统一](unified-understanding-generation.md)。
 
+## 继续深入
+
+本页保留跨模态架构的稳定总览；更细的 canonical 契约分别位于[对齐、桥接与融合](foundations/alignment-fusion.md)、[空间、时间、位置与 Mask](foundations/position-time-masks.md)和[多模态数据、训练与系统](foundations/data-training-systems.md)。输入压缩与可逆性见[信号、表示与 Token 化](foundations/signals-tokenization.md)。
+
 ## Reference {#reference}
 
 - [Visual Instruction Tuning / LLaVA](https://arxiv.org/abs/2304.08485)

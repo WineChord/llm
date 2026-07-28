@@ -223,6 +223,15 @@ $$
 
 动作输出和闭环验证见[具身智能与动作](embodied-agents.md)，长输入利用见[长上下文](../architecture/long-context.md)，时空 patch 与 mask 练习见[多模态手撕实现](../practice/multimodal.md)。
 
+## 继续深入
+
+视频与世界模型在这里保留稳定交汇入口，但 canonical 边界已经拆开：
+
+- [视频理解与长程记忆](video/understanding-long-context.md)讨论采样、事件定位和证据；
+- [视频生成](video/generation.md)讨论时空 latent、causal rollout 和音画同步；
+- [世界模型总览](../world-models/index.md)区分视频预测、latent dynamics、JEPA 和交互模拟器；
+- [表示预测与生成式世界](../world-models/predictive-generative-worlds.md)比较动作条件、latent action 与闭环可用性。
+
 ## Reference {#reference}
 
 - [VideoPoet](https://arxiv.org/abs/2312.14125)

@@ -207,6 +207,9 @@ nav:
               - CLIP: landscape/works/clip.md
               - Flamingo、BLIP-2 与 LLaVA: landscape/works/visual-language-bridges.md
               - DDPM、DiT 与 Flow: landscape/works/diffusion-dit-flow.md
+              - Kimi-VL: multimodal/kimi-vl.md
+              - Kimi 多模态家族: multimodal/kimi.md
+              - DeepSeek 多模态家族: multimodal/deepseek.md
           - 检索、行动与评测:
               - RAG: landscape/works/rag.md
               - ReAct 与 Toolformer: landscape/works/react-toolformer.md
@@ -219,25 +222,52 @@ nav:
           - K3 引用图谱: landscape/kimi-k3-reference-map.md
           - GLM 演化案例: landscape/glm-timeline.md
           - GLM-5 引用图谱: landscape/glm-5-reference-map.md
-  - 多模态:
+  - 多模态与生成:
       - 总览: multimodal/index.md
-      - 理解与对齐:
+      - 历史与全景:
+          - 多模态的四条汇流: multimodal/history.md
+      - 共同基础:
+          - 信号、表示与 Token 化: multimodal/foundations/signals-tokenization.md
+          - 对齐、桥接与融合: multimodal/foundations/alignment-fusion.md
+          - 空间、时间、位置与 Mask: multimodal/foundations/position-time-masks.md
+          - 多模态数据、训练与系统: multimodal/foundations/data-training-systems.md
+          - 融合、位置与训练: multimodal/architecture-training.md
+      - 视觉理解:
           - 视觉语言模型: multimodal/vision-language.md
-          - 融合与训练: multimodal/architecture-training.md
+          - 视觉表示、感知与 Grounding: multimodal/vision/representation-grounding.md
           - 文档与 GUI Grounding: multimodal/document-gui-grounding.md
-      - 理解与生成:
+          - 空间智能与三维表示: multimodal/vision/spatial-3d.md
+      - 图像生成:
+          - 总览: multimodal/generative-modeling.md
+          - 从像素概率到 GAN: multimodal/image-generation/history-autoregressive-gan.md
+          - Autoencoder 与视觉 Tokenizer: multimodal/image-generation/autoencoders-tokenizers.md
+          - Diffusion 与 Score 建模: multimodal/image-generation/diffusion-score.md
+          - Latent Diffusion、DiT 与 Flow: multimodal/image-generation/latent-dit-flow.md
+          - 条件控制、编辑与评测: multimodal/image-generation/control-editing-evaluation.md
+      - 音频与语音:
+          - 连续媒体与流式协议: multimodal/audio-video.md
+          - 音频表示、Codec 与理解: multimodal/audio/representations-understanding.md
+          - 音频与语音模型: multimodal/audio-language-models.md
+          - 音频生成、语音交互与流式: multimodal/audio/generation-streaming.md
+      - 视频:
+          - 视频理解与长程记忆: multimodal/video/understanding-long-context.md
+          - 视频生成与时空一致性: multimodal/video/generation.md
+      - 全模态:
           - 原生多模态与生成: multimodal/native-generation.md
           - 统一理解与生成: multimodal/unified-understanding-generation.md
-          - 多模态生成模型: multimodal/generative-modeling.md
-      - 音频、视频与世界:
-          - 音频与视频总览: multimodal/audio-video.md
-          - 音频语言模型: multimodal/audio-language-models.md
+          - Any-to-Any 系统: multimodal/omni/any-to-any.md
+  - 世界模型与具身智能:
+      - 世界模型:
+          - 总览: world-models/index.md
+          - 潜在动力学、想象与规划: world-models/dynamics-planning.md
+          - 表示预测与生成式世界: world-models/predictive-generative-worlds.md
           - 视频与世界模型: multimodal/video-world-models.md
-          - 具身智能体: multimodal/embodied-agents.md
-      - 模型案例:
-          - Kimi-VL: multimodal/kimi-vl.md
-          - Kimi 家族: multimodal/kimi.md
-          - DeepSeek: multimodal/deepseek.md
+      - 具身智能:
+          - 总览: embodied/index.md
+          - 状态、动作与策略: embodied/state-action-policies.md
+          - VLA、数据与跨本体学习: embodied/vla-data-lineage.md
+          - 规划、闭环评测与安全: embodied/planning-evaluation-safety.md
+          - 具身智能与动作: multimodal/embodied-agents.md
   - 训练与系统:
       - 训练与对齐:
           - 总览: training/index.md

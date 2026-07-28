@@ -79,6 +79,10 @@ $\lambda$ 不只是超参数：它与模态 batch 比例、token 数和 loss red
 
 还要区分作者披露、可下载 checkpoint 和可复现训练代码。开放权重只能验证前向行为，不能自动验证数据混合、目标权重或训练稳定性。案例页面可说明具体模型的组合方式，但通用机制以以上主题页为准；图像生成的离散与连续路径见[多模态生成模型](generative-modeling.md)，音视频状态见[音频与视频](audio-video.md)。
 
+## 继续深入
+
+[理解与生成统一](unified-understanding-generation.md)展开表示与混合目标，[Any-to-Any 系统](omni/any-to-any.md)展开多输入、多输出、并发流与 runtime；判断任何“原生”声明时，都应回到这两页的计算图和证据矩阵。
+
 ## Reference {#reference}
 
 - [Chameleon: Mixed-Modal Early-Fusion Foundation Models](https://arxiv.org/abs/2405.09818)

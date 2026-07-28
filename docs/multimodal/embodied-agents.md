@@ -197,6 +197,10 @@ $$
 
 视频状态预测见[视频与世界模型](video-world-models.md)，GUI 动作的坐标与状态问题见[文档、图表、GUI 与 Grounding](document-gui-grounding.md)，多模态输入接口见[融合、位置与训练](architecture-training.md)。
 
+## 继续深入
+
+本页保留从 VLM 到动作的稳定概览。完整控制栈见[具身智能总览](../embodied/index.md)，动作 token、chunk、diffusion/flow policy 见[状态、动作与策略](../embodied/state-action-policies.md)，数据与 VLA 谱系见[VLA、数据与跨本体学习](../embodied/vla-data-lineage.md)，真实运行和物理边界见[规划、闭环评测与安全](../embodied/planning-evaluation-safety.md)。
+
 ## Reference {#reference}
 
 - [PaLM-E](https://arxiv.org/abs/2303.03378)

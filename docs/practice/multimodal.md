@@ -2,6 +2,8 @@
 
 多模态实现的核心是 token 预算、坐标、mask、模态归一化与采样过程。以下代码覆盖视觉 patch、对比学习、resampler、grounding、统一序列、VQ、diffusion、flow、音频 RVQ 与视频 tubelet。
 
+这页负责把跨模态原语放在一起做组合验证；机制为什么成立、在系统中放在哪里，则分别由[信号与 Token 化](../multimodal/foundations/signals-tokenization.md)、[对齐与融合](../multimodal/foundations/alignment-fusion.md)、[Diffusion 与 Score](../multimodal/image-generation/diffusion-score.md)、[音频生成](../multimodal/audio/generation-streaming.md)、[视频生成](../multimodal/video/generation.md)、[世界模型](../world-models/dynamics-planning.md)与[具身策略](../embodied/state-action-policies.md)展开。
+
 ## ViT patchify
 
 图像 $x\in\mathbb R^{B\times C\times H\times W}$，patch 边长 $P$，token 数：

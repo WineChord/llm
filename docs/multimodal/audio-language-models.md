@@ -179,7 +179,7 @@ $$
 
 端到端 speech-to-speech 可以在共享表示中保留声学条件，但内容正确性、说话人保持、延迟与安全更难分层诊断。
 
-## 流式与全双工
+## 流式与全双工 {#streaming-full-duplex}
 
 流式 encoder 只能看到有限未来。设 chunk 时长为 $c$、lookahead 为 $a$，算法延迟下界包含
 
@@ -261,6 +261,10 @@ $$
 | 对话 | 抢话、打断、静音、重叠和长时间会话 |
 
 音频 token 的紧凑 RVQ、delay stream 与 streaming state 练习见[多模态手撕实现](../practice/multimodal.md)，共享融合接口见[多模态融合、位置与训练](architecture-training.md)。
+
+## 继续深入
+
+感知、ASR、声源、音画对齐与证据定位见[音频表示、Codec 与理解](audio/representations-understanding.md)；TTS、音乐、通用声音、diffusion/flow 和全双工 runtime 见[音频生成、语音交互与流式](audio/generation-streaming.md)。本页继续维护 codec token、RVQ 与语音到语音的共同机制。
 
 ## Reference {#reference}
 

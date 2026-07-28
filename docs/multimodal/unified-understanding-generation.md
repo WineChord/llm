@@ -222,6 +222,10 @@ $$
 
 离散与连续生成目标见[图像生成](generative-modeling.md)，融合接口见[多模态融合、位置与训练](architecture-training.md)，最小 modality mask 与 loss 见[多模态手撕实现](../practice/multimodal.md)。
 
+## 继续深入
+
+token、位置和可见性契约见[空间、时间、位置与 Mask](foundations/position-time-masks.md)；系统如何把文本、图像、音频、视频与流式输出调度在一起，见[Any-to-Any 系统](omni/any-to-any.md)；生成目标的独立推导见[图像生成总览](generative-modeling.md)。
+
 ## Reference {#reference}
 
 - [Chameleon: Mixed-Modal Early-Fusion Foundation Models](https://arxiv.org/abs/2405.09818)

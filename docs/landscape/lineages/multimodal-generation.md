@@ -1,6 +1,6 @@
-# 从“看懂”到“生成”：多模态模型的两次汇流
+# 从“看懂”到“生成”：多模态模型的四股汇流
 
-今天把图片、语音或视频送进一个语言模型，看起来像是在输入端多接了几种数据。真正困难的地方却不在接口：不同模态原本拥有不同的采样频率、空间结构和训练传统，模型既要找到可以互相比较的表示，又要保留各自不可压平的细节。多模态的发展因此不是一条直线，而是两股长期分开的水流逐渐汇合——一股研究“怎样把感知映射到语言能够使用的空间”，另一股研究“怎样从压缩表示中生成高保真世界”。
+今天把图片、语音或视频送进一个语言模型，看起来像是在输入端多接了几种数据。真正困难的地方却不在接口：不同模态原本拥有不同的采样频率、空间结构和训练传统，模型既要找到可以互相比较的表示，又要保留各自不可压平的细节。多模态的发展因此不是一条直线，而是四股长期分开的水流逐渐汇合：可学习感知、语言对齐、可逆媒体生成，以及动作条件下的环境预测。更完整的时代背景见[多模态的四条汇流](../../multimodal/history.md)，本页聚焦真正改变接口的工作转折。
 
 ## 第一股水流：语言成为视觉的开放词表
 
@@ -28,7 +28,23 @@
 
 完整推导和一段可执行的噪声预测 reference 见[从 DDPM 到 DiT 与 Flow](../works/diffusion-dit-flow.md)，机制地图见[多模态生成模型](../../multimodal/generative-modeling.md)。
 
-## 两股水流怎样汇合
+## 第三股水流：声音与视频带来真实时间
+
+图像模型可以把一个样本当作静态 token 集，音频与视频却必须面对采样率、同步、流式状态和中断。[wav2vec 2.0](https://arxiv.org/abs/2006.11477)与 [HuBERT](https://arxiv.org/abs/2106.07447)从无标注语音学习上下文表示；[SoundStream](https://arxiv.org/abs/2107.03312)和 [EnCodec](https://arxiv.org/abs/2210.13438)把波形压成多码本 codec token；[AudioLM](https://arxiv.org/abs/2209.03143)再把语义与声学 token 分层生成。声音由此同时接入理解与生成，但 speech content、speaker identity、韵律和高保真声学仍属于不同信息层。
+
+视频侧从 3D CNN、分解时空 attention 与 masked video modeling，逐步走到时空 latent 生成。理解任务要求事件顺序和时间证据，生成任务还要求身份、运动、镜头与长 rollout 一致。两者共享视频 tokenizer 并不意味着目标相同：理解表示可以忽略难以预测的纹理，生成表示则要把它恢复。
+
+更重要的变化发生在 runtime。实时语音和视频不是离线 batch；采集时间、到达时间、模型状态和播放时间必须共同存在。音频路线见[音频表示与理解](../../multimodal/audio/representations-understanding.md)和[音频生成与流式](../../multimodal/audio/generation-streaming.md)，视频路线见[视频理解](../../multimodal/video/understanding-long-context.md)与[视频生成](../../multimodal/video/generation.md)。
+
+## 第四股水流：预测开始服务行动
+
+[World Models](https://arxiv.org/abs/1803.10122)、[PlaNet](https://arxiv.org/abs/1811.04551)与 [Dreamer](https://arxiv.org/abs/1912.01603)把观察压入 latent dynamics，并在想象中规划或训练策略；[MuZero](https://www.nature.com/articles/s41586-020-03051-4)进一步说明，决策模型可以只学习 reward、value 与 policy 所需状态，而不重建全部像素。
+
+视频预测与这条路线后来重新相遇。JEPA 在表示空间预测未来或被遮区域，Genie 类工作从视频学习潜在动作和交互环境，VLA 则把视觉、语言、机器人状态与动作块接入共同模型。真正的汇流标准不是画面“像一个世界”，而是动作能否改变预测、预测能否改善规划、真实反馈能否纠正模型。
+
+这条路线的 canonical 边界见[世界模型](../../world-models/index.md)、[潜在动力学与规划](../../world-models/dynamics-planning.md)和[具身智能](../../embodied/index.md)。
+
+## 四股水流怎样汇合
 
 理解与生成开始共享 tokenizer、backbone 或序列接口后，“图像输入”和“图像输出”可以出现在同一上下文里。但统一 token 并不会自动统一语义：
 
@@ -37,7 +53,7 @@
 3. 自回归、diffusion 与 flow 的时间轴含义不同，不能只因为都使用 Transformer 就共享同一 loss mask；
 4. 端到端训练会让梯度跨模态流动，也可能破坏原来稳定的单模态能力。
 
-因此，“原生多模态”只有落到计算图和训练目标才有意义。统一理解与生成的具体接口见[统一理解与生成](../../multimodal/unified-understanding-generation.md)，音频、视频和动作的时间结构见[音频语言模型](../../multimodal/audio-language-models.md)、[视频与世界模型](../../multimodal/video-world-models.md)与[具身智能体](../../multimodal/embodied-agents.md)。
+因此，“原生多模态”只有落到计算图和训练目标才有意义。统一理解与生成的具体接口见[统一理解与生成](../../multimodal/unified-understanding-generation.md)，多输入、多输出和实时状态见[Any-to-Any 系统](../../multimodal/omni/any-to-any.md)。
 
 ## 留给后来工作的三个问题
 
@@ -45,7 +61,7 @@
 
 - **表示瓶颈**：压缩多少才不会丢掉 OCR、空间关系、音色或动作细节；
 - **时间与空间预算**：高分辨率和长视频怎样进入有限上下文，哪些 token 可以合并或递推；
-- **可验证性**：开放式描述容易显得流畅，grounding、计数、时序因果和生成一致性却需要可定位的证据。
+- **可验证性**：开放式描述容易显得流畅，grounding、计数、时序因果、生成一致性和闭环收益却需要可定位的证据。
 
 读新工作时，先问它改变了哪一个瓶颈，再看它是否只是增加数据、模型和推理预算。这样，模型名称会不断更换，技术位置仍然清楚。
 
@@ -59,3 +75,7 @@
 - [High-Resolution Image Synthesis with Latent Diffusion Models](https://arxiv.org/abs/2112.10752)
 - [Scalable Diffusion Models with Transformers](https://arxiv.org/abs/2212.09748)
 - [Flow Matching for Generative Modeling](https://arxiv.org/abs/2210.02747)
+- [SoundStream: An End-to-End Neural Audio Codec](https://arxiv.org/abs/2107.03312)
+- [AudioLM: a Language Modeling Approach to Audio Generation](https://arxiv.org/abs/2209.03143)
+- [World Models](https://arxiv.org/abs/1803.10122)
+- [Mastering Atari, Go, Chess and Shogi by Planning with a Learned Model](https://www.nature.com/articles/s41586-020-03051-4)
