@@ -65,6 +65,11 @@ TEXT_COMMAND = re.compile(
     r"\\(?:text|operatorname|mathrm|mathbf|mathit|mathtt)\{[^{}]*\}"
 )
 SNIPPET = re.compile(r'(?m)^[ \t]*--8<-- "([^"]+)"[ \t]*$')
+VISIBLE_MARKDOWN_PATTERNS = (
+    ("strong emphasis", re.compile(r"\*\*[^*]+\*\*|__[^_]+__")),
+    ("strikethrough", re.compile(r"~~[^~]+~~")),
+    ("inline link", re.compile(r"(?<!!)\[[^\]]+\]\([^)]+\)")),
+)
 
 
 @dataclass(frozen=True)
@@ -491,10 +496,14 @@ def compare_generated_site(
             )
         if re.search(r"\\(?:[A-Za-z]+|[\[\]()])", parser.visible_text):
             errors.append(f"{relative}: generated page leaks raw TeX into prose")
-        if re.search(r"\*\*[^*\n]+\*\*", parser.visible_text):
-            errors.append(
-                f"{relative}: generated page leaks raw Markdown emphasis"
-            )
+        for label, pattern in VISIBLE_MARKDOWN_PATTERNS:
+            match = pattern.search(parser.visible_text)
+            if match:
+                excerpt = " ".join(match.group(0).split())
+                errors.append(
+                    f"{relative}: generated page leaks raw Markdown "
+                    f"{label}: {excerpt!r}"
+                )
     return total
 
 

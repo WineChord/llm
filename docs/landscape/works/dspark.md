@@ -939,7 +939,7 @@ arXiv v1 HTML 含 110 个 bibliography 条目，正文引用目标覆盖 110 / 1
 
 DSpark 最值得迁移的方法论不是某个固定 block size，而是四层闭环：
 **用结构提高 prefix survival，用概率校准把 survival 变成可用估计，用硬件 profile
-把估计换成机会成本，再用 non-anticipating 调度保持目标分布。**少任何一层，都只
+把估计换成机会成本，再用 non-anticipating 调度保持目标分布**。少任何一层，都只
 复现了 DSpark 名称下的一部分。
 
 ## Reference {#reference}
