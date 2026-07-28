@@ -148,6 +148,15 @@
 }
 
 @media (max-width: 44.984375em) {
+  .md-typeset .highlight,
+  .md-typeset pre,
+  .md-typeset .md-typeset__scrollwrap {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    margin-inline: 0;
+  }
+
   .md-typeset .code-disclosure__meta {
     display: block;
     margin-block-start: 0.15rem;
