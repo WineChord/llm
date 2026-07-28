@@ -149,6 +149,13 @@ GLM-5 并非从训练第一步就启用 DSA，而是在 mid-training 末端从�
 
 20B 是 GLM-5 报告中的适配量；GLM-4.7-Flash 的 150B DSA 实验是另一组小模型研究，二者不能拼成同一训练阶段。报告还把 20B 与 DeepSeek-V3.2 披露的 943.7B 适配量对照，说明“后接式稀疏化”可以更省数据，但跨模型、数据与实现的比较不是受控消融。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-5-figure-06" data-paper-source="glm-5" data-paper-asset="glm-5-figure-06" markdown="1">
+[![GLM-5 在相同 SFT 数据上比较 MLA 与完成稀疏适配后的 DSA loss，主曲线几乎重合，插图显示很小的相对差](../../assets/papers/glm-5/figure-06-mla-dsa-loss.png){ width="1063" height="638" loading="lazy" decoding="async" }](../../assets/papers/glm-5/figure-06-mla-dsa-loss.png)
+<figcaption><strong>Figure 6 提供的是“适配后的优化轨迹接近”证据，而不是 DSA 与 MLA 数学等价。</strong>蓝红曲线在这组 SFT 设置中几乎重合，relative-loss 插图仍保留非零差异；训练 loss 也不能替代长上下文任务、索引召回、kernel 成本和极端输入下的验证。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2602.15763v2#page=6">GLM-5: from Vibe Coding to Agentic Engineering, Figure 6, p. 6</a>；Copyright © 2026 GLM-5 Team，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去原始 caption 与周围正文。</span></figcaption>
+</figure>
+</div>
+
 ### 长上下文结果不是“数学无损”
 
 | 128K 任务 | MLA | DSA |

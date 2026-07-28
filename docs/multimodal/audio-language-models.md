@@ -2,6 +2,13 @@
 
 音频模型同时面对高采样率连续信号、语义内容、说话人和声学细节。理解任务希望压缩无关声学变化，生成任务却需要恢复音色、韵律和环境；一个 tokenization 很难同时最优。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="kimi-audio-framework" data-paper-source="kimi-audio" data-paper-asset="kimi-audio-framework" markdown="1">
+[![Kimi-Audio 的音频 tokenizer、连续声学 encoder、共享 LLM、并行文本与音频头以及流式 detokenizer](../assets/papers/kimi-audio/kimi-audio-framework.png){ width="2464" height="2055" loading="lazy" decoding="async" }](../assets/papers/kimi-audio/kimi-audio-framework.png)
+<figcaption><strong>一套完整的 audio language model 同时处理输入表示、共享推理、双通道生成与波形恢复。</strong>这张架构图把容易混为一谈的四个接口分开：连续与离散输入如何对齐，文本头与音频头共享到哪里，blank-token delay 怎样维护生成时钟，以及 flow-matching detokenizer 在何处恢复高带宽声学细节。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-Audio/349251e1d8f4f98d58fda59246381faecd7392e0/assets/kimia_framework.png">Kimi-Audio architecture overview, standalone architecture diagram</a>；Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-Audio/blob/349251e1d8f4f98d58fda59246381faecd7392e0/README.md#license">MIT License（repository non-Qwen components）</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 表示层次
 
 ### 波形与频谱

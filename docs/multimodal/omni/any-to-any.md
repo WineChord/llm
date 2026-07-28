@@ -19,6 +19,20 @@ $$
 
 Any-to-Any 描述的是接口目标，不是一种固定架构。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-image-hybrid-pipeline" data-paper-source="glm-image-hybrid-pipeline" data-paper-asset="glm-image-hybrid-pipeline" markdown="1">
+[![GLM-Image 用自回归主干产生离散视觉语义，再把图像、字形和视觉 embedding 路由到独立 diffusion decoder 的混合生成路径](../../assets/papers/glm-image-hybrid-pipeline/glm-image-hybrid-pipeline.png){ width="1280" height="314" loading="lazy" decoding="async" }](../../assets/papers/glm-image-hybrid-pipeline/glm-image-hybrid-pipeline.png)
+<figcaption><strong>这张 standalone diagram 是“共享状态、分离输出头”的一个实例：高层语义由自回归路径组织，高保真图像仍交给连续 diffusion decoder。</strong>Any-to-Any 系统完全可以在会话与语义状态上统一，同时保留模态专用 tokenizer、solver 和安全边界；把所有输出强行压进一个词表不是唯一终点。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/zai-org/GLM-Image/69b87db2874f8b556417c03eedf2b8a1484f62e0/resources/architecture_1.jpeg">GLM-Image hybrid autoregressive and diffusion pipeline, standalone diagram</a>；Copyright 2026 Zhipu AI，<a href="https://github.com/zai-org/GLM-Image/blob/69b87db2874f8b556417c03eedf2b8a1484f62e0/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="kimi-audio-framework" data-paper-source="kimi-audio" data-paper-asset="kimi-audio-framework" markdown="1">
+[![Kimi-Audio 用模态专用输入前端和音频 detokenizer 包围共享 LLM 状态的 Any-to-Any 架构实例](../../assets/papers/kimi-audio/kimi-audio-framework.png){ width="2464" height="2055" loading="lazy" decoding="async" }](../../assets/papers/kimi-audio/kimi-audio-framework.png)
+<figcaption><strong>共享状态不要求所有模态采用相同 tokenization 或相同输出过程。</strong>Kimi-Audio 让连续声学特征、离散语义 token 与文本进入共享 LLM，又为文本和音频保留并行输出头，并用独立 detokenizer 恢复波形；这正是“核心计算统一、物理接口专用”的一种可审计实现。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-Audio/349251e1d8f4f98d58fda59246381faecd7392e0/assets/kimia_framework.png">Kimi-Audio architecture overview, standalone architecture diagram</a>；Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-Audio/blob/349251e1d8f4f98d58fda59246381faecd7392e0/README.md#license">MIT License（repository non-Qwen components）</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 从多任务共享到交错全模态
 
 早期统一模型主要共享中间主干。[MultiModel](https://arxiv.org/abs/1706.05137) 为图像、音频和文本设置模态专用前后端，再让共享 encoder–mixer–decoder 处理多项任务。[Perceiver IO](https://arxiv.org/abs/2107.14795) 用 latent bottleneck 接受不同结构输入并产生灵活输出。这类工作证明参数可以跨模态复用，但任务通常仍由独立输入/输出 adapter 定义。

@@ -161,6 +161,13 @@ $$
 
 比较单 agent 与多 agent 时，应固定总 token、工具调用、wall-clock 与模型调用预算。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k25-figure-03" data-paper-source="kimi-k2-5" data-paper-asset="k25-figure-03" markdown="1">
+[![Kimi K2.5 的 orchestrator 创建不同角色子智能体并把大量任务分派给专业 worker 后汇总结果](../assets/papers/kimi-k2-5/figure-03-agent-swarm.png){ width="1958" height="1138" loading="lazy" decoding="async" }](../assets/papers/kimi-k2-5/figure-03-agent-swarm.png)
+<figcaption><strong>Figure 3 展示一种 orchestrator–worker 结构：先创建带角色和工具的子智能体，再把许多独立任务分派并汇总。</strong>角色分工可以扩大并行搜索，却不会自动带来多智能体学习；若所有 worker 共享同一策略且没有独立 reward，它更接近受预算约束的并行推理系统。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K2.5/3e60763b943e93c443287c383e0468ffe05b188f/tech_report.pdf#page=5">Kimi K2.5: Visual Agentic Intelligence, Figure 3, p. 5</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K2.5/blob/3e60763b943e93c443287c383e0468ffe05b188f/LICENSE">Modified MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 约束与多智能体的交叉
 
 多个 agent 可能共享资源或共同触发外部风险。此时约束需要定义在：

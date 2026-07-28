@@ -8,6 +8,13 @@
 
 本页建立训练和推理共用的符号、成本模型与验证方法。它给出可用于设计和排障的近似式，而不是替代 profiler 的精确预测器。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="flashattention-h100-benchmark" data-paper-source="flash-attention-h100" data-paper-asset="flashattention-h100-benchmark" markdown="1">
+[![FlashAttention-2 在 H100 上随序列长度和 head dimension 变化的 forward 加 backward 性能](../assets/papers/flash-attention-h100/flashattention-h100-benchmark.png){ width="1882" height="1262" loading="lazy" decoding="async" }](../assets/papers/flash-attention-h100/flashattention-h100-benchmark.png)
+<figcaption><strong>成本模型给出趋势和边界，benchmark 才告诉我们实现落在边界的什么位置。</strong>同一 GPU、同一算子中，仅 head dimension 与序列长度变化就会改变吞吐曲线；模型预测必须保留 shape、kernel 版本和 OOM 边界，不能只代入总 FLOPs。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/Dao-AILab/flash-attention/14c377950125c70b7a9dabf9c561fca53715ac7d/assets/flash2_h100_fwd_bwd_benchmark.png">FlashAttention-2 H100 forward and backward benchmark, standalone benchmark figure</a>；FlashAttention contributors，<a href="https://github.com/Dao-AILab/flash-attention/blob/14c377950125c70b7a9dabf9c561fca53715ac7d/LICENSE">BSD 3-Clause License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 统一符号
 
 | 符号 | 含义 |

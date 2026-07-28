@@ -1,0 +1,83 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "flash-attention-h100",
+    "title": "FlashAttention-2 H100 forward and backward benchmark",
+    "canonical_url": "https://github.com/Dao-AILab/flash-attention/blob/14c377950125c70b7a9dabf9c561fca53715ac7d/assets/flash2_h100_fwd_bwd_benchmark.png",
+    "artifact_kind": "standalone_raster",
+    "artifact_url": "https://raw.githubusercontent.com/Dao-AILab/flash-attention/14c377950125c70b7a9dabf9c561fca53715ac7d/assets/flash2_h100_fwd_bwd_benchmark.png",
+    "artifact_sha256": "92bec94ee65e454bf55efbfe32dfde0419c40cb7017da1902de760ae1803505e",
+    "version": {
+      "kind": "git_commit",
+      "value": "14c377950125c70b7a9dabf9c561fca53715ac7d"
+    },
+    "page_count": 1,
+    "license": {
+      "name": "BSD 3-Clause License",
+      "url": "https://github.com/Dao-AILab/flash-attention/blob/14c377950125c70b7a9dabf9c561fca53715ac7d/LICENSE",
+      "credit": "FlashAttention contributors",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "c1baebacd50fbd6487eb7dca7718f8543bc8a86f9dde2bc4ebdf13130c7b632c"
+    }
+  },
+  "render": {
+    "renderer": "imagemagick",
+    "renderer_version": "7.1.2-27 Q16-HDRI",
+    "dpi": 72,
+    "coordinate_space": "source-pixels-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "flashattention-h100-benchmark",
+      "file": "flashattention-h100-benchmark.png",
+      "kind": "figure",
+      "source_label": "standalone benchmark figure",
+      "page": 1,
+      "source_size_pixels": [
+        1882,
+        1262
+      ],
+      "rotation": 0,
+      "source_crop_box_pixels": [
+        0,
+        0,
+        1882,
+        1262
+      ],
+      "pixel_size": [
+        1882,
+        1262
+      ],
+      "sha256": "5109d689f71fd437861c1b128807e04571e40fcfe938622fb62cba06d0cf4499",
+      "placements": [
+        {
+          "page": "docs/systems/kernels-performance.md",
+          "anchor": "flashattention-h100-benchmark",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/systems/performance-model.md",
+          "anchor": "flashattention-h100-benchmark",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/inference/benchmarking-reliability.md",
+          "anchor": "flashattention-h100-benchmark",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/systems/gpu-execution.md",
+          "anchor": "flashattention-h100-benchmark",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

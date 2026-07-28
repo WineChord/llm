@@ -1,0 +1,12 @@
+Mastering Diverse Domains through World Models
+
+Copyright © 2024 Danijar Hafner, Jurgis Pasukonis, Jimmy Ba, and Timothy Lillicrap.
+Licensed under the Creative Commons Attribution 4.0 International License:
+https://creativecommons.org/licenses/by/4.0/
+
+The accompanying PNG files are precise crops of Figures 3 and 4 from
+arXiv:2301.04104v2. Each crop removes the caption and surrounding page content
+and is rasterized at 300 DPI; the figure content is otherwise unchanged.
+
+Paper: https://arxiv.org/abs/2301.04104
+PDF: https://arxiv.org/pdf/2301.04104v2

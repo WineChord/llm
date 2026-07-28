@@ -164,6 +164,13 @@ $$
 
 只生成自然语言 caption 会隐藏数值错误。可以要求中间输出结构化表，再用几何或 OCR 规则验证轴范围、单位和数据点。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glmocr-throughput" data-paper-source="glm-ocr-throughput" data-paper-asset="glmocr-throughput" markdown="1">
+[![GLM-OCR 官方表格比较多个 OCR 模型处理图片与 PDF 的每秒样本吞吐](../assets/papers/glm-ocr-throughput/glmocr-throughput.png){ width="1758" height="903" loading="lazy" decoding="async" }](../assets/papers/glm-ocr-throughput/glmocr-throughput.png)
+<figcaption><strong>standalone table 展示 OCR 系统评测不能只看识别分数：图片与 PDF 的解码、页数和 batch 形状会形成不同吞吐。</strong>表中数字是 GLM-OCR 仓库给出的特定硬件与服务配方结果；跨系统比较必须重新固定输入分辨率、PDF 页数、并发、预热、精度和端到端计时边界。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/zai-org/GLM-OCR/cef4d0ea120d1741f5cefe8985eee45f6c8eff1d/resources/speed.png">GLM-OCR image and PDF throughput table, standalone table</a>；Copyright 2026 Zhipu AI，<a href="https://github.com/zai-org/GLM-OCR/blob/cef4d0ea120d1741f5cefe8985eee45f6c8eff1d/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## GUI 状态与动作
 
 截图只描述某一时刻的可见像素。可靠操作还需要：

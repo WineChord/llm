@@ -2,6 +2,13 @@
 
 量化用更少 bit 表示权重、activation 或 KV Cache。它可以降低模型驻留、HBM 读取和通信量，也可能增加 scale 元数据、反量化、校准和专用 kernel。一个“4-bit checkpoint”只有存储意义；只有执行路径真正使用低比特矩阵乘或减少关键路径字节时，才可能带来延迟收益。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="smoothquant-intuition" data-paper-source="smoothquant-intuition" data-paper-asset="smoothquant-intuition" markdown="1">
+[![SmoothQuant 把 activation 的通道异常值通过等价缩放迁移到较易量化的 weight，使两侧范围更均衡](../assets/papers/smoothquant-intuition/smoothquant-intuition.png){ width="1934" height="400" loading="lazy" decoding="async" }](../assets/papers/smoothquant-intuition/smoothquant-intuition.png)
+<figcaption><strong>量化难度取决于分布形状，不只取决于 bit 数。</strong>少数 activation outlier 会占据全局 scale 的动态范围，使普通值只剩很少有效 level；SmoothQuant 用离线逐通道等价变换重新分配难度，并没有凭空消除误差。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/mit-han-lab/smoothquant/c61476d728e42ae0d8a35e7e78494edcac3237b5/figures/intuition.png">SmoothQuant activation-to-weight difficulty migration, standalone method figure</a>；MIT HAN Lab，<a href="https://github.com/mit-han-lab/smoothquant/blob/c61476d728e42ae0d8a35e7e78494edcac3237b5/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 基本映射
 
 对 $b$ bit 仿射量化，给定实数范围 $[x_{\min},x_{\max}]$：
@@ -139,6 +146,13 @@ $$
 
 实数运算中两者等价，但新的 $X$ 与 $W$ 范围不同，量化误差也随之改变。实现必须把缩放融合进相邻算子或权重，避免新增关键路径 kernel。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--portrait" id="smoothquant-precision-flow" data-paper-source="smoothquant-flow" data-paper-asset="smoothquant-precision-flow" markdown="1">
+[![SmoothQuant Transformer block 中线性层和 attention BMM 使用 INT8，而 LayerNorm、Softmax 与非线性保持 FP16 的精度流](../assets/papers/smoothquant-flow/smoothquant-precision-flow.png){ width="3224" height="2116" loading="lazy" decoding="async" }](../assets/papers/smoothquant-flow/smoothquant-precision-flow.png)
+<figcaption><strong>W8A8 并不意味着整个 block 的每个算子都以 INT8 执行。</strong>计算密集的 projection 与 BMM 走低精度矩阵路径，LayerNorm、Softmax、ReLU 和残差保留 FP16；真实部署必须逐边记录 format、scale 与 accumulator，才能复现这张精度流。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/mit-han-lab/smoothquant/c61476d728e42ae0d8a35e7e78494edcac3237b5/figures/quantization_flow.png">SmoothQuant Transformer-block precision flow, standalone precision-flow diagram</a>；MIT HAN Lab，<a href="https://github.com/mit-han-lab/smoothquant/blob/c61476d728e42ae0d8a35e7e78494edcac3237b5/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## FP8、MXFP8 与 FP4
 
 FP8 不是一种单一格式。E4M3 与 E5M2 在精度和动态范围间取舍，scale 还可能使用 delayed、current 或 block scaling。[NVIDIA Transformer Engine 的 FP8 说明](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/examples/fp8_primer.html)区分了格式与 scaling recipe。
@@ -219,6 +233,13 @@ $$
 - 不支持的 shape 是否回退到高精度。
 
 [vLLM 的量化支持文档](https://docs.vllm.ai/en/latest/features/quantization/)展示了运行时格式与硬件支持是独立矩阵。它适合核对当前实现能力，不应代替方法原论文和本地基准。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="smoothquant-latency-memory" data-paper-source="smoothquant-benchmark" data-paper-asset="smoothquant-latency-memory" markdown="1">
+[![SmoothQuant 在 A100 FasterTransformer 路径上对不同 OPT 模型和输入长度的 latency 与 memory 实测](../assets/papers/smoothquant-benchmark/smoothquant-latency-memory.png){ width="2730" height="962" loading="lazy" decoding="async" }](../assets/papers/smoothquant-benchmark/smoothquant-latency-memory.png)
+<figcaption><strong>压缩比与延迟收益必须分别测量。</strong>这组实验中显存近似减半，而不同模型和序列长度的 latency 收益并不等比例；设备数、batch、实现版本与目标质量固定后，图表才构成可比较证据。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/mit-han-lab/smoothquant/c61476d728e42ae0d8a35e7e78494edcac3237b5/figures/ft_latency_mem.png">SmoothQuant FasterTransformer latency and memory benchmark, standalone benchmark figure</a>；MIT HAN Lab，<a href="https://github.com/mit-han-lab/smoothquant/blob/c61476d728e42ae0d8a35e7e78494edcac3237b5/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
 
 ## 校准与转换
 

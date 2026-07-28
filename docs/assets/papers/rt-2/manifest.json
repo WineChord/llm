@@ -35,14 +35,49 @@
       "kind": "diagram",
       "source_label": "Figure 1",
       "page": 2,
-      "page_box_points": [612, 792],
+      "page_box_points": [
+        612,
+        792
+      ],
       "rotation": 0,
-      "crop_box_points": [108, 69, 507, 220],
-      "pixel_size": [1663, 629],
+      "crop_box_points": [
+        108,
+        69,
+        507,
+        220
+      ],
+      "pixel_size": [
+        1663,
+        629
+      ],
       "sha256": "249c6d90a0f1a8434896916da9052fb41d16e350e8ba33f69dbbd30b06fcea3a",
       "placements": [
         {
           "page": "docs/embodied/vla-data-lineage.md",
+          "anchor": "rt2-figure-01",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/embodied/index.md",
+          "anchor": "rt2-figure-01",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/embodied/state-action-policies.md",
+          "anchor": "rt2-figure-01",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/embodied/planning-evaluation-safety.md",
+          "anchor": "rt2-figure-01",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/embodied-agents.md",
           "anchor": "rt2-figure-01",
           "role": "wide",
           "media_link": "asset"

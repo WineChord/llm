@@ -2,6 +2,13 @@
 
 大模型性能优化的核心是减少关键路径上的无效计算、数据搬运、同步和 launch。FLOPs 相同的两个实现可能相差很大；理论复杂度更低的方法也可能因 kernel 粒度差而更慢。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="flashattention-h100-benchmark" data-paper-source="flash-attention-h100" data-paper-asset="flashattention-h100-benchmark" markdown="1">
+[![H100 上 PyTorch、FlashAttention 与 FlashAttention-2 在不同序列长度和 head dimension 下的 forward 加 backward 吞吐对比](../assets/papers/flash-attention-h100/flashattention-h100-benchmark.png){ width="1882" height="1262" loading="lazy" decoding="async" }](../assets/papers/flash-attention-h100/flashattention-h100-benchmark.png)
+<figcaption><strong>算法名并不决定性能，shape、causal 语义、head dimension、forward/backward 与硬件共同决定可达吞吐。</strong>这组 H100 数据适合说明 kernel 专门化的收益，也提醒我们不能把单一 TFLOPs/s 图表写成跨硬件、跨版本的永久排名。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/Dao-AILab/flash-attention/14c377950125c70b7a9dabf9c561fca53715ac7d/assets/flash2_h100_fwd_bwd_benchmark.png">FlashAttention-2 H100 forward and backward benchmark, standalone benchmark figure</a>；FlashAttention contributors，<a href="https://github.com/Dao-AILab/flash-attention/blob/14c377950125c70b7a9dabf9c561fca53715ac7d/LICENSE">BSD 3-Clause License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## Roofline
 
 算术强度定义为
@@ -93,14 +100,14 @@ CUDA Graph 可复用一组稳定 kernel launch，降低 CPU 调度开销；它�
 
 ## TileLang：把 host tax 与静态证明纳入编译
 
-[TileLang](https://github.com/tile-ai/tilelang) 以 tile-level DSL 表达数据移动、layout 与计算。[DeepSeek-V4](../landscape/works/deepseek-v4.md#mega-moe) 强调的增量不只在 device kernel：
+[TileLang](tilelang.md) 以 tile-level DSL 表达数据移动、layout、计算和流水线；语言、编译器、JIT、后端与验证的完整机制见专题页。[DeepSeek-V4](../landscape/works/deepseek-v4.md#mega-moe) 强调的增量不只在 device kernel：
 
 - 由 IR 生成 host-side shape/layout validation 与 launch code，并通过 TVM-FFI 连接 runtime；报告把原本几十到数百微秒的动态检查降到低于 $1\,\mu s$；
 - 把 layout、越界、barrier 和 hazard 约束转成 Z3 QF_NIA，允许数秒编译换取运行前验证；
 - fast math 显式 opt-in，并提供 IEEE-style intrinsic、rounding 与 layout annotation，使数值路径可审计；
 - 同一 DSL 覆盖压缩 attention、mHC、Muon、MegaMoE 与 OPD KL 等异形 kernel。
 
-SMT 只能证明被编码的约束，不能替代端到端数值 reference；host codegen 的收益也只在短 kernel / decode 中可能占显著比例。完整背景见 [MegaMoE、TileLang 与 DSec](../landscape/works/tilelang-mega-moe.md#host-codegen)。
+SMT 只能证明被编码的约束，不能替代端到端数值 reference；host codegen 的收益也只在短 kernel / decode 中可能占显著比例。V4 特有背景见 [MegaMoE、TileLang 与 DSec](../landscape/works/tilelang-mega-moe.md#host-codegen)。
 
 ## 正确性阶梯
 

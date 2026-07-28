@@ -6,6 +6,13 @@
 
 家族事件可与 [GLM 时间线](glm-timeline.md)对读；报告本身的结构、公式、表格与附录见 [GLM-5 深读](works/glm-5.md)。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-5-figure-05" data-paper-source="glm-5" data-paper-asset="glm-5-figure-05" markdown="1">
+[![GLM-5 的预训练、mid-training、三类强化学习与在策略跨阶段蒸馏组成的完整训练管线](../assets/papers/glm-5/figure-05-training-pipeline.png){ width="1667" height="1017" loading="lazy" decoding="async" }](../assets/papers/glm-5/figure-05-training-pipeline.png)
+<figcaption><strong>Figure 5 为六十三项书目提供一张责任图：数据、分布式训练、Reasoning RL、Agent 环境、General RL 和蒸馏文献分别进入不同阶段。</strong>同一文献出现在报告中不代表它支撑全部箭头；引用时应先定位 stage，再区分 GLM-5 自身配方与外部工作的原始贡献。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2602.15763v2#page=4">GLM-5: from Vibe Coding to Agentic Engineering, Figure 5, p. 4</a>；Copyright © 2026 GLM-5 Team，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 报告最终书目
 
 - **[1] [System Card: Claude Opus 4.5](https://assets.anthropic.com/m/64823ba7485345a7/Claude-Opus-4-5-System-Card.pdf)**：既是 frontier model 对比来源，也为 $\tau^2$-Bench Airline 的 domain fix 提供协议依据；它不是 GLM-5 训练方法来源。

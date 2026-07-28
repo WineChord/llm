@@ -20,6 +20,13 @@ model-based 方法已知或学习这些对象，再用 rollout、dynamic program
 - **Model learning**：从真实 transition 拟合动力学；
 - **Policy/value learning**：改变行为或价值估计。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="dreamerv3-figure-03" data-paper-source="dreamerv3" data-paper-asset="dreamerv3-figure-03" markdown="1">
+[![DreamerV3 把真实经验上的世界模型学习，与 imagined trajectory 上的 actor critic 学习拆成两个闭环](../assets/papers/dreamerv3/figure-03-training-process.png){ width="2008" height="875" loading="lazy" decoding="async" }](../assets/papers/dreamerv3/figure-03-training-process.png)
+<figcaption><strong>Figure 3 是区分 model learning、planning 与 policy learning 的具体例子。</strong>encoder / dynamics 从真实观察形成可滚动状态，actor / critic 则把模型当作可查询环境；模型误差会先改变 imagined state distribution，再通过 value 和 policy 放大，所以规划长度、真实状态重置和闭环校验都是算法的一部分。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2301.04104v2#page=3">Hafner et al., Mastering Diverse Domains through World Models, Figure 3, p. 3</a>；Copyright © 2024 Danijar Hafner, Jurgis Pasukonis, Jimmy Ba, and Timothy Lillicrap，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去原始 caption 与周围正文。</span></figcaption>
+</figure>
+</div>
+
 它们可以交替：
 
 ```text

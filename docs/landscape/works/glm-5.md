@@ -61,6 +61,13 @@ GLM-5.1 与 GLM-5.2 已在报告之后发布，但官方 [GLM-5.2 模型卡](htt
 
 这套组织本身也透露了报告的重心：架构只占前半部分的一小段，后训练、Agent 环境和评测占据了更大篇幅。GLM-5 的“规模”由参数与 token 决定，而“Agentic Engineering”由环境、rollout、验证器、调度和故障语义共同决定。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-5-figure-05" data-paper-source="glm-5" data-paper-asset="glm-5-figure-05" markdown="1">
+[![GLM-5 从通用预训练、代码推理语料、长上下文与 Agent mid-training，经过稀疏注意力适配，再进入 SFT、Reasoning RL、Agentic RL、General RL 与 OPD 的训练流程](../../assets/papers/glm-5/figure-05-training-pipeline.png){ width="1667" height="1017" loading="lazy" decoding="async" }](../../assets/papers/glm-5/figure-05-training-pipeline.png)
+<figcaption><strong>Figure 5 的关键不是一条从左到右的流水线，而是两组跨阶段依赖。</strong>基础模型侧把上下文长度、Agent 数据与稀疏注意力适配放在 mid-training 收束；后训练侧则让 Reasoning、Agentic 与 General RL 共享一个由在策略跨阶段蒸馏回收的学生状态。于是数据配方、policy state 与部署架构不能分开阅读。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2602.15763v2#page=4">GLM-5: from Vibe Coding to Agentic Engineering, Figure 5, p. 4</a>；Copyright © 2026 GLM-5 Team，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
+
 本页负责报告台账；可复用机制继续进入以下路径：
 
 - [GLM-5 架构](glm-5-architecture.md)连接[注意力家族](../../architecture/attention-variants.md)、[长上下文](../../architecture/long-context.md)、[预训练](../../training/pretraining.md)与 Shared MTP；
@@ -859,6 +866,13 @@ CC-Bench-V2 包含三类任务。
 2. 成功后交给 Claude Code + Claude Sonnet 4.5；
 3. Judge 通过 Playwright MCP、terminal、截图和源码读取逐项验证 checklist；
 4. 分别报告 Build Success Rate、Instance Success Rate 与 Check-item Success Rate。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-5-figure-10" data-paper-source="glm-5" data-paper-asset="glm-5-figure-10" markdown="1">
+[![GLM-5 CC-Bench-V2 先构建并启动前端项目，再由多模态 Judge Agent 循环读取代码、规划、浏览页面、点击与截图，最后逐检查点判定](../../assets/papers/glm-5/figure-10-agent-as-judge.png){ width="1667" height="863" loading="lazy" decoding="async" }](../../assets/papers/glm-5/figure-10-agent-as-judge.png)
+<figcaption><strong>Figure 10 把“能运行”与“交互正确”分成两个 gate。</strong>静态 build 通过后，Judge 才在代码读取与 Playwright 交互之间循环，并用截图核对可见结果；因此 BSR、ISR 与 CSR 分别回答构建、整例和细粒度检查点问题，不能合并成一个成功率。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2602.15763v2#page=25">GLM-5: from Vibe Coding to Agentic Engineering, Figure 10, p. 25</a>；Copyright © 2026 GLM-5 Team，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
 
 130 个 check-items 上，Agent judge 与独立人工判断的一致率为 94%；8 个 frontier models 的排序与人工排序 Spearman correlation 为 85.7%。这说明自动 judge 有较强信号，但分歧集中在主观视觉质量。
 

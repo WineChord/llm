@@ -1,0 +1,131 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "dreamerv3",
+    "title": "Mastering Diverse Domains through World Models",
+    "canonical_url": "https://arxiv.org/abs/2301.04104v2",
+    "artifact_url": "https://arxiv.org/pdf/2301.04104v2",
+    "artifact_sha256": "d0385798e8bada8e81b915c1743be81d9ce8776f12ed937e09351995e099ce37",
+    "version": {
+      "kind": "arxiv_version",
+      "value": "2301.04104v2"
+    },
+    "page_count": 40,
+    "license": {
+      "name": "Creative Commons Attribution 4.0 International",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "credit": "Copyright © 2024 Danijar Hafner, Jurgis Pasukonis, Jimmy Ba, and Timothy Lillicrap",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "934a7c6dec653ac674eed19962c0b9b79f64ffa2482d7027ba7e393829e4839f"
+    }
+  },
+  "render": {
+    "renderer": "pdftocairo",
+    "renderer_version": "26.07.0",
+    "dpi": 300,
+    "coordinate_space": "rendered-page-points-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "dreamerv3-figure-03",
+      "file": "figure-03-training-process.png",
+      "kind": "diagram",
+      "source_label": "Figure 3",
+      "page": 3,
+      "page_box_points": [
+        612,
+        792
+      ],
+      "rotation": 0,
+      "crop_box_points": [
+        65,
+        50,
+        547,
+        260
+      ],
+      "pixel_size": [
+        2008,
+        875
+      ],
+      "sha256": "313146325c85d74cfb4d9f374545b90ba3a3766bab8f71572a37acf7d3069cd8",
+      "placements": [
+        {
+          "page": "docs/world-models/index.md",
+          "anchor": "dreamerv3-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/world-models/predictive-generative-worlds.md",
+          "anchor": "dreamerv3-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/world-models/dynamics-planning.md",
+          "anchor": "dreamerv3-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/reinforcement-learning/models-planning-hierarchy.md",
+          "anchor": "dreamerv3-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/embodied/planning-evaluation-safety.md",
+          "anchor": "dreamerv3-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "dreamerv3-figure-04",
+      "file": "figure-04-open-loop-prediction.png",
+      "kind": "panel",
+      "source_label": "Figure 4",
+      "page": 4,
+      "page_box_points": [
+        612,
+        792
+      ],
+      "rotation": 0,
+      "crop_box_points": [
+        55,
+        15,
+        550,
+        263
+      ],
+      "pixel_size": [
+        2062,
+        1033
+      ],
+      "sha256": "064451597d4922ff183b8310e667ffd424a888ce2ff135b0e21423eee77f4a1c",
+      "placements": [
+        {
+          "page": "docs/world-models/predictive-generative-worlds.md",
+          "anchor": "dreamerv3-figure-04",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/video/generation.md",
+          "anchor": "dreamerv3-figure-04",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/video-world-models.md",
+          "anchor": "dreamerv3-figure-04",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

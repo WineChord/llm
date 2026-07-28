@@ -172,6 +172,13 @@ $$
 
 计算顺序从显式 $T\times T$ score 矩阵改成固定状态累积。若 feature dimension 很大，状态 $S_t$ 的二次通道成本仍可能显著。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="kimi-linear-figure-03" data-paper-source="kimi-linear" data-paper-asset="kimi-linear-figure-03" markdown="1">
+[![Kimi Linear 以 KDA 层为主并周期性插入 MLA 层，形成固定状态与精确注意力混合的解码架构](../assets/papers/kimi-linear/figure-03-hybrid-architecture.png){ width="1492" height="1542" loading="lazy" decoding="async" }](../assets/papers/kimi-linear/figure-03-hybrid-architecture.png)
+<figcaption><strong>Figure 3 把混合序列模型的两类状态放在同一张图中：KDA 保存固定大小递推状态，MLA 层仍维护随可见历史增长的缓存。</strong>这种周期性插层保留少量精确内容寻址，同时让大部分层按递推方式解码；服务系统必须分别管理两类状态的 fork、rollback、迁移和前缀复用。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-Linear/8c1d85eb6b5f8fcefb15758691b0ce50b0827ce3/tech_report.pdf#page=6">Kimi Linear: An Expressive, Efficient Attention Architecture, Figure 3, p. 6</a>；Copyright (c) 2025 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-Linear/blob/8c1d85eb6b5f8fcefb15758691b0ce50b0827ce3/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## Retention、衰减与 Delta Rule
 
 [RetNet](https://arxiv.org/abs/2307.08621) 将带衰减的 retention 写成 parallel、recurrent 与 chunkwise 等价形式。一般状态可写为
@@ -364,6 +371,13 @@ $$
 门控制“本 token 从有限状态读出的哪些通道写回 residual stream”，与控制写入强度的
 $\beta_t$ 不是同一个门。K3 的主干按 **3 层 KDA + 1 层 Gated MLA** 重复，并让最后一层仍为
 全局注意力；完整组合见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-03" data-paper-source="kimi-k3" data-paper-asset="k3-figure-03" markdown="1">
+[![Kimi K3 比较无界衰减与有界 log-decay，并把 KDA 的下三角计算改写为对角 tile 并行结构](../assets/papers/kimi-k3/figure-03-bounded-decay.png){ width="1967" height="683" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-03-bounded-decay.png)
+<figcaption><strong>Figure 3 把数值约束与 kernel 形状直接连在一起：有界 log-decay 避免累计缩放出现极端值，进而允许对角 tile 保持张量核友好的并行计算。</strong>左图是参数化约束，右图是由此获得的计算结构；二者必须成套理解，不能只把 decay 下界当作脱离实现的正则项。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=5">Kimi K3 Technical Report, Figure 3, p. 5</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
 
 ### KDA recurrent reference {#kda-recurrence}
 

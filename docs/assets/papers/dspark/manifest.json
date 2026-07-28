@@ -46,6 +46,12 @@
           "anchor": "dspark-figure-01",
           "role": "wide",
           "media_link": "asset"
+        },
+        {
+          "page": "docs/inference/speculative-decoding.md",
+          "anchor": "dspark-figure-01",
+          "role": "wide",
+          "media_link": "asset"
         }
       ]
     },
@@ -63,6 +69,12 @@
       "placements": [
         {
           "page": "docs/landscape/works/dspark.md",
+          "anchor": "dspark-figure-02",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/inference/speculative-decoding.md",
           "anchor": "dspark-figure-02",
           "role": "wide",
           "media_link": "asset"

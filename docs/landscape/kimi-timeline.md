@@ -42,6 +42,13 @@ release date
 
 这条线后来进入 K2.5，再被 K3 扩展为跨 iteration 保存轨迹、KV state 与 sandbox state 的百万 token agentic RL。需要注意，K1.5 官方仓库只公开报告和说明材料；没有权重或完整训练代码时，不能把“方法公开”写成“系统可复现”。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k15-figure-03" data-paper-source="kimi-k1-5" data-paper-asset="k15-figure-03" markdown="1">
+[![Kimi k1.5 用 rollout worker、replay buffer 与 trainer 组织完整、截断和 partial rollout，并保存未完成轨迹供后续 iteration 继续](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png){ width="1650" height="808" loading="lazy" decoding="async" }](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png)
+<figcaption><strong>Figure 3 记录了 Kimi 技术谱系中“长推理变成持久状态”的起点。</strong>replay buffer 不再只装终止样本，还要区分长度截断、重复终止与可续跑轨迹；K2.5 和 K3 后来把这条状态线扩展到视觉、工具环境、KV 与 sandbox，但不等于直接复用了同一套系统实现。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-k1.5/cf9a8785730c7e59d788956e1e40dc9fc31ebf08/Kimi_k1.5.pdf#page=8">Kimi k1.5: Scaling Reinforcement Learning with LLMs, Figure 3, p. 8</a>；Kimi Team，<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>。</span></figcaption>
+</figure>
+</div>
+
 K1.5 也建立了 Kimi 家族中持续出现的一种研究习惯：把结果同时放在数学 / 视觉推理、长 CoT 和 policy optimization 下观察，而不是只以短答案准确率评价 reasoning。它与[推理策略优化谱系](lineages/reasoning-policy-optimization.md)相接，却不等同于后来的 DAPO、VAPO 或异步 SAO。
 
 ## 2025-04：Kimi-VL 建立独立的视觉分支
@@ -117,6 +124,13 @@ K3 把架构组织成三个互补维度：
 - **sequence**：69 层 KDA 与 24 层 Gated MLA；
 - **depth**：8 个 Block AttnRes block；
 - **channel**：896 routed experts 中每 token 选择 16 个，并保留 2 个 shared experts。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--portrait" id="k3-figure-02" data-paper-source="kimi-k3" data-paper-asset="k3-figure-02" markdown="1">
+[![Kimi K3 将 KDA、Gated MLA、Block Attention Residuals 与 Stable LatentMoE 组织进同一 2.8T 级架构](../assets/papers/kimi-k3/figure-02-architecture.png){ width="1967" height="1617" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-02-architecture.png)
+<figcaption><strong>Figure 2 是 K3 汇流点的结构证据：sequence、depth 与 channel 三条信息流不再是独立论文线，而是在同一层级图中共同承担状态、寻址与稀疏容量。</strong>3:1 KDA / MLA 比例、Block AttnRes 分组和 expert 配置属于 K3 的具体组合，不能外推成所有长上下文 MoE 的默认设计。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=3">Kimi K3 Technical Report, Figure 2, p. 3</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
 
 原生视觉、Per-Head Muon、逐级 1M context curriculum、九个 domain × effort RL experts、Multi-Teacher On-Policy Distillation，以及 MoonEP / persistent sandbox / hybrid prefix cache 共同构成训练与部署闭环。只复制任一公式都无法推出报告中的整体结果。
 

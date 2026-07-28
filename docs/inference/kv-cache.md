@@ -36,6 +36,20 @@ $$
 
 只有 cache 确实按 head 或其他维度分片时，才能把 $M_{\mathrm{KV}}$ 除以 tensor-parallel size；复制式布局不能这样估算。量化 scale、block table、对齐、copy-on-write 和通信 staging 也必须计入。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="deepseek-v2-architecture" data-paper-source="deepseek-v2-architecture" data-paper-asset="deepseek-v2-architecture" markdown="1">
+[![DeepSeek-V2 的 MLA 在推理阶段缓存压缩 key value latent 与单独的 RoPE key 分支，而不是完整保存每个 attention head 的 K 和 V](../assets/papers/deepseek-v2-architecture/deepseek-v2-architecture.png){ width="1139" height="918" loading="lazy" decoding="async" }](../assets/papers/deepseek-v2-architecture/deepseek-v2-architecture.png)
+<figcaption><strong>standalone architecture diagram 解释 MLA 为什么改变 KV Cache 的“每 token 字节数”：持久对象变成压缩 latent 与位置分支，而不是完整 per-head K/V。</strong>这只解决单 token 状态宽度；分页、block ownership、prefix sharing、beam fork 和回收仍是独立的物理内存问题。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/deepseek-ai/DeepSeek-V2/ec98ee3cbffc32104cd55dba8af884b3d772602a/figures/architecture.png">DeepSeek-V2 architecture diagram, standalone architecture diagram</a>；Copyright (c) 2023 DeepSeek，<a href="https://github.com/deepseek-ai/DeepSeek-V2/blob/ec98ee3cbffc32104cd55dba8af884b3d772602a/LICENSE-CODE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="deepseek-v4-figure-06" data-paper-source="deepseek-v4" data-paper-asset="deepseek-v4-figure-06" markdown="1">
+[![DeepSeek-V4 把 SWA 与未压缩尾 token 放入每请求 State Cache，并把不同 layer 的 CSA indexer、CSA main KV 与 HCA KV 放入 block 化 KV Cache](../assets/papers/deepseek-v4/figure-06-hybrid-kv-cache-layout.png){ width="1875" height="583" loading="lazy" decoding="async" }](../assets/papers/deepseek-v4/figure-06-hybrid-kv-cache-layout.png)
+<figcaption><strong>Figure 6 展示压缩注意力为什么不再只有一个“每 token K/V”公式。</strong>最近窗口与未闭合 tail 是随请求推进的 state，完整 CSA/HCA entry 才适合进入 block pool；不同 layer 还需要 indexer 与主 KV 的独立布局。容量模型因而必须同时记录状态种类、闭合粒度、分页单位与回收条件。<span class="paper-figure__source">图源：<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/resolve/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/DeepSeek_V4.pdf#page=22">DeepSeek-V4 Technical Report, Figure 6, p. 22</a>；Copyright (c) 2023 DeepSeek，<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 连续布局为什么会失效
 
 若为每条请求一次性预留最大长度 $T_{\max}$，长度为 $T_i$ 的请求会浪费 $T_{\max}-T_i$ 个 slot；请求增长、取消和不同长度混排还会造成外部碎片。[PagedAttention](https://arxiv.org/abs/2309.06180) 把逻辑 token 区间映射到固定大小物理 block，使逻辑连续与物理连续解耦：
@@ -105,6 +119,13 @@ assert physical_slot(table, 4, 11) == 71
 ```
 
 映射的不变量是每个已分配逻辑位置恰好落到 table 指定 block 的同一 offset，越过已分配范围必须失败。生产 kernel 还需把 layer、K/V、head、vector lane、dtype 和 shard stride 纳入地址计算，并在读取前验证 computed-token count；page table 与分配器的组合实验见[手撕：推理引擎 · Page table](../practice/inference-engine.md#page-table-reference)。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-12" data-paper-source="kimi-k3" data-paper-asset="k3-figure-12" markdown="1">
+[![Kimi K3 把一个 6144 token 的 MLA 物理缓存块映射到多个 512 token prefix hash 块并在命中边界恢复 KDA checkpoint](../assets/papers/kimi-k3/figure-12-prefix-cache.png){ width="1521" height="525" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-12-prefix-cache.png)
+<figcaption><strong>Figure 12 展示混合模型前缀命中为何需要两种粒度：MLA 使用物理 cache block，KDA 在更细的 hash 边界保存递推 checkpoint。</strong>命中落在物理块内部时，需要恢复对应 KDA 状态并对 MLA 尾块 copy-on-write；只复用一侧会让输出状态与前缀 token 不一致。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=23">Kimi K3 Technical Report, Figure 12, p. 23</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
 
 ## 生命周期与所有权
 

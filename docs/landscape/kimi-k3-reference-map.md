@@ -21,6 +21,13 @@
 
 K3 家族的发布日期、权重、代码、API 与许可证差别见 [Kimi 技术谱系](kimi-timeline.md)；模型本身的公式、系统和评测见 [K3 工作深读](works/kimi-k3.md)；Kimi-VL、K2.5、MoonViT-V2 与 Kimi-Audio 的边界则见 [Kimi 多模态分支](../multimodal/kimi.md)。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--portrait" id="k3-figure-02" data-paper-source="kimi-k3" data-paper-asset="k3-figure-02" markdown="1">
+[![Kimi K3 总体架构把 KDA、Gated MLA、Block Attention Residuals、Stable LatentMoE 与视觉输入放在同一主干中](../assets/papers/kimi-k3/figure-02-architecture.png){ width="1967" height="1617" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-02-architecture.png)
+<figcaption><strong>Figure 2 为 150 项引用建立结构坐标：attention / state 文献进入 sequence mixing，AttnRes 文献进入 depth，MoE / routing 文献进入 channel，而视觉与训练系统又跨越这些分组。</strong>下面的主分类用于审计书目覆盖，不能把同一架构中的交叉依赖切断。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=3">Kimi K3 Technical Report, Figure 2, p. 3</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## K3 与 Kimi 第一方谱系：12 项
 
 - **[14] [FlashKDA](https://github.com/MoonshotAI/FlashKDA)**：为 KDA 提供 CUTLASS kernel，是报告中 algorithm–system co-design 的直接实现证据。
@@ -37,6 +44,13 @@ K3 家族的发布日期、权重、代码、API 与许可证差别见 [Kimi 技
 - **[118] [Kimi k1.5](https://arxiv.org/abs/2501.12599)**：把长 CoT、长上下文 RL 与 partial rollout 接到一起，是 K3 百万 token agentic RL 的早期家族节点。
 
 这组里只有 [14]、[57]、[60]直接属于 K3 发布附近的独立材料；[63]、[58]、[59]等是前身。正文提出但 bibliography 没有单列的 [MoonEP](https://github.com/MoonshotAI/MoonEP)、Stable LatentMoE、SiTU-GLU、Quantile Balancing、Per-Head Muon、MoonViT-V2、KDA Context Parallelism 与 XTML，应直接引用 K3 报告，不能把邻近工作误当成原始出处。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k15-figure-03" data-paper-source="kimi-k1-5" data-paper-asset="k15-figure-03" markdown="1">
+[![Kimi k1.5 的长推理强化学习系统把 rollout worker、replay buffer、trainer 与 partial rollout 状态连接起来](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png){ width="1650" height="808" loading="lazy" decoding="async" }](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png)
+<figcaption><strong>Figure 3 解释第一方谱系中的 [118] 为什么不只是一个算法引用。</strong>K1.5 把未完成长轨迹变成可持久化训练状态，K3 再把同一问题扩展到百万 token、工具环境、KV 和 sandbox；引用关系证明的是问题与接口的延续，不证明两代系统逐模块相同。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-k1.5/cf9a8785730c7e59d788956e1e40dc9fc31ebf08/Kimi_k1.5.pdf#page=8">Kimi k1.5: Scaling Reinforcement Learning with LLMs, Figure 3, p. 8</a>；Kimi Team，<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>。</span></figcaption>
+</figure>
+</div>
 
 ## 注意力、状态、深度、归一化与激活：20 项
 

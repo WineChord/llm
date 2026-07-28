@@ -573,9 +573,9 @@ Token-in-Token-out，让 learner 直接消费 rollout engine 实际产生的 tok
 
 在权重固定后，通过更长生成、并行采样、搜索、验证或工具交互增加单题计算。
 
-**[TileLang](landscape/works/tilelang-mega-moe.md#host-codegen)**
+**[TileLang](systems/tilelang.md)**
 
-以 tile-level 程序表达高性能算子的 DSL 与编译栈；性能不仅取决于设备 kernel，也取决于 host code generation、静态分析与浮点语义。
+以 tile-level 程序表达高性能算子的 DSL 与编译栈；显式组织 placement、layout、pipeline 与计算，再由编译器完成目标 lowering、host codegen 和运行时接入。
 
 **Token share**
 

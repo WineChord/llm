@@ -1,0 +1,89 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "vllm-process-architecture",
+    "title": "vLLM V1 process architecture for TP=2 and DP=4",
+    "canonical_url": "https://github.com/vllm-project/vllm/blob/b6cbba8bc893c61e412a205533aafbee1ae6be31/docs/assets/design/arch_overview/v1_process_architecture_tp2_dp4.png",
+    "artifact_kind": "standalone_raster",
+    "artifact_url": "https://raw.githubusercontent.com/vllm-project/vllm/b6cbba8bc893c61e412a205533aafbee1ae6be31/docs/assets/design/arch_overview/v1_process_architecture_tp2_dp4.png",
+    "artifact_sha256": "5c79b2b2ce38b6b2f1737a1b5c5fe8d3acd0cbf0d1f6ed542fd4d85c28f8c46b",
+    "version": {
+      "kind": "git_commit",
+      "value": "b6cbba8bc893c61e412a205533aafbee1ae6be31"
+    },
+    "page_count": 1,
+    "license": {
+      "name": "Apache License 2.0",
+      "url": "https://github.com/vllm-project/vllm/blob/b6cbba8bc893c61e412a205533aafbee1ae6be31/LICENSE",
+      "credit": "vLLM project contributors",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "50fdeff4108a939bda88d97028693fbd2de3c2ac03757fd5e33fbf998dfaae27"
+    }
+  },
+  "render": {
+    "renderer": "imagemagick",
+    "renderer_version": "7.1.2-27 Q16-HDRI",
+    "dpi": 72,
+    "coordinate_space": "source-pixels-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "vllm-v1-process-architecture",
+      "file": "vllm-v1-process-architecture.png",
+      "kind": "diagram",
+      "source_label": "standalone process architecture diagram",
+      "page": 1,
+      "source_size_pixels": [
+        2816,
+        1536
+      ],
+      "rotation": 0,
+      "source_crop_box_pixels": [
+        0,
+        0,
+        2816,
+        1536
+      ],
+      "pixel_size": [
+        2816,
+        1536
+      ],
+      "sha256": "949445c030dae8b9966a5c7ec34833af064ccce00fafa0247eca104504dfc4ed",
+      "placements": [
+        {
+          "page": "docs/inference/serving.md",
+          "anchor": "vllm-v1-process-architecture",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/inference/scheduling-goodput.md",
+          "anchor": "vllm-v1-process-architecture",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/lineages/inference-serving.md",
+          "anchor": "vllm-v1-process-architecture",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/works/vllm-pagedattention.md",
+          "anchor": "vllm-v1-process-architecture",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/systems/model-parallelism.md",
+          "anchor": "vllm-v1-process-architecture",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

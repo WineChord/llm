@@ -18,6 +18,13 @@ $$
 
 本页沿一条真实任务的生命周期展开：**任务从哪里来，怎样变成可执行环境，轨迹怎样训练，运行时怎样管理上下文，最后怎样评测**。异步优化细节见 [slime 与异步 Agentic RL](slime-async-agentic-rl.md)，报告逐表逐图审计见 [GLM-5](glm-5.md)。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-5-figure-07" data-paper-source="glm-5" data-paper-asset="glm-5-figure-07" markdown="1">
+[![GLM-5 的 interleaved thinking 与 preserved thinking 协议，展示 reasoning、工具调用、工具结果和用户消息如何跨 step 与 turn 流动](../../assets/papers/glm-5/figure-07-thinking-state.png){ width="1725" height="1175" loading="lazy" decoding="async" }](../../assets/papers/glm-5/figure-07-thinking-state.png)
+<figcaption><strong>Figure 7 把 Agentic Engineering 的最小状态单元从“回答”改成了 turn 内外的事件序列。</strong>同轮 reasoning 可以夹在多次工具调用之间；跨轮是否保留 reasoning 与 observation 又是另一项策略。训练样本、API history、缓存键和审计日志若对这两层边界理解不同，模型看到的任务就已经不是同一个任务。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2602.15763v2#page=10">GLM-5: from Vibe Coding to Agentic Engineering, Figure 7, p. 10</a>；Copyright © 2026 GLM-5 Team，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去原始 caption 与周围正文。</span></figcaption>
+</figure>
+</div>
+
 ## 从问题文本到可验证环境 {#environment-loop}
 
 一个软件任务不能只保存 issue 描述。可训练的环境至少包含
@@ -164,6 +171,13 @@ assert folded[2]["observation"].startswith("Tool result") and folded[3]["observa
 - token threshold 只看长度，不看未来价值。
 
 更一般的 context manager 应把内容分成 immutable task state、recent interaction、verified facts、ephemeral observations，并用 provenance pointer 让被折叠内容可重新读取。相关设计见[记忆、规划与上下文](../../applications/memory-planning.md)和[长程 Agent](../../agentic-rl/long-horizon.md)。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-5-figure-08" data-paper-source="glm-5" data-paper-asset="glm-5-figure-08" markdown="1">
+[![GLM-5 在 BrowseComp 上比较 Pass at K、fewest-step、Hierarchical Context Management 与 GLM-4.7 基线随执行步数的准确率](../../assets/papers/glm-5/figure-08-context-management.png){ width="1125" height="725" loading="lazy" decoding="async" }](../../assets/papers/glm-5/figure-08-context-management.png)
+<figcaption><strong>Figure 8 展示 context policy 与计算预算的耦合：释放窗口会让 Agent 继续执行更多 step，但不同策略的收益曲线并不相同。</strong>Pass@K、最少步和 HCM 对应不同选择协议；曲线不能证明“上下文越短越好”，只能说明在该搜索环境、judge 与预算下，保留近期 observation 并在阈值处重启比单纯 discard-all 更有效。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2602.15763v2#page=19">GLM-5: from Vibe Coding to Agentic Engineering, Figure 8, p. 19</a>；Copyright © 2026 GLM-5 Team，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去原始 caption 与周围正文。</span></figcaption>
+</figure>
+</div>
 
 ## Slide 生成：reward 如何反过来塑造环境 {#slide-rl}
 

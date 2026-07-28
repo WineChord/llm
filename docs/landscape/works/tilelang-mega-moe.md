@@ -10,7 +10,7 @@ DeepSeek-V4 的系统章节不是一份“用了哪些库”的清单。它围�
 4. 推理端必须同时管理 SWA state、未完成压缩块、CSA/HCA 压缩项和 indexer key state；
 5. 长程 Agent rollout 会被抢占、跨越数十万环境，因而还需要 token WAL、外部 KV 与 DSec 沙箱。
 
-本页还原这些接口怎样咬合。[DeepSeek-V4 总深读](deepseek-v4.md#mega-moe)给出报告全貌；通用机制分别进入 [GPU 执行模型](../../systems/gpu-execution.md)、[MoE 系统](../../systems/moe-systems.md)、[Attention Kernel](../../systems/attention-kernels.md)、[KV Cache](../../inference/kv-cache.md) 和 [Agentic RL 训练系统](../../agentic-rl/training-systems.md)。
+本页还原这些接口怎样咬合。[DeepSeek-V4 总深读](deepseek-v4.md#mega-moe)给出报告全貌；通用机制分别进入 [TileLang](../../systems/tilelang.md)、[GPU 执行模型](../../systems/gpu-execution.md)、[MoE 系统](../../systems/moe-systems.md)、[Attention Kernel](../../systems/attention-kernels.md)、[KV Cache](../../inference/kv-cache.md) 和 [Agentic RL 训练系统](../../agentic-rl/training-systems.md)。
 
 ## 为什么低激活 MoE 仍可能被通信拖住
 
@@ -86,7 +86,14 @@ assert overlap_budget(3072, dispatch_bytes=2) == 4608
 
 ## TileLang：DSL 只是入口 {#host-codegen}
 
-[TileLang](https://github.com/tile-ai/tilelang) 把 kernel 写成 tile 级数据流，让编译器负责 layout、pipeline 和底层代码生成。V4 报告强调了三项容易被“Python 写 kernel”口号遮住的工程：
+[TileLang 通用专题](../../systems/tilelang.md)解释语言、layout、pipeline、编译 pass、JIT 与后端；本节只讨论 V4 披露的增量。TileLang 把 kernel 写成 tile 级数据流，让编译器负责 layout、pipeline 和底层代码生成。V4 报告强调了三项容易被“Python 写 kernel”口号遮住的工程：
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="tilelang-figure-02" data-paper-source="tilelang" data-paper-asset="tilelang-figure-02" markdown="1">
+[![TileLang 程序从 Python AST 经 Parser、IR Builder 和 Optimization 降到 LLVM、CUDA 与 HIP 代码的编译路径](../../assets/papers/tilelang/figure-02-compile-pipeline.png){ width="1675" height="271" loading="lazy" decoding="async" }](../../assets/papers/tilelang/figure-02-compile-pipeline.png)
+<figcaption><strong>Figure 2 说明 V4 报告里的 host codegen 并不是孤立脚本，而是编译流水线最后一段的自然延伸。</strong>前端 dataflow、TVM IR 与调度优化共同拥有 shape 和 layout 信息，因而可以同时生成 device kernel 与更轻的 host launcher；具体 V4 增量仍须与通用 TileLang 论文分开核对。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2504.17577v2#page=5">TileLang: A Composable Tiled Programming Model for AI Systems, Figure 2, p. 5</a>；Copyright © 2025 Lei Wang et al.，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
 
 ### Host code generation
 
@@ -187,6 +194,13 @@ padding 位置和 top-$k$ 可见集合因此一起定义正确性。
 V4 将 SWA 和 tail 放进 state cache，把已闭合 compressed entries 放进 classical block cache，
 并以 $\operatorname{lcm}(m,m')$ 对齐 block。页分配仍然有用，但页的完成条件、跨层布局和稀疏
 索引不再是传统同构 KV cache；kernel 与 cache manager 必须共同定义 block metadata。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="deepseek-v4-figure-06" data-paper-source="deepseek-v4" data-paper-asset="deepseek-v4-figure-06" markdown="1">
+[![DeepSeek-V4 把每个请求的 SWA 与未压缩尾状态放入 State Cache，并按 block 分别组织 CSA、HCA 与 indexer KV](../../assets/papers/deepseek-v4/figure-06-hybrid-kv-cache-layout.png){ width="1875" height="583" loading="lazy" decoding="async" }](../../assets/papers/deepseek-v4/figure-06-hybrid-kv-cache-layout.png)
+<figcaption><strong>Figure 6 展示同一请求为什么同时需要 state cache 与 classical KV cache。</strong>左侧保存随位置推进的 SWA 与未闭合尾状态，右侧按 block 和 layer 组织 CSA indexer、CSA main KV 与 HCA KV；这使 block 完成条件和 layer-specific layout 都成为 cache manager 的一等元数据。<span class="paper-figure__source">图源：<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/resolve/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/DeepSeek_V4.pdf#page=22">DeepSeek-V4 Technical Report, Figure 6, p. 22</a>；Copyright (c) 2023 DeepSeek，<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
 
 ## On-disk prefix：压缩块能存，局部状态怎样恢复 {#on-disk-kv}
 

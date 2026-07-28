@@ -73,6 +73,13 @@ ChatGLM-6B、ChatGLM2-6B 与 ChatGLM3-6B 的共同变化，是模型从“续写
 
 ChatGLM3 的工具调用尤其说明：工具能力不是模型权重的一个单独分数。schema 如何注入、模型如何产生结构化参数、运行时怎样执行、结果如何回填，都会改变最终行为。2024 年的 GLM-4 All Tools 把浏览器、Python、文生图与用户函数纳入统一决策流程，进一步把评测单位从“单次回答”推向“模型—工具—环境”的闭环。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="cogvlm-visual-expert" data-paper-source="glm-cogvlm-visual-expert" data-paper-asset="cogvlm-visual-expert" markdown="1">
+[![CogVLM 在语言主干各层按视觉和文本位置分配不同的 QKV 与 FFN 路径，同时维持共同序列上下文](../assets/papers/glm-cogvlm-visual-expert/cogvlm-visual-expert.png){ width="1378" height="824" loading="lazy" decoding="async" }](../assets/papers/glm-cogvlm-visual-expert/cogvlm-visual-expert.png)
+<figcaption><strong>CogVLM 是 GLM 家族从纯文本对话向视觉语言迁移时的一次明确结构实验。</strong>visual expert 让视觉 token 在每层保留专属参数容量，而不是只在输入端接一个 projector；它解释了后来 GLM-V 分支的技术背景，却不能据此推断 GLM-4V、GLM-5V 或 GLM-OCR 沿用了完全相同的层级结构。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/zai-org/CogVLM/f7283b2c8d26cd7f932d9a5f7f5f9307f568195d/assets/method.png">CogVLM visual-expert architecture, Figure 3</a>；Copyright 2024 CogVLM team @ Zhipu AI，<a href="https://github.com/zai-org/CogVLM/blob/f7283b2c8d26cd7f932d9a5f7f5f9307f568195d/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 第四阶段：GLM-4.5 重写模型主干
 
 GLM-4.5 是清晰的架构分界点：主干转向稀疏 MoE，并把 reasoning、coding 与 agentic task 放进同一模型。公开报告给出的主线包括：
@@ -96,6 +103,13 @@ y_t=\operatorname{Attn}\!\left(q_t,K_{I_t},V_{I_t}\right).
 $$
 
 它同时改造 MLA head 配置、共享三步 MTP 参数，并把推测解码、训练内存、长序列并行、国产加速器部署与 Agentic RL 放进同一系统。详细机制与报告证据见 [GLM-5 深读](works/glm-5.md)和[引用图谱](glm-5-reference-map.md)。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-5-figure-05" data-paper-source="glm-5" data-paper-asset="glm-5-figure-05" markdown="1">
+[![GLM-5 从预训练与 mid-training 分流到 Reasoning RL、Agentic RL 和 General RL，再用 On-Policy Cross-Stage Distillation 汇合能力](../assets/papers/glm-5/figure-05-training-pipeline.png){ width="1667" height="1017" loading="lazy" decoding="async" }](../assets/papers/glm-5/figure-05-training-pipeline.png)
+<figcaption><strong>Figure 5 说明 GLM-5 的历史转折不只发生在 backbone：后训练从单一路径变成多阶段、跨能力的训练图。</strong>Reasoning、Agent 与通用对齐分别形成 policy，再经在策略跨阶段蒸馏回到统一 checkpoint；每条边都隐含 tokenizer、template、teacher、rollout 与 verifier 的版本边界。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2602.15763v2#page=4">GLM-5: from Vibe Coding to Agentic Engineering, Figure 5, p. 4</a>；Copyright © 2026 GLM-5 Team，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
 
 这里有两项不能被整齐时间线掩盖的报告内冲突：
 

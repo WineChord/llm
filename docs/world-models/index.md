@@ -6,14 +6,6 @@
 
 这一定义把世界模型与普通视频模型分开。视频理解模型可以说明“发生了什么”，视频生成模型可以合成“可能发生什么”；只有当模型表示了动作对未来的影响，并通过规划、策略学习或闭环控制接受检验时，它才成为决策意义上的世界模型。
 
-<figure class="concept-figure" id="world-model-decision-loop" markdown="1">
-
-![观察编码成状态，动力学在动作条件下想象未来，规划器选择动作，环境返回新观察的世界模型闭环](../assets/diagrams/world-model-loop.svg)
-
-<figcaption>世界模型位于“状态—想象—规划—真实反馈”的循环中。单步预测 loss 只是训练信号之一；动作反事实、规划增益、模型利用与闭环恢复才检验它是否服务决策。</figcaption>
-
-</figure>
-
 ## 从不可见状态开始
 
 现实中的真实状态 $s_t$ 通常不可直接观测。相机、麦克风和传感器只给出带噪、局部的观察：
@@ -39,6 +31,13 @@ p_\theta(\,\cdot\mid z_t,a_t).
 $$
 
 $z_t$ 不必是可解码的图像。它可以是连续 latent、离散 token、对象与几何、JEPA feature，甚至只保留 reward、policy 与 value 所需的信息。选择哪一种表示，取决于模型最终服务什么决策，而不是哪一种重建看起来最清晰。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="dreamerv3-figure-03" data-paper-source="dreamerv3" data-paper-asset="dreamerv3-figure-03" markdown="1">
+[![DreamerV3 的世界模型学习与 actor critic 想象学习：编码器把观察映射为离散状态，递归动力学在动作条件下推进 latent，策略与价值只在预测轨迹上学习](../assets/papers/dreamerv3/figure-03-training-process.png){ width="2008" height="875" loading="lazy" decoding="async" }](../assets/papers/dreamerv3/figure-03-training-process.png)
+<figcaption><strong>Figure 3 把“学会预测”和“用预测做决策”拆成两个闭环。</strong>左侧 encoder、dynamics 与 decoder 从真实经验学习状态；右侧 actor 和 critic 从真实起点出发，却沿模型想象出的 latent 轨迹更新。图中重建支路帮助塑造表示，但真正决定控制价值的是动作条件动力学、reward/value 接口和 imagined policy 是否能迁移回真实环境。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2301.04104v2#page=3">Hafner et al., Mastering Diverse Domains through World Models, Figure 3, p. 3</a>；Copyright © 2024 Danijar Hafner, Jurgis Pasukonis, Jimmy Ba, and Timothy Lillicrap，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去原始 caption 与周围正文。</span></figcaption>
+</figure>
+</div>
 
 ## 四条轴看清一个“世界模型”
 

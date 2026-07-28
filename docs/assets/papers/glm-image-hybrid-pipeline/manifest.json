@@ -36,15 +36,62 @@
       "kind": "diagram",
       "source_label": "standalone diagram",
       "page": 1,
-      "source_size_pixels": [1280, 314],
+      "source_size_pixels": [
+        1280,
+        314
+      ],
       "rotation": 0,
-      "source_crop_box_pixels": [0, 0, 1280, 314],
-      "pixel_size": [1280, 314],
+      "source_crop_box_pixels": [
+        0,
+        0,
+        1280,
+        314
+      ],
+      "pixel_size": [
+        1280,
+        314
+      ],
       "sha256": "686a5d264b1e6e557a2d6fb6820eff49d6481b9a13ec07045592c7340686c404",
       "placements": [
         {
           "page": "docs/multimodal/glm.md",
           "anchor": "glm-image-hybrid-pipeline-figure",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/generative-modeling.md",
+          "anchor": "glm-image-hybrid-pipeline",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/unified-understanding-generation.md",
+          "anchor": "glm-image-hybrid-pipeline",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/families/glm.md",
+          "anchor": "glm-image-hybrid-pipeline",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/image-generation/history-autoregressive-gan.md",
+          "anchor": "glm-image-hybrid-pipeline",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/image-generation/autoencoders-tokenizers.md",
+          "anchor": "glm-image-hybrid-pipeline",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/omni/any-to-any.md",
+          "anchor": "glm-image-hybrid-pipeline",
           "role": "wide",
           "media_link": "asset"
         }

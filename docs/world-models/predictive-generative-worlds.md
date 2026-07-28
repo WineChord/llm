@@ -7,6 +7,13 @@
 
 两条路线共同扩大数据规模，也共同面对因果不可识别与闭环验证。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="dreamerv3-figure-03" data-paper-source="dreamerv3" data-paper-asset="dreamerv3-figure-03" markdown="1">
+[![DreamerV3 在观察重建、动作条件 latent dynamics 与 imagined actor critic 之间分离真实数据流和想象数据流](../assets/papers/dreamerv3/figure-03-training-process.png){ width="2008" height="875" loading="lazy" decoding="async" }](../assets/papers/dreamerv3/figure-03-training-process.png)
+<figcaption><strong>Figure 3 提供一个有用的基准接口：预测表征不是孤立的 pretext task，而应说明观察怎样进入状态、动作怎样改变状态、预测状态最终怎样进入 actor 与 critic。</strong>后来的 JEPA、latent action 与交互式生成世界会替换其中的表示或生成机制，但这三条责任边界仍然存在。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2301.04104v2#page=3">Hafner et al., Mastering Diverse Domains through World Models, Figure 3, p. 3</a>；Copyright © 2024 Danijar Hafner, Jurgis Pasukonis, Jimmy Ba, and Timothy Lillicrap，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去原始 caption 与周围正文。</span></figcaption>
+</figure>
+</div>
+
 ## 像素预测为什么不是唯一答案
 
 给定上下文 $x_{\mathcal V}$ 与被遮区域 $\mathcal M$，像素重建优化
@@ -31,6 +38,13 @@ $$
 | reward/value | 决策直接 | 不支持目标外反事实与解释 |
 
 不存在脱离任务的“最佳 latent”。应同时检查 reconstruction/probe、动作反事实和真实决策。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="dreamerv3-figure-04" data-paper-source="dreamerv3" data-paper-asset="dreamerv3-figure-04" markdown="1">
+[![DreamerV3 在迷宫与四足机器人环境中用五帧上下文和动作序列开放环预测后续四十五帧，对照真实轨迹显示长期结构与局部细节误差](../assets/papers/dreamerv3/figure-04-open-loop-prediction.png){ width="2062" height="1033" loading="lazy" decoding="async" }](../assets/papers/dreamerv3/figure-04-open-loop-prediction.png)
+<figcaption><strong>Figure 4 说明为什么开放环预测必须同时看“结构是否继续成立”和“像素是否越来越模糊”。</strong>模型只得到最初五帧与完整动作序列，之后四十五帧不再接收真实观察；迷宫拓扑和机器人姿态仍可延续，但纹理与精确几何逐步偏离。这样的可视化适合诊断表示与动力学，却仍不能替代在模型中规划后回到真实环境的闭环成功率。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2301.04104v2#page=4">Hafner et al., Mastering Diverse Domains through World Models, Figure 4, p. 4</a>；Copyright © 2024 Danijar Hafner, Jurgis Pasukonis, Jimmy Ba, and Timothy Lillicrap，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去原始 caption 与周围正文。</span></figcaption>
+</figure>
+</div>
 
 ## JEPA：预测目标编码器中的表示 {#jepa}
 

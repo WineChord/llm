@@ -24,6 +24,13 @@ Vision-Language-Action（VLA）模型通常组合：
 
 [PaLM-E](https://arxiv.org/abs/2303.03378) 把连续传感器表示注入语言模型，[RT-2](https://arxiv.org/abs/2307.15818) 把机器人动作表示为可由视觉语言模型预测的 token。它们展示了把互联网语义知识迁移到动作模型的路线，不意味着语言能力会自动转化为精确控制。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="rt2-figure-01" data-paper-source="rt-2" data-paper-asset="rt2-figure-01" markdown="1">
+[![RT-2 将 Web 视觉语言样本与机器人动作样本共同序列化，并把模型输出的动作 token 接回闭环控制](../assets/papers/rt-2/figure-01-vla-cofinetuning.png){ width="1663" height="629" loading="lazy" decoding="async" }](../assets/papers/rt-2/figure-01-vla-cofinetuning.png)
+<figcaption><strong>Figure 1 把 VLM 到 VLA 的接口变化画得很清楚：自然语言答案与离散机器人动作进入同一预测空间，但落地时仍分流到不同执行端。</strong>共同训练可以迁移对象语义和指令理解；动作精度、延迟、坐标、失败恢复与安全边界仍必须由具身数据和 runtime 验证。<span class="paper-figure__source">图源：<a href="https://proceedings.mlr.press/v229/zitkovich23a/zitkovich23a.pdf#page=2">RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control, Figure 1, p. 2</a>；Copyright © 2023 the authors，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 动作表示
 
 ### 离散动作

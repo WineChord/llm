@@ -75,6 +75,13 @@ $m$ 个并行 streams，以动态 mixing matrix 读写；[mHC](https://arxiv.org
 AttnRes 改变的是访问模式：保留可寻址的历史来源并做 depth-wise softmax。两类机制理论上可以组合，
 但 state、I/O 与初始化都会随之改变。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--portrait" id="deepseek-v4-figure-02" data-paper-source="deepseek-v4" data-paper-asset="deepseek-v4-figure-02" markdown="1">
+[![DeepSeek-V4 block 中的 mHC 通过 pre-block、post-block 与 residual mixing 维护少量并行 residual streams，而不是保存所有历史层输出](../../assets/papers/deepseek-v4/figure-02-overall-architecture.png){ width="1938" height="1488" loading="lazy" decoding="async" }](../../assets/papers/deepseek-v4/figure-02-overall-architecture.png)
+<figcaption><strong>DeepSeek-V4 的 Figure 2 给出 mHC 这条相邻路线的具体边界：它维护固定数量的并行 residual streams，并在每个子层前后动态混合。</strong>AttnRes 则把更早的 layer 或 block 结果保留为可寻址来源；前者扩展 recurrent state，后者扩展 depth-wise retrieval，两者的显存与通信增长项不同。<span class="paper-figure__source">图源：<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/resolve/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/DeepSeek_V4.pdf#page=6">DeepSeek-V4 Technical Report, Figure 2, p. 6</a>；Copyright (c) 2023 DeepSeek，<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 由此可以用两个问题定位一项 residual 方法：
 
 1. 它保存一份、$m$ 份，还是所有历史层的表示？

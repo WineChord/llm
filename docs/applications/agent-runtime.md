@@ -205,6 +205,13 @@ awaiting_approval
 
 长日志、重复错误和无关工具结果应保存在事件层，通过引用按需取回。上下文压缩策略见[记忆与规划](memory-planning.md)。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-16" data-paper-source="kimi-k3" data-paper-asset="k3-figure-16" markdown="1">
+[![Kimi K3 的 xTML 把上下文布局、助手消息和工具通道编码为显式结构化片段](../assets/papers/kimi-k3/figure-16-xtml.png){ width="2050" height="762" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-16-xtml.png)
+<figcaption><strong>Figure 16 给出一种结构化上下文协议：普通内容、assistant message 与 tool channel 使用显式边界，而不是依赖自然语言约定。</strong>格式化协议能减少角色和工具结果混淆，但只有 tokenizer、模板、parser、日志脱敏和重放器使用同一版本时，结构才真正可执行。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=46">Kimi K3 Technical Report, Figure 16, p. 46</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 验证与可观测性
 
 每个 step 记录：

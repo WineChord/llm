@@ -71,6 +71,13 @@ prompt/environment snapshot
 
 因此 $\lambda$、pause age、完成/暂停长度分布和版本跨度都应入账；若一个 episode 允许跨版本继续，必须逐 token 保存 behavior identity，并采用明确的 off-policy 校正或丢弃规则。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k15-figure-03" data-paper-source="kimi-k1-5" data-paper-asset="k15-figure-03" markdown="1">
+[![Kimi k1.5 的 rollout workers、trainer workers、reward models、replay buffer 与 partial rollout 恢复流程](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png){ width="1650" height="808" loading="lazy" decoding="async" }](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png)
+<figcaption><strong>Figure 3 把 online RL 的版本边界画成可追踪数据流：rollout、reward、buffer 与 learner 分离，未完成轨迹还可跨 iteration 恢复。</strong>partial rollout 降低长尾等待，却使完成概率、轨迹长度和 policy age 相关；训练样本必须保留 behavior version 与暂停状态，才能判断更新是否仍接近 on-policy。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-k1.5/cf9a8785730c7e59d788956e1e40dc9fc31ebf08/Kimi_k1.5.pdf#page=8">Kimi k1.5: Scaling Reinforcement Learning with LLMs, Figure 3, p. 8</a>；Kimi Team，<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International</a>。</span></figcaption>
+</figure>
+</div>
+
 ## Reward 与 verifier
 
 可验证任务通常把最终答案、测试或环境状态转成 reward。必须区分：

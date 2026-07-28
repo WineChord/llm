@@ -36,6 +36,13 @@ $$
 
 上下文压缩必须区分事实、推断和待办。若把失败尝试压缩成“已解决”，后续代理会在错误状态上继续行动；若保留所有工具输出，注意力又会被噪声占满。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-5-figure-08" data-paper-source="glm-5" data-paper-asset="glm-5-figure-08" markdown="1">
+[![GLM-5 与 GLM-4.7 搜索 Agent 在不同 context management 策略下，随可用执行步数变化的 BrowseComp 准确率](../assets/papers/glm-5/figure-08-context-management.png){ width="1125" height="725" loading="lazy" decoding="async" }](../assets/papers/glm-5/figure-08-context-management.png)
+<figcaption><strong>Figure 8 说明长任务的 context manager 实际上在分配“可继续行动的步数”。</strong>保留全部历史可能过早耗尽窗口，过度删除又会丢失证据；图中的 HCM 只是在特定搜索任务上给出一个折中实例。Coding Agent 还需要把仓库状态、测试结果、未提交改动和恢复点存到可重新读取的外部状态，而不是只压缩聊天文本。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2602.15763v2#page=19">GLM-5: from Vibe Coding to Agentic Engineering, Figure 8, p. 19</a>；Copyright © 2026 GLM-5 Team，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去原始 caption 与周围正文。</span></figcaption>
+</figure>
+</div>
+
 ## 工具契约
 
 工具接口应满足：

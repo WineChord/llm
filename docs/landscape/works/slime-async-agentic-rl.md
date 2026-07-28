@@ -64,6 +64,13 @@ $$
 | learner 时钟 | optimizer step | 当前策略已经更新了多少次 |
 | 同步时钟 | inference refresh | 推理集群何时接收一版新权重 |
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k25-figure-10" data-paper-source="kimi-k2-5" data-paper-asset="k25-figure-10" markdown="1">
+[![Kimi K2.5 的 rollout manager、agent loop、工具与 judge、黑盒和白盒环境池、推理服务与训练服务之间的数据流](../../assets/papers/kimi-k2-5/figure-10-agentic-rl-runtime.png){ width="1454" height="617" loading="lazy" decoding="async" }](../../assets/papers/kimi-k2-5/figure-10-agentic-rl-runtime.png)
+<figcaption><strong>Figure 10 把四种时钟落到服务边界：rollout manager 决定任务何时推进，agent loop 与环境保存交互状态，推理服务产生 token，训练服务消费轨迹并刷新权重。</strong>箭头上的 token-in/token-out 与 mismatch correction 说明异步 RL 不只是把两组 GPU 分开；动作、环境、behavior probability 和权重版本都要能跨服务重建。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K2.5/3e60763b943e93c443287c383e0468ffe05b188f/tech_report.pdf#page=23">Kimi K2.5: Visual Agentic Intelligence, Figure 10, p. 23</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K2.5/blob/3e60763b943e93c443287c383e0468ffe05b188f/LICENSE">Modified MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 只保存一个“global step”无法重建它们的关系。GLM-5 的做法是训练端每 $K$ 个梯度更新向推理端推送权重；轨迹记录生成过程中经历的版本序列 $(w_0,\ldots,w_k)$；若当前训练版本 $w'$ 满足
 
 $$

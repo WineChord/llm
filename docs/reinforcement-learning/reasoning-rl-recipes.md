@@ -15,6 +15,13 @@
 
 本页负责方法选择与互相导航；完整推导分别进入 [GAE](advantage-estimation-gae.md)、[PPO](trust-region-ppo.md)、[GRPO](grpo.md)、[Ratio 与 Gate](ratio-clipping-gating.md) 以及[训推分布](training-inference-discrepancy.md)。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-08" data-paper-source="kimi-k3" data-paper-asset="k3-figure-08" markdown="1">
+[![Kimi K3 的多个 Agentic RL 任务族在不同 RL FLOPs 下呈现不同的分数和轨迹长度曲线](../assets/papers/kimi-k3/figure-08-rl-scaling.png){ width="1571" height="758" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-08-rl-scaling.png)
+<figcaption><strong>配方选择必须按任务族和预算读取。</strong>Figure 8 中有的任务平滑改善，有的波动或延迟起效，平均 assistant steps 也在变化；单一“RL 越多越好”无法说明 reward、curriculum、采样长度和 estimator 各自的作用。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=13">Kimi K3 Technical Report, Figure 8, p. 13</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 第一轴：反馈决定可学的目标
 
 先判断 reward 的含义：
@@ -183,6 +190,13 @@ trajectory 完成立即入队
 - 相同 wall-clock 下的 held-out improvement。
 
 Agentic 细节见[训练系统](../agentic-rl/training-systems.md)和 [SAO 深读](../landscape/works/sao-compactionrl.md#sao)。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k15-figure-03" data-paper-source="kimi-k1-5" data-paper-asset="k15-figure-03" markdown="1">
+[![Kimi k1.5 中 rollout、replay buffer、trainer 与 partial rollout 的系统关系](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png){ width="1650" height="808" loading="lazy" decoding="async" }](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png)
+<figcaption><strong>Figure 3 给“系统决定等待还是偏移”补上了第三种选择：暂停并保存未完成轨迹。</strong>partial rollout 避免把长度截断误当终止，但 replay、权重版本与环境状态必须一起治理；它和 single-rollout async 解决的是不同 barrier。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-k1.5/cf9a8785730c7e59d788956e1e40dc9fc31ebf08/Kimi_k1.5.pdf#page=8">Kimi k1.5: Scaling Reinforcement Learning with LLMs, Figure 3, p. 8</a>；Kimi Team，<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>。</span></figcaption>
+</figure>
+</div>
 
 ## 方法不是互斥选项
 

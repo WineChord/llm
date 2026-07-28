@@ -17,6 +17,13 @@ $\mathcal F_l$ 尚未学好，前向信号和反向梯度仍有一条不必连�
 [DeepSeek-V4](https://arxiv.org/abs/2606.19348) 随后把 mHC 放进每个 Transformer block。
 本页完整展开报告公式 (1)–(8)，并区分矩阵约束真正保证了什么、完整非线性网络仍可能怎样失稳。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--portrait" id="deepseek-v4-figure-02" data-paper-source="deepseek-v4" data-paper-asset="deepseek-v4-figure-02" markdown="1">
+[![DeepSeek-V4 在注意力与 MoE 两个子层周围分别加入 pre-block、post-block 和 residual mixing，把单路 residual stream 扩为多路受约束混合](../../assets/papers/deepseek-v4/figure-02-overall-architecture.png){ width="1938" height="1488" loading="lazy" decoding="async" }](../../assets/papers/deepseek-v4/figure-02-overall-architecture.png)
+<figcaption><strong>Figure 2 显示 mHC 不是在 block 外追加一次门控，而是同时介入两个子层的读取、历史搬运与写回。</strong>注意力或 MoE 仍在普通 hidden space 中计算；扩展发生在跨层 residual state，因此参数开销、激活生命周期和 pipeline 边界都与“把 hidden size 乘四”不同。<span class="paper-figure__source">图源：<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/resolve/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/DeepSeek_V4.pdf#page=6">DeepSeek-V4 Technical Report, Figure 2, p. 6</a>；Copyright (c) 2023 DeepSeek，<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 从 identity path 到 residual width
 
 普通 residual stream 在每个 token 上只有一个 $d$ 维状态。HC 将其扩展为

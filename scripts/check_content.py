@@ -102,6 +102,7 @@ REQUIRED_PAGES = (
     "systems/collectives-sharding.md",
     "systems/model-parallelism.md",
     "systems/kernels-performance.md",
+    "systems/tilelang.md",
     "systems/attention-kernels.md",
     "systems/moe-systems.md",
     "systems/precision-numerics.md",

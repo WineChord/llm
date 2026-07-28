@@ -35,14 +35,31 @@
       "kind": "figure",
       "source_label": "Figure 2",
       "page": 4,
-      "page_box_points": [612, 792],
+      "page_box_points": [
+        612,
+        792
+      ],
       "rotation": 0,
-      "crop_box_points": [68, 316, 542, 452],
-      "pixel_size": [1975, 567],
+      "crop_box_points": [
+        68,
+        316,
+        542,
+        452
+      ],
+      "pixel_size": [
+        1975,
+        567
+      ],
       "sha256": "b9149cdc1d27f14fb0f7e3bbcb94a4a2989c7d13420f01558f3d3ac96dbc4d23",
       "placements": [
         {
           "page": "docs/landscape/works/kimi-k2.md",
+          "anchor": "k2-figure-02",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/training/optimizer-families.md",
           "anchor": "k2-figure-02",
           "role": "wide",
           "media_link": "asset"
@@ -55,14 +72,37 @@
       "kind": "diagram",
       "source_label": "Figure 8",
       "page": 10,
-      "page_box_points": [612, 792],
+      "page_box_points": [
+        612,
+        792
+      ],
       "rotation": 0,
-      "crop_box_points": [103, 69, 507, 190],
-      "pixel_size": [1683, 504],
+      "crop_box_points": [
+        103,
+        69,
+        507,
+        190
+      ],
+      "pixel_size": [
+        1683,
+        504
+      ],
       "sha256": "a71e738efe908b18b1457a43c0d9dcdcb862573390ecedfd952793d675b8887e",
       "placements": [
         {
           "page": "docs/landscape/works/kimi-k2.md",
+          "anchor": "k2-figure-08",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/applications/agents.md",
+          "anchor": "k2-figure-08",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/data/synthetic-data.md",
           "anchor": "k2-figure-08",
           "role": "wide",
           "media_link": "asset"
@@ -75,16 +115,33 @@
       "kind": "diagram",
       "source_label": "Figure 13",
       "page": 32,
-      "page_box_points": [612, 792],
+      "page_box_points": [
+        612,
+        792
+      ],
       "rotation": 0,
-      "crop_box_points": [116, 150, 490, 459],
-      "pixel_size": [1558, 1288],
+      "crop_box_points": [
+        116,
+        150,
+        490,
+        459
+      ],
+      "pixel_size": [
+        1558,
+        1288
+      ],
       "sha256": "dbeab2f9bcf86f7144ed7f239efda7d258e2cbf00c1789c6e462ab4919300871",
       "placements": [
         {
           "page": "docs/landscape/works/kimi-k2.md",
           "anchor": "k2-figure-13",
           "role": "portrait",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/agentic-rl/training-systems.md",
+          "anchor": "k2-figure-13",
+          "role": "wide",
           "media_link": "asset"
         }
       ]

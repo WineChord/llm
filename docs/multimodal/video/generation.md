@@ -108,6 +108,13 @@ $$
 - 3D patch 或因果 3D 卷积先压缩，再交给 Transformer；
 - 图像与视频混训时，对单帧样本退化为合法的 $T_p=1$ 情形。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="dit-figure-03" data-paper-source="dit" data-paper-asset="dit-figure-03" markdown="1">
+[![DiT 把 VAE latent 切成 patch token，并比较 adaLN-Zero、cross-attention 与 in-context 三种时间和类别条件注入方式](../../assets/papers/dit/figure-03-architecture-conditioning.png){ width="2150" height="883" loading="lazy" decoding="async" }](../../assets/papers/dit/figure-03-architecture-conditioning.png)
+<figcaption><strong>Figure 3 固定了视频 DiT 仍需回答的两个基础问题：时空 latent 怎样变成 token，扩散时刻与外部条件怎样进入每一层。</strong>视频模型会把二维 patch 扩展到时间轴，并重新设计 attention 与位置；但 adaLN、cross-attention 和条件 token 的参数、缓存与初始化差异不会因为多了一维时间就消失。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2212.09748v2#page=3">Peebles and Xie, Scalable Diffusion Models with Transformers, Figure 3, p. 3</a>；Copyright © 2023 William Peebles and Saining Xie，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
+
 位置契约同样重要。时间位置应来自 timestamp，而不只是 frame id：
 
 $$
@@ -237,6 +244,13 @@ p(s_{t+1},r_t\mid s_t,a_t),
 $$
 
 并在规划与真实反馈中检验。[GameNGen](https://arxiv.org/abs/2408.14837) 和 [Cosmos](https://arxiv.org/abs/2501.03575) 将生成视频与可交互/物理世界建模联系起来；论文结果是作者报告，不能仅凭视觉逼真度推断可控性、因果性或长期规划价值。关于闭环状态、动作与规划的严格边界见[世界模型总览](../../world-models/index.md)。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="dreamerv3-figure-04" data-paper-source="dreamerv3" data-paper-asset="dreamerv3-figure-04" markdown="1">
+[![DreamerV3 以五帧上下文和动作序列开放环预测迷宫与四足机器人后续四十五帧，并与真实轨迹逐时刻对照](../../assets/papers/dreamerv3/figure-04-open-loop-prediction.png){ width="2062" height="1033" loading="lazy" decoding="async" }](../../assets/papers/dreamerv3/figure-04-open-loop-prediction.png)
+<figcaption><strong>Figure 4 是“会生成视频”和“能作为世界模型”之间的一个最小可视化契约：上下文结束后，未来不仅由历史画面条件化，还显式接收动作序列。</strong>逐帧对照能暴露姿态、几何和纹理误差怎样随 horizon 累积；若没有动作干预和真实 rollout 对照，同样连贯的生成片段无法证明可控动力学。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2301.04104v2#page=4">Hafner et al., Mastering Diverse Domains through World Models, Figure 4, p. 4</a>；Copyright © 2024 Danijar Hafner, Jurgis Pasukonis, Jimmy Ba, and Timothy Lillicrap，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去原始 caption 与周围正文。</span></figcaption>
+</figure>
+</div>
 
 ## 实现契约：一个视频不是一个四维数组就够了
 

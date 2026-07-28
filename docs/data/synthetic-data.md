@@ -89,6 +89,13 @@ $$
 
 [Generalized Knowledge Distillation](https://arxiv.org/abs/2306.13649) 讨论了在 student 生成分布上进行蒸馏，以缩小 teacher-forcing 与部署分布的差距；具体目标见[知识蒸馏](../training/distillation.md)。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k2-figure-08" data-paper-source="kimi-k2" data-paper-asset="k2-figure-08" markdown="1">
+[![Kimi K2 从真实与合成工具规范构造 agent 任务、rubric、轨迹并由 judge 筛选可验证样本](../assets/papers/kimi-k2/figure-08-tool-synthesis.png){ width="1683" height="504" loading="lazy" decoding="async" }](../assets/papers/kimi-k2/figure-08-tool-synthesis.png)
+<figcaption><strong>Figure 8 给出工具型合成数据的完整最小环：先确定 tool spec，再生成带 rubric 的任务，采样轨迹并用 judge 过滤。</strong>工具 schema 固定动作空间，rubric 固定终态判据；若两者由同一个生成器无独立校验地产生，规模增加也可能只放大一致的错误。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K2/1b4022bbb7187cf4011a8bdf0b4cd10e2daa26c4/tech_report.pdf#page=10">Kimi K2: Open Agentic Intelligence, Figure 8, p. 10</a>；Copyright (c) 2025 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K2/blob/1b4022bbb7187cf4011a8bdf0b4cd10e2daa26c4/LICENSE">Modified MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 正确性与失效
 
 - **生成量替代覆盖**：百万条同模板数据仍可能只覆盖极窄行为。

@@ -22,6 +22,13 @@ $$
 
 pre-norm 给恒等残差路径提供更直接的梯度通道，通常更容易训练深层网络；post-norm 的表示尺度与优化行为不同，不能只替换一行代码而沿用全部超参数。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--portrait" id="smoothquant-precision-flow" data-paper-source="smoothquant-flow" data-paper-asset="smoothquant-precision-flow" markdown="1">
+[![一个 SmoothQuant Transformer block 中 residual、LayerNorm、QKV、attention BMM、MLP 与不同精度路径的关系](../assets/papers/smoothquant-flow/smoothquant-precision-flow.png){ width="3224" height="2116" loading="lazy" decoding="async" }](../assets/papers/smoothquant-flow/smoothquant-precision-flow.png)
+<figcaption><strong>decoder block 的计算图还隐含着一张数值图。</strong>图中 projection 和 attention BMM 使用 INT8，而 residual、LayerNorm、Softmax 与激活保留 FP16；融合或量化 block 时，必须同时守住拓扑、精度和 scale 三类边界。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/mit-han-lab/smoothquant/c61476d728e42ae0d8a35e7e78494edcac3237b5/figures/quantization_flow.png">SmoothQuant Transformer-block precision flow, standalone precision-flow diagram</a>；MIT HAN Lab，<a href="https://github.com/mit-han-lab/smoothquant/blob/c61476d728e42ae0d8a35e7e78494edcac3237b5/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## LayerNorm 与 RMSNorm
 
 对 $x\in\mathbb{R}^{d}$，LayerNorm 为
@@ -111,6 +118,13 @@ K3 取 $\beta_1=4,\beta_2=25$，上界为 $100$。这个上界约束的是 eleme
 不是经过 $W_d$ 后的 MLP 输出，也不等于全模型不会出现 outlier。K3 将它用于
 [Stable LatentMoE](moe.md#latent-moe) 的 routed experts；完整架构关系见
 [Kimi K3](../landscape/works/kimi-k3.md)。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-04" data-paper-source="kimi-k3" data-paper-asset="k3-figure-04" markdown="1">
+[![Kimi K3 对比 GLU、SwiGLU 与 SiTU-GLU 的门控分支、上行分支和激活曲线](../assets/papers/kimi-k3/figure-04-situ-glu.png){ width="1967" height="546" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-04-situ-glu.png)
+<figcaption><strong>Figure 4 直接比较三种 gated MLP：差别不仅在激活函数名称，还在乘法两侧分别接收什么变换。</strong>SiTU-GLU 给乘法结果引入平滑上界，目标是限制极端激活而保留中间区域梯度；曲线形状必须与公式、初始化和 kernel 实现一起核对。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=7">Kimi K3 Technical Report, Figure 4, p. 7</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
 
 ### SiTU-GLU reference
 

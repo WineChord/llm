@@ -2,6 +2,13 @@
 
 推理后训练不是单一算法，而是一条把候选生成、搜索、验证与策略学习连接起来的闭环。任务可以在推理时花更多计算寻找答案，也可以把搜索到的轨迹转成 SFT、偏好、过程监督或 RL 数据；两者的成本和泛化边界不同。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-08" data-paper-source="kimi-k3" data-paper-asset="k3-figure-08" markdown="1">
+[![Kimi K3 在编码、工具、网页、搜索、办公和视觉任务上的分数与平均步骤随 RL FLOPs 变化](../assets/papers/kimi-k3/figure-08-rl-scaling.png){ width="1571" height="758" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-08-rl-scaling.png)
+<figcaption><strong>后训练 compute 的收益不是一条统一 scaling law。</strong>Figure 8 同时给出任务分数与平均步骤，显示更高分数可能伴随更长轨迹，且不同领域的饱和与波动不同；搜索预算、训练预算和交互长度必须拆开记录。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=13">Kimi K3 Technical Report, Figure 8, p. 13</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 问题分解
 
 “推理能力”至少包含：
@@ -128,6 +135,13 @@ Teacher 或强搜索器可以生成成功轨迹，再蒸馏到 student；目标�
 ## 长时与 Agent 推理
 
 在工具或环境中，推理不只是一段文本，而是 observation、action、外部状态和权限组成的 trajectory。[ReAct](https://arxiv.org/abs/2210.03629) 展示了 reasoning 与 acting 的交错形式。此时 verifier 应检查环境终态与副作用，文本解释不能替代真实状态；详细契约见[数据与环境](../agentic-rl/data-environments.md)与[长时任务](../agentic-rl/long-horizon.md)。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k15-figure-03" data-paper-source="kimi-k1-5" data-paper-asset="k15-figure-03" markdown="1">
+[![Kimi k1.5 用 replay buffer 保留长度截断的 partial rollout，并在后续训练 iteration 继续](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png){ width="1650" height="808" loading="lazy" decoding="async" }](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png)
+<figcaption><strong>长推理后训练需要区分“暂停”与“终止”。</strong>Figure 3 中长度预算耗尽的轨迹保留可继续状态并返回 replay buffer，而正常结束与重复检测有不同标记；若训练数据把三者都截成文本 response，信用和终止语义都会错位。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-k1.5/cf9a8785730c7e59d788956e1e40dc9fc31ebf08/Kimi_k1.5.pdf#page=8">Kimi k1.5: Scaling Reinforcement Learning with LLMs, Figure 3, p. 8</a>；Kimi Team，<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>。</span></figcaption>
+</figure>
+</div>
 
 ## 正确性与失效
 

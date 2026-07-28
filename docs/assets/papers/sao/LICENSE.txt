@@ -1,0 +1,12 @@
+Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning
+
+Copyright © 2026 Zhenyu Hou, Yujiang Li, Jie Tang, and Yuxiao Dong.
+Licensed under the Creative Commons Attribution 4.0 International License:
+https://creativecommons.org/licenses/by/4.0/
+
+The accompanying PNG is a precise crop of Figure 2 from arXiv:2607.07508v1.
+The crop removes the caption and surrounding page content and is rasterized at
+300 DPI; the figure content is otherwise unchanged.
+
+Paper: https://arxiv.org/abs/2607.07508
+PDF: https://arxiv.org/pdf/2607.07508v1

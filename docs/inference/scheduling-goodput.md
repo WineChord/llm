@@ -2,6 +2,13 @@
 
 LLM 请求同时消耗 prompt 计算、逐 token decode、持续增长的 KV 和流式连接。调度器必须在每一轮决定“谁现在运行、运行多少 token、为未来保留多少显存”。追求设备不空闲很容易，但设备满载并不代表请求按时完成。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="vllm-v1-process-architecture" data-paper-source="vllm-process-architecture" data-paper-asset="vllm-v1-process-architecture" markdown="1">
+[![vLLM V1 多 API server、数据并行协调器、engine core 和 GPU worker 之间的调度与通信关系](../assets/papers/vllm-process-architecture/vllm-v1-process-architecture.png){ width="2816" height="1536" loading="lazy" decoding="async" }](../assets/papers/vllm-process-architecture/vllm-v1-process-architecture.png)
+<figcaption><strong>调度不是一个全局队列就结束了。</strong>请求先跨 API server 和 DP rank 分配，再由各 engine core 维护批次、KV 与执行状态，最后映射到 TP worker；goodput 的尾延迟与公平性必须沿这条状态路径逐层归因。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/vllm-project/vllm/b6cbba8bc893c61e412a205533aafbee1ae6be31/docs/assets/design/arch_overview/v1_process_architecture_tp2_dp4.png">vLLM V1 process architecture for TP=2 and DP=4, standalone process architecture diagram</a>；vLLM project contributors，<a href="https://github.com/vllm-project/vllm/blob/b6cbba8bc893c61e412a205533aafbee1ae6be31/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 工作负载模型
 
 对请求 $i$，至少记录：

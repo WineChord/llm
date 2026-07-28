@@ -151,6 +151,13 @@ $$
 
 模型结构也会反向改变系统选择：长上下文增加 activation 与 attention IO，MoE 把 dense all-reduce 转为 token all-to-all，GQA 减少推理 KV 却不等比例减少训练中的所有通信。组合并行应从 tensor shape 和拓扑出发，而不是从框架配置名出发。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-11" data-paper-source="kimi-k3" data-paper-asset="k3-figure-11" markdown="1">
+[![Kimi K3 的 free-stage pipeline 将不同设备上的前向、反向、reduce 与 broadcast 阶段错开，以减少同步 stage 形成的空泡](../../assets/papers/kimi-k3/figure-11-training-pipeline.png){ width="1933" height="600" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-11-training-pipeline.png)
+<figcaption><strong>Figure 11 展示并行训练史从“怎样切 tensor”走向“怎样允许 stage 不齐步”的一步。</strong>free-stage 调度减少同步 bubble，却让更多 microbatch、梯度和权重版本同时在途；收益必须与依赖追踪、版本可见性、reduce/broadcast 冲突和故障恢复边界一起计量。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=19">Kimi K3 Technical Report, Figure 11, p. 19</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 数值与 kernel：显存释放后，瓶颈继续转移
 
 [Mixed Precision Training](https://arxiv.org/abs/1710.03740) 用低精度保存和计算大部分 tensor，并以 FP32 master weights 与 loss scaling 处理 FP16 范围不足。它同时改变显存、HBM traffic、collective bytes 与数值稳定性；“checkpoint 是低比特”不代表运行时执行低比特 GEMM。

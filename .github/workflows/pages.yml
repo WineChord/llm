@@ -36,6 +36,10 @@ jobs:
           python scripts/check_typography.py
       - name: Check paper figures
         run: python scripts/check_paper_figures.py
+      - name: Check media policy
+        run: python scripts/check_media_policy.py
+      - name: Audit visual coverage
+        run: python scripts/audit_visual_coverage.py --report visual-audit/coverage.json
       - name: Check knowledge architecture
         run: python scripts/check_architecture.py
       - name: Check Python snippets

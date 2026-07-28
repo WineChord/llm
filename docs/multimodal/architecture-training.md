@@ -130,6 +130,13 @@ $$
 - position IDs 是否重置；
 - 哪些媒体 token 参与语言 loss。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k25-figure-09" data-paper-source="kimi-k2-5" data-paper-asset="k25-figure-09" markdown="1">
+[![Kimi K2.5 在三个视觉文本混合阶段比较 10 比 90、20 比 80 和 50 比 50 配方对视觉、文本、OCR 与编码指标的影响](../assets/papers/kimi-k2-5/figure-09-early-fusion.png){ width="1975" height="1117" loading="lazy" decoding="async" }](../assets/papers/kimi-k2-5/figure-09-early-fusion.png)
+<figcaption><strong>Figure 9 说明 early fusion 之后仍需设计 curriculum：视觉与文本 token 比例改变时，各能力曲线的响应速度和波动并不相同。</strong>阶段切换同时改变数据分布、有效 token 和梯度来源；图中结果只属于 K2.5 的固定配方，不能据此把某个比例当成通用多模态配方。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K2.5/3e60763b943e93c443287c383e0468ffe05b188f/tech_report.pdf#page=21">Kimi K2.5: Visual Agentic Intelligence, Figure 9, p. 21</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K2.5/blob/3e60763b943e93c443287c383e0468ffe05b188f/LICENSE">Modified MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 原生联合训练与 MoonViT-V2
 
 “Early fusion”只描述 token 怎样进入主干，不决定视觉塔何时、用什么目标训练。常见 grafting 路线先

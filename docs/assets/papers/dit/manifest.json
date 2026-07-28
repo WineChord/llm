@@ -35,14 +35,61 @@
       "kind": "diagram",
       "source_label": "Figure 3",
       "page": 3,
-      "page_box_points": [612, 792],
+      "page_box_points": [
+        612,
+        792
+      ],
       "rotation": 0,
-      "crop_box_points": [48, 70, 564, 282],
-      "pixel_size": [2150, 883],
+      "crop_box_points": [
+        48,
+        70,
+        564,
+        282
+      ],
+      "pixel_size": [
+        2150,
+        883
+      ],
       "sha256": "62eaa0c1d2c984d69864bc4c9c7ef06f58bb3d5b59a5e67e71ac2772eacc0dee",
       "placements": [
         {
           "page": "docs/multimodal/image-generation/latent-dit-flow.md",
+          "anchor": "dit-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/generative-modeling.md",
+          "anchor": "dit-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/video/generation.md",
+          "anchor": "dit-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/image-generation/diffusion-score.md",
+          "anchor": "dit-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/image-generation/control-editing-evaluation.md",
+          "anchor": "dit-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/history.md",
+          "anchor": "dit-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/lineages/multimodal-generation.md",
           "anchor": "dit-figure-03",
           "role": "wide",
           "media_link": "asset"

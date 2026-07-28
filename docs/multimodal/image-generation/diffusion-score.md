@@ -6,6 +6,13 @@ Diffusion 的直觉常被压缩成“加噪，再去噪”。这句话没有错�
 
 这条路线并非突然出现。[Score Matching](https://www.jmlr.org/papers/v6/hyvarinen05a.html) 先研究不需要归一化常数的密度梯度，[Denoising Score Matching](https://doi.org/10.1162/NECO_a_00142) 把它化为加噪样本上的回归；扩散概率模型则构造一串逐渐变成简单先验的分布，并学习反向过程。把这些放在同一组符号中，DDPM、DDIM、score SDE 与许多 sampler 的差异会清楚得多。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="dit-figure-03" data-paper-source="dit" data-paper-asset="dit-figure-03" markdown="1">
+[![DiT 把加噪 VAE latent 切为 patch token，并用时间与类别条件驱动 adaLN-Zero、cross-attention 或条件 token 三种 Transformer block](../../assets/papers/dit/figure-03-architecture-conditioning.png){ width="2150" height="883" loading="lazy" decoding="async" }](../../assets/papers/dit/figure-03-architecture-conditioning.png)
+<figcaption><strong>Figure 3 展示 score 或噪声预测目标落到网络时仍需三个工程接口：带噪状态怎样 token 化，时间变量怎样注入，外部条件怎样调制 denoiser。</strong>扩散方程规定训练目标与采样路径，却不唯一决定 backbone；DiT 只是把 U-Net 的空间计算改写为 latent patch sequence 与条件化 Transformer。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2212.09748v2#page=3">Scalable Diffusion Models with Transformers, Figure 3, p. 3</a>；Copyright © 2023 William Peebles and Saining Xie，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## Score 是密度的局部指北针
 
 分布 $p(x)$ 的 score 定义为

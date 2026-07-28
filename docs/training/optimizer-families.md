@@ -88,6 +88,13 @@ $$
 
 Muon 通常只应用于隐藏层的二维矩阵；embedding、norm、bias 和标量参数仍使用 AdamW 或其他优化器。因此“使用 Muon”实际上是混合优化器与参数路由规则。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k2-figure-02" data-paper-source="kimi-k2" data-paper-asset="k2-figure-02" markdown="1">
+[![Kimi K2 对比普通 Muon 训练中 max logits 持续发散与 MuonClip 约束后长期稳定的轨迹](../assets/papers/kimi-k2/figure-02-muonclip.png){ width="1975" height="567" loading="lazy" decoding="async" }](../assets/papers/kimi-k2/figure-02-muonclip.png)
+<figcaption><strong>Figure 2 把 MuonClip 的目标落到可观测量：普通 Muon 运行中的最大 logit 持续抬升，而加入约束后的长训练保持在受控范围。</strong>这是 K2 配方内的稳定性证据，不等于任何 max-logit 上升都会导致发散；复现实验仍要同时记录学习率、参数路由、精度、裁剪阈值和数据阶段。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K2/1b4022bbb7187cf4011a8bdf0b4cd10e2daa26c4/tech_report.pdf#page=4">Kimi K2: Open Agentic Intelligence, Figure 2, p. 4</a>；Copyright (c) 2025 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K2/blob/1b4022bbb7187cf4011a8bdf0b4cd10e2daa26c4/LICENSE">Modified MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ### Per-Head Muon {#per-head-muon}
 
 Q/K/V projection 通常把多个 head 沿输出维堆在同一个矩阵中。若对整张 momentum matrix 一次

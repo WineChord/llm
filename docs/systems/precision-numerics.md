@@ -11,6 +11,13 @@
 
 只有这些语义都确定，才能讨论显存、吞吐和质量。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="smoothquant-intuition" data-paper-source="smoothquant-intuition" data-paper-asset="smoothquant-intuition" markdown="1">
+[![SmoothQuant 中 activation outlier 挤压有效量化 level，以及缩放后 activation 与 weight 范围的重新平衡](../assets/papers/smoothquant-intuition/smoothquant-intuition.png){ width="1934" height="400" loading="lazy" decoding="async" }](../assets/papers/smoothquant-intuition/smoothquant-intuition.png)
+<figcaption><strong>数值格式必须与数据分布一起讨论。</strong>统一 scale 在遇到固定通道 outlier 时会牺牲普通值的有效 level；逐通道等价缩放改变了两侧的数值范围，却仍需 kernel 支持和校准数据验证。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/mit-han-lab/smoothquant/c61476d728e42ae0d8a35e7e78494edcac3237b5/figures/intuition.png">SmoothQuant activation-to-weight difficulty migration, standalone method figure</a>；MIT HAN Lab，<a href="https://github.com/mit-han-lab/smoothquant/blob/c61476d728e42ae0d8a35e7e78494edcac3237b5/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 浮点格式解决什么问题
 
 浮点数可抽象为
@@ -50,6 +57,13 @@ $$
 - norm、loss 与 optimizer state 保持 FP32。
 
 只写一个 dtype 会隐藏最重要的稳定性信息。特别是 reduction：求和长度为 $n$ 时，舍入误差会随求和顺序和 $n$ 境况变化；分布式树形 reduction 与单卡顺序 reduction 不保证 bitwise 一致。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--portrait" id="smoothquant-precision-flow" data-paper-source="smoothquant-flow" data-paper-asset="smoothquant-precision-flow" markdown="1">
+[![SmoothQuant 在一个 Transformer block 内混合 FP16 与 INT8 的逐算子精度映射](../assets/papers/smoothquant-flow/smoothquant-precision-flow.png){ width="3224" height="2116" loading="lazy" decoding="async" }](../assets/papers/smoothquant-flow/smoothquant-precision-flow.png)
+<figcaption><strong>一个 block 可以同时存在多条数值路径。</strong>低精度 BMM 与 projection 之间穿插 FP16 norm、softmax、激活和 residual；因此“模型是 INT8”不足以定义舍入位置、累加精度或误差传播。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/mit-han-lab/smoothquant/c61476d728e42ae0d8a35e7e78494edcac3237b5/figures/quantization_flow.png">SmoothQuant Transformer-block precision flow, standalone precision-flow diagram</a>；MIT HAN Lab，<a href="https://github.com/mit-han-lab/smoothquant/blob/c61476d728e42ae0d8a35e7e78494edcac3237b5/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
 
 ## 舍入、溢出与下溢
 

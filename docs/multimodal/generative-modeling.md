@@ -10,13 +10,12 @@
 
 [DDPM、DiT 与 Flow Matching](../landscape/works/diffusion-dit-flow.md) 把去噪目标、Transformer backbone 和连续向量场放在同一组符号下比较；它们与视觉语言理解路线的汇合位置见[多模态理解与生成](../landscape/lineages/multimodal-generation.md)。
 
-<figure class="concept-figure" id="generative-modeling-paths" markdown="1">
-
-![离散自回归、Diffusion 与 Flow Matching 从简单表示生成数据的三种路径](../assets/diagrams/generative-paths.svg)
-
-<figcaption>三条路线的差异首先在状态与推理协议：离散模型补 token，diffusion 逆转扰动，flow 积分速度场。backbone 同为 Transformer 并不会让目标与 sampler 自动等价。</figcaption>
-
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-image-hybrid-pipeline" data-paper-source="glm-image-hybrid-pipeline" data-paper-asset="glm-image-hybrid-pipeline" markdown="1">
+[![GLM-Image 先由自回归模型生成视觉输出 token，再把条件图像、字形和视觉 embedding 送入 diffusion decoder](../assets/papers/glm-image-hybrid-pipeline/glm-image-hybrid-pipeline.png){ width="1280" height="314" loading="lazy" decoding="async" }](../assets/papers/glm-image-hybrid-pipeline/glm-image-hybrid-pipeline.png)
+<figcaption><strong>standalone diagram 展示离散自回归与连续扩散并非互斥路线：AR 阶段负责语义和低分辨率视觉 token，diffusion decoder 负责高分辨率生成。</strong>编辑输入还通过 VQ 与 VAE 形成两种条件表示，文字 glyph 另设 embedding；这些接口解释了可控性来源，也增加 tokenizer、投影、mask 与 decoder 版本耦合。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/zai-org/GLM-Image/69b87db2874f8b556417c03eedf2b8a1484f62e0/resources/architecture_1.jpeg">GLM-Image hybrid autoregressive and diffusion pipeline, standalone diagram</a>；Copyright 2026 Zhipu AI，<a href="https://github.com/zai-org/GLM-Image/blob/69b87db2874f8b556417c03eedf2b8a1484f62e0/LICENSE">Apache License 2.0</a>。</span></figcaption>
 </figure>
+</div>
 
 ## VQ 表示
 
@@ -155,6 +154,13 @@ $$
 再在 latent $z$ 上扩散。空间压缩降低计算，但 decoder 重建误差构成上限。实现必须固定 autoencoder 版本、latent scale、通道布局和像素归一化。
 
 [DiT](https://arxiv.org/abs/2212.09748) 使用 Transformer 处理 latent patches，并通过时间和条件调制 block。其“Transformer”是去噪 backbone，不等于自回归语言模型。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="dit-figure-03" data-paper-source="dit" data-paper-asset="dit-figure-03" markdown="1">
+[![DiT 将加噪 VAE latent 切成 patch token，并比较 adaLN-Zero、cross-attention 与 in-context conditioning](../assets/papers/dit/figure-03-architecture-conditioning.png){ width="2150" height="883" loading="lazy" decoding="async" }](../assets/papers/dit/figure-03-architecture-conditioning.png)
+<figcaption><strong>Figure 3 把 DiT 的两个独立选择放在一起：latent 怎样切成序列，时间与类别条件怎样进入 Transformer block。</strong>adaLN-Zero、cross-attention 与条件 token 拼接具有不同参数、缓存和初始化契约；使用 Transformer backbone 并不会让这些条件接口自动等价。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2212.09748v2#page=3">Scalable Diffusion Models with Transformers, Figure 3, p. 3</a>；Copyright © 2023 William Peebles and Saining Xie，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
 
 ## Conditioning
 

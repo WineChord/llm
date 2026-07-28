@@ -2,6 +2,13 @@
 
 上下文窗口长度包含至少四个不同命题：接口允许输入多长、训练见过多长、注意力能计算多长，以及模型能可靠利用多远的信息。只扩大配置中的最大位置不能同时证明这四点。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="flashattention-memory" data-paper-source="flash-attention" data-paper-asset="flashattention-memory" markdown="1">
+[![FlashAttention 的显存缩减倍率随序列长度上升，体现长上下文中的二次中间状态成本](../assets/papers/flash-attention/flashattention-memory.png){ width="1935" height="932" loading="lazy" decoding="async" }](../assets/papers/flash-attention/flashattention-memory.png)
+<figcaption><strong>“能够计算更长”首先是内存生命周期问题，却还不是“能够利用更远”。</strong>FlashAttention 通过重算和 tile-local 统计避免完整 attention 矩阵驻留，使较长序列更可执行；位置外推、训练长度、检索能力与干扰仍需另行验证。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/Dao-AILab/flash-attention/14c377950125c70b7a9dabf9c561fca53715ac7d/assets/flashattn_memory.jpg">FlashAttention memory reduction benchmark, standalone benchmark figure</a>；FlashAttention contributors，<a href="https://github.com/Dao-AILab/flash-attention/blob/14c377950125c70b7a9dabf9c561fca53715ac7d/LICENSE">BSD 3-Clause License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## RoPE 的相对位置
 
 [RoPE](https://arxiv.org/abs/2104.09864) 在每个二维子空间对 Q/K 施加位置相关旋转。第 $j$ 个频率可写为

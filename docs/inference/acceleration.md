@@ -70,6 +70,13 @@ $$
 
 IO-aware exact attention 的转折见 [FlashAttention 深读](../landscape/works/flashattention.md)；分页 KV 与 block table 的执行语义见 [vLLM / PagedAttention 深读](../landscape/works/vllm-pagedattention.md)。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="smoothquant-latency-memory" data-paper-source="smoothquant-benchmark" data-paper-asset="smoothquant-latency-memory" markdown="1">
+[![SmoothQuant 对不同 OPT 模型规模和输入长度的 FasterTransformer latency 与 memory 对比](../assets/papers/smoothquant-benchmark/smoothquant-latency-memory.png){ width="2730" height="962" loading="lazy" decoding="async" }](../assets/papers/smoothquant-benchmark/smoothquant-latency-memory.png)
+<figcaption><strong>减少搬运往往先稳定地降低显存，能否降低延迟还取决于执行路径。</strong>图中 W8A8 在固定 A100 与 FasterTransformer 配置下获得不同幅度的 latency 改善；模型规模、序列长度和 GPU 数变化都会移动算力—带宽边界。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/mit-han-lab/smoothquant/c61476d728e42ae0d8a35e7e78494edcac3237b5/figures/ft_latency_mem.png">SmoothQuant FasterTransformer latency and memory benchmark, standalone benchmark figure</a>；MIT HAN Lab，<a href="https://github.com/mit-han-lab/smoothquant/blob/c61476d728e42ae0d8a35e7e78494edcac3237b5/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ### 3. 增加有效并行
 
 - continuous batching 提高 decode 的有效 batch；

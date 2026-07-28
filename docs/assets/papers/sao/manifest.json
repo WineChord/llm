@@ -1,0 +1,94 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "sao",
+    "title": "Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning",
+    "canonical_url": "https://arxiv.org/abs/2607.07508v1",
+    "artifact_url": "https://arxiv.org/pdf/2607.07508v1",
+    "artifact_sha256": "44c695be0428c666d06c914ba76c037e3ac77eeb5db0a81bbe239719c21bda48",
+    "version": {
+      "kind": "arxiv_version",
+      "value": "2607.07508v1"
+    },
+    "page_count": 14,
+    "license": {
+      "name": "Creative Commons Attribution 4.0 International",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "credit": "Copyright © 2026 Zhenyu Hou, Yujiang Li, Jie Tang, and Yuxiao Dong",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "eb81c3e5640fcd3b03fcb8bf03c385bfdf1c999ff6f3f0143f8a79845c316b86"
+    }
+  },
+  "render": {
+    "renderer": "pdftocairo",
+    "renderer_version": "26.07.0",
+    "dpi": 300,
+    "coordinate_space": "rendered-page-points-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "sao-figure-02",
+      "file": "figure-02-single-rollout.png",
+      "kind": "diagram",
+      "source_label": "Figure 2",
+      "page": 3,
+      "page_box_points": [
+        612,
+        792
+      ],
+      "rotation": 0,
+      "crop_box_points": [
+        160,
+        65,
+        455,
+        190
+      ],
+      "pixel_size": [
+        1229,
+        521
+      ],
+      "sha256": "a6796bc305fcd8ee23fb4aeae3fdd3a0a77d82b0a00bc30dae096fbbe17acd0d",
+      "placements": [
+        {
+          "page": "docs/landscape/works/sao-compactionrl.md",
+          "anchor": "sao-figure-02",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/lineages/reasoning-policy-optimization.md",
+          "anchor": "sao-figure-02",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/reinforcement-learning/ratio-clipping-gating.md",
+          "anchor": "sao-figure-02",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/reinforcement-learning/training-inference-discrepancy.md",
+          "anchor": "sao-figure-02",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/reinforcement-learning/off-policy-correction.md",
+          "anchor": "sao-figure-02",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/agentic-rl/long-horizon.md",
+          "anchor": "sao-figure-02",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

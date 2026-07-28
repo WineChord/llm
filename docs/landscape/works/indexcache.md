@@ -204,6 +204,13 @@ IndexCache 的缓存只需保存当前最近 Full 层的索引，并在下一个
 
 它也不会直接降低 [KV cache](../../inference/kv-cache.md) 的 bytes/token。要优化 KV 容量，需要 MLA、量化、分页、淘汰或跨请求 [prefix/cache reuse](../../inference/cache-reuse.md)；IndexCache 优化的是“沿网络深度重复选择候选”的计算。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-12" data-paper-source="kimi-k3" data-paper-asset="k3-figure-12" markdown="1">
+[![Kimi K3 的混合 prefix cache 将物理页、细粒度 hash、MLA block 与稀疏 KDA checkpoint 放在同一复用边界中](../../assets/papers/kimi-k3/figure-12-prefix-cache.png){ width="1521" height="525" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-12-prefix-cache.png)
+<figcaption><strong>Figure 12 刻意放在这里作为反例边界：它缓存的是跨请求前缀状态，IndexCache 复用的是相邻网络层的 top-k 索引，两者的轴完全不同。</strong>前者受物理页、hash 粒度和 recurrent checkpoint 的最短共同前缀限制；后者受 Full/Shared 层布局和 indexer 质量限制。名字里都有 cache，不意味着能共享同一命中率或显存公式。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=23">Kimi K3 Technical Report, Figure 12, p. 23</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 速度数字应该怎样读
 
 论文在一个 H100 节点上，用 SGLang、`dp_attention` 与 data-parallel size 8 测量 30B DSA 模型，覆盖 10K、60K、120K 与 200K 上下文。在 200K、保留 1/4 indexer 时报告：

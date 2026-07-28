@@ -4,6 +4,13 @@
 
 Megatron 的 tensor parallel 与 ZeRO 的状态分片解决的是不同复制对象。[分布式训练系统](../landscape/lineages/distributed-training-systems.md)给出从数据并行到多维并行的历史主线，[Megatron 与 ZeRO](../landscape/works/megatron-zero.md) 则用最小张量账本展示二者怎样组合而不混淆。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="vllm-v1-process-architecture" data-paper-source="vllm-process-architecture" data-paper-asset="vllm-v1-process-architecture" markdown="1">
+[![vLLM V1 在八张 GPU 上组合四路数据并行和两路张量并行的进程架构](../assets/papers/vllm-process-architecture/vllm-v1-process-architecture.png){ width="2816" height="1536" loading="lazy" decoding="async" }](../assets/papers/vllm-process-architecture/vllm-v1-process-architecture.png)
+<figcaption><strong>并行维度的乘积会落成具体进程、通信组与状态所有权。</strong>这个 TP=2、DP=4 的推理实例中，每个 DP rank 对应一个 engine core 和两个 TP worker，另有独立 DP coordinator；同一组数字若映射到不同拓扑，通信关键路径与故障域也会不同。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/vllm-project/vllm/b6cbba8bc893c61e412a205533aafbee1ae6be31/docs/assets/design/arch_overview/v1_process_architecture_tp2_dp4.png">vLLM V1 process architecture for TP=2 and DP=4, standalone process architecture diagram</a>；vLLM project contributors，<a href="https://github.com/vllm-project/vllm/blob/b6cbba8bc893c61e412a205533aafbee1ae6be31/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## Tensor Parallel
 
 设线性层 $Y=XW$。

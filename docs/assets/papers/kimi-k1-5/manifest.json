@@ -35,14 +35,79 @@
       "kind": "diagram",
       "source_label": "Figure 3",
       "page": 8,
-      "page_box_points": [612, 792],
+      "page_box_points": [
+        612,
+        792
+      ],
       "rotation": 0,
-      "crop_box_points": [112, 524, 508, 718],
-      "pixel_size": [1650, 808],
+      "crop_box_points": [
+        112,
+        524,
+        508,
+        718
+      ],
+      "pixel_size": [
+        1650,
+        808
+      ],
       "sha256": "4a9069613d0d9211ddb61caa3fddbad96a087056b0d3da4b296f901aa0dc5946",
       "placements": [
         {
           "page": "docs/landscape/works/kimi-k1-5.md",
+          "anchor": "k15-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/agentic-rl/training-systems.md",
+          "anchor": "k15-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/training/online-rl.md",
+          "anchor": "k15-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/agentic-rl/math-algorithms.md",
+          "anchor": "k15-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/agentic-rl/long-horizon.md",
+          "anchor": "k15-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/reinforcement-learning/history.md",
+          "anchor": "k15-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/reinforcement-learning/reasoning-rl-recipes.md",
+          "anchor": "k15-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/training/reasoning-posttraining.md",
+          "anchor": "k15-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/kimi-timeline.md",
+          "anchor": "k15-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/kimi-k3-reference-map.md",
           "anchor": "k15-figure-03",
           "role": "wide",
           "media_link": "asset"

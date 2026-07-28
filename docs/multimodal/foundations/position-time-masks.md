@@ -105,6 +105,13 @@ $$
 
 多图还应明确坐标是否重置。每张图的局部 $(0,0)$ 可以相同，但 segment ID 必须不同；若任务包含拼图、跨视角或页面顺序，还需要额外的全局关系，而不是把所有坐标简单累加。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="kimi-vl-figure-03" data-paper-source="kimi-vl" data-paper-asset="kimi-vl-figure-03" markdown="1">
+[![Kimi-VL 让原生分辨率 MoonViT 处理小图、普通图像、长视频、OCR 与 GUI 截图，再经 projector 接入 MoE 语言解码器](../../assets/papers/kimi-vl/figure-03-architecture.png){ width="1733" height="1308" loading="lazy" decoding="async" }](../../assets/papers/kimi-vl/figure-03-architecture.png)
+<figcaption><strong>Figure 3 直观展示了同一视觉入口为何不能只保存一个 token index：小图、原生分辨率图像、视频、OCR 页面和 GUI 截图具有不同宽高比、时间轴和有效区域。</strong>架构图说明数据流，却没有替实现补齐 resize、tile origin、timestamp、padding、segment 与 attention mask；这些元数据必须一路保留到 grounding 和生成结果的逆映射。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-VL/41d5ef072bc52a04524f94ab736ff9c29f125fda/Kimi-VL.pdf#page=3">Kimi-VL Technical Report, Figure 3, p. 3</a>；Copyright © 2025 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-VL/blob/41d5ef072bc52a04524f94ab736ff9c29f125fda/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 时间位置必须回到真实时钟
 
 对固定帧率视频，frame index $k$ 可近似映射为

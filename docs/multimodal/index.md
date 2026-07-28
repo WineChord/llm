@@ -25,14 +25,6 @@ $$
 
 模型名称不能替代计算图。判断能力时，应追踪哪些参数共享、哪些表示可逆、哪些模态真正参与 loss，以及推理中是否调用外部工具。
 
-<figure class="concept-figure" id="multimodal-field-map" markdown="1">
-
-![图像、音频、视频与身体状态经过采样和表示，进入语义推理、生成或世界模型，输出语言、媒体与动作](../assets/diagrams/multimodal-computing-map.svg)
-
-<figcaption>统一接口位于中间，而不是起点或终点。采样与表示决定模型获得哪些证据；媒体 decoder、规划器和运行时决定输出能否可靠回到真实世界。</figcaption>
-
-</figure>
-
 ## 能力层次
 
 | 层次 | 目标 | 关键瓶颈 |

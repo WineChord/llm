@@ -14,14 +14,6 @@ $$
 
 模型的输出会改变下一次输入。一个很小的抓取偏差可能让相机看到训练中从未出现的状态；一句语义正确的计划也可能因为坐标、接触或延迟错误而失败。具身系统因此同时属于感知、决策、控制、系统工程和安全。
 
-<figure class="concept-figure" id="embodied-control-stack" markdown="1">
-
-![目标和多传感器观察经过语义规划、VLA 策略、运行时安全监督与低层控制器形成机器人动作并返回新观察](../assets/diagrams/embodied-control-stack.svg)
-
-<figcaption>VLA 只占控制栈的一层。语义规划决定做什么，policy 产生动作分布，运行时监督检查时效与约束，低层控制器负责稳定执行；这些责任不能由一个端到端标签合并。</figcaption>
-
-</figure>
-
 ## 部分可观测才是常态
 
 环境真实状态为 $s_t$，机器人只能得到相机、语言、本体感知与触觉组成的观察：
@@ -105,6 +97,13 @@ vision / audio / language / proprioception
 - 目标机器人的后训练、标定和安全控制提供可执行性。
 
 第一层强，不会自动补齐后两层。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="rt2-figure-01" data-paper-source="rt-2" data-paper-asset="rt2-figure-01" markdown="1">
+[![RT-2 把互联网视觉问答与机器人动作数据共同写成 token 序列并部署到闭环机器人控制](../assets/papers/rt-2/figure-01-vla-cofinetuning.png){ width="1663" height="629" loading="lazy" decoding="async" }](../assets/papers/rt-2/figure-01-vla-cofinetuning.png)
+<figcaption><strong>Figure 1 抓住 VLA 历史中的接口转折：机器人动作被序列化为 VLM 可预测的 token，并与 Web 视觉语言样本共同微调。</strong>共享 token 接口让语义知识进入动作预测，却不表示低层动力学来自 Web 数据；动作范围、机器人形态、时延和闭环恢复仍由机器人数据与控制系统约束。<span class="paper-figure__source">图源：<a href="https://proceedings.mlr.press/v229/zitkovich23a/zitkovich23a.pdf#page=2">RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control, Figure 1, p. 2</a>；Copyright © 2023 the authors，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
 
 ## VLM、VLA、世界模型与控制器
 

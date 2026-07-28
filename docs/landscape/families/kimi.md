@@ -82,6 +82,13 @@ license
 
 MoonViT-V2、Per-Head Muon、Quantile Balancing、Multi-Teacher On-Policy Distillation、MXFP4 / MXFP8 QAT、EAGLE draft、MoonEP、persistent AgentENV、hybrid prefix cache 与 XTML 则把模型结构接回训练和服务。其 2.8T 总参数、104B activated 与 1M context 是具体 checkpoint 口径，不能反向覆盖 K2 系列，也不能由 API 名称推断本地权重与线上服务完全一致。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-02" data-paper-source="kimi-k3" data-paper-asset="k3-figure-02" markdown="1">
+[![Kimi K3 的 KDA 与 Gated MLA 混合主干、Attention Residual 深度路由、Stable LatentMoE 通道路由和 MoonViT-V2 视觉入口](../../assets/papers/kimi-k3/figure-02-architecture.png){ width="1967" height="1617" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-02-architecture.png)
+<figcaption><strong>Figure 2 把 K3 的三种稀疏与状态机制放进同一张计算图：sequence 轴混合递归 KDA 与全局 MLA，depth 轴选择 residual block，channel 轴选择 routed experts。</strong>视觉 encoder 只是输入入口；训练和服务还要分别维护 recurrent state、latent KV、depth route、expert dispatch 与多模态位置。家族演进因而不能只用总参数或上下文长度概括。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=3">Kimi K3 Technical Report, Figure 2, p. 3</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 公开产物账本 {#release-ledger}
 
 下表核验到 2026-07-28。日期指最早可核验的对应公开物；博客、论文、权重、代码与 API 可以不同日上线。`未公开` 只表示在所列第一方入口中没有找到相应产物，不表示内部不存在。

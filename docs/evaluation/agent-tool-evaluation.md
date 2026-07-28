@@ -243,6 +243,13 @@ effect/cluster CI and known environment limits
 
 GLM-5 报告的内部 CC-Bench-V2 不只读最终文本，而是让 Agent-as-a-Judge 操作产物：frontend 有 220 个任务、949 个 check-items，backend 有 85 个跨六语言任务、每题 5–10 个测试，long-horizon 任务串联 3–15 个 commit 并运行累积测试。报告另从 frontend 抽取 130 个 check-items 做 judge–human point-wise consistency 校准，不能把这个子样本误当成完整评测规模。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-5-figure-10" data-paper-source="glm-5" data-paper-asset="glm-5-figure-10" markdown="1">
+[![CC-Bench-V2 的 Agent-as-a-Judge 先构建并启动网站，再循环读取代码、规划、浏览、点击和截图，对每个 checklist 项给出最终判定](../assets/papers/glm-5/figure-10-agent-as-judge.png){ width="1667" height="863" loading="lazy" decoding="async" }](../assets/papers/glm-5/figure-10-agent-as-judge.png)
+<figcaption><strong>Figure 10 展示一种运行式前端评测：build gate 过滤静态失败，多模态 Judge 再把源码证据与真实浏览器交互合并。</strong>这种设计比只读最终答案更接近任务完成，但也把浏览器版本、工具协议、judge model、截图时机和 checklist 粒度一起带进测量系统。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2602.15763v2#page=25">GLM-5: from Vibe Coding to Agentic Engineering, Figure 10, p. 25</a>；Copyright © 2026 GLM-5 Team，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
+
 报告给出 frontend 检查点一致率 $94\%$、模型排序 Spearman $85.7\%$。这些数字说明团队做过 judge–human 校准，却不足以独立复现：任务、完整 rubric、judge prompt、运行环境和样本级 verdict 未充分公开。此类结果应登记为 `[I] internal`，并把确定性测试、模型语义判断和人工偏好三种证据分开。逐项边界见 [GLM Agentic Engineering](../landscape/works/glm-agentic-engineering.md#agent-judge) 与 [GLM-5](../landscape/works/glm-5.md#evaluation)。
 
 ## Reference {#reference}

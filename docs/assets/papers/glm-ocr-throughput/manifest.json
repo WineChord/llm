@@ -36,15 +36,32 @@
       "kind": "table",
       "source_label": "standalone table",
       "page": 1,
-      "source_size_pixels": [1758, 903],
+      "source_size_pixels": [
+        1758,
+        903
+      ],
       "rotation": 0,
-      "source_crop_box_pixels": [0, 0, 1758, 903],
-      "pixel_size": [1758, 903],
+      "source_crop_box_pixels": [
+        0,
+        0,
+        1758,
+        903
+      ],
+      "pixel_size": [
+        1758,
+        903
+      ],
       "sha256": "bf1c549f5810d274bad4414b710a06d317a21447575b357d7bd6f913c9d9e0e6",
       "placements": [
         {
           "page": "docs/multimodal/glm.md",
           "anchor": "glmocr-throughput-figure",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/document-gui-grounding.md",
+          "anchor": "glmocr-throughput",
           "role": "wide",
           "media_link": "asset"
         }

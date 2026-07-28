@@ -37,6 +37,13 @@ $$
 
 其中 $n_e$ 是分配给 expert $e$ 的 token 数。平均负载平衡不能保证最大 expert 不阻塞整个 collective。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-05" data-paper-source="kimi-k3" data-paper-asset="k3-figure-05" markdown="1">
+[![Kimi K3 的 Quantile Balancing 比较 expert 负载分位数与不同平衡策略，突出尾部 expert 而不只观察平均负载](../assets/papers/kimi-k3/figure-05-quantile-balancing.png){ width="1950" height="646" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-05-quantile-balancing.png)
+<figcaption><strong>Figure 5 把 MoE 系统最容易被平均值掩盖的问题可视化：collective 和 grouped GEMM 的完成时间由尾部 expert 决定，均匀的均值并不保证高分位负载受控。</strong>Quantile Balancing 是 K3 的具体训练机制；可迁移的诊断原则是同时记录 expert count 分布、最大值、高分位、drop/reroute 和每个 rank 的通信尾延迟。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=8">Kimi K3 Technical Report, Figure 5, p. 8</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 一次 MoE forward 的数据流
 
 稳定实现通常包含：

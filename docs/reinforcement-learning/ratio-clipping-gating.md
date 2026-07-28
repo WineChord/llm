@@ -2,6 +2,13 @@
 
 LLM 强化学习近年的许多缩写，都在回答一个共同问题：<strong>rollout 不是由当前训练分布即时采出时，哪些梯度还值得相信？</strong>但它们修改的 ratio、粒度和梯度几何并不相同。把所有方法都概括为“换一种 clip”，会同时丢失统计目标与系统动机。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="sao-figure-02" data-paper-source="sao" data-paper-asset="sao-figure-02" markdown="1">
+[![SAO 将单条完成轨迹立即入队，并对 token-level direct ratio 使用双侧拒绝区间的示意](../assets/papers/sao/figure-02-single-rollout.png){ width="1229" height="521" loading="lazy" decoding="async" }](../assets/papers/sao/figure-02-single-rollout.png)
+<figcaption><strong>Figure 2 把系统 barrier 与梯度 gate 放在同一张图里。</strong>取消同 prompt 的 group 等待会提高轨迹就绪速度，却让 behavior policy 更容易陈旧；DIS 因而直接按 rollout-relative token ratio 拒绝区间外梯度，而不是把 PPO clipping 当作通用补丁。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2607.07508v1#page=3">Hou et al., Single-Rollout Asynchronous Optimization, Figure 2, p. 3</a>；Copyright © 2026 Zhenyu Hou, Yujiang Li, Jie Tang, and Yuxiao Dong，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去论文页眉、正文与原始 caption。</span></figcaption>
+</figure>
+</div>
+
 本页先固定三个坐标：
 
 $$

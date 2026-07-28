@@ -168,7 +168,14 @@ $$
 
 它避免把所有媒体 token 都放进语言 self-attention，却需要额外管理媒体 K/V、注入层、门控、多个媒体片段和服务缓存。
 
-下面的最小 reference 保留 Flamingo 类桥接中最不可约的两个语义：padding 媒体不能影响输出，零初始化门控使新分支在训练开始时严格退化为原文本路径。
+随后给出的最小 reference 保留 Flamingo 类桥接中最不可约的两个语义：padding 媒体不能影响输出，零初始化门控使新分支在训练开始时严格退化为原文本路径。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="cogvlm-visual-expert" data-paper-source="glm-cogvlm-visual-expert" data-paper-asset="cogvlm-visual-expert" markdown="1">
+[![CogVLM 在预训练语言模型各层中为视觉位置引入独立 QKV 与视觉 FFN，同时让文本位置继续使用原语言参数](../../assets/papers/glm-cogvlm-visual-expert/cogvlm-visual-expert.png){ width="1378" height="824" loading="lazy" decoding="async" }](../../assets/papers/glm-cogvlm-visual-expert/cogvlm-visual-expert.png)
+<figcaption><strong>Figure 3 展示一种介于“只加 projector”和“完全重训共享主干”之间的融合：视觉 token 与文本 token 进入同一层序列，但按位置选择不同的 attention/FFN 参数路径。</strong>这种 visual expert 保留语言参数的连续性，同时增加了路由、位置类型、缓存布局和权重版本契约；它不是把视觉 encoder 输出线性投影一次就结束。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/zai-org/CogVLM/f7283b2c8d26cd7f932d9a5f7f5f9307f568195d/assets/method.png">CogVLM visual-expert architecture, Figure 3</a>；Copyright 2024 CogVLM team @ Zhipu AI，<a href="https://github.com/zai-org/CogVLM/blob/f7283b2c8d26cd7f932d9a5f7f5f9307f568195d/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
 
 ```python
 import torch
@@ -246,6 +253,13 @@ $$
 3. 解冻桥接层与部分主干；
 4. 端到端多模态预训练；
 5. 指令、grounding、偏好与安全训练。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k25-figure-09" data-paper-source="kimi-k2-5" data-paper-asset="k25-figure-09" markdown="1">
+[![Kimi K2.5 在三个视觉文本混合训练阶段比较不同 token 配比对视觉、文本、OCR 与编码指标的影响](../../assets/papers/kimi-k2-5/figure-09-early-fusion.png){ width="1975" height="1117" loading="lazy" decoding="async" }](../../assets/papers/kimi-k2-5/figure-09-early-fusion.png)
+<figcaption><strong>Figure 9 说明“已经 early fusion”并不等于训练混合自动平衡：视觉与文本 token 比例改变时，不同能力曲线具有不同响应速度、波动和饱和点。</strong>实际梯度份额还受样本概率、有效 token、loss reduction 与数据难度共同影响；图中比例只属于 K2.5 的固定实验，适合展示诊断方法，不应被当成通用配方。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K2.5/3e60763b943e93c443287c383e0468ffe05b188f/tech_report.pdf#page=21">Kimi K2.5: Visual Agentic Intelligence, Figure 9, p. 21</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K2.5/blob/3e60763b943e93c443287c383e0468ffe05b188f/LICENSE">Modified MIT License</a>。</span></figcaption>
+</figure>
+</div>
 
 这不是必须遵守的固定配方。选择取决于数据、预算和初始模型：
 

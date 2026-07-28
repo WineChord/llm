@@ -1111,6 +1111,9 @@ def browser_audit(
                               element.querySelectorAll(
                                 ':scope > mjx-container'
                               ).length !== 1
+                              || element.querySelectorAll(
+                                'mjx-assistive-mml mjx-container'
+                              ).length !== 0
                             ).length;
                             const mathErrors = [
                               ...document.querySelectorAll(
@@ -1118,9 +1121,29 @@ def browser_audit(
                               )
                             ].map((node) => node.textContent.trim());
                             const badOverflow = wrappers.filter((element) => {
+                              if (element.tagName !== 'DIV') return false;
                               if (element.scrollWidth <= element.clientWidth + 1) {
                                 return false;
                               }
+                              const overflow = getComputedStyle(element).overflowX;
+                              return overflow !== 'auto'
+                                && overflow !== 'scroll';
+                            }).length;
+                            const inlineMathIssues = wrappers.filter((element) => {
+                              if (element.tagName !== 'SPAN') return false;
+                              const style = getComputedStyle(element);
+                              const shift = Number.parseFloat(style.verticalAlign);
+                              const fontSize = Number.parseFloat(style.fontSize);
+                              const ratio = shift / fontSize;
+                              return style.display !== 'inline-block'
+                                || style.overflowX !== 'visible'
+                                || style.overflowY !== 'visible'
+                                || !Number.isFinite(ratio)
+                                || ratio < -0.24
+                                || ratio > -0.20;
+                            }).length;
+                            const displayMathIssues = wrappers.filter((element) => {
+                              if (element.tagName !== 'DIV') return false;
                               const overflow = getComputedStyle(element).overflowX;
                               return overflow !== 'auto'
                                 && overflow !== 'scroll';
@@ -1213,6 +1236,8 @@ def browser_audit(
                               invalid,
                               mathErrors,
                               badOverflow,
+                              inlineMathIssues,
+                              displayMathIssues,
                               brokenImages,
                               paperFigures: paperFigures.length,
                               raw,
@@ -1336,6 +1361,17 @@ def browser_audit(
                             errors.append(
                                 f"{route}: {stats['badOverflow']} formulas "
                                 f"overflow at {width}px without scrolling"
+                            )
+                        if stats["inlineMathIssues"]:
+                            errors.append(
+                                f"{route}: {stats['inlineMathIssues']} inline "
+                                "formulas violate the shared baseline or "
+                                "clipping contract"
+                            )
+                        if stats["displayMathIssues"]:
+                            errors.append(
+                                f"{route}: {stats['displayMathIssues']} display "
+                                "formulas lack horizontal overflow handling"
                             )
                         if stats["brokenImages"]:
                             errors.append(

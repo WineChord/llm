@@ -16,6 +16,13 @@ Encoder $E$ 决定保留什么，prior 学习什么，decoder $D$ 决定哪些�
 
 因此，autoencoder 不是“训练好后可以忘掉的压缩器”，而是生成系统的概率接口与版本边界。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-image-hybrid-pipeline" data-paper-source="glm-image-hybrid-pipeline" data-paper-asset="glm-image-hybrid-pipeline" markdown="1">
+[![GLM-Image 的 VQ 与 VAE 分支分别编码图像编辑条件，自回归视觉 token 和字形 embedding 随后共同进入 diffusion decoder](../../assets/papers/glm-image-hybrid-pipeline/glm-image-hybrid-pipeline.png){ width="1280" height="314" loading="lazy" decoding="async" }](../../assets/papers/glm-image-hybrid-pipeline/glm-image-hybrid-pipeline.png)
+<figcaption><strong>这张 standalone diagram 把 tokenizer 的版本边界画得很具体：VQ 表示承担离散视觉语义，VAE latent 承担连续重建与扩散空间，二者经不同投影进入同一 decoder。</strong>任何码本、下采样率或 decoder 的更换都会改变可表达细节和条件分布，不能只更新 prior 而假设接口仍然等价。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/zai-org/GLM-Image/69b87db2874f8b556417c03eedf2b8a1484f62e0/resources/architecture_1.jpeg">GLM-Image hybrid autoregressive and diffusion pipeline, standalone diagram</a>；Copyright 2026 Zhipu AI，<a href="https://github.com/zai-org/GLM-Image/blob/69b87db2874f8b556417c03eedf2b8a1484f62e0/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 连续潜变量：VAE 把压缩写成概率模型
 
 [VAE](https://arxiv.org/abs/1312.6114) 假设

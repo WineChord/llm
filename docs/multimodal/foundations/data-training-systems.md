@@ -110,6 +110,13 @@ $$
 
 [DataComp](https://arxiv.org/abs/2304.14108) 在固定模型与训练预算下系统比较数据选择策略，强调数据质量不能脱离计算预算评估。多模态 mixture 也应采用同样的等预算思想，而不是只比较原始样本总量。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-06" data-paper-source="kimi-k3" data-paper-asset="k3-figure-06" markdown="1">
+[![Kimi K3 比较从头联合训练的 MoonViT-V2 与 SigLIP 初始化视觉塔在训练中的 gradient norm 轨迹](../../assets/papers/kimi-k3/figure-06-vision-gradients.png){ width="1733" height="733" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-06-vision-gradients.png)
+<figcaption><strong>Figure 6 展示多模态联合训练中的一个关键观测量：视觉塔 gradient norm 会随初始化和训练阶段呈现不同轨迹。</strong>较平滑的曲线只说明这套 K3 配方中的优化行为；判断端到端联合训练是否更好，还需固定数据、loss reduction、学习率、视觉 token 比例与最终能力评测。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=9">Kimi K3 Technical Report, Figure 6, p. 9</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## Loss reduction 是训练配方
 
 把所有 token 直接求平均：
@@ -168,6 +175,13 @@ torch.testing.assert_close(duplicated, total)
 ```
 
 这不是“自动平衡”算法。$\lambda_m$ 仍决定容量分配；不同目标的 loss 单位、梯度尺度和学习速度也不相同。分布式训练还要先 all-reduce 每个目标的 numerator 与 denominator，不能平均各 rank 的局部均值。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glmv-rl-multidomain" data-paper-source="glm-v-multidomain-rl" data-paper-asset="glmv-rl-multidomain" markdown="1">
+[![GLM-V 在编码、STEM、通用问答、长文档、视频、GUI、OCR 与图表等领域比较基线并展示 SFT 后 RL 的分域增益](../../assets/papers/glm-v-multidomain-rl/glmv-rl-multidomain.png){ width="1880" height="817" loading="lazy" decoding="async" }](../../assets/papers/glm-v-multidomain-rl/glmv-rl-multidomain.png)
+<figcaption><strong>standalone figure 说明多领域后训练必须保留分域视图：总体提升可能由少数任务主导，而每个领域的 SFT 到 RL 增益又不同。</strong>雷达图适合观察覆盖形状，柱状图适合读取分域增量；二者都依赖各 benchmark 的尺度和聚合方式，不能把面积或百分比直接当作统一能力单位。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/zai-org/GLM-V/726dac56ddde6d33f72bd62967322e15f61a8471/resources/rl.jpeg">GLM-V multidomain reinforcement-learning comparison, standalone figure</a>；Copyright 2026 Z.AI Co., Ltd，<a href="https://github.com/zai-org/GLM-V/blob/726dac56ddde6d33f72bd62967322e15f61a8471/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
 
 ## 课程学习解决的是状态转换
 

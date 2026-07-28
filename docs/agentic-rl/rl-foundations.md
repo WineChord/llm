@@ -91,6 +91,13 @@ $$
 
 一个 coding Agent 可以使用程序 verifier reward、learned critic、PPO update 与异步 rollout；“RLVR”只覆盖其中 reward 的来源。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-08" data-paper-source="kimi-k3" data-paper-asset="k3-figure-08" markdown="1">
+[![Kimi K3 在编码、工具调用、网页开发、搜索和专业工作流等多个任务族上展示指标随 RL FLOPs 的变化](../assets/papers/kimi-k3/figure-08-rl-scaling.png){ width="1571" height="758" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-08-rl-scaling.png)
+<figcaption><strong>Figure 8 展示了为什么“RL 是否继续扩展”必须按任务族阅读：不同领域的增益曲线、饱和点和波动并不一致。</strong>横轴是同一报告口径下的 RL FLOPs，纵轴却对应各任务自己的指标；这些小图可以支持配方内趋势判断，不能被压成一个跨领域可比的统一分数。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=13">Kimi K3 Technical Report, Figure 8, p. 13</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 长时信用
 
 终局成功要传回早期决策。可选接口包括：

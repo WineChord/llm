@@ -1,14 +1,30 @@
 :root {
   --md-text-font: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
+  --wc-inline-math-baseline-shift: -0.22em;
 }
 
 .md-typeset span.arithmatex {
   display: inline-block;
+  max-width: none;
+  overflow: visible;
+  vertical-align: var(--wc-inline-math-baseline-shift);
+}
+
+.md-typeset div.arithmatex {
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  vertical-align: -0.15em;
+}
+
+.md-typeset .md-typeset__table {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .md-typeset .code-disclosure {
@@ -131,35 +147,6 @@
   outline-offset: 0.4rem;
 }
 
-.md-typeset .concept-figure {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 54rem;
-  margin: 1.6rem auto 2rem;
-  scroll-margin-top: 6.5rem;
-}
-
-.md-typeset .concept-figure > p {
-  margin: 0;
-}
-
-.md-typeset .concept-figure img {
-  display: block;
-  width: 100%;
-  height: auto;
-  margin: 0;
-  border: 0.05rem solid var(--md-default-fg-color--lightest);
-}
-
-.md-typeset .concept-figure figcaption {
-  margin-top: 0.65rem;
-  color: var(--md-default-fg-color--light);
-  font-size: 0.82rem;
-  font-style: normal;
-  line-height: 1.65;
-  text-align: left;
-}
-
 @media (max-width: 44.984375em) {
   .md-typeset .code-disclosure__meta {
     display: block;
@@ -178,13 +165,4 @@
     line-height: 1.6;
   }
 
-  .md-typeset .concept-figure {
-    margin-block: 1.25rem 1.6rem;
-    scroll-margin-top: 4rem;
-  }
-
-  .md-typeset .concept-figure figcaption {
-    font-size: 0.76rem;
-    line-height: 1.6;
-  }
 }

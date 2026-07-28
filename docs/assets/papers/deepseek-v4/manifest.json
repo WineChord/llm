@@ -1,0 +1,131 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "deepseek-v4",
+    "title": "DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence",
+    "canonical_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/DeepSeek_V4.pdf",
+    "artifact_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/resolve/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/DeepSeek_V4.pdf",
+    "artifact_sha256": "8a03dadae71894de1515da33e296f0df1dbeed3e7f4bf0badd087f9af77f29e9",
+    "version": {
+      "kind": "git_commit",
+      "value": "653b8ce97de7ed21df99e5f6bd49bacb3840df2b"
+    },
+    "page_count": 58,
+    "license": {
+      "name": "MIT License",
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/LICENSE",
+      "credit": "Copyright (c) 2023 DeepSeek",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "6e4c38e1172f42fdbff13edf9a7a017679fb82b0fde415a3e8b3c31c6ed4a4e4"
+    }
+  },
+  "render": {
+    "renderer": "pdftocairo",
+    "renderer_version": "26.07.0",
+    "dpi": 300,
+    "coordinate_space": "rendered-page-points-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "deepseek-v4-figure-02",
+      "file": "figure-02-overall-architecture.png",
+      "kind": "diagram",
+      "source_label": "Figure 2",
+      "page": 6,
+      "page_box_points": [
+        595.276,
+        841.89
+      ],
+      "rotation": 0,
+      "crop_box_points": [
+        65,
+        75,
+        530,
+        432
+      ],
+      "pixel_size": [
+        1938,
+        1488
+      ],
+      "sha256": "584132c6840ee9618783115f341f5e2484701cfe501c7fca4002aee0bc94038f",
+      "placements": [
+        {
+          "page": "docs/landscape/works/deepseek-v4.md",
+          "anchor": "deepseek-v4-figure-02",
+          "role": "portrait",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/works/manifold-hyper-connections.md",
+          "anchor": "deepseek-v4-figure-02",
+          "role": "portrait",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/works/attention-residuals.md",
+          "anchor": "deepseek-v4-figure-02",
+          "role": "portrait",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/deepseek-timeline.md",
+          "anchor": "deepseek-v4-figure-02",
+          "role": "portrait",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/deepseek-v4-reference-map.md",
+          "anchor": "deepseek-v4-figure-02",
+          "role": "portrait",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "deepseek-v4-figure-06",
+      "file": "figure-06-hybrid-kv-cache-layout.png",
+      "kind": "diagram",
+      "source_label": "Figure 6",
+      "page": 22,
+      "page_box_points": [
+        595.276,
+        841.89
+      ],
+      "rotation": 0,
+      "crop_box_points": [
+        85,
+        88,
+        535,
+        228
+      ],
+      "pixel_size": [
+        1875,
+        583
+      ],
+      "sha256": "4cc27765e8a3792687d6c7e21033d208800191c1e4f0d51f72c4e07347590cf4",
+      "placements": [
+        {
+          "page": "docs/landscape/works/deepseek-v4.md",
+          "anchor": "deepseek-v4-figure-06",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/inference/kv-cache.md",
+          "anchor": "deepseek-v4-figure-06",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/works/tilelang-mega-moe.md",
+          "anchor": "deepseek-v4-figure-06",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

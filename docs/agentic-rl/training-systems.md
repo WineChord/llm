@@ -18,6 +18,20 @@ task queue
 
 每条轨迹应携带 policy、tokenizer、prompt template、tool schema、environment 和 verifier 版本。缺少任何一项都可能使奖励无法解释。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-5-figure-05" data-paper-source="glm-5" data-paper-asset="glm-5-figure-05" markdown="1">
+[![GLM-5 由预训练和 mid-training 进入 Reasoning RL、Agentic RL、General RL，并通过 On-Policy Cross-Stage Distillation 连接各阶段的训练流程](../assets/papers/glm-5/figure-05-training-pipeline.png){ width="1667" height="1017" loading="lazy" decoding="async" }](../assets/papers/glm-5/figure-05-training-pipeline.png)
+<figcaption><strong>Figure 5 提醒我们，Agentic RL 并不是一个可以单独替换的末端 loss。</strong>它接收经过长上下文与 Agent 数据 mid-training 的 base model，又与 Reasoning RL、General RL 和在策略跨阶段蒸馏共享 logits、weights 与学生轨迹；任何阶段的 tokenizer、模板或 policy 版本漂移都会沿这条链传播。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2602.15763v2#page=4">GLM-5: from Vibe Coding to Agentic Engineering, Figure 5, p. 4</a>；Copyright © 2026 GLM-5 Team，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k25-figure-10" data-paper-source="kimi-k2-5" data-paper-asset="k25-figure-10" markdown="1">
+[![Kimi K2.5 的 rollout manager、可插拔工具与 judge、agent loop、环境池、推理服务和训练服务之间的数据流](../assets/papers/kimi-k2-5/figure-10-agentic-rl-runtime.png){ width="1454" height="617" loading="lazy" decoding="async" }](../assets/papers/kimi-k2-5/figure-10-agentic-rl-runtime.png)
+<figcaption><strong>Figure 10 把 Agentic RL 的运行面拆成 rollout 管理、单任务 agent loop、环境、推理服务与训练服务。</strong>黑盒环境通过 LLM gateway 返回观察，白盒环境可暴露受控状态，训练服务还要处理推理与训练引擎之间的权重不一致；这张图说明系统边界，不表示所有环境都应开放内部状态。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K2.5/3e60763b943e93c443287c383e0468ffe05b188f/tech_report.pdf#page=23">Kimi K2.5: Visual Agentic Intelligence, Figure 10, p. 23</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K2.5/blob/3e60763b943e93c443287c383e0468ffe05b188f/LICENSE">Modified MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## Rollout 与训练的资源冲突
 
 Rollout 偏好大量解码实例和高显存 KV cache；训练偏好大 batch、反向计算和高带宽通信。常见部署方式：
@@ -39,6 +53,13 @@ $$
 
 而不是单个 kernel 的峰值。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k2-figure-13" data-paper-source="kimi-k2" data-paper-asset="k2-figure-13" markdown="1">
+[![Kimi K2 的训练与推理引擎通过分阶段权重广播和 engine switching 交替执行 rollout 与更新](../assets/papers/kimi-k2/figure-13-engine-switching.png){ width="1558" height="1288" loading="lazy" decoding="async" }](../assets/papers/kimi-k2/figure-13-engine-switching.png)
+<figcaption><strong>Figure 13 展示一种同池部署的权重切换协议：训练权重按 stage 广播到推理侧，并通过固定或 PCIe-bound 调度隐藏部分转换开销。</strong>它把“复用 GPU”具体化为带同步点的状态迁移；若权重版本、广播完成边界或 KV 生命周期没有进入协议，表面上的资源共享会变成不可解释的 policy lag。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K2/1b4022bbb7187cf4011a8bdf0b4cd10e2daa26c4/tech_report.pdf#page=32">Kimi K2: Open Agentic Intelligence, Figure 13, p. 32</a>；Copyright (c) 2025 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K2/blob/1b4022bbb7187cf4011a8bdf0b4cd10e2daa26c4/LICENSE">Modified MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 长度不均衡
 
 agent 轨迹长度重尾：简单任务几步结束，困难任务可能运行很久。固定 batch 会产生 straggler。可采用：
@@ -52,6 +73,13 @@ agent 轨迹长度重尾：简单任务几步结束，困难任务可能运行�
 不能简单截断所有长轨迹，因为尾部可能包含最终奖励和恢复行为。需要区分预算终止、环境故障和策略主动终止。
 
 部分 rollout 可以在一批轨迹达到预设完成比例后解除 barrier，把其余 episode 连同环境与采样状态暂停并在后续 iteration 恢复。这条路线降低 straggler 等待，却把 length-dependent selection 与跨版本 policy lag 带入训练；状态字段和校正边界见[在线 RL](../training/online-rl.md#partial-rollout)。[Kimi K3](../landscape/works/kimi-k3.md) 提供了这一组合的完整实例。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k15-figure-03" data-paper-source="kimi-k1-5" data-paper-asset="k15-figure-03" markdown="1">
+[![Kimi k1.5 的 rollout workers、trainer workers、reward models、replay buffer 与 partial rollout 状态流](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png){ width="1650" height="808" loading="lazy" decoding="async" }](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png)
+<figcaption><strong>Figure 3 同时画出学习数据流和 partial rollout：未完成轨迹可以保存环境与采样状态，在后续 iteration 继续。</strong>解除 batch barrier 能减少长尾等待，但恢复样本可能跨越 policy 版本；因此完成比例、暂停状态、behavior log-probability 与重新入队规则必须一起记录。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-k1.5/cf9a8785730c7e59d788956e1e40dc9fc31ebf08/Kimi_k1.5.pdf#page=8">Kimi k1.5: Scaling Reinforcement Learning with LLMs, Figure 3, p. 8</a>；Kimi Team，<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International</a>。</span></figcaption>
+</figure>
+</div>
 
 ## Policy lag
 
@@ -68,6 +96,13 @@ agent 轨迹长度重尾：简单任务几步结束，困难任务可能运行�
 参数热更新必须保证一个 episode 内模型版本是否允许变化；若允许，轨迹概率就不再来自单一 policy。
 
 [SAO](../landscape/works/sao-compactionrl.md#sao) 进一步把 prompt 内的多 rollout 等待视为异步 barrier：单条轨迹完成后即可进入训练队列，但 learner 仍须保存真实 behavior log-probability、限制 policy lag，并审计 DIS 丢弃了哪些 token。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-11" data-paper-source="kimi-k3" data-paper-asset="k3-figure-11" markdown="1">
+[![Kimi K3 的 free-stage training pipeline 把多个 device 上的前向、反向和权重同步阶段错开调度](../assets/papers/kimi-k3/figure-11-training-pipeline.png){ width="1933" height="600" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-11-training-pipeline.png)
+<figcaption><strong>Figure 11 展示 free-stage pipeline 的核心变化：设备不必在同一逻辑 stage 上齐步等待，而可把前向、反向、reduce 与 broadcast 错开。</strong>减少 bubble 的代价是更多在途版本和依赖；调度器必须知道每个 microbatch 使用哪份权重、梯度何时可见，以及故障恢复应回到哪个一致性边界。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=19">Kimi K3 Technical Report, Figure 11, p. 19</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
 
 ## Token WAL 与抢占恢复
 

@@ -19,6 +19,13 @@ $$
 - **纵向**：让单条轨迹更长，允许修正、工具调用或分层求解；
 - **横向**：生成多条不同轨迹，再聚合或选择。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-5-figure-07" data-paper-source="glm-5" data-paper-asset="glm-5-figure-07" markdown="1">
+[![GLM-5 区分同一轮中的 interleaved thinking，以及跨轮是否保留先前 reasoning 与工具结果两种上下文协议](../assets/papers/glm-5/figure-07-thinking-state.png){ width="1725" height="1175" loading="lazy" decoding="async" }](../assets/papers/glm-5/figure-07-thinking-state.png)
+<figcaption><strong>Figure 7 把“让模型多想一会儿”拆成两种状态机制。</strong>interleaved thinking 在同一轮内让 reasoning 与 tool call 交替；preserved thinking 决定下一轮是否继续携带先前的 reasoning、调用与结果。二者会同时改变 token 成本、可用证据和后续动作分布，因此 effort 评测必须记录上下文协议，而不只是最终输出长度。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2602.15763v2#page=10">GLM-5: from Vibe Coding to Agentic Engineering, Figure 7, p. 10</a>；Copyright © 2026 GLM-5 Team，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去原始 caption 与周围正文。</span></figcaption>
+</figure>
+</div>
+
 纵向依赖模型能否利用额外步骤，横向依赖样本多样性和选择器。两者都可能在错误模式高度相关时迅速饱和。
 
 ## Self-consistency

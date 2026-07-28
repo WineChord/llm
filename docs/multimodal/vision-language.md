@@ -92,6 +92,13 @@ $$
 
 在语言层中加入对视觉 memory 的 cross-attention。视觉 token 不必与文本完全拼成同一序列，但主干结构和 checkpoint 接口会改变。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="cogvlm-visual-expert" data-paper-source="glm-cogvlm-visual-expert" data-paper-asset="cogvlm-visual-expert" markdown="1">
+[![CogVLM 把图像 patch 经 ViT 与 MLP adapter 接入文本序列，并在注意力和前馈层中使用独立视觉专家参数](../assets/papers/glm-cogvlm-visual-expert/cogvlm-visual-expert.png){ width="1378" height="824" loading="lazy" decoding="async" }](../assets/papers/glm-cogvlm-visual-expert/cogvlm-visual-expert.png)
+<figcaption><strong>Figure 3 展示 projector 之外的另一层设计选择：视觉 token 与文本 token 共享序列和 attention 拓扑，但在 QKV 与 FFN 路径使用视觉专家参数。</strong>这种 visual expert 增加模态容量，同时保留语言路径；它既不同于只训练一个 MLP projector，也不同于把媒体 memory 放在独立 cross-attention 中。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/zai-org/CogVLM/f7283b2c8d26cd7f932d9a5f7f5f9307f568195d/assets/method.png">CogVLM visual-expert architecture diagram, Figure 3</a>；Copyright 2024 CogVLM team @ Zhipu AI，<a href="https://github.com/zai-org/CogVLM/blob/f7283b2c8d26cd7f932d9a5f7f5f9307f568195d/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## Token 合并
 
 若将视觉 embedding 插入文本占位符，必须明确：
@@ -124,6 +131,13 @@ N_v=N_{\text{global}}+\sum_{j=1}^{m}N_{\text{tile},j}.
 $$
 
 tile 顺序与二维位置必须可恢复；否则模型看到的是一串局部图，却不知道它们在原图中的关系。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="kimi-vl-figure-03" data-paper-source="kimi-vl" data-paper-asset="kimi-vl-figure-03" markdown="1">
+[![Kimi-VL 用原生分辨率 MoonViT、MLP projector 和 MoE 语言解码器处理小图、长视频、普通图像、OCR 与 GUI 截图](../assets/papers/kimi-vl/figure-03-architecture.png){ width="1733" height="1308" loading="lazy" decoding="async" }](../assets/papers/kimi-vl/figure-03-architecture.png)
+<figcaption><strong>Figure 3 把输入分辨率、视觉 token 化和语言解码放到同一接口中：MoonViT 保留原生宽高比，projector 接入 MoE decoder。</strong>小图、长视频、OCR 和 GUI 截图的 token 数与纵横比差异很大；架构图能说明数据流，却不能替代对 dynamic tiling、position、mask 和批处理 padding 的逐项约定。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-VL/41d5ef072bc52a04524f94ab736ff9c29f125fda/Kimi-VL.pdf#page=3">Kimi-VL Technical Report, Figure 3, p. 3</a>；Copyright © 2025 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-VL/blob/41d5ef072bc52a04524f94ab736ff9c29f125fda/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
 
 ## 训练阶段
 

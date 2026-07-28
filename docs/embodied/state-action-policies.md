@@ -56,6 +56,13 @@ $$
 
 只是起点。旋转表示、左/右乘、四元数顺序和 delta 所在 frame 都要版本化。固定方向偏差通常是标定或坐标错误，不是模型“不够聪明”。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="rt2-figure-01" data-paper-source="rt-2" data-paper-asset="rt2-figure-01" markdown="1">
+[![RT-2 将互联网视觉问答与机器人轨迹写入共同 token 空间，并在部署时把预测的动作 token 还原为机器人控制](../assets/papers/rt-2/figure-01-vla-cofinetuning.png){ width="1663" height="629" loading="lazy" decoding="async" }](../assets/papers/rt-2/figure-01-vla-cofinetuning.png)
+<figcaption><strong>Figure 1 说明“动作 token 化”真正连接的是两份数据接口，而不是抹去控制语义。</strong>模型可以复用视觉语言主干预测离散动作，但量化区间、坐标系、控制频率、执行器约束和闭环恢复仍由机器人侧 contract 决定；同一个 token ID 换一台机器人并不自动保持物理意义。<span class="paper-figure__source">图源：<a href="https://proceedings.mlr.press/v229/zitkovich23a/zitkovich23a.pdf#page=2">RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control, Figure 1, p. 2</a>；Copyright © 2023 the authors，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## Behavior cloning：把示范变成策略
 
 离散动作的 behavior cloning 为

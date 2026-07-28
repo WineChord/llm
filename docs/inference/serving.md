@@ -4,6 +4,13 @@
 
 本页给出系统全景。单引擎状态见[推理运行时](runtime.md)，队列与容量算法见[调度与 goodput](scheduling-goodput.md)，测量和故障验证见[基准与可靠性](benchmarking-reliability.md)。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="vllm-v1-process-architecture" data-paper-source="vllm-process-architecture" data-paper-asset="vllm-v1-process-architecture" markdown="1">
+[![vLLM V1 在八张 GPU 上以四路数据并行和两路张量并行组织 API server、engine core、worker 与协调器](../assets/papers/vllm-process-architecture/vllm-v1-process-architecture.png){ width="2816" height="1536" loading="lazy" decoding="async" }](../assets/papers/vllm-process-architecture/vllm-v1-process-architecture.png)
+<figcaption><strong>在线服务由请求面、调度状态与 GPU 执行面共同组成。</strong>这张 8-GPU 示例把多个 API server、DP coordinator、每个 DP rank 的 engine core 和 TP worker 分开；负载均衡、请求状态所有权与集合通信由此成为服务契约，而不只是部署参数。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/vllm-project/vllm/b6cbba8bc893c61e412a205533aafbee1ae6be31/docs/assets/design/arch_overview/v1_process_architecture_tp2_dp4.png">vLLM V1 process architecture for TP=2 and DP=4, standalone process architecture diagram</a>；vLLM project contributors，<a href="https://github.com/vllm-project/vllm/blob/b6cbba8bc893c61e412a205533aafbee1ae6be31/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 服务目标
 
 请求延迟可拆为

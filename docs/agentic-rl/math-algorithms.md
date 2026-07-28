@@ -239,6 +239,13 @@ $$
 5. 对过旧或无法重建的轨迹明确丢弃，而不是静默混入；
 6. 将环境故障与策略失败分开。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k15-figure-03" data-paper-source="kimi-k1-5" data-paper-asset="k15-figure-03" markdown="1">
+[![Kimi k1.5 的 rollout workers、trainer workers、reward models 与 replay buffer 数据流，并标出 partial rollout 在迭代间保存和恢复的路径](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png){ width="1650" height="808" loading="lazy" decoding="async" }](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png)
+<figcaption><strong>Figure 3 说明“同步还是异步”最终会进入算法语义：未完成轨迹跨 iteration 保存后，后续 token 可能由更新后的 policy 继续生成。</strong>这能减少长尾等待，却要求 advantage、behavior probability、episode termination 与 partial-state 恢复都知道版本边界；否则系统吞吐增加的同时，优化对象已经悄悄改变。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-k1.5/cf9a8785730c7e59d788956e1e40dc9fc31ebf08/Kimi_k1.5.pdf#page=8">Kimi k1.5: Scaling Reinforcement Learning with LLMs, Figure 3, p. 8</a>；Kimi Team，<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>。</span></figcaption>
+</figure>
+</div>
+
 [IMPALA](https://arxiv.org/abs/1802.01561) 的 V-trace 是经典异步 actor–learner 校正；[AReaL](https://arxiv.org/abs/2505.24298) 讨论了大模型 RL 的异步训练系统；[SAO](../landscape/works/sao-compactionrl.md#sao) 进一步面向长尾 agent rollout，使用单 rollout、critic 与 token 级行为概率控制更新。异步解决的是调度等待，不会自动解决稀疏奖励、状态覆盖或长时信用。若没有 wall-clock、利用率和 staleness 的共同证据，不能把训练步数提升解释成系统更快。
 
 ## 各方法的决策边界

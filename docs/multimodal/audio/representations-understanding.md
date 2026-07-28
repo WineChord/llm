@@ -8,6 +8,13 @@
 
 一个可靠的音频系统必须先说明它保留了哪一层信息，再讨论识别或推理能力。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="kimi-audio-framework" data-paper-source="kimi-audio" data-paper-asset="kimi-audio-framework" markdown="1">
+[![Kimi-Audio 同时提取连续 Whisper 声学特征和 12.5 Hz 离散语义 token，再由共享 LLM 处理的架构](../../assets/papers/kimi-audio/kimi-audio-framework.png){ width="2464" height="2055" loading="lazy" decoding="async" }](../../assets/papers/kimi-audio/kimi-audio-framework.png)
+<figcaption><strong>理解与生成对表示的需求并不相同，混合前端因此不是重复编码。</strong>连续声学特征保留细粒度感知线索，12.5 Hz 离散 token 提供适合长序列建模和音频生成的语义接口；两者在共享 LLM 中汇合，说明“一个 tokenizer 统一所有任务”并不是必要条件。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-Audio/349251e1d8f4f98d58fda59246381faecd7392e0/assets/kimia_framework.png">Kimi-Audio architecture overview, standalone architecture diagram</a>；Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-Audio/blob/349251e1d8f4f98d58fda59246381faecd7392e0/README.md#license">MIT License（repository non-Qwen components）</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 波形、频谱与可学习前端
 
 离散波形 $x[n]$ 的采样率 $f_s$ 给出最高可表示频率约 $f_s/2$。把不同采样率音频直接混入 batch 会改变同一索引对应的真实时间，必须先统一或显式记录。

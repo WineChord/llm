@@ -8,56 +8,25 @@ GLM 最初指一种把理解与生成放进同一模型的预训练目标；五�
 
 本页给出家族级入口；精确事件顺序见 [GLM 演化时间线](../glm-timeline.md)，GLM-5 的逐章证据见[总深读](../works/glm-5.md)与[引用图谱](../glm-5-reference-map.md)。内容截至 2026 年 7 月 28 日，只登记能够由论文、官方仓库、模型卡或官方发布台账确认的公开对象。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-5-figure-05" data-paper-source="glm-5" data-paper-asset="glm-5-figure-05" markdown="1">
+[![GLM-5 把通用、代码推理、长上下文与 Agent 数据逐步接入 Base Model，再通过多阶段强化学习与在策略蒸馏完成后训练](../../assets/papers/glm-5/figure-05-training-pipeline.png){ width="1667" height="1017" loading="lazy" decoding="async" }](../../assets/papers/glm-5/figure-05-training-pipeline.png)
+<figcaption><strong>Figure 5 是 GLM-5 文本模型分支的一张阶段账本，而不是整个 GLM 家族的统一架构。</strong>它把稀疏注意力适配、长上下文/Agent mid-training 和多阶段 RL 接成一条证据明确的路径；视觉、语音、OCR 与图像生成分支仍须回到各自报告判断主干和目标函数。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2602.15763v2#page=4">GLM-5: from Vibe Coding to Agentic Engineering, Figure 5, p. 4</a>；Copyright © 2026 GLM-5 Team，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 家族地图 {#family-map}
 
-先把边界画清楚，许多看似矛盾的命名便会自然消失。
+先把边界画清楚，许多看似矛盾的命名便会自然消失。下面按公开证据把对象分成四条线；同一行表示研究或产品方向，不自动表示 checkpoint 继承。
 
-```mermaid
-flowchart LR
-  subgraph L["通用语言主线"]
-    G["GLM\nblank infilling"] --> G130["GLM-130B"]
-    G130 --> C1["ChatGLM-6B"]
-    C1 --> C2["ChatGLM2-6B"]
-    C2 --> C3["ChatGLM3"]
-    C3 --> G4["GLM-4 / 0414"]
-    G4 --> Z1["GLM-Z1"]
-    G4 --> G45["GLM-4.5"]
-    G45 --> G46["GLM-4.6"]
-    G46 --> G47["GLM-4.7"]
-    G47 --> G5["GLM-5"]
-    G5 --> G51["GLM-5.1"]
-    G51 --> G52["GLM-5.2"]
-  end
-  subgraph V["视觉理解与行动"]
-    VG["VisualGLM"] -. "团队的下一代视觉路线" .-> CV["CogVLM"]
-    CV --> CV2["CogVLM2"]
-    CV2 -. "共享方法与数据；语言基座不同" .-> G4V["GLM-4V"]
-    G4V -. "GLM 视觉版本演进" .-> G41V["GLM-4.1V"]
-    G41V --> G45V["GLM-4.5V"]
-    G45V --> G46V["GLM-4.6V"]
-    G46V -. "API 代际；完整权重谱系未公开" .-> G5V["GLM-5V-Turbo"]
-    CV --> CA["CogAgent"]
-    G4V --> CA2["CogAgent-9B"]
-  end
-  subgraph C["代码、检索与 Agent"]
-    C2 --> CG2["CodeGeeX2"]
-    G4 --> CG4["CodeGeeX4"]
-    C3 --> AW["AutoWebGLM"]
-    G4 --> WR["WebRL"]
-    G45 --> SL["slime / Agentic RL"]
-    G5 --> AE["长程 Agentic Engineering"]
-  end
-  subgraph M["理解之外的模态分支"]
-    GV["GLM-4-Voice"] -. "语音生成方向；非 checkpoint 继承" .-> TTS["GLM-TTS\n独立两阶段 TTS"]
-    ASR["GLM-ASR"] --> AU["语音接口"]
-    CVW["CogView 1–4"] -. "生成范式重组" .-> GI["GLM-Image\nAR + diffusion"]
-    CVD["CogVideo"] --> CVX["CogVideoX"]
-    CVX --> CVX15["CogVideoX 1.5"]
-    CVX15 -. "线上 API 更新" .-> CVX3["CogVideoX-3"]
-  end
-```
+| 谱系 | 公开对象 | 证据边界 |
+| --- | --- | --- |
+| 通用语言 | [GLM](https://arxiv.org/abs/2103.10360) → [GLM-130B](https://arxiv.org/abs/2210.02414) → ChatGLM 系列 → GLM-4.x → GLM-5.x | 家族名称和能力连续；具体目标、tokenizer、数据、主干与权重继承仍须逐代核对 |
+| 视觉理解与行动 | [VisualGLM](https://github.com/THUDM/VisualGLM-6B)、[CogVLM](https://arxiv.org/abs/2311.03079)、CogVLM2、GLM-4V / 4.1V / 4.5V / 4.6V、CogAgent | 方法、数据或团队可能相连；语言基座不同，不能把产品代际直接写成 checkpoint 直系 |
+| 代码、检索与 Agent | CodeGeeX2 / 4、AutoWebGLM、WebRL、slime 与长程 Agentic Engineering | 一部分有明确基座或继续训练关系，另一部分只是共享模型家族或训练基础设施 |
+| 语音与媒体生成 | GLM-4-Voice、GLM-TTS、GLM-ASR、CogView / GLM-Image、CogVideo / CogVideoX | 属于同一研究与产品生态，但任务、表示、生成协议和模型谱系彼此独立 |
 
-图中的实线只表示官方材料能够支持的直接演化、继续训练或明确基座关系；虚线表示同一产品方向上的后续发布，不能据名称断言内部 checkpoint 直接继承。还有三类对象必须单列：
+判断一条连线是否成立，至少要区分三类对象：
 
 - **GLM 核心主线**：从 GLM 目标、GLM-130B、ChatGLM 到 GLM-4.x / 5.x，存在连续的家族报告或官方版本记录。
 - **有明确连接的派生线**：例如 CodeGeeX2 基于 ChatGLM2、CodeGeeX4 从 GLM-4-9B 继续训练、VisualGLM 使用 ChatGLM-6B、GLM-4.5V 基于 GLM-4.5-Air。这些关系可落到仓库或论文。
@@ -65,9 +34,18 @@ flowchart LR
 
 ### 两个最容易混淆的名字
 
-**GLM-Zero Preview<strong> 是 2024 年 12 月上线过的推理模型服务；官方公司时间线确认了产品事件，但截至本页截面没有相应公开权重、代码或完整技术报告。</strong>GLM-Z1** 则是 2025 年 4 月随 GLM-4-0414 开放的 9B / 32B 推理 checkpoint，其中 Rumination 版本带固定搜索协议。二者不是同一个公开对象，也没有足够材料证明简单的 checkpoint 继承关系。[官方里程碑](https://www.zhipuai.cn/en/about)与 [GLM-4 仓库](https://github.com/zai-org/GLM-4)分别固定了这两层证据。
+**GLM-Zero Preview** 是 2024 年 12 月上线过的推理模型服务；官方公司时间线确认了产品事件，但截至本页截面没有相应公开权重、代码或完整技术报告。
+
+**GLM-Z1** 则是 2025 年 4 月随 GLM-4-0414 开放的 9B / 32B 推理 checkpoint，其中 Rumination 版本带固定搜索协议。二者不是同一个公开对象，也没有足够材料证明简单的 checkpoint 继承关系。[官方里程碑](https://www.zhipuai.cn/en/about)与 [GLM-4 仓库](https://github.com/zai-org/GLM-4)分别固定了这两层证据。
 
 **CogVLM 与 GLM-V** 也不能写成一条无条件直线。CogVLM 以 visual expert 改造语言主干；CogVLM2 的公开主模型基于 Llama 3，而同期 GLM-4V 使用相同数据与训练方法、换成 GLM-4 语言基座。后来的 GLM-4.1V 才在官方论文中形成更清晰的 GLM-V 线。[CogVLM2 仓库](https://github.com/zai-org/CogVLM2)明确给出了这种“方法与数据相近、语言基座不同”的边界。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="cogvlm-visual-expert" data-paper-source="glm-cogvlm-visual-expert" data-paper-asset="cogvlm-visual-expert" markdown="1">
+[![CogVLM 在语言模型各层为视觉位置加入独立 attention 与 FFN expert，同时保留文本位置的原语言参数路径](../../assets/papers/glm-cogvlm-visual-expert/cogvlm-visual-expert.png){ width="1378" height="824" loading="lazy" decoding="async" }](../../assets/papers/glm-cogvlm-visual-expert/cogvlm-visual-expert.png)
+<figcaption><strong>Figure 3 解释了“共享方法、不共享语言 checkpoint”为什么可以同时成立：visual expert 是一种层内融合机制，实际主干仍可替换为不同语言模型。</strong>CogVLM2 与 GLM-4V 的关系应沿语言基座、数据、visual expert 和发布权重分别登记，而不能从相似结构图直接推导权重继承。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/zai-org/CogVLM/f7283b2c8d26cd7f932d9a5f7f5f9307f568195d/assets/method.png">CogVLM visual-expert architecture, Figure 3</a>；Copyright 2024 CogVLM team @ Zhipu AI，<a href="https://github.com/zai-org/CogVLM/blob/f7283b2c8d26cd7f932d9a5f7f5f9307f568195d/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
 
 ## 一条历史主线：目标、协议、系统
 
@@ -247,6 +225,13 @@ GLM-4.5 的 355B-A32B MoE 建立稀疏主干，GLM-5 再扩到约 744B-A40B，�
 | 2024-08 | CogVideoX 2B / 5B | 3D causal VAE + expert Transformer diffusion，文本与视频专家化处理 | [P](https://arxiv.org/abs/2408.06072) · [C/W](https://github.com/zai-org/CogVideo) | 2B、5B、I2V 权重许可与能力接口分别核对 |
 | 2024-11 | CogVideoX 1.5 | 分辨率、时长与 image-to-video 更新 | [C/W](https://github.com/zai-org/CogVideo) | 属 checkpoint 更新，不是新论文自动覆盖全部细节 |
 | 2025-07 | CogVideoX-3 | 起止帧、清晰度与服务侧生成接口更新 | [A](https://docs.z.ai/guides/video/cogvideox-3) | 当前公开证据是 API 文档；不能假定与 1.5 开放权重逐层相同 |
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-image-hybrid-pipeline" data-paper-source="glm-image-hybrid-pipeline" data-paper-asset="glm-image-hybrid-pipeline" markdown="1">
+[![GLM-Image 先由自回归语言视觉模型生成离散视觉 token，再由接收图像、字形和视觉 embedding 的 diffusion decoder 还原高分辨率图像](../../assets/papers/glm-image-hybrid-pipeline/glm-image-hybrid-pipeline.png){ width="1280" height="314" loading="lazy" decoding="async" }](../../assets/papers/glm-image-hybrid-pipeline/glm-image-hybrid-pipeline.png)
+<figcaption><strong>这张 standalone diagram 说明 GLM-Image 是家族中一条可验证的交汇线，而不是把所有 CogView 代际重新命名：9B AR 模型负责语义与离散视觉规划，7B diffusion decoder 负责连续高分辨率生成。</strong>编辑图像、glyph 与视觉 embedding 分别进入不同条件接口，因而 tokenizer、字形编码、mask 和 decoder 版本都属于模型能力边界。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/zai-org/GLM-Image/69b87db2874f8b556417c03eedf2b8a1484f62e0/resources/architecture_1.jpeg">GLM-Image official hybrid pipeline</a>；Copyright 2026 Zhipu AI，<a href="https://github.com/zai-org/GLM-Image/blob/69b87db2874f8b556417c03eedf2b8a1484f62e0/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
 
 [ImageReward](https://github.com/zai-org/ImageReward) 与 [VisionReward](https://github.com/zai-org/VisionReward) 提供图像 / 视频偏好建模，[Kaleido](https://github.com/zai-org/Kaleido)、[SCAIL](https://github.com/zai-org/SCAIL)、[SCAIL-2](https://github.com/zai-org/SCAIL-2) 和 [RealVideo](https://github.com/zai-org/RealVideo) 继续探索参考主体、角色动画与流式生成。它们是同一组织的相邻生成研究，不因共同托管在 `zai-org` 就自动成为 CogVideoX 或 GLM-Image 的正式版本。
 

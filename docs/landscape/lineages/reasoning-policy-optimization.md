@@ -220,6 +220,13 @@ $$
 
 SAO 让每个 prompt 只采一条 trajectory，完成后立即进入异步 learner；critic 提供 token/step advantage，DIS 直接比较 current training policy 与 rollout behavior，并用双侧 gate 拒绝 mismatch tail。它用 critic 与分布治理换取不再等待同组候选。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="sao-figure-02" data-paper-source="sao" data-paper-asset="sao-figure-02" markdown="1">
+[![SAO 将 GRPO 的组就绪屏障改为单轨迹就绪，并用双侧可信区间筛除 current policy 与 rollout behavior 差异过大的 token](../../assets/papers/sao/figure-02-single-rollout.png){ width="1229" height="521" loading="lazy" decoding="async" }](../../assets/papers/sao/figure-02-single-rollout.png)
+<figcaption><strong>Figure 2 是这条谱系在 2026 年发生转向的缩影：左侧改变样本何时进入 learner，右侧改变哪些 off-policy token 可以进入梯度。</strong>去掉组屏障并没有消除 policy lag；它只是让 lag 从“等待同组慢样本”转移为需要显式观测、筛选和审计的 behavior-policy 差异。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2607.07508v1#page=3">Hou et al., Single-Rollout Asynchronous Optimization, Figure 2, p. 3</a>；Copyright © 2026 Zhenyu Hou, Yujiang Li, Jie Tang, and Yuxiao Dong，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去论文页眉、正文与原始 caption。</span></figcaption>
+</figure>
+</div>
+
 CompactionRL 让 policy 学会生成摘要，并把摘要视作会影响后续状态的 action；训练还要修复 segment 切分导致的 token normalization 与跨段信用。
 
 这时，“PPO 还是 GRPO”已不是完整问题。还要问：

@@ -1,0 +1,101 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "deepseek-v2-architecture",
+    "title": "DeepSeek-V2 architecture diagram",
+    "canonical_url": "https://github.com/deepseek-ai/DeepSeek-V2/blob/ec98ee3cbffc32104cd55dba8af884b3d772602a/figures/architecture.png",
+    "artifact_kind": "standalone_raster",
+    "artifact_url": "https://raw.githubusercontent.com/deepseek-ai/DeepSeek-V2/ec98ee3cbffc32104cd55dba8af884b3d772602a/figures/architecture.png",
+    "artifact_sha256": "69910543d2248eb7d201a3aa164278fc24f886f86e5acd0273dc70fa5e9a728c",
+    "version": {
+      "kind": "git_commit",
+      "value": "ec98ee3cbffc32104cd55dba8af884b3d772602a"
+    },
+    "page_count": 1,
+    "license": {
+      "name": "MIT License",
+      "url": "https://github.com/deepseek-ai/DeepSeek-V2/blob/ec98ee3cbffc32104cd55dba8af884b3d772602a/LICENSE-CODE",
+      "credit": "Copyright (c) 2023 DeepSeek",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "6e4c38e1172f42fdbff13edf9a7a017679fb82b0fde415a3e8b3c31c6ed4a4e4"
+    }
+  },
+  "render": {
+    "renderer": "imagemagick",
+    "renderer_version": "7.1.2-27 Q16-HDRI",
+    "dpi": 72,
+    "coordinate_space": "source-pixels-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "deepseek-v2-architecture",
+      "file": "deepseek-v2-architecture.png",
+      "kind": "diagram",
+      "source_label": "standalone architecture diagram",
+      "page": 1,
+      "source_size_pixels": [
+        1139,
+        918
+      ],
+      "rotation": 0,
+      "source_crop_box_pixels": [
+        0,
+        0,
+        1139,
+        918
+      ],
+      "pixel_size": [
+        1139,
+        918
+      ],
+      "sha256": "3fa0e4772c2d31e78e2a99c637845f77effa0b745f10dbe580a4617781ae052c",
+      "placements": [
+        {
+          "page": "docs/architecture/moe.md",
+          "anchor": "deepseek-v2-architecture",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/architecture/attention-variants.md",
+          "anchor": "deepseek-v2-architecture",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/inference/kv-cache.md",
+          "anchor": "deepseek-v2-architecture",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/works/deepseek-compressed-attention.md",
+          "anchor": "deepseek-v2-architecture",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/families/deepseek.md",
+          "anchor": "deepseek-v2-architecture",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/deepseek-timeline.md",
+          "anchor": "deepseek-v2-architecture",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/deepseek-v4-reference-map.md",
+          "anchor": "deepseek-v2-architecture",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

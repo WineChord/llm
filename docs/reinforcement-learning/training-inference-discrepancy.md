@@ -4,6 +4,13 @@
 
 先给结论：任何 PPO、GRPO 或异步算法都应先写清四个 policy 身份，再讨论 clipping。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="sao-figure-02" data-paper-source="sao" data-paper-asset="sao-figure-02" markdown="1">
+[![SAO 单轨迹异步消费与 rollout-relative token ratio gate 的联合示意](../assets/papers/sao/figure-02-single-rollout.png){ width="1229" height="521" loading="lazy" decoding="async" }](../assets/papers/sao/figure-02-single-rollout.png)
+<figcaption><strong>Figure 2 直观展示了“更异步”为什么会把 policy 身份问题推到前台。</strong>轨迹不再等待同组样本后，learner 消费时的 current policy、生成它的 rollout policy 与重算 log-prob 的训练引擎更可能分离；右侧 gate 只有在这三者被准确记录时才有统计含义。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2607.07508v1#page=3">Hou et al., Single-Rollout Asynchronous Optimization, Figure 2, p. 3</a>；Copyright © 2026 Zhenyu Hou, Yujiang Li, Jie Tang, and Yuxiao Dong，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去论文页眉、正文与原始 caption。</span></figcaption>
+</figure>
+</div>
+
 | 记号 | 含义 | 回答的问题 |
 | --- | --- | --- |
 | $\pi_\theta^{\mathrm{train}}$ | 当前训练引擎上的 learner policy | 现在要更新谁 |

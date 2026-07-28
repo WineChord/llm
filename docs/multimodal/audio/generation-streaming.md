@@ -10,6 +10,13 @@
 
 若需要先建立采样率、STFT、Mel 和量化的共同语言，可从[多模态信号与 token 化](../foundations/signals-tokenization.md)读起；识别、事件定位与音画理解则见[音频理解](representations-understanding.md)。本页只沿生成链路推进，但沿用相同的物理时间契约。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="kimi-audio-framework" data-paper-source="kimi-audio" data-paper-asset="kimi-audio-framework" markdown="1">
+[![Kimi-Audio 从连续声学特征和离散语义 token 出发，经共享 LLM、并行文本与音频输出头以及流式 detokenizer 生成波形的架构](../../assets/papers/kimi-audio/kimi-audio-framework.png){ width="2464" height="2055" loading="lazy" decoding="async" }](../../assets/papers/kimi-audio/kimi-audio-framework.png)
+<figcaption><strong>流式语音的延迟并不只发生在网络传输层，而是从表示和解码结构中生长出来。</strong>图中连续 Whisper 特征与低帧率离散 token 共同进入共享 LLM，音频头再用延迟 blank token 保持因果边界，最后交给带 lookahead 的 flow-matching detokenizer；因此 chunk、lookahead 与首包延迟必须作为同一份时序契约分析。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-Audio/349251e1d8f4f98d58fda59246381faecd7392e0/assets/kimia_framework.png">Kimi-Audio architecture overview, standalone architecture diagram</a>；Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-Audio/blob/349251e1d8f4f98d58fda59246381faecd7392e0/README.md#license">MIT License（repository non-Qwen components）</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 从逐样本预测到神经声码器
 
 在采样率 $f_s=24\,\mathrm{kHz}$ 时，一秒单声道音频已经包含 $24\,000$ 个样本。最直接的分解是

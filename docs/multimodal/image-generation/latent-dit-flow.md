@@ -125,6 +125,13 @@ AdaLN-Zero 把最后的 modulation/gate 初始化为零，使初始网络接近�
 
 文本还可通过 cross-attention 注入。[PixArt-$\alpha$](https://arxiv.org/abs/2310.00426)展示训练分解、强文本 encoder 与高质量数据的重要性；[Stable Diffusion 3](https://arxiv.org/abs/2403.03206) 的 MMDiT 让文本与图像各保留 stream-specific 参数，再在 joint attention 中交换信息。不同条件接口不能只凭“是否 joint”排序：还要看文本 token 长度、位置编码、条件 dropout 与训练数据。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-image-single-stream-dit" data-paper-source="glm-image-single-stream-dit" data-paper-asset="glm-image-single-stream-dit" markdown="1">
+[![GLM-Image 的 single-stream DiT 同时处理条件图像、字形与待生成图像 embedding，并用分块 attention mask 控制可见性](../../assets/papers/glm-image-single-stream-dit/glm-image-single-stream-dit.png){ width="1278" height="527" loading="lazy" decoding="async" }](../../assets/papers/glm-image-single-stream-dit/glm-image-single-stream-dit.png)
+<figcaption><strong>standalone diagram 给出更复杂的 DiT 条件接口：条件图像、glyph 与 noisy image token 进入同一主干，但时间标记和 attention mask 各不相同。</strong>single-stream 不等于全连接可见；右侧分块 mask 决定哪些条件能彼此读取，AdaLN 时间条件又区分固定条件与正在去噪的状态。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/zai-org/GLM-Image/69b87db2874f8b556417c03eedf2b8a1484f62e0/resources/architecture_2.jpeg">GLM-Image single-stream diffusion-transformer diagram, standalone diagram</a>；Copyright 2026 Zhipu AI，<a href="https://github.com/zai-org/GLM-Image/blob/69b87db2874f8b556417c03eedf2b8a1484f62e0/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## Flow matching：直接学习运输速度
 
 接下来暂用 $z_0$ 表示<strong>噪声端</strong>、$z_1$ 表示<strong>数据端</strong>，避免与 diffusion 中常把 $x_0$ 写成干净样本的记号冲突。选择条件概率路径

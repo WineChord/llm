@@ -8,6 +8,13 @@
 
 这条线索从显式似然出发，经由 GAN 把“似然难写”改成“真假可判”，又借 VQ tokenizer 回到序列建模。后来 diffusion 与 flow 并没有让它失效：它们仍在使用 autoencoder、Transformer、adversarial perceptual loss 与离散条件接口。理解早期路线，才能看清今天系统里每个组件究竟继承了什么。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-image-hybrid-pipeline" data-paper-source="glm-image-hybrid-pipeline" data-paper-asset="glm-image-hybrid-pipeline" markdown="1">
+[![GLM-Image 先以自回归模型生成视觉 token，再由 diffusion decoder 融合编辑图像、字形与视觉条件输出高分辨率图像](../../assets/papers/glm-image-hybrid-pipeline/glm-image-hybrid-pipeline.png){ width="1280" height="314" loading="lazy" decoding="async" }](../../assets/papers/glm-image-hybrid-pipeline/glm-image-hybrid-pipeline.png)
+<figcaption><strong>这张 standalone diagram 是几条历史主线重新汇合的一个现代实例：自回归模型保留离散似然与序列接口，VQ/VAE 承担视觉表示，diffusion decoder 负责连续高分辨率细节。</strong>它说明技术史不是“新范式彻底淘汰旧范式”，而是不同目标与表示在系统边界上重新分工。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/zai-org/GLM-Image/69b87db2874f8b556417c03eedf2b8a1484f62e0/resources/architecture_1.jpeg">GLM-Image hybrid autoregressive and diffusion pipeline, standalone diagram</a>；Copyright 2026 Zhipu AI，<a href="https://github.com/zai-org/GLM-Image/blob/69b87db2874f8b556417c03eedf2b8a1484f62e0/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 先区分三种概率观
 
 设真实数据分布为 $p_{\mathrm{data}}(x)$，模型分布为 $p_\theta(x)$。

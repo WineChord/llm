@@ -36,15 +36,32 @@
       "kind": "diagram",
       "source_label": "standalone diagram",
       "page": 1,
-      "source_size_pixels": [1278, 527],
+      "source_size_pixels": [
+        1278,
+        527
+      ],
       "rotation": 0,
-      "source_crop_box_pixels": [0, 0, 1278, 527],
-      "pixel_size": [1278, 527],
+      "source_crop_box_pixels": [
+        0,
+        0,
+        1278,
+        527
+      ],
+      "pixel_size": [
+        1278,
+        527
+      ],
       "sha256": "6401c2aae1a5d64a4ba934351b8b55188f824c361cacd8da2136e507e5253c82",
       "placements": [
         {
           "page": "docs/multimodal/glm.md",
           "anchor": "glm-image-single-stream-dit-figure",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/image-generation/latent-dit-flow.md",
+          "anchor": "glm-image-single-stream-dit",
           "role": "wide",
           "media_link": "asset"
         }

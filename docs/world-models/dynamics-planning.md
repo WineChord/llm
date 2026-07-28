@@ -2,6 +2,13 @@
 
 世界模型最早面对的是一个朴素问题：真实交互昂贵，已经见过的 transition 能否被压进模型，再从模型中生成额外经验或直接规划？从 Dyna 到 Dreamer、MuZero，变化的不是“要不要预测未来”，而是预测什么、怎样使用预测，以及怎样控制模型误差。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="dreamerv3-figure-03" data-paper-source="dreamerv3" data-paper-asset="dreamerv3-figure-03" markdown="1">
+[![DreamerV3 将真实观察编码为离散状态，再用递归动力学生成 imagined trajectory，并让 actor 与 critic 只沿想象轨迹学习](../assets/papers/dreamerv3/figure-03-training-process.png){ width="2008" height="875" loading="lazy" decoding="async" }](../assets/papers/dreamerv3/figure-03-training-process.png)
+<figcaption><strong>Figure 3 把 model learning 与 planning-by-imagination 放进同一张计算图。</strong>左侧模型从真实 transition 学 encoder、dynamics、reward 与 decoder，右侧 actor / critic 从真实状态起步却沿预测 latent 更新；因此“模型预测得像”与“预测足以支持决策”是两个相连但不同的检验。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2301.04104v2#page=3">Hafner et al., Mastering Diverse Domains through World Models, Figure 3, p. 3</a>；Copyright © 2024 Danijar Hafner, Jurgis Pasukonis, Jimmy Ba, and Timothy Lillicrap，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去原始 caption 与周围正文。</span></figcaption>
+</figure>
+</div>
+
 ## Dyna：让真实经验与想象共享更新
 
 对 MDP transition $(s,a,r,s')$，tabular Q-learning 更新为

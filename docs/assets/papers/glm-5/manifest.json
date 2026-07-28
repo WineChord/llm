@@ -1,0 +1,248 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "glm-5",
+    "title": "GLM-5: from Vibe Coding to Agentic Engineering",
+    "canonical_url": "https://arxiv.org/abs/2602.15763v2",
+    "artifact_url": "https://arxiv.org/pdf/2602.15763v2",
+    "artifact_sha256": "e20742ff36e08dc361de6973f7f72ad38e107edf8fd92d2a777a8428fc9b8f0e",
+    "version": {
+      "kind": "arxiv_version",
+      "value": "2602.15763v2"
+    },
+    "page_count": 40,
+    "license": {
+      "name": "Creative Commons Attribution 4.0 International",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "credit": "Copyright © 2026 GLM-5 Team",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "15cfeffa1f2bb223559572845d557d72a55c81b873d80005d03ddcebe88cac63"
+    }
+  },
+  "render": {
+    "renderer": "pdftocairo",
+    "renderer_version": "26.07.0",
+    "dpi": 300,
+    "coordinate_space": "rendered-page-points-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "glm-5-figure-05",
+      "file": "figure-05-training-pipeline.png",
+      "kind": "diagram",
+      "source_label": "Figure 5",
+      "page": 4,
+      "page_box_points": [
+        612,
+        792
+      ],
+      "rotation": 0,
+      "crop_box_points": [
+        106,
+        72,
+        506,
+        316
+      ],
+      "pixel_size": [
+        1667,
+        1017
+      ],
+      "sha256": "b03b91adf36703641e628c32dc936dc2481b1a38f67464d5631877606974d1d1",
+      "placements": [
+        {
+          "page": "docs/landscape/works/glm-5.md",
+          "anchor": "glm-5-figure-05",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/agentic-rl/training-systems.md",
+          "anchor": "glm-5-figure-05",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/families/glm.md",
+          "anchor": "glm-5-figure-05",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/glm-timeline.md",
+          "anchor": "glm-5-figure-05",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/glm-5-reference-map.md",
+          "anchor": "glm-5-figure-05",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "glm-5-figure-10",
+      "file": "figure-10-agent-as-judge.png",
+      "kind": "diagram",
+      "source_label": "Figure 10",
+      "page": 25,
+      "page_box_points": [
+        612,
+        792
+      ],
+      "rotation": 0,
+      "crop_box_points": [
+        106,
+        468,
+        506,
+        675
+      ],
+      "pixel_size": [
+        1667,
+        863
+      ],
+      "sha256": "427fa34fe624a75c5409449facd8b464b2cd50f171126e5610b2000758aa33f8",
+      "placements": [
+        {
+          "page": "docs/landscape/works/glm-5.md",
+          "anchor": "glm-5-figure-10",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/evaluation/agent-tool-evaluation.md",
+          "anchor": "glm-5-figure-10",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "glm-5-figure-06",
+      "file": "figure-06-mla-dsa-loss.png",
+      "kind": "figure",
+      "source_label": "Figure 6",
+      "page": 6,
+      "page_box_points": [
+        612,
+        792
+      ],
+      "rotation": 0,
+      "crop_box_points": [
+        186,
+        63,
+        441,
+        216
+      ],
+      "pixel_size": [
+        1063,
+        638
+      ],
+      "sha256": "7bf0bc10c54d8c3f72e60549f6ac9217a9878443e06e0aa69060e2a658f638e9",
+      "placements": [
+        {
+          "page": "docs/landscape/works/glm-5-architecture.md",
+          "anchor": "glm-5-figure-06",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/architecture/attention-variants.md",
+          "anchor": "glm-5-figure-06",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "glm-5-figure-07",
+      "file": "figure-07-thinking-state.png",
+      "kind": "diagram",
+      "source_label": "Figure 7",
+      "page": 10,
+      "page_box_points": [
+        612,
+        792
+      ],
+      "rotation": 0,
+      "crop_box_points": [
+        99,
+        0,
+        513,
+        282
+      ],
+      "pixel_size": [
+        1725,
+        1175
+      ],
+      "sha256": "3a937a8315dd86d2b6807d583f3b36a9c0dcf05e207c9bde54e16a440af6af39",
+      "placements": [
+        {
+          "page": "docs/reasoning/test-time-compute.md",
+          "anchor": "glm-5-figure-07",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/works/glm-agentic-engineering.md",
+          "anchor": "glm-5-figure-07",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/applications/tool-use.md",
+          "anchor": "glm-5-figure-07",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "glm-5-figure-08",
+      "file": "figure-08-context-management.png",
+      "kind": "figure",
+      "source_label": "Figure 8",
+      "page": 19,
+      "page_box_points": [
+        612,
+        792
+      ],
+      "rotation": 0,
+      "crop_box_points": [
+        171,
+        69,
+        441,
+        243
+      ],
+      "pixel_size": [
+        1125,
+        725
+      ],
+      "sha256": "b4ccbfb68966955419f3cbf0ee556e130d34a0be32b9444760c6077d4df7ef45",
+      "placements": [
+        {
+          "page": "docs/architecture/memory-architectures.md",
+          "anchor": "glm-5-figure-08",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/works/glm-agentic-engineering.md",
+          "anchor": "glm-5-figure-08",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/applications/coding-agents.md",
+          "anchor": "glm-5-figure-08",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

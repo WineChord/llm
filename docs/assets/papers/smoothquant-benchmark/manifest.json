@@ -1,0 +1,77 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "smoothquant-benchmark",
+    "title": "SmoothQuant FasterTransformer latency and memory benchmark",
+    "canonical_url": "https://github.com/mit-han-lab/smoothquant/blob/c61476d728e42ae0d8a35e7e78494edcac3237b5/figures/ft_latency_mem.png",
+    "artifact_kind": "standalone_raster",
+    "artifact_url": "https://raw.githubusercontent.com/mit-han-lab/smoothquant/c61476d728e42ae0d8a35e7e78494edcac3237b5/figures/ft_latency_mem.png",
+    "artifact_sha256": "4ddc5f1a2e3c9281e83271c20b611a4fadbbb8805b57b1589c938b1a2e1ea0dc",
+    "version": {
+      "kind": "git_commit",
+      "value": "c61476d728e42ae0d8a35e7e78494edcac3237b5"
+    },
+    "page_count": 1,
+    "license": {
+      "name": "MIT License",
+      "url": "https://github.com/mit-han-lab/smoothquant/blob/c61476d728e42ae0d8a35e7e78494edcac3237b5/LICENSE",
+      "credit": "MIT HAN Lab",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "461e568b2ba8b2d9ab6a055746590a5bd2d030211dd751acba01cdf78511c06d"
+    }
+  },
+  "render": {
+    "renderer": "imagemagick",
+    "renderer_version": "7.1.2-27 Q16-HDRI",
+    "dpi": 72,
+    "coordinate_space": "source-pixels-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "smoothquant-latency-memory",
+      "file": "smoothquant-latency-memory.png",
+      "kind": "figure",
+      "source_label": "standalone benchmark figure",
+      "page": 1,
+      "source_size_pixels": [
+        2730,
+        962
+      ],
+      "rotation": 0,
+      "source_crop_box_pixels": [
+        0,
+        0,
+        2730,
+        962
+      ],
+      "pixel_size": [
+        2730,
+        962
+      ],
+      "sha256": "82af9e9d7561fffd2593f8218be9ccf95aa4edecfba6be7c6412187c715b58c0",
+      "placements": [
+        {
+          "page": "docs/inference/quantization.md",
+          "anchor": "smoothquant-latency-memory",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/inference/acceleration.md",
+          "anchor": "smoothquant-latency-memory",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/inference/benchmarking-reliability.md",
+          "anchor": "smoothquant-latency-memory",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

@@ -16,6 +16,13 @@
 
 家族演化可与 [DeepSeek 时间线](deepseek-timeline.md)对读；分布式训练、服务系统和评测方法分别见[训练系统谱系](lineages/distributed-training-systems.md)、[推理运行时谱系](lineages/inference-serving.md)与[评测谱系](lineages/evaluation.md)。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="deepseek-v2-architecture" data-paper-source="deepseek-v2-architecture" data-paper-asset="deepseek-v2-architecture" markdown="1">
+[![DeepSeek-V2 的 MLA 与 DeepSeekMoE 架构图，显示低秩 query 和 key value latent、可缓存位置分支、共享专家与路由专家](../assets/papers/deepseek-v2-architecture/deepseek-v2-architecture.png){ width="1139" height="918" loading="lazy" decoding="async" }](../assets/papers/deepseek-v2-architecture/deepseek-v2-architecture.png)
+<figcaption><strong>这张 V2 架构图为引用图谱提供家族坐标系：V4 书目中的 MLA、DeepSeekMoE、RoPE、MoE routing 和 KV-cache 工作最终都要落回这些张量与状态对象。</strong>V4 的 CSA/HCA 并非把图中 latent KV 简单改名，而是在 token 轴继续压缩、选择并保留局部未压缩状态。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/deepseek-ai/DeepSeek-V2/ec98ee3cbffc32104cd55dba8af884b3d772602a/figures/architecture.png">DeepSeek-V2 architecture diagram, standalone architecture diagram</a>；Copyright (c) 2023 DeepSeek，<a href="https://github.com/deepseek-ai/DeepSeek-V2/blob/ec98ee3cbffc32104cd55dba8af884b3d772602a/LICENSE-CODE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## DeepSeek 家族与直接方法谱系：13 项
 
 - **[7] [Kimi K2](https://arxiv.org/abs/2507.20534)**：作为同时代开放 MoE 与 agentic model 基线进入引言，也提供规模化 Muon 的邻近实现语境。
@@ -45,6 +52,13 @@ $$
 $$
 
 这里的箭头表示可核对的继承或扩展关系，不表示每个新组件都来自上一代。CSA、HCA、anticipatory routing、loss-spike detection / rollback control、grouped output projection、Quick Instruction 与 DSec 都应首先引用 V4 报告本身。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--portrait" id="deepseek-v4-figure-02" data-paper-source="deepseek-v4" data-paper-asset="deepseek-v4-figure-02" markdown="1">
+[![DeepSeek-V4 总体架构将 CSA 或 HCA、DeepSeekMoE 与 mHC residual path 组合，并在主干输出后连接 MTP](../assets/papers/deepseek-v4/figure-02-overall-architecture.png){ width="1938" height="1488" loading="lazy" decoding="async" }](../assets/papers/deepseek-v4/figure-02-overall-architecture.png)
+<figcaption><strong>Figure 2 把书目中的结构分支重新合到一个 block。</strong>稀疏与压缩注意力解释 sequence state，DeepSeekMoE 解释 channel capacity，mHC 解释 depth state，MTP 则跨到训练目标与 speculative serving；引用图谱按主题拆分只是为了检索，最终实现仍要恢复这些交叉依赖。<span class="paper-figure__source">图源：<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/resolve/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/DeepSeek_V4.pdf#page=6">DeepSeek-V4 Technical Report, Figure 2, p. 6</a>；Copyright (c) 2023 DeepSeek，<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
 
 ## 注意力、残差、MTP 与基础结构：11 项
 

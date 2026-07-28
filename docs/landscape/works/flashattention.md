@@ -8,6 +8,13 @@ $$
 
 的数学结果，而是重排计算，使中间 score 和 probability tile 尽量停留在片上存储，不把完整 $N\times N$ 矩阵反复写入 HBM。它把“复杂度看 FLOPs”推进到“性能还要看数据在内存层次间搬了几次”。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="flashattention-memory" data-paper-source="flash-attention" data-paper-asset="flashattention-memory" markdown="1">
+[![FlashAttention 相对标准 attention 的显存缩减随序列长度增长而快速扩大](../../assets/papers/flash-attention/flashattention-memory.png){ width="1935" height="932" loading="lazy" decoding="async" }](../../assets/papers/flash-attention/flashattention-memory.png)
+<figcaption><strong>显存收益随序列增长而扩大，揭示了 FlashAttention 的核心不是近似掉一部分注意力，而是避免物化二次增长的中间矩阵。</strong>图中的倍数来自特定实现与配置，不能直接外推到任意 mask、head dimension 或硬件；它更适合用来辨认增长阶与验证 IO 叙事。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/Dao-AILab/flash-attention/14c377950125c70b7a9dabf9c561fca53715ac7d/assets/flashattn_memory.jpg">FlashAttention memory reduction benchmark, standalone benchmark figure</a>；FlashAttention contributors，<a href="https://github.com/Dao-AILab/flash-attention/blob/14c377950125c70b7a9dabf9c561fca53715ac7d/LICENSE">BSD 3-Clause License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 前序瓶颈：算完又搬走
 
 标准实现通常分为：

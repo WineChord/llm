@@ -2,6 +2,13 @@
 
 自回归模型把一次请求拆成长度不确定的多轮执行：prefill 并行处理 prompt，decode 随后一次生成少量 token。服务系统的历史因而不是 kernel 越来越快，而是调度粒度、KV 所有权和阶段边界不断重写。每次提高吞吐，都会产生新的显存、尾延迟或分布式状态问题。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="vllm-v1-process-architecture" data-paper-source="vllm-process-architecture" data-paper-asset="vllm-v1-process-architecture" markdown="1">
+[![vLLM V1 把 HTTP 请求入口、数据并行协调、engine core 与张量并行 GPU worker 分层组织的进程架构](../../assets/papers/vllm-process-architecture/vllm-v1-process-architecture.png){ width="2816" height="1536" loading="lazy" decoding="async" }](../../assets/papers/vllm-process-architecture/vllm-v1-process-architecture.png)
+<figcaption><strong>推理系统从单进程 engine 演化成状态化集群后，性能边界也从单个 kernel 扩展到进程拓扑。</strong>API 扩展、DP 负载均衡、engine 状态和 TP worker 可以分别伸缩，却必须保持请求身份、KV 所有权与故障恢复一致。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/vllm-project/vllm/b6cbba8bc893c61e412a205533aafbee1ae6be31/docs/assets/design/arch_overview/v1_process_architecture_tp2_dp4.png">vLLM V1 process architecture for TP=2 and DP=4, standalone process architecture diagram</a>；vLLM project contributors，<a href="https://github.com/vllm-project/vllm/blob/b6cbba8bc893c61e412a205533aafbee1ae6be31/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 两种阶段，两组约束
 
 对典型 decoder-only Transformer：

@@ -35,16 +35,33 @@
       "kind": "diagram",
       "source_label": "Figure 3",
       "page": 6,
-      "page_box_points": [612, 792],
+      "page_box_points": [
+        612,
+        792
+      ],
       "rotation": 0,
-      "crop_box_points": [135, 70, 493, 440],
-      "pixel_size": [1492, 1542],
+      "crop_box_points": [
+        135,
+        70,
+        493,
+        440
+      ],
+      "pixel_size": [
+        1492,
+        1542
+      ],
       "sha256": "4de1865109d8e583b86c3f58045b32aa73237a13632f68fb5787ff089e801b26",
       "placements": [
         {
           "page": "docs/landscape/works/kimi-linear-flashkda.md",
           "anchor": "kimi-linear-figure-03",
           "role": "portrait",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/architecture/state-space-linear-attention.md",
+          "anchor": "kimi-linear-figure-03",
+          "role": "wide",
           "media_link": "asset"
         }
       ]

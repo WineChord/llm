@@ -2,6 +2,13 @@
 
 推理系统的性能结论只有在工作负载、质量、硬件和失败条件都明确时才可复现。离线吞吐测试回答“设备能做多少工作”，在线可靠性回答“随机到达、取消、版本变化和组件失败时，有多少请求仍按契约完成”。两者需要同一套请求身份、阶段计时和资源账本。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="flashattention-h100-benchmark" data-paper-source="flash-attention-h100" data-paper-asset="flashattention-h100-benchmark" markdown="1">
+[![H100 单 kernel benchmark 中 PyTorch、FlashAttention 与 FlashAttention-2 随 shape 变化的性能对比](../assets/papers/flash-attention-h100/flashattention-h100-benchmark.png){ width="1882" height="1262" loading="lazy" decoding="async" }](../assets/papers/flash-attention-h100/flashattention-h100-benchmark.png)
+<figcaption><strong>这是 kernel 层证据，不是端到端服务结论。</strong>图中固定了 H100 80 GB SXM5、attention 训练路径和若干 shape；把它用于服务容量规划前，还要加入模型其余算子、KV、batch 调度、采样、网络与质量等价条件。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/Dao-AILab/flash-attention/14c377950125c70b7a9dabf9c561fca53715ac7d/assets/flash2_h100_fwd_bwd_benchmark.png">FlashAttention-2 H100 forward and backward benchmark, standalone benchmark figure</a>；FlashAttention contributors，<a href="https://github.com/Dao-AILab/flash-attention/blob/14c377950125c70b7a9dabf9c561fca53715ac7d/LICENSE">BSD 3-Clause License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 明确测量对象
 
 至少区分三层：
@@ -124,6 +131,13 @@ $$
 - cache 热点和租户公平是否恶化。
 
 稳态窗口开始前，要单独报告模型加载、JIT / CUDA Graph 编译和 prefix 预热；自动扩容场景则必须把这些冷启动成本计入。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="smoothquant-latency-memory" data-paper-source="smoothquant-benchmark" data-paper-asset="smoothquant-latency-memory" markdown="1">
+[![SmoothQuant 在不同模型规模、输入长度和 GPU 数配置上的 latency 与 memory 对比](../assets/papers/smoothquant-benchmark/smoothquant-latency-memory.png){ width="2730" height="962" loading="lazy" decoding="async" }](../assets/papers/smoothquant-benchmark/smoothquant-latency-memory.png)
+<figcaption><strong>一张可解释的性能图必须把实验矩阵留在画面里。</strong>这里同时变化模型规模与输入长度，并显式标出部分模型的 GPU 数差异；比较结论只能在相同硬件、实现、batch 与质量门下读取，不能抽走上下文只保留最大加速比。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/mit-han-lab/smoothquant/c61476d728e42ae0d8a35e7e78494edcac3237b5/figures/ft_latency_mem.png">SmoothQuant FasterTransformer latency and memory benchmark, standalone benchmark figure</a>；MIT HAN Lab，<a href="https://github.com/mit-han-lab/smoothquant/blob/c61476d728e42ae0d8a35e7e78494edcac3237b5/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
 
 ## 资源和阶段分解
 

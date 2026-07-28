@@ -45,6 +45,13 @@ $m_t$ 是记忆，$p_t$ 是当前计划，$b_t$ 是预算与权限。模型只�
 
 后几类需要更强的身份、确认、幂等与验收。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k2-figure-08" data-paper-source="kimi-k2" data-paper-asset="k2-figure-08" markdown="1">
+[![Kimi K2 从真实工具规范和合成工具规范生成 agent 任务、轨迹与 judge 标注的数据管线](../assets/papers/kimi-k2/figure-08-tool-synthesis.png){ width="1683" height="504" loading="lazy" decoding="async" }](../assets/papers/kimi-k2/figure-08-tool-synthesis.png)
+<figcaption><strong>Figure 8 把工具能力数据拆成两个彼此校验的对象：工具规范定义可执行动作，任务与 rubric 定义何时算完成。</strong>模型生成 agent trajectory 只产生候选数据，judge 仍要结合工具结果与 rubric 筛选；否则 student 容易学习表面调用格式，而不是可验证的任务闭环。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K2/1b4022bbb7187cf4011a8bdf0b4cd10e2daa26c4/tech_report.pdf#page=10">Kimi K2: Open Agentic Intelligence, Figure 8, p. 10</a>；Copyright (c) 2025 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K2/blob/1b4022bbb7187cf4011a8bdf0b4cd10e2daa26c4/LICENSE">Modified MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 自主程度
 
 “可以多步执行”不等于“可以自动执行任何动作”。自主程度至少由四个轴决定：

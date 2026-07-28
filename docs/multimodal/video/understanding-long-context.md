@@ -11,14 +11,6 @@
 
 只在均匀采样帧上做图像问答，通常只能覆盖第一类和部分第三类。
 
-<figure class="concept-figure" id="video-to-world-model-boundary" markdown="1">
-
-![观察先编码为状态，动力学在动作条件下想象未来，规划器选动作并由环境返回新观察的闭环](../../assets/diagrams/world-model-loop.svg)
-
-<figcaption>视频理解主要位于左侧“观察—状态”接口；只有当预测显式接收动作、进入规划并由真实反馈检验时，才开始构成决策意义上的世界模型。</figcaption>
-
-</figure>
-
 ## 从运动特征到时空网络
 
 早期视频识别常把 RGB 外观与 optical flow 运动分开。双流网络显式提供短期运动线索，3D CNN 则用时空卷积联合处理局部帧块：

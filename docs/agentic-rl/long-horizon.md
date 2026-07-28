@@ -14,6 +14,13 @@ $$
 
 因此长时能力必须依赖检测、回滚、重新规划和冗余验证，而不能只提升单步准确率。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="sao-figure-02" data-paper-source="sao" data-paper-asset="sao-figure-02" markdown="1">
+[![长轨迹让同组 rollout 完成时间产生长尾，SAO 用单轨迹就绪语义替代 group barrier 的示意](../assets/papers/sao/figure-02-single-rollout.png){ width="1229" height="521" loading="lazy" decoding="async" }](../assets/papers/sao/figure-02-single-rollout.png)
+<figcaption><strong>长时任务把同步采样的尾部等待放大成系统瓶颈。</strong>Figure 2 左侧展示单条完成轨迹立即进入训练队列的改变；它消除了 group barrier，却没有消除轨迹陈旧、选择偏差和高方差，右侧的 ratio gate 只是这组代价中的一层控制。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2607.07508v1#page=3">Hou et al., Single-Rollout Asynchronous Optimization, Figure 2, p. 3</a>；Copyright © 2026 Zhenyu Hou, Yujiang Li, Jie Tang, and Yuxiao Dong，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去论文页眉、正文与原始 caption。</span></figcaption>
+</figure>
+</div>
+
 ## 三层状态
 
 | 状态 | 内容 | 维护方式 |
@@ -82,6 +89,13 @@ next action
 - 不应泛化的项目特例。
 
 直接把完整历史塞入下一次上下文会造成隐私、噪声和错误固化。更稳妥的是抽取经过验证、去情境化的规则，并保留来源与适用边界。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k15-figure-03" data-paper-source="kimi-k1-5" data-paper-asset="k15-figure-03" markdown="1">
+[![Kimi k1.5 强化学习系统与 partial rollout：长度预算耗尽的未完成轨迹回到 replay buffer，在后续 iteration 继续](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png){ width="1650" height="808" loading="lazy" decoding="async" }](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png)
+<figcaption><strong>Figure 3 把“跨 iteration 存活”落实为可区分的轨迹状态。</strong>正常终止、长度截断与重复检测提前结束不是同一种边界；只有长度截断的 partial rollout 携带可恢复状态返回 replay buffer。长时 agent 的 checkpoint 也应保存这种语义，而不只保存一段摘要文本。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-k1.5/cf9a8785730c7e59d788956e1e40dc9fc31ebf08/Kimi_k1.5.pdf#page=8">Kimi k1.5: Scaling Reinforcement Learning with LLMs, Figure 3, p. 8</a>；Kimi Team，<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>。</span></figcaption>
+</figure>
+</div>
 
 ## 评测时间范围
 

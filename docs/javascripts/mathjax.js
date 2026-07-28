@@ -8,12 +8,29 @@ window.MathJax = {
   options: {
     ignoreHtmlClass: ".*|",
     processHtmlClass: "arithmatex"
+  },
+  startup: {
+    typeset: false
   }
 };
 
+let previousMathTargets = [];
+let pendingMathTypeset = Promise.resolve();
+
 document$.subscribe(() => {
-  MathJax.startup.output.clearCache();
-  MathJax.typesetClear();
-  MathJax.texReset();
-  MathJax.typesetPromise();
+  pendingMathTypeset = pendingMathTypeset
+    .then(() => {
+      if (previousMathTargets.length) {
+        MathJax.typesetClear(previousMathTargets);
+      }
+      MathJax.texReset();
+      previousMathTargets = [...document.querySelectorAll(".arithmatex")]
+        .filter((element) =>
+          element.querySelector(":scope > mjx-container") === null
+        );
+      return previousMathTargets.length
+        ? MathJax.typesetPromise(previousMathTargets)
+        : undefined;
+    })
+    .catch((error) => console.error("MathJax typesetting failed", error));
 });

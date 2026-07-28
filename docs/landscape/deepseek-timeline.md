@@ -33,6 +33,13 @@ $$
 
 它不能只被理解为“另一种注意力”。权重吸收、RoPE 分支、训练实现与推理 kernel 决定理论压缩能否转化为真实吞吐。V2 同时采用 MoE，因此模型容量、激活计算、expert parallel 通信和 KV cache 需要联合评估。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="deepseek-v2-architecture" data-paper-source="deepseek-v2-architecture" data-paper-asset="deepseek-v2-architecture" markdown="1">
+[![DeepSeek-V2 在同一架构图中展示 MLA 的低秩 query 与 key value latent、RoPE 分支，以及共享专家和路由专家](../assets/papers/deepseek-v2-architecture/deepseek-v2-architecture.png){ width="1139" height="918" loading="lazy" decoding="async" }](../assets/papers/deepseek-v2-architecture/deepseek-v2-architecture.png)
+<figcaption><strong>V2 的 standalone architecture diagram 是家族主干的第一个关键截面：注意力压缩与稀疏专家从这里开始共同决定模型容量、缓存和通信。</strong>斜线阴影标出 decode 期缓存对象；后续 V3、V3.2 与 V4 改变其中的路由、历史访问和 residual path，却不能脱离这组张量接口理解。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/deepseek-ai/DeepSeek-V2/ec98ee3cbffc32104cd55dba8af884b3d772602a/figures/architecture.png">DeepSeek-V2 architecture diagram, standalone architecture diagram</a>；Copyright (c) 2023 DeepSeek，<a href="https://github.com/deepseek-ai/DeepSeek-V2/blob/ec98ee3cbffc32104cd55dba8af884b3d772602a/LICENSE-CODE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## V3：训练系统成为模型设计的一部分
 
 V3 的公开材料把架构与系统放在同一配方中：专家路由、负载均衡、共享专家、FP8 训练和多 token prediction 共同决定训练稳定性与效率。阅读这类报告时，应为每项创新建立三栏：
@@ -77,6 +84,13 @@ V4 没有简单把 DSA 的 context 上限改成 1M，而是在选择之前先压
 ## V4：压缩、选择与局部精度分工
 
 [DeepSeek-V4](works/deepseek-v4.md) 发布 Flash 与 Pro 两个 MoE 规模：284B / 13B activated 和 1.6T / 49B activated，均给出 1M context。主线可以分成四层：
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--portrait" id="deepseek-v4-figure-02" data-paper-source="deepseek-v4" data-paper-asset="deepseek-v4-figure-02" markdown="1">
+[![DeepSeek-V4 的 Transformer block 由 mHC residual mixing 包围 CSA 或 HCA 注意力与 DeepSeekMoE，并在主干顶部接入 MTP](../assets/papers/deepseek-v4/figure-02-overall-architecture.png){ width="1938" height="1488" loading="lazy" decoding="async" }](../assets/papers/deepseek-v4/figure-02-overall-architecture.png)
+<figcaption><strong>Figure 2 是时间线的另一个架构截面：V4 不只是替换 attention kernel，而是同时改变长历史状态、跨层 residual mixing 和 draft path。</strong>CSA/HCA、SWA、DeepSeekMoE、mHC 与 MTP 在同一 block 中相互制约，所以报告中的系统结论不能拆成单个组件的孤立倍数。<span class="paper-figure__source">图源：<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/resolve/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/DeepSeek_V4.pdf#page=6">DeepSeek-V4 Technical Report, Figure 2, p. 6</a>；Copyright (c) 2023 DeepSeek，<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
 
 1. [CSA](works/deepseek-compressed-attention.md#token-compressor) 每 $m=4$ 个 token 产生一个重叠压缩项，再由 Lightning Indexer 做 top-$k$ 选择；
 2. HCA 每 $m'=128$ 个 token 产生一个非重叠压缩项，在较短的压缩序列上做 dense MQA；

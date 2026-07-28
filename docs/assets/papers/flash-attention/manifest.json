@@ -1,0 +1,83 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "flash-attention",
+    "title": "FlashAttention memory reduction benchmark",
+    "canonical_url": "https://github.com/Dao-AILab/flash-attention/blob/14c377950125c70b7a9dabf9c561fca53715ac7d/assets/flashattn_memory.jpg",
+    "artifact_kind": "standalone_raster",
+    "artifact_url": "https://raw.githubusercontent.com/Dao-AILab/flash-attention/14c377950125c70b7a9dabf9c561fca53715ac7d/assets/flashattn_memory.jpg",
+    "artifact_sha256": "6fd1ae092c3ac6ce421f508c5d9d85f69b203de058479dd6305ac42c817bad8c",
+    "version": {
+      "kind": "git_commit",
+      "value": "14c377950125c70b7a9dabf9c561fca53715ac7d"
+    },
+    "page_count": 1,
+    "license": {
+      "name": "BSD 3-Clause License",
+      "url": "https://github.com/Dao-AILab/flash-attention/blob/14c377950125c70b7a9dabf9c561fca53715ac7d/LICENSE",
+      "credit": "FlashAttention contributors",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "c1baebacd50fbd6487eb7dca7718f8543bc8a86f9dde2bc4ebdf13130c7b632c"
+    }
+  },
+  "render": {
+    "renderer": "imagemagick",
+    "renderer_version": "7.1.2-27 Q16-HDRI",
+    "dpi": 72,
+    "coordinate_space": "source-pixels-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "flashattention-memory",
+      "file": "flashattention-memory.png",
+      "kind": "figure",
+      "source_label": "standalone benchmark figure",
+      "page": 1,
+      "source_size_pixels": [
+        1935,
+        932
+      ],
+      "rotation": 0,
+      "source_crop_box_pixels": [
+        0,
+        0,
+        1935,
+        932
+      ],
+      "pixel_size": [
+        1935,
+        932
+      ],
+      "sha256": "c0c4c4be999452822ae8700c70a64c4d0540301f132877316174095d6af06a91",
+      "placements": [
+        {
+          "page": "docs/landscape/works/flashattention.md",
+          "anchor": "flashattention-memory",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/systems/attention-kernels.md",
+          "anchor": "flashattention-memory",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/architecture/long-context.md",
+          "anchor": "flashattention-memory",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/systems/memory-numerics-hardware.md",
+          "anchor": "flashattention-memory",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

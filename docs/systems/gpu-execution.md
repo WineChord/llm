@@ -4,6 +4,13 @@
 
 本页以 CUDA 术语说明核心机制，但分析方法同样适用于其他加速器：先找并行执行单元和存储层级，再建立 tile、带宽、同步与调度模型。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="flashattention-h100-benchmark" data-paper-source="flash-attention-h100" data-paper-asset="flashattention-h100-benchmark" markdown="1">
+[![FlashAttention-2 在 H100 上对不同序列长度、head dimension 和 causal 设置的算子吞吐](../assets/papers/flash-attention-h100/flashattention-h100-benchmark.png){ width="1882" height="1262" loading="lazy" decoding="async" }](../assets/papers/flash-attention-h100/flashattention-h100-benchmark.png)
+<figcaption><strong>GPU 执行效率是算法、tile 与具体 shape 的函数。</strong>相同的 attention 语义在 causal mask、head dimension 与序列长度变化后，会改变 occupancy、数据搬运和指令流水；因此 profiler 中的 kernel 名称必须与输入契约一起解释。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/Dao-AILab/flash-attention/14c377950125c70b7a9dabf9c561fca53715ac7d/assets/flash2_h100_fwd_bwd_benchmark.png">FlashAttention-2 H100 forward and backward benchmark, standalone benchmark figure</a>；FlashAttention contributors，<a href="https://github.com/Dao-AILab/flash-attention/blob/14c377950125c70b7a9dabf9c561fca53715ac7d/LICENSE">BSD 3-Clause License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 从 kernel 到 warp
 
 一次 kernel launch 创建 grid；grid 由 thread block 组成，block 被调度到 SM。一个 block 内的线程以 warp 为基本执行批次。NVIDIA 当前 CUDA 模型中，一个 warp 通常包含 32 个线程，完整语义以 [CUDA Programming Guide](https://docs.nvidia.com/cuda/cuda-programming-guide/index.html) 为准。

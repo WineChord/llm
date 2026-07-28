@@ -174,6 +174,13 @@ $$
 语义路径拼错的 suffix decay。RNN 头可以保留更长块内历史，但需要额外 recurrent
 state；DSpark 默认使用更简单的 Markov 版本。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="dspark-figure-01" data-paper-source="dspark" data-paper-asset="dspark-figure-01" markdown="1">
+[![DSpark 的一次解码 round：并行骨干生成 block base logits，低秩顺序头恢复块内条件，置信度调度器选择验证前缀，目标模型执行精确接受与纠正](../assets/papers/dspark/figure-01-architecture.png){ width="1938" height="1250" loading="lazy" decoding="async" }](../assets/papers/dspark/figure-01-architecture.png)
+<figcaption><strong>Figure 1 把半自回归 draft 的三种责任分开：深骨干决定候选质量，轻顺序头修复 suffix 条件依赖，scheduler 只决定把多长前缀送去 target 验证。</strong>最终分布仍由目标模型的接受与 residual correction 保证；置信度可以减少浪费，却不能取代 exact sampling rule。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2607.05147v1#page=5">Cheng et al., DSpark, Figure 1, p. 5</a>；Copyright (c) 2026 Xin Cheng et al.，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
+
 它还把 draft / target 的分布重叠
 
 $$
@@ -185,6 +192,13 @@ $$
 作为 confidence 软标签。请求 $r$ 的第 $j$ 个 prefix 存活概率为
 $a_{r,j}=\prod_{i\le j}c_{r,i}$；经过校准后，serving scheduler 可以把这些概率与
 实测 step-rate 曲线结合，为不同请求分配不同 verify length。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="dspark-figure-02" data-paper-source="dspark" data-paper-asset="dspark-figure-02" markdown="1">
+[![Qwen3-4B 上数学、代码与对话任务的逐位置条件接受率，对比独立并行 DFlash、顺序 EAGLE-3 与半自回归 DSpark](../assets/papers/dspark/figure-02-position-acceptance.png){ width="1896" height="717" loading="lazy" decoding="async" }](../assets/papers/dspark/figure-02-position-acceptance.png)
+<figcaption><strong>Figure 2 隔离了“当前位置在前缀已接受条件下的质量”：DFlash 首位置强、后缀衰减；EAGLE-3 首位置较弱但条件更稳定；DSpark 试图同时保留两者。</strong>这不是累计 acceptance length，也不是端到端 speedup；把它接到服务决策仍需乘前缀存活概率，再与 draft cost、target step-rate、batch 和负载共同建模。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2607.05147v1#page=12">Cheng et al., DSpark, Figure 2, p. 12</a>；Copyright (c) 2026 Xin Cheng et al.，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
 
 这里要保留实现边界：官方 [DeepSpec](https://github.com/deepseek-ai/DeepSpec)
 公开训练、标准 rejection sampling 和静态 confidence-threshold 评测；完整的多请求

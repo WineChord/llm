@@ -80,6 +80,13 @@ L_m
 {\sum_im_i+\varepsilon}.
 $$
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-image-hybrid-pipeline" data-paper-source="glm-image-hybrid-pipeline" data-paper-asset="glm-image-hybrid-pipeline" markdown="1">
+[![GLM-Image 的混合生成流水：自回归模型生成离散视觉语义，diffusion decoder 接收图像、glyph 与视觉 embedding 并输出高分辨率结果](../assets/papers/glm-image-hybrid-pipeline/glm-image-hybrid-pipeline.png){ width="1280" height="314" loading="lazy" decoding="async" }](../assets/papers/glm-image-hybrid-pipeline/glm-image-hybrid-pipeline.png)
+<figcaption><strong>这张 standalone diagram 给出“理解与生成统一”的一种务实边界：高层语义状态可以共享，自回归和 diffusion 仍保留各自最合适的输出空间。</strong>AR 视觉 token、VQ/VAE 编辑条件、glyph embedding 与 DiT latent 并不天然对齐；统一主干必须伴随显式投影、loss mask、条件版本和训练比例，而不是把两种目标写在同一行 loss 后就视为完成。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/zai-org/GLM-Image/69b87db2874f8b556417c03eedf2b8a1484f62e0/resources/architecture_1.jpeg">GLM-Image official hybrid pipeline</a>；Copyright 2026 Zhipu AI，<a href="https://github.com/zai-org/GLM-Image/blob/69b87db2874f8b556417c03eedf2b8a1484f62e0/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## Attention mask 是任务定义
 
 文本生成通常使用 causal mask；图像理解 token 可能需要双向可见；离散 diffusion 的 masked token 也不服从单向顺序。一个 batch 中可构造 block mask：

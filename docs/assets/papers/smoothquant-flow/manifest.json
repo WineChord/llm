@@ -1,0 +1,77 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "smoothquant-flow",
+    "title": "SmoothQuant Transformer-block precision flow",
+    "canonical_url": "https://github.com/mit-han-lab/smoothquant/blob/c61476d728e42ae0d8a35e7e78494edcac3237b5/figures/quantization_flow.png",
+    "artifact_kind": "standalone_raster",
+    "artifact_url": "https://raw.githubusercontent.com/mit-han-lab/smoothquant/c61476d728e42ae0d8a35e7e78494edcac3237b5/figures/quantization_flow.png",
+    "artifact_sha256": "9598ed81264584f8e1e22d21e3956cbf5ce4ef1b9dca6c1fb5192035d397f239",
+    "version": {
+      "kind": "git_commit",
+      "value": "c61476d728e42ae0d8a35e7e78494edcac3237b5"
+    },
+    "page_count": 1,
+    "license": {
+      "name": "MIT License",
+      "url": "https://github.com/mit-han-lab/smoothquant/blob/c61476d728e42ae0d8a35e7e78494edcac3237b5/LICENSE",
+      "credit": "MIT HAN Lab",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "461e568b2ba8b2d9ab6a055746590a5bd2d030211dd751acba01cdf78511c06d"
+    }
+  },
+  "render": {
+    "renderer": "imagemagick",
+    "renderer_version": "7.1.2-27 Q16-HDRI",
+    "dpi": 72,
+    "coordinate_space": "source-pixels-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "smoothquant-precision-flow",
+      "file": "smoothquant-precision-flow.png",
+      "kind": "diagram",
+      "source_label": "standalone precision-flow diagram",
+      "page": 1,
+      "source_size_pixels": [
+        3224,
+        2116
+      ],
+      "rotation": 0,
+      "source_crop_box_pixels": [
+        0,
+        0,
+        3224,
+        2116
+      ],
+      "pixel_size": [
+        3224,
+        2116
+      ],
+      "sha256": "0fde31c20388a143c9046e081787481be060e117b54c437d063f98be4fc1a5c6",
+      "placements": [
+        {
+          "page": "docs/inference/quantization.md",
+          "anchor": "smoothquant-precision-flow",
+          "role": "portrait",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/systems/precision-numerics.md",
+          "anchor": "smoothquant-precision-flow",
+          "role": "portrait",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/architecture/decoder-block.md",
+          "anchor": "smoothquant-precision-flow",
+          "role": "portrait",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

@@ -2,6 +2,13 @@
 
 训练是否能运行由峰值内存决定，运行是否高效由计算、内存带宽和通信的关键路径决定。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="flashattention-memory" data-paper-source="flash-attention" data-paper-asset="flashattention-memory" markdown="1">
+[![FlashAttention 通过改变 attention 中间状态的驻留方式降低显存，收益随序列长度扩大](../assets/papers/flash-attention/flashattention-memory.png){ width="1935" height="932" loading="lazy" decoding="async" }](../assets/papers/flash-attention/flashattention-memory.png)
+<figcaption><strong>峰值内存不是张量尺寸的静态相加，还取决于中间量何时产生、驻留和释放。</strong>FlashAttention 的曲线展示了同一数学算子仅通过计算顺序与存储层次重排，就能改变序列长度对应的实际峰值；分析 OOM 时必须把 kernel workspace 与物化策略纳入时间轴。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/Dao-AILab/flash-attention/14c377950125c70b7a9dabf9c561fca53715ac7d/assets/flashattn_memory.jpg">FlashAttention memory reduction benchmark, standalone benchmark figure</a>；FlashAttention contributors，<a href="https://github.com/Dao-AILab/flash-attention/blob/14c377950125c70b7a9dabf9c561fca53715ac7d/LICENSE">BSD 3-Clause License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 显存账本
 
 设参数量为 $N$。以 BF16 权重、BF16 梯度、FP32 master weight 和 Adam FP32 一二阶矩为例，仅静态模型状态就可能接近：

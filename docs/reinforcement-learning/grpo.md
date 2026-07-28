@@ -31,6 +31,13 @@ $$
 
 若同一 prompt 可以便宜地生成 $G$ 个候选，就可以把“这个回答比该题其他回答好多少”作为 baseline。这样不需要跨 prompt 预测绝对 value，却把成本转移为 $G$ 倍 rollout 和 group barrier。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-08" data-paper-source="kimi-k3" data-paper-asset="k3-figure-08" markdown="1">
+[![Kimi K3 在编码、工具调用、网页开发、搜索与专业工作流任务上展示指标随强化学习 FLOPs 的变化](../assets/papers/kimi-k3/figure-08-rl-scaling.png){ width="1571" height="758" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-08-rl-scaling.png)
+<figcaption><strong>Figure 8 提醒我们，是否继续扩大 group rollout 或 RL compute 不能只看一个聚合分数：不同任务族的增益、波动和饱和点并不一致。</strong>图中纵轴采用各任务自身指标，只能支持同一配方内的趋势比较；判断 GRPO 是否值得付出 G 倍采样，还需并列报告无方差组比例、有效 action token、straggler 等待与 wall-clock。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=13">Kimi K3 Technical Report, Figure 8, p. 13</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 原始 outcome GRPO
 
 在原始理想化记号下，对 prompt $x$，冻结的 old policy 采样

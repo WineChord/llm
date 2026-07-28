@@ -23,6 +23,13 @@ Attention（CSA）选择“中等压缩后再稀疏”，Heavily Compressed Atte
 坐标见[注意力家族](../../architecture/attention-variants.md)，训练窗口、有效利用长度和测量边界见
 [长上下文](../../architecture/long-context.md)。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="deepseek-v2-architecture" data-paper-source="deepseek-v2-architecture" data-paper-asset="deepseek-v2-architecture" markdown="1">
+[![DeepSeek-V2 的 MLA 把每个 token 的 key value 压进低秩 latent，并分离不能被权重吸收的位置分支与推理缓存对象](../../assets/papers/deepseek-v2-architecture/deepseek-v2-architecture.png){ width="1139" height="918" loading="lazy" decoding="async" }](../../assets/papers/deepseek-v2-architecture/deepseek-v2-architecture.png)
+<figcaption><strong>这张 standalone architecture diagram 固定了 CSA/HCA 之前已经完成的一次压缩：V2 主要缩减每个历史 token 的 KV 特征宽度，而没有缩短历史 token 轴。</strong>V4 的 compressed attention 继续在时间轴上聚合与筛选；把两层压缩分开，才能判断 bytes/token、历史 entry 数和 score 计算分别减少了什么。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/deepseek-ai/DeepSeek-V2/ec98ee3cbffc32104cd55dba8af884b3d772602a/figures/architecture.png">DeepSeek-V2 official architecture diagram</a>；Copyright (c) 2023 DeepSeek，<a href="https://github.com/deepseek-ai/DeepSeek-V2/blob/ec98ee3cbffc32104cd55dba8af884b3d772602a/LICENSE-CODE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 一张计算图
 
 两条分支共享同一个外层结构：

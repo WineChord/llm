@@ -91,6 +91,13 @@ $$
 
 [DeepSeek-V2](https://arxiv.org/abs/2405.04434) 中的 Multi-head Latent Attention 把这条路线与可单独缓存的位置分支组合。它的价值不只来自低秩分解，还取决于推理时能否将部分投影吸收到 query 或输出计算中，避免每步显式恢复大 K/V 张量。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="deepseek-v2-architecture" data-paper-source="deepseek-v2-architecture" data-paper-asset="deepseek-v2-architecture" markdown="1">
+[![DeepSeek-V2 的 MLA 将 query 与 key value 分别压入低秩 latent，并只缓存解码时重建各 head 所需的压缩状态](../assets/papers/deepseek-v2-architecture/deepseek-v2-architecture.png){ width="1139" height="918" loading="lazy" decoding="async" }](../assets/papers/deepseek-v2-architecture/deepseek-v2-architecture.png)
+<figcaption><strong>standalone architecture diagram 展示 MLA 的关键分解：query 与 key-value 先进入低秩 latent，再重建各 head 所需分量。</strong>RoPE 只作用于不能被直接吸收到投影矩阵的分支；斜线阴影标出推理期缓存对象。图形说明张量关系，真正的节省量仍取决于 latent 宽度、head 数、位置分支和实现是否完成权重吸收。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/deepseek-ai/DeepSeek-V2/ec98ee3cbffc32104cd55dba8af884b3d772602a/figures/architecture.png">DeepSeek-V2 architecture diagram, standalone architecture diagram</a>；Copyright (c) 2023 DeepSeek，<a href="https://github.com/deepseek-ai/DeepSeek-V2/blob/ec98ee3cbffc32104cd55dba8af884b3d772602a/LICENSE-CODE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 权重吸收的边界
 
 若注意力 score 中出现
@@ -227,6 +234,13 @@ attention 实现至少同时处理：
 GLM-5 延续 [DeepSeek-V2](https://arxiv.org/abs/2405.04434) 的 Multi-head Latent Attention（MLA），但把单头维度扩大到 $256$ 并减少 head 数，以保持参数与训练计算大致不变，同时降低 decode 阶段的 head 相关开销。报告中的精确配置是 64 个 attention heads，query 的非 RoPE / RoPE 维度为 $192/64$，value 维度为 $256$，KV LoRA rank 为 $512$。
 
 长上下文部分使用 [DeepSeek Sparse Attention](https://arxiv.org/abs/2512.02556)：轻量 indexer 先为历史位置打分，保留 top-$2048$，再只对选中 KV 做 attention。GLM-5 在 mid-training 末段先用 1000 steps 训练 indexer，再用 20B tokens 做 sparse adaptation。论文称其“lossless by construction”应理解为作者对训练设计与实验范围的表述，不是 sparse output 与 dense attention 对所有输入严格相等。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-5-figure-06" data-paper-source="glm-5" data-paper-asset="glm-5-figure-06" markdown="1">
+[![GLM-5 的 MLA 与 DSA 在相同 SFT 数据上的 loss 曲线对照，插图放大两者的相对 loss](../assets/papers/glm-5/figure-06-mla-dsa-loss.png){ width="1063" height="638" loading="lazy" decoding="async" }](../assets/papers/glm-5/figure-06-mla-dsa-loss.png)
+<figcaption><strong>Figure 6 说明评估 attention 替换不能只比较复杂度符号。</strong>DSA 经专门 adaptation 后在这段 SFT 中贴近 MLA，证明稀疏路径可以被模型吸收；它没有证明所有 query 都选中相同信息，也没有覆盖 indexer 的扫描成本、长尾召回或服务端内存访问。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2602.15763v2#page=6">GLM-5: from Vibe Coding to Agentic Engineering, Figure 6, p. 6</a>；Copyright © 2026 GLM-5 Team，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去原始 caption 与周围正文。</span></figcaption>
+</figure>
+</div>
 
 GLM-5.2 把成本继续沿层轴压缩：[官方配置](https://huggingface.co/zai-org/GLM-5.2/blob/main/config.json)显示每四层共享一组 indexer，称为 IndexShare；这与 GLM-5 每层独立 indexer 不是同一结构。缓存、共享与逐层误差传播见 [IndexCache 与 IndexShare](../landscape/works/indexcache.md)，完整参数口径见 [GLM-5 架构](../landscape/works/glm-5-architecture.md)。
 

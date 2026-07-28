@@ -70,6 +70,13 @@ $$
 
 [SigLIP](https://arxiv.org/abs/2303.15343) 把 batch 内配对改为 pairwise sigmoid 目标，降低全局 softmax 对 batch 规模和跨设备归一化的依赖。目标变化影响优化与负样本语义，不意味着空间 grounding 自动解决。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="cogvlm-visual-expert" data-paper-source="glm-cogvlm-visual-expert" data-paper-asset="cogvlm-visual-expert" markdown="1">
+[![CogVLM 在同一 Transformer 层中按视觉位置和文本位置选择不同的 QKV 与 FFN 参数路径](../../assets/papers/glm-cogvlm-visual-expert/cogvlm-visual-expert.png){ width="1378" height="824" loading="lazy" decoding="async" }](../../assets/papers/glm-cogvlm-visual-expert/cogvlm-visual-expert.png)
+<figcaption><strong>Figure 3 展示一种保留视觉表示容量的融合办法：视觉 token 与文本 token 共同参与序列计算，却不被迫共享全部 attention / FFN 参数。</strong>独立 visual expert 可以减少语言主干对局部视觉特征的挤压，但它仍不自动产生 box、mask 或可追溯证据；grounding 能力最终取决于视觉分辨率、位置表示、监督粒度和输出 contract。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/zai-org/CogVLM/f7283b2c8d26cd7f932d9a5f7f5f9307f568195d/assets/method.png">CogVLM visual-expert architecture, Figure 3</a>；Copyright 2024 CogVLM team @ Zhipu AI，<a href="https://github.com/zai-org/CogVLM/blob/f7283b2c8d26cd7f932d9a5f7f5f9307f568195d/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 从图像级 token 到区域证据
 
 一个 pooled `CLS` token 适合全局语义，密集任务需要保留二维网格：

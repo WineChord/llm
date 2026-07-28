@@ -2,6 +2,13 @@
 
 视频模型不仅处理更多图像，还要表示运动、持续身份、事件顺序和时间因果。世界模型进一步尝试预测环境怎样随动作变化；视觉上逼真的视频不自动等于可用于规划的动力学模型。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="dreamerv3-figure-04" data-paper-source="dreamerv3" data-paper-asset="dreamerv3-figure-04" markdown="1">
+[![DreamerV3 只用五帧上下文和后续动作，在迷宫与四足机器人环境中开放环预测四十五帧，并与真实轨迹并排比较](../assets/papers/dreamerv3/figure-04-open-loop-prediction.png){ width="2062" height="1033" loading="lazy" decoding="async" }](../assets/papers/dreamerv3/figure-04-open-loop-prediction.png)
+<figcaption><strong>Figure 4 展示了视频预测与世界模型评测的交界：输入结束后，模型必须仅凭动作和内部状态维持场景结构。</strong>画面连贯可以说明 latent dynamics 捕获了部分运动规律，却不能单独证明可规划性；还要检查动作反事实、reward / value 误差，以及按预测规划后回到真实环境的闭环收益。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2301.04104v2#page=4">Hafner et al., Mastering Diverse Domains through World Models, Figure 4, p. 4</a>；Copyright © 2024 Danijar Hafner, Jurgis Pasukonis, Jimmy Ba, and Timothy Lillicrap，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去原始 caption 与周围正文。</span></figcaption>
+</figure>
+</div>
+
 ## 时空 token
 
 对 $T\times H\times W$ 视频，以 tubelet

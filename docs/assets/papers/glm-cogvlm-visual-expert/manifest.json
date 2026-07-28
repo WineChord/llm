@@ -36,15 +36,62 @@
       "kind": "diagram",
       "source_label": "Figure 3",
       "page": 1,
-      "source_size_pixels": [1378, 824],
+      "source_size_pixels": [
+        1378,
+        824
+      ],
       "rotation": 0,
-      "source_crop_box_pixels": [0, 0, 1378, 824],
-      "pixel_size": [1378, 824],
+      "source_crop_box_pixels": [
+        0,
+        0,
+        1378,
+        824
+      ],
+      "pixel_size": [
+        1378,
+        824
+      ],
       "sha256": "73d3a8471ad0312703e273ce91c953a4adfdfd0f1c5d864dd448eb1d22873a10",
       "placements": [
         {
           "page": "docs/multimodal/glm.md",
           "anchor": "cogvlm-visual-expert-figure",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/vision-language.md",
+          "anchor": "cogvlm-visual-expert",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/foundations/alignment-fusion.md",
+          "anchor": "cogvlm-visual-expert",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/families/glm.md",
+          "anchor": "cogvlm-visual-expert",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/vision/representation-grounding.md",
+          "anchor": "cogvlm-visual-expert",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/history.md",
+          "anchor": "cogvlm-visual-expert",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/glm-timeline.md",
+          "anchor": "cogvlm-visual-expert",
           "role": "wide",
           "media_link": "asset"
         }

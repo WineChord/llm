@@ -1,0 +1,70 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "tilelang",
+    "title": "TileLang: A Composable Tiled Programming Model for AI Systems",
+    "canonical_url": "https://arxiv.org/abs/2504.17577v2",
+    "artifact_url": "https://arxiv.org/pdf/2504.17577v2",
+    "artifact_sha256": "1c4c86d6f2b90b226c42af3e3d7a61eb90bfd9c66137660fb858e35769862574",
+    "version": {
+      "kind": "arxiv_version",
+      "value": "2504.17577v2"
+    },
+    "page_count": 21,
+    "license": {
+      "name": "Creative Commons Attribution 4.0 International",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "credit": "Copyright © 2025 Lei Wang et al.",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "83f6cab58103b7a93e147ef5c817891386376a69e36863401e0f0a98fa1598bd"
+    }
+  },
+  "render": {
+    "renderer": "pdftocairo",
+    "renderer_version": "26.07.0",
+    "dpi": 300,
+    "coordinate_space": "rendered-page-points-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "tilelang-figure-02",
+      "file": "figure-02-compile-pipeline.png",
+      "kind": "diagram",
+      "source_label": "Figure 2",
+      "page": 5,
+      "page_box_points": [
+        486,
+        720
+      ],
+      "rotation": 0,
+      "crop_box_points": [
+        44,
+        337,
+        446,
+        402
+      ],
+      "pixel_size": [
+        1675,
+        271
+      ],
+      "sha256": "a16b312d02bdb18b52dc1b9c75b8470111e279fb28f7cde690533ec143da67ec",
+      "placements": [
+        {
+          "page": "docs/systems/tilelang.md",
+          "anchor": "tilelang-figure-02",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/works/tilelang-mega-moe.md",
+          "anchor": "tilelang-figure-02",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

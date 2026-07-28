@@ -57,6 +57,13 @@ $$
 
 其中 recurrent state 是固定大小，attention KV 随可见历史增长。模型若每隔若干层保留 full attention，就同时拥有两类生命周期不同的状态：prefix 复用、beam fork、speculative rollback 和跨设备迁移都必须同时更新，不能只复制 KV。对应推理边界见[缓存复用](../inference/cache-reuse.md)和[推测解码](../inference/speculative-decoding.md)。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-02" data-paper-source="kimi-k3" data-paper-asset="k3-figure-02" markdown="1">
+[![Kimi K3 在同一主干中交替使用 KDA、Gated MLA 与 Stable LatentMoE，并展示共享专家和路由专家的内部结构](../assets/papers/kimi-k3/figure-02-architecture.png){ width="1967" height="1617" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-02-architecture.png)
+<figcaption><strong>Figure 2 给出一个混合架构的具体实例：token mixing、条件计算和跨层残差分别由不同子结构承担。</strong>图中 KDA、Gated MLA 与 Stable LatentMoE 的交替说明“线性时间”“稀疏参数”和“精确注意力”可以同时存在；它只证明 K3 的组合方式，不能把这一层比率当成其他工作负载的默认最优解。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=3">Kimi K3 Technical Report, Figure 2, p. 3</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 先固定工作负载，再比较
 
 公平比较至少固定：

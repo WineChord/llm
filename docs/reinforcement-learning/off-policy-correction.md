@@ -6,6 +6,13 @@ Off-policy correction 试图修正这两个分布之间的差异，但不存在�
 
 先读 [Policy Gradient](policy-gradient.md) 理解 on-policy estimator，再读 [Actor–Critic](actor-critic.md) 理解 value target。本页最后把经典 importance sampling、V-trace 与异步 LLM/Agentic RL 的版本契约连起来。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="sao-figure-02" data-paper-source="sao" data-paper-asset="sao-figure-02" markdown="1">
+[![SAO 在单条 rollout 完成后立即训练，并用 token-level direct importance ratio 控制离策略更新](../assets/papers/sao/figure-02-single-rollout.png){ width="1229" height="521" loading="lazy" decoding="async" }](../assets/papers/sao/figure-02-single-rollout.png)
+<figcaption><strong>Figure 2 是离策略校正在语言模型系统中的一个具体落点。</strong>吞吐优化缩短等待，却让 rollout 与 current policy 的距离随队列和更新推进而变化；双侧 gate 降低极端 ratio 的影响，但它同时引入偏差，不能恢复 behavior policy 未覆盖的 token。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2607.07508v1#page=3">Hou et al., Single-Rollout Asynchronous Optimization, Figure 2, p. 3</a>；Copyright © 2026 Zhenyu Hou, Yujiang Li, Jie Tang, and Yuxiao Dong，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去论文页眉、正文与原始 caption。</span></figcaption>
+</figure>
+</div>
+
 ## Behavior 与 target policy
 
 设轨迹由

@@ -298,6 +298,7 @@ nav:
           - 集合通信与状态分片: systems/collectives-sharding.md
           - 模型并行: systems/model-parallelism.md
           - Kernel 与性能: systems/kernels-performance.md
+          - TileLang: systems/tilelang.md
           - Attention Kernel: systems/attention-kernels.md
           - MoE 系统: systems/moe-systems.md
           - 内存、数值与硬件: systems/memory-numerics-hardware.md

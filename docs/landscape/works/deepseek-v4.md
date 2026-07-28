@@ -75,6 +75,13 @@ DeepSeek-V4 给出的答案由四层共同构成：
 
 ## 架构：先压缩，再决定看哪里 {#csa-hca}
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--portrait" id="deepseek-v4-figure-02" data-paper-source="deepseek-v4" data-paper-asset="deepseek-v4-figure-02" markdown="1">
+[![DeepSeek-V4 Transformer block 以 mHC 的 pre-block、post-block 与 residual mixing 包围 CSA 或 HCA 注意力和 DeepSeekMoE，并在顶部连接 Prediction Head 与 MTP Modules](../../assets/papers/deepseek-v4/figure-02-overall-architecture.png){ width="1938" height="1488" loading="lazy" decoding="async" }](../../assets/papers/deepseek-v4/figure-02-overall-architecture.png)
+<figcaption><strong>Figure 2 把 V4 的三项变化放回同一个 block：CSA/HCA 改变注意力状态，DeepSeekMoE 保持稀疏容量，mHC 则在两个子层前后重写 residual stream 的读写。</strong>MTP 位于主干输出之后，因此它既是训练辅助目标，也是可服务化的 draft 路径；任何单独机制都不能代表整套架构。<span class="paper-figure__source">图源：<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/resolve/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/DeepSeek_V4.pdf#page=6">DeepSeek-V4 Technical Report, Figure 2, p. 6</a>；Copyright (c) 2023 DeepSeek，<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ### 继承的 DeepSeekMoE 与 MTP
 
 DeepSeek-V4 沿用 [DeepSeekMoE](https://arxiv.org/abs/2401.06066) 的 fine-grained routed experts、shared expert 与辅助损失自由的均衡策略，也保留 [DeepSeek-V3](https://arxiv.org/abs/2412.19437) 的一层 Multi-Token Prediction。真正变化发生在路由入口与最前面的 block：
@@ -448,6 +455,13 @@ $$
 ### 异构 KV cache 与磁盘前缀 {#on-disk-kv}
 
 V4 同时存在 compressed CSA/HCA entry、CSA indexer key、128-token SWA 与尚不足一个 compression block 的尾部 hidden state。统一套用等长 PagedAttention block 会遇到两类冲突：不同 layer 的 cache policy 不同，高性能 sparse kernel 又要求对齐。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="deepseek-v4-figure-06" data-paper-source="deepseek-v4" data-paper-asset="deepseek-v4-figure-06" markdown="1">
+[![DeepSeek-V4 的 State Cache 保存各请求的 SWA KV 与未压缩尾状态，KV Cache 则按 block 和 layer 保存 CSA indexer、CSA main KV 与 HCA KV](../../assets/papers/deepseek-v4/figure-06-hybrid-kv-cache-layout.png){ width="1875" height="583" loading="lazy" decoding="async" }](../../assets/papers/deepseek-v4/figure-06-hybrid-kv-cache-layout.png)
+<figcaption><strong>Figure 6 把“混合注意力”落实成两套生命周期不同的物理状态。</strong>State cache 随请求位置滚动并等待压缩块闭合；classical KV cache 承载可分页、可复用的完整压缩 entry。两者若只共享一个同构 block schema，就会丢失 layer 类型、尾状态与 indexer 的边界。<span class="paper-figure__source">图源：<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/resolve/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/DeepSeek_V4.pdf#page=22">DeepSeek-V4 Technical Report, Figure 6, p. 22</a>；Copyright (c) 2023 DeepSeek，<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/653b8ce97de7ed21df99e5f6bd49bacb3840df2b/LICENSE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
 
 报告把缓存拆成：
 

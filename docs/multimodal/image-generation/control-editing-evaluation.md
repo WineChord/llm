@@ -29,6 +29,13 @@ $$
 
 若把四者都压成一句 prompt，系统就无法知道“红色”应绑定哪个对象，也无法保证背景保持。可控架构的核心是让条件拥有合适的<strong>粒度、位置与强度接口</strong>。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="dit-figure-03" data-paper-source="dit" data-paper-asset="dit-figure-03" markdown="1">
+[![DiT 将加噪 latent 切成 patch token，并比较 adaLN-Zero、cross-attention 与条件 token 拼接三种条件注入方式](../../assets/papers/dit/figure-03-architecture-conditioning.png){ width="2150" height="883" loading="lazy" decoding="async" }](../../assets/papers/dit/figure-03-architecture-conditioning.png)
+<figcaption><strong>Figure 3 说明“加入条件”至少包含位置、参数路径和初始化三项选择。</strong>adaLN 把条件变成通道调制，cross-attention 建立独立键值记忆，in-context 方案则让条件直接占用序列位置；后续加入边缘、深度、身份或 mask 时，必须继续说明它们复用哪条路径，以及多条件冲突怎样被训练和评测。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2212.09748v2#page=3">Scalable Diffusion Models with Transformers, Figure 3, p. 3</a>；Copyright © 2023 William Peebles and Saining Xie，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## Guidance：最轻量的控制是改变 score
 
 Classifier guidance 利用

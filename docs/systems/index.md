@@ -40,6 +40,7 @@ $$
 | 数值 | storage、compute、accumulator、scale、rounding | [数值与低精度](precision-numerics.md) |
 | 硬件 | SM、warp、register、shared memory、TMA、graph | [GPU 执行](gpu-execution.md) |
 | 通用 kernel | GEMM、norm、activation、fusion、benchmark | [Kernel 与性能](kernels-performance.md) |
+| Kernel DSL | tile、layout、pipeline、JIT、后端与验证 | [TileLang](tilelang.md) |
 | Attention | online softmax、prefill/decode、paged/ragged | [Attention Kernel](attention-kernels.md) |
 | MoE | route、permute、all-to-all、grouped GEMM、combine | [MoE 系统](moe-systems.md) |
 
@@ -88,6 +89,6 @@ $$
 - 平均 step time 会掩盖 straggler 与 checkpoint 抖动；
 - 优化后的实现必须与慢 reference、backward 和真实 shape 对齐。
 
-学习时先走[性能模型](performance-model.md)→[并行总览](parallelism.md)→[Kernel](kernels-performance.md)→[检查点](checkpointing.md)；排错时从[调试手册](../practice/debugging.md)进入首个分叉点。
+学习时先走[性能模型](performance-model.md)→[并行总览](parallelism.md)→[Kernel](kernels-performance.md)→[TileLang](tilelang.md)→[检查点](checkpointing.md)；排错时从[调试手册](../practice/debugging.md)进入首个分叉点。
 
 开放系统组件与模型版本的对应关系可从 [DeepSeek](../landscape/families/deepseek.md)、[Kimi](../landscape/families/kimi.md) 与 [GLM](../landscape/families/glm.md) 家族页反查；组织名或仓库名本身不证明某个组件已经进入生产 checkpoint。

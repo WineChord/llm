@@ -89,6 +89,13 @@ CompactionRL 把一个 rollout 拆成长度不同的多个 segment 后，究竟�
 
 SAO 为每个 prompt 采样一条 rollout。轨迹完成后即可成为 learner 的可用样本，不必等待同 prompt 的其他候选。这里的 single rollout 是 **group size 为 1**，不是 learner 每收到一个样本就立刻更新一次；论文实验仍以 128 条轨迹组成 global batch。这样减少了由组内 straggler 额外制造的 staleness，也适配真实在线环境中“一次状态只返回一条后续轨迹”的数据形态。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="sao-figure-02" data-paper-source="sao" data-paper-asset="sao-figure-02" markdown="1">
+[![SAO 与 GRPO 的 rollout 就绪语义对照：GRPO 等待同组轨迹，SAO 让单条已完成轨迹直接进入训练队列，并在 token ratio 上施加双侧可信区间](../../assets/papers/sao/figure-02-single-rollout.png){ width="1229" height="521" loading="lazy" decoding="async" }](../../assets/papers/sao/figure-02-single-rollout.png)
+<figcaption><strong>Figure 2 把“group size 为 1”与“每条样本立即更新”区分开：SAO 消除的是同 prompt 候选之间的就绪屏障，learner 仍可把多条已完成轨迹组成 batch。</strong>右侧两幅图还揭示了第二层变化：普通 PPO 的截断只在部分 advantage 方向形成平区，DIS 则把双侧区间外的 token 都拒绝出梯度；吞吐调度和统计稳定性因而必须一起阅读。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2607.07508v1#page=3">Hou et al., Single-Rollout Asynchronous Optimization, Figure 2, p. 3</a>；Copyright © 2026 Zhenyu Hou, Yujiang Li, Jie Tang, and Yuxiao Dong，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去论文页眉、正文与原始 caption。</span></figcaption>
+</figure>
+</div>
+
 代价同样直接：失去组内 baseline 后，单条 Monte Carlo reward 的方差很高，必须依赖状态相关的 critic。SAO 因而不是一个单独的 scheduler trick，而是“异步消费 + token-level correction + value-model recipe”的组合。
 
 ### 三个 policy 角色

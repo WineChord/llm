@@ -26,6 +26,13 @@
 
 [Latent Diffusion](https://arxiv.org/abs/2112.10752) 把这两类思想接了起来：先用 autoencoder 压缩，再在连续 latent 中扩散。随后 [DiT](https://arxiv.org/abs/2212.09748) 表明去噪 backbone 也可以换成 Transformer；[Flow Matching](https://arxiv.org/abs/2210.02747) 进一步把训练表述为沿选定概率路径回归向量场。它们共享的深层问题不是“U-Net 还是 Transformer”，而是表示空间、概率路径、训练目标和数值求解器怎样共同决定误差。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="dit-figure-03" data-paper-source="dit" data-paper-asset="dit-figure-03" markdown="1">
+[![DiT 先把加噪 VAE latent 切成 patch token，再用 adaLN-Zero、cross-attention 或额外 token 注入时间和类别条件](../../assets/papers/dit/figure-03-architecture-conditioning.png){ width="2150" height="883" loading="lazy" decoding="async" }](../../assets/papers/dit/figure-03-architecture-conditioning.png)
+<figcaption><strong>Figure 3 是“连续生成借用 Transformer”这次汇流的具体形态。</strong>latent patch 让图像进入序列骨架，时间步和条件却通过生成专属接口进入 block；因此 DiT 的历史意义不是把 diffusion 改名为自回归，而是把可扩展 backbone 与概率路径解耦。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2212.09748v2#page=3">Scalable Diffusion Models with Transformers, Figure 3, p. 3</a>；Copyright © 2023 William Peebles and Saining Xie，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
+
 完整推导和一段可执行的噪声预测 reference 见[从 DDPM 到 DiT 与 Flow](../works/diffusion-dit-flow.md)，机制地图见[多模态生成模型](../../multimodal/generative-modeling.md)。
 
 ## 第三股水流：声音与视频带来真实时间

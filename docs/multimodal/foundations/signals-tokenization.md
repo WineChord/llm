@@ -23,14 +23,6 @@ $$
 
 任一阶段丢失的信息，后续语言模型都无法凭空恢复。它最多利用先验猜测，这正是许多多模态幻觉的来源。
 
-<figure class="concept-figure" id="signal-to-token-map" markdown="1">
-
-![图像、音频、视频与身体状态经过采样、编码和 Token 化进入共享计算，再输出语言、媒体或动作](../../assets/diagrams/multimodal-computing-map.svg)
-
-<figcaption>Token 是模态接口，不是原始世界本身。图中每一条进入共享计算的边都必须携带 shape、位置、时间、segment 与有效位置约定。</figcaption>
-
-</figure>
-
 ## 两种充分性
 
 表示是否“足够好”取决于目标。

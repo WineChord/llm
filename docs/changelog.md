@@ -2,6 +2,7 @@
 
 ## 2026-07-28
 
+- 新增 [TileLang 系统专题](systems/tilelang.md)：按 2025 年初稿、ICLR 2026 最终论文、0.1.12 稳定版与开发主线分开证据边界，系统展开 tile 编程模型、layout、流水线、FTG recommendation/inference、编译 pass、JIT/ABI、缓存、自动调优、多后端、性能模型、数值正确性、论文 benchmark 与上线验证，并与 Kernel 主干和 DeepSeek‑V4 专页双向连接。
 - 新增 [DSpark 深读](landscape/works/dspark.md)：从精确 rejection sampling、DFlash 并行骨干和低秩 Markov / RNN 头进入 confidence soft label、STS、SPS 前缀调度与 non-anticipating 反例，再分开 DeepSpec 公开训练栈、V4 内部生产改造、SGLang confidence-scheduled 路径和 vLLM 固定长度支持；论文四幅机制 / 遥测图按 CC BY 4.0 登记到可复现 manifest，并将可复用结论接回[推测解码](inference/speculative-decoding.md)与[调度和 Goodput](inference/scheduling-goodput.md)。
 - 建立[模型家族](landscape/families/index.md)入口与可审计发布账本，分别展开 [DeepSeek](landscape/families/deepseek.md)、[Kimi](landscape/families/kimi.md) 和 [GLM](landscape/families/glm.md) 的主干、专门模型、研究方法、系统组件、Agent 工具、评测工件、API / 产品与许可证边界；三条时间线、工作深读和 canonical 主题同步形成双向阅读路径。
 - 扩展家族的多模态支线：[DeepSeek](multimodal/deepseek.md) 补入 OCR-2 的语义阅读顺序，[Kimi](multimodal/kimi.md) 继续连接 Kimi-VL、K2.5 与 K3，[GLM](multimodal/glm.md) 则从 VisualGLM、CogVLM 与 GLM-V 贯通 OCR、GUI、端侧、语音、图像和视频生成。

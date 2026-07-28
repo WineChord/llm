@@ -10,6 +10,13 @@
 
 这些记忆的容量、可写性、可寻址性和生命周期完全不同。讨论前应先说明“记住什么、保存在哪里、何时清除、如何验证”。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-5-figure-08" data-paper-source="glm-5" data-paper-asset="glm-5-figure-08" markdown="1">
+[![GLM-5 搜索 Agent 在不同上下文管理策略和执行步数下的 BrowseComp 准确率曲线](../assets/papers/glm-5/figure-08-context-management.png){ width="1125" height="725" loading="lazy" decoding="async" }](../assets/papers/glm-5/figure-08-context-management.png)
+<figcaption><strong>Figure 8 是“窗口不等于记忆”的运行时证据。</strong>HCM 通过折叠较早 observation、在阈值处重启上下文，让固定窗口支持更多搜索 step；它没有把被删除内容变成神经记忆，也没有保证信息可恢复。评价 memory architecture 时必须分别记录保留、压缩、外部存储和重新读取机制。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2602.15763v2#page=19">GLM-5: from Vibe Coding to Agentic Engineering, Figure 8, p. 19</a>；Copyright © 2026 GLM-5 Team，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去原始 caption 与周围正文。</span></figcaption>
+</figure>
+</div>
+
 ## 记忆分类
 
 | 类型 | 写入 | 读取 | 容量 | 主要风险 |

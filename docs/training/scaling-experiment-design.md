@@ -44,6 +44,13 @@ $$
 
 这说明最优扩展指数由拟合系数决定，而不是一个永久的 tokens-per-parameter 常数。数据质量、重复度、模型形状或训练目标变化后，需要重新拟合。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-07" data-paper-source="kimi-k3" data-paper-asset="k3-figure-07" markdown="1">
+[![Kimi K3 与 K2 的验证损失随训练 FLOPs 变化并形成近似线性的对数坐标趋势线](../assets/papers/kimi-k3/figure-07-scaling.png){ width="1033" height="879" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-07-scaling.png)
+<figcaption><strong>Figure 7 是一次配方内规模律的例子：在作者固定的代理模型、数据与训练设置中，验证损失随 FLOPs 呈稳定趋势，并显示 K3 配方相对 K2 的位移。</strong>图中的约 2.5 倍只属于这组受控实验；架构、数据、tokenizer 或 loss 定义改变后，斜率和截距都要重新估计，不能把一条模型家族曲线当作普适常数。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=11">Kimi K3 Technical Report, Figure 7, p. 11</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## $6ND$ 的边界
 
 对稠密 Transformer，常以

@@ -2,6 +2,13 @@
 
 自回归服务的 KV Cache 会随每个请求逐 token 增长，结束时又突然释放。静态连续 tensor 很适合 kernel，却不适合长度未知、动态到达的请求。PagedAttention 的核心是把逻辑序列连续性与物理 KV 连续性解耦，使运行时可以按需分配、共享和回收固定大小 block。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="vllm-v1-process-architecture" data-paper-source="vllm-process-architecture" data-paper-asset="vllm-v1-process-architecture" markdown="1">
+[![vLLM V1 中多个 API server、DP engine core 与 TP GPU worker 的进程边界](../../assets/papers/vllm-process-architecture/vllm-v1-process-architecture.png){ width="2816" height="1536" loading="lazy" decoding="async" }](../../assets/papers/vllm-process-architecture/vllm-v1-process-architecture.png)
+<figcaption><strong>PagedAttention 最终服务的是一个分布式运行时，而不是孤立的页表算法。</strong>图中的 engine core 持有调度和 KV 逻辑状态，GPU worker 执行分片模型；当 DP rank、API server 或 worker 失效时，页表、请求与采样状态必须一起恢复或明确丢弃。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/vllm-project/vllm/b6cbba8bc893c61e412a205533aafbee1ae6be31/docs/assets/design/arch_overview/v1_process_architecture_tp2_dp4.png">vLLM V1 process architecture for TP=2 and DP=4, standalone process architecture diagram</a>；vLLM project contributors，<a href="https://github.com/vllm-project/vllm/blob/b6cbba8bc893c61e412a205533aafbee1ae6be31/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 为什么连续预留会压低 batch
 
 对 $L$ 层、batch 中第 $i$ 条序列长度 $T_i$、KV head 数 $H_{\text{kv}}$、head dimension $d_h$、每元素 $b$ 字节：

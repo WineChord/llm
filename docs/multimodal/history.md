@@ -9,14 +9,6 @@
 
 这四条路线并非依次替代。一个现代系统往往同时包含感知 encoder、语言主干、媒体 tokenizer、生成 decoder、记忆与控制器；所谓“原生”或“统一”，只有落到这些接口怎样训练和共享参数上才有意义。
 
-<figure class="concept-figure" id="multimodal-computing-map" markdown="1">
-
-![从图像、音频、视频与身体状态，经模态表示、共享语义、生成和世界模型，输出语言、媒体与动作的多模态计算图](../assets/diagrams/multimodal-computing-map.svg)
-
-<figcaption>同一个 Transformer 接口并不会抹平模态差异。信号采样决定可见证据，表示决定可逆性，共享主干决定信息怎样交互，输出协议则决定系统能否回到媒体或真实环境。</figcaption>
-
-</figure>
-
 ## 第一条水流：从手工特征到可学习感知
 
 早期视觉和语音系统通常把表示设计与任务学习分开：视觉依赖边缘、角点和局部描述子，语音依赖频谱、声学模型与语言模型。它们建立了两个至今仍然重要的观念：
@@ -54,6 +46,13 @@ $$
 
 $E_m$ 决定保留什么感知信息，$P_m$ 决定以多少 token、什么位置和尺度接入，$G$ 决定语言推理怎样访问证据。模型可能拥有很强的语言先验，却因低分辨率、过强压缩或错误坐标变换而看不清输入；因此 caption、OCR、grounding 与跨帧推理必须分开验证。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="cogvlm-visual-expert" data-paper-source="glm-cogvlm-visual-expert" data-paper-asset="cogvlm-visual-expert" markdown="1">
+[![CogVLM 让视觉位置和文本位置共享序列上下文，同时在各层使用不同的视觉与语言 QKV 和 FFN 参数](../assets/papers/glm-cogvlm-visual-expert/cogvlm-visual-expert.png){ width="1378" height="824" loading="lazy" decoding="async" }](../assets/papers/glm-cogvlm-visual-expert/cogvlm-visual-expert.png)
+<figcaption><strong>Figure 3 记录了视觉语言桥从“输入端投影一次”向“层内保留模态专属容量”的一次转折。</strong>视觉和文本已经进入共同上下文，但参数路径仍按 token 类型分流；这提醒我们，所谓统一 backbone 可以有多种粒度，不能只看最终是否由同一个 Transformer 名称承载。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/zai-org/CogVLM/f7283b2c8d26cd7f932d9a5f7f5f9307f568195d/assets/method.png">CogVLM visual-expert architecture, Figure 3</a>；Copyright 2024 CogVLM team @ Zhipu AI，<a href="https://github.com/zai-org/CogVLM/blob/f7283b2c8d26cd7f932d9a5f7f5f9307f568195d/LICENSE">Apache License 2.0</a>。</span></figcaption>
+</figure>
+</div>
+
 音频和视频也逐渐进入语言接口。[Whisper](https://arxiv.org/abs/2212.04356) 把多任务语音识别、翻译与时间戳统一为序列预测；[CLAP](https://arxiv.org/abs/2206.04769) 把声音与语言映射到共享空间；视频—语言模型则需要额外处理采样、镜头边界和事件顺序。语言提供了统一的任务描述，却不能代替模态内部的时空结构。
 
 ## 第三条水流：表示开始可逆
@@ -67,6 +66,13 @@ $E_m$ 决定保留什么感知信息，$P_m$ 决定以多少 token、什么位�
 [VQ-VAE](https://arxiv.org/abs/1711.00937) 把图像压成离散码，[VQGAN](https://arxiv.org/abs/2012.09841) 进一步用感知和对抗目标改善重建。于是图像可以像文本一样交给自回归或 masked-token 模型处理。音频侧的 [SoundStream](https://arxiv.org/abs/2107.03312) 与 [EnCodec](https://arxiv.org/abs/2210.13438) 用多级量化码本在码率、语义和音质之间取舍；视频 tokenizer 还要同时压缩空间与时间。
 
 另一条生成路线从连续扰动出发。[DDPM](https://arxiv.org/abs/2006.11239) 学习逆转加噪过程，[Latent Diffusion](https://arxiv.org/abs/2112.10752) 把计算移入压缩 latent，[DiT](https://arxiv.org/abs/2212.09748) 让 Transformer 成为可扩展去噪 backbone。[Flow Matching](https://arxiv.org/abs/2210.02747) 则把问题写成沿概率路径学习速度场。它们共享“从简单分布运输到数据分布”的几何，但训练参数化、时间方向、采样器和少步误差并不相同。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="dit-figure-03" data-paper-source="dit" data-paper-asset="dit-figure-03" markdown="1">
+[![DiT 把 VAE latent 分块为 token，并以时间和类别条件调制 Transformer 去噪 block](../assets/papers/dit/figure-03-architecture-conditioning.png){ width="2150" height="883" loading="lazy" decoding="async" }](../assets/papers/dit/figure-03-architecture-conditioning.png)
+<figcaption><strong>Figure 3 标出生成史上的一个关键接口变化：Transformer 不再只预测离散文本或图像码，也可以作为连续 latent 的去噪向量场。</strong>真正迁移过来的是 patch sequence、scaling law 与 block 设计；噪声时间、条件注入和 sampler 仍属于生成模型自己的数学契约。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2212.09748v2#page=3">Scalable Diffusion Models with Transformers, Figure 3, p. 3</a>；Copyright © 2023 William Peebles and Saining Xie，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
 
 这条水流后来扩展到声音和视频：
 

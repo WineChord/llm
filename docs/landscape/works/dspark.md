@@ -716,10 +716,16 @@ $\gamma=5$ 的吞吐数字直接解释。
 固定长度 Qwen3 示例为：
 
 ```bash
+spec_config='{
+  "method": "dspark",
+  "model": "deepseek-ai/dspark_qwen3_8b_block7",
+  "num_speculative_tokens": 7,
+  "attention_backend": "FLASH_ATTN",
+  "draft_sample_method": "probabilistic"
+}'
 vllm serve Qwen/Qwen3-8B \
   --trust-remote-code \
-  --speculative-config \
-  '{"method":"dspark","model":"deepseek-ai/dspark_qwen3_8b_block7","num_speculative_tokens":7,"attention_backend":"FLASH_ATTN","draft_sample_method":"probabilistic"}'
+  --speculative-config "$spec_config"
 ```
 
 部署前要按所装 vLLM 版本核对字段；开放 PR 的接口不能提前当作 stable contract。

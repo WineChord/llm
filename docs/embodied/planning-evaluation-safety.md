@@ -63,6 +63,13 @@ $$
 
 VLA 直接输出 action chunk，延迟低、接口短；遇到长程任务、失败恢复或约束变化时，需要额外 state machine 或 planner。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="rt2-figure-01" data-paper-source="rt-2" data-paper-asset="rt2-figure-01" markdown="1">
+[![RT-2 把 Web 视觉语言数据和机器人动作轨迹放进共同 token 接口，再把动作 token 交给闭环机器人执行](../assets/papers/rt-2/figure-01-vla-cofinetuning.png){ width="1663" height="629" loading="lazy" decoding="async" }](../assets/papers/rt-2/figure-01-vla-cofinetuning.png)
+<figcaption><strong>Figure 1 是 direct VLA policy 的代表性边界：高层语义迁移与低层动作预测可以共用主干，执行安全却没有因此消失。</strong>预测出的 token 仍要经过动作反量化、坐标与限幅检查，并在新观察到来后决定继续、重规划或中止；图中 shared sequence interface 不能替代这些 runtime contract。<span class="paper-figure__source">图源：<a href="https://proceedings.mlr.press/v229/zitkovich23a/zitkovich23a.pdf#page=2">RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control, Figure 1, p. 2</a>；Copyright © 2023 the authors，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ### 世界模型 MPC
 
 $$
@@ -75,6 +82,13 @@ J\left(
 $$
 
 世界模型可以显式比较反事实动作，每次只执行第一步再重规划。代价是 rollout 计算、模型偏差和目标函数。最小 CEM 见[动力学、想象与规划](../world-models/dynamics-planning.md#cem)。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="dreamerv3-figure-03" data-paper-source="dreamerv3" data-paper-asset="dreamerv3-figure-03" markdown="1">
+[![DreamerV3 从真实观察学习递归世界模型，再在模型想象出的 latent 轨迹上更新 actor 与 critic](../assets/papers/dreamerv3/figure-03-training-process.png){ width="2008" height="875" loading="lazy" decoding="async" }](../assets/papers/dreamerv3/figure-03-training-process.png)
+<figcaption><strong>Figure 3 展示 world-model policy 为什么天然带有第二条安全边界：策略依赖的不只是观测，还依赖模型产生的状态分布。</strong>训练时应分别验证重建、reward、continuation、value 与 imagined rollout；部署时仍要用真实传感器周期性重置，并让 supervisor 拒绝越界动作。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2301.04104v2#page=3">Hafner et al., Mastering Diverse Domains through World Models, Figure 3, p. 3</a>；Copyright © 2024 Danijar Hafner, Jurgis Pasukonis, Jimmy Ba, and Timothy Lillicrap，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去原始 caption 与周围正文。</span></figcaption>
+</figure>
+</div>
 
 ### 高层 reasoning + 低层 VLA
 

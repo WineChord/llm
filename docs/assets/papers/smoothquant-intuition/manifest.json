@@ -1,0 +1,71 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "smoothquant-intuition",
+    "title": "SmoothQuant activation-to-weight difficulty migration",
+    "canonical_url": "https://github.com/mit-han-lab/smoothquant/blob/c61476d728e42ae0d8a35e7e78494edcac3237b5/figures/intuition.png",
+    "artifact_kind": "standalone_raster",
+    "artifact_url": "https://raw.githubusercontent.com/mit-han-lab/smoothquant/c61476d728e42ae0d8a35e7e78494edcac3237b5/figures/intuition.png",
+    "artifact_sha256": "54ff002e8de45b53fc6d5210c8f88537c4f645184c52e7a61684a33d12c99f01",
+    "version": {
+      "kind": "git_commit",
+      "value": "c61476d728e42ae0d8a35e7e78494edcac3237b5"
+    },
+    "page_count": 1,
+    "license": {
+      "name": "MIT License",
+      "url": "https://github.com/mit-han-lab/smoothquant/blob/c61476d728e42ae0d8a35e7e78494edcac3237b5/LICENSE",
+      "credit": "MIT HAN Lab",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "461e568b2ba8b2d9ab6a055746590a5bd2d030211dd751acba01cdf78511c06d"
+    }
+  },
+  "render": {
+    "renderer": "imagemagick",
+    "renderer_version": "7.1.2-27 Q16-HDRI",
+    "dpi": 72,
+    "coordinate_space": "source-pixels-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "smoothquant-intuition",
+      "file": "smoothquant-intuition.png",
+      "kind": "figure",
+      "source_label": "standalone method figure",
+      "page": 1,
+      "source_size_pixels": [
+        1934,
+        400
+      ],
+      "rotation": 0,
+      "source_crop_box_pixels": [
+        0,
+        0,
+        1934,
+        400
+      ],
+      "pixel_size": [
+        1934,
+        400
+      ],
+      "sha256": "1a17747ee1bd0693f990a216f794780e4fe9947e6bd90faf6888156278c779f7",
+      "placements": [
+        {
+          "page": "docs/inference/quantization.md",
+          "anchor": "smoothquant-intuition",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/systems/precision-numerics.md",
+          "anchor": "smoothquant-intuition",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

@@ -52,6 +52,13 @@ $$
 
 而 MLA 试图压缩每个 token 需要缓存的 K/V channel。前者减少每 token 激活的参数，后者减少 decode 时随序列累积的状态；两者分别把瓶颈推向 expert communication 与 attention kernel。因而 V2 的真正转折不是“参数更多”，而是模型容量、激活 FLOPs、KV cache 与跨设备通信必须联合预算。通用原理见 [MoE](../../architecture/moe.md)、[注意力家族](../../architecture/attention-variants.md)和 [MoE 系统](../../systems/moe-systems.md)。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="deepseek-v2-architecture" data-paper-source="deepseek-v2-architecture" data-paper-asset="deepseek-v2-architecture" markdown="1">
+[![DeepSeek-V2 的 MLA 低秩压缩、位置分支和缓存对象，以及与传统多头注意力不同的 query key value 路径](../../assets/papers/deepseek-v2-architecture/deepseek-v2-architecture.png){ width="1139" height="918" loading="lazy" decoding="async" }](../../assets/papers/deepseek-v2-architecture/deepseek-v2-architecture.png)
+<figcaption><strong>这张 standalone architecture diagram 让 V2 家族史中的“服务成本”变成可见的张量设计：缓存从完整 K/V heads 转为低秩 latent 与独立位置分支。</strong>后续 V3 延续这条 MLA 主线，DSA、CSA 与 HCA 则进一步改变历史怎样被检索和沿时间压缩；这些机制不能只按模型版本名合并成一个“稀疏注意力”。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/deepseek-ai/DeepSeek-V2/ec98ee3cbffc32104cd55dba8af884b3d772602a/figures/architecture.png">DeepSeek-V2 official architecture diagram</a>；Copyright (c) 2023 DeepSeek，<a href="https://github.com/deepseek-ai/DeepSeek-V2/blob/ec98ee3cbffc32104cd55dba8af884b3d772602a/LICENSE-CODE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ### 第三段历史：V3 把训练系统写进模型配方
 
 [DeepSeek-V3](https://arxiv.org/abs/2412.19437) 延续 MLA 与细粒度 MoE，又加入 auxiliary-loss-free balancing、Multi-Token Prediction、FP8 训练和 DualPipe。这里每项机制都要读两层：

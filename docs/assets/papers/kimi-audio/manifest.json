@@ -1,0 +1,83 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "kimi-audio",
+    "title": "Kimi-Audio architecture overview",
+    "canonical_url": "https://github.com/MoonshotAI/Kimi-Audio/blob/349251e1d8f4f98d58fda59246381faecd7392e0/assets/kimia_framework.png",
+    "artifact_kind": "standalone_raster",
+    "artifact_url": "https://raw.githubusercontent.com/MoonshotAI/Kimi-Audio/349251e1d8f4f98d58fda59246381faecd7392e0/assets/kimia_framework.png",
+    "artifact_sha256": "88e34c7745dd95c77f7020cfcd42810deaddc8e57dd257585126b613b8e2ddcd",
+    "version": {
+      "kind": "git_commit",
+      "value": "349251e1d8f4f98d58fda59246381faecd7392e0"
+    },
+    "page_count": 1,
+    "license": {
+      "name": "MIT License (repository non-Qwen components)",
+      "url": "https://github.com/MoonshotAI/Kimi-Audio/blob/349251e1d8f4f98d58fda59246381faecd7392e0/README.md#license",
+      "credit": "Moonshot AI",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "1cac5929a0183d16d3a56179859b9fe2daf25a98b7174fb38b672c008170e429"
+    }
+  },
+  "render": {
+    "renderer": "imagemagick",
+    "renderer_version": "7.1.2-27 Q16-HDRI",
+    "dpi": 72,
+    "coordinate_space": "source-pixels-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "kimi-audio-framework",
+      "file": "kimi-audio-framework.png",
+      "kind": "diagram",
+      "source_label": "standalone architecture diagram",
+      "page": 1,
+      "source_size_pixels": [
+        2464,
+        2055
+      ],
+      "rotation": 0,
+      "source_crop_box_pixels": [
+        0,
+        0,
+        2464,
+        2055
+      ],
+      "pixel_size": [
+        2464,
+        2055
+      ],
+      "sha256": "29bbc579eea2264b83906afb35ad47fbbbf2fd410aaa3bd57a81472188bd78d2",
+      "placements": [
+        {
+          "page": "docs/multimodal/audio/generation-streaming.md",
+          "anchor": "kimi-audio-framework",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/audio/representations-understanding.md",
+          "anchor": "kimi-audio-framework",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/audio-language-models.md",
+          "anchor": "kimi-audio-framework",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/omni/any-to-any.md",
+          "anchor": "kimi-audio-framework",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

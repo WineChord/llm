@@ -97,6 +97,13 @@ torch.testing.assert_close(normalized.square().mean(-1), torch.ones(6), atol=2e-
 这里没有 capacity、expert parallel、GLU、bias 或 padding；它只锁定 full-width 与 latent-width 的
 边界。RMSNorm 稳定的是 aggregate 的输入尺度，不会修复路由塌缩、专家内部 outlier 或通信拥塞。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="deepseek-v2-architecture" data-paper-source="deepseek-v2-architecture" data-paper-asset="deepseek-v2-architecture" markdown="1">
+[![DeepSeek-V2 在 Transformer block 中组合 Multi-head Latent Attention 与包含共享专家和路由专家的 DeepSeekMoE](../assets/papers/deepseek-v2-architecture/deepseek-v2-architecture.png){ width="1139" height="918" loading="lazy" decoding="async" }](../assets/papers/deepseek-v2-architecture/deepseek-v2-architecture.png)
+<figcaption><strong>standalone architecture diagram 把 DeepSeekMoE 的共享路径与 top-k 路由路径放在同一张图里。</strong>共享专家始终接收 token，路由专家只激活一小部分；两路输出再汇合，因此“总参数”和“每 token 激活参数”必须分别报告。下半部分的 MLA 属于另一条 attention 成本轴，不能把 KV 压缩收益归给 MoE。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/deepseek-ai/DeepSeek-V2/ec98ee3cbffc32104cd55dba8af884b3d772602a/figures/architecture.png">DeepSeek-V2 architecture diagram, standalone architecture diagram</a>；Copyright (c) 2023 DeepSeek，<a href="https://github.com/deepseek-ai/DeepSeek-V2/blob/ec98ee3cbffc32104cd55dba8af884b3d772602a/LICENSE-CODE">MIT License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 容量与溢出
 
 若 batch 中共有 $N$ 个 token、$E$ 个专家、每 token 选择 $k$ 个专家，平均负载为
@@ -248,6 +255,13 @@ kernel 时间仍需单独监控。
 - 实际 wall-clock 是否均匀。
 
 token 数相同的专家也可能因序列形状、kernel 或节点拥塞产生不同耗时。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-05" data-paper-source="kimi-k3" data-paper-asset="k3-figure-05" markdown="1">
+[![Kimi K3 对比无辅助路由、按专家分位阈值平衡与按 token 排名平衡三种专家选择方式](../assets/papers/kimi-k3/figure-05-quantile-balancing.png){ width="1950" height="646" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-05-quantile-balancing.png)
+<figcaption><strong>Figure 5 把负载均衡的反馈对象画清楚：quantile balancing 调整每个专家的阈值，rank-based routing 则在 token 侧重排候选。</strong>两者都可能得到更均匀的计数，却改变了不同决策边界；比较时必须同时报告 expert load、被拒绝 token、路由分数分布与主任务质量。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=8">Kimi K3 Technical Report, Figure 5, p. 8</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
 
 ## Expert Parallel
 

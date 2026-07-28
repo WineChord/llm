@@ -4,6 +4,13 @@ Attention kernel 的核心矛盾不是矩阵乘法不会算，而是 score 矩�
 
 [FlashAttention 深读](../landscape/works/flashattention.md)从 IO complexity、online softmax 不变量和 blockwise reference 解释这次转折；它与模型结构中的 attention 定义相容，却改变了计算被搬运和重算的方式。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="flashattention-memory" data-paper-source="flash-attention" data-paper-asset="flashattention-memory" markdown="1">
+[![FlashAttention 不物化完整 score 和 probability 后的显存缩减随序列长度变化](../assets/papers/flash-attention/flashattention-memory.png){ width="1935" height="932" loading="lazy" decoding="async" }](../assets/papers/flash-attention/flashattention-memory.png)
+<figcaption><strong>kernel 设计改变的是中间状态的生命周期。</strong>序列越长，标准实现写回 N² score/probability 的代价越突出；tile-local online softmax 让峰值显存不再跟随同一条二次曲线。实际倍率仍由 dtype、backward、dropout、mask 与 kernel 版本共同决定。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/Dao-AILab/flash-attention/14c377950125c70b7a9dabf9c561fca53715ac7d/assets/flashattn_memory.jpg">FlashAttention memory reduction benchmark, standalone benchmark figure</a>；FlashAttention contributors，<a href="https://github.com/Dao-AILab/flash-attention/blob/14c377950125c70b7a9dabf9c561fca53715ac7d/LICENSE">BSD 3-Clause License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 问题与成本
 
 单层 attention 可写为

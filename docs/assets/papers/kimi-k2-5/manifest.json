@@ -35,14 +35,31 @@
       "kind": "diagram",
       "source_label": "Figure 3",
       "page": 5,
-      "page_box_points": [612, 792],
+      "page_box_points": [
+        612,
+        792
+      ],
       "rotation": 0,
-      "crop_box_points": [71, 55, 541, 328],
-      "pixel_size": [1958, 1138],
+      "crop_box_points": [
+        71,
+        55,
+        541,
+        328
+      ],
+      "pixel_size": [
+        1958,
+        1138
+      ],
       "sha256": "c6937fedc7c4e48f1088b34b585b45e16f00831749541a96542ff7c2f1f38fd2",
       "placements": [
         {
           "page": "docs/landscape/works/kimi-k2-5.md",
+          "anchor": "k25-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/reinforcement-learning/constraints-multiagent.md",
           "anchor": "k25-figure-03",
           "role": "wide",
           "media_link": "asset"
@@ -55,14 +72,37 @@
       "kind": "figure",
       "source_label": "Figure 9",
       "page": 21,
-      "page_box_points": [612, 792],
+      "page_box_points": [
+        612,
+        792
+      ],
       "rotation": 0,
-      "crop_box_points": [67, 55, 541, 323],
-      "pixel_size": [1975, 1117],
+      "crop_box_points": [
+        67,
+        55,
+        541,
+        323
+      ],
+      "pixel_size": [
+        1975,
+        1117
+      ],
       "sha256": "3387628827499313547af80b3377d1a3276fcce6fe1d1a86969ea2f2e91f228b",
       "placements": [
         {
           "page": "docs/landscape/works/kimi-k2-5.md",
+          "anchor": "k25-figure-09",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/architecture-training.md",
+          "anchor": "k25-figure-09",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/foundations/alignment-fusion.md",
           "anchor": "k25-figure-09",
           "role": "wide",
           "media_link": "asset"
@@ -75,14 +115,37 @@
       "kind": "diagram",
       "source_label": "Figure 10",
       "page": 23,
-      "page_box_points": [612, 792],
+      "page_box_points": [
+        612,
+        792
+      ],
       "rotation": 0,
-      "crop_box_points": [116, 77, 465, 225],
-      "pixel_size": [1454, 617],
+      "crop_box_points": [
+        116,
+        77,
+        465,
+        225
+      ],
+      "pixel_size": [
+        1454,
+        617
+      ],
       "sha256": "b2c1bd83a6814787595b5455fbc55657667c1f119591d5609b49a2ac8e8d6c44",
       "placements": [
         {
           "page": "docs/landscape/works/kimi-k2-5.md",
+          "anchor": "k25-figure-10",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/agentic-rl/training-systems.md",
+          "anchor": "k25-figure-10",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/landscape/works/slime-async-agentic-rl.md",
           "anchor": "k25-figure-10",
           "role": "wide",
           "media_link": "asset"

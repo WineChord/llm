@@ -97,6 +97,13 @@ $$
 
 [DeepSeek-R1](https://arxiv.org/abs/2501.12948) 把可验证 reward、group-relative optimization、冷启动数据和蒸馏组织成推理后训练路线。随后大量工作围绕 clipping、长度归一化、无信号组、process reward 和异步 rollout 调整具体 estimator。读这些方法时，应把“目标函数变化”和“采样预算、过滤、系统吞吐变化”分开。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k15-figure-03" data-paper-source="kimi-k1-5" data-paper-asset="k15-figure-03" markdown="1">
+[![Kimi k1.5 将 rollout worker、replay buffer、trainer 与 partial rollout 状态连接成闭环的强化学习系统](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png){ width="1650" height="808" loading="lazy" decoding="async" }](../assets/papers/kimi-k1-5/figure-03-rl-system-partial-rollout.png)
+<figcaption><strong>Figure 3 标志着长推理 RL 从单个 surrogate 走向显式状态系统。</strong>轨迹可以完整结束、被长度预算暂停或因重复提前终止；replay buffer 因而既承载训练数据，也承载跨 iteration 的未完成计算。算法史在这里开始与运行时状态史合流。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-k1.5/cf9a8785730c7e59d788956e1e40dc9fc31ebf08/Kimi_k1.5.pdf#page=8">Kimi k1.5: Scaling Reinforcement Learning with LLMs, Figure 3, p. 8</a>；Kimi Team，<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>。</span></figcaption>
+</figure>
+</div>
+
 ### Baseline 与分母
 
 [Dr. GRPO](https://arxiv.org/abs/2503.20783) 把 group std 与 response-length denominator 带来的权重显式化；[DAPO](../landscape/works/dapo.md) 把 Clip-Higher、mixed-group sampling、global token loss 与 overlong handling 组合成开放配方；[VAPO](../landscape/works/vapo.md) 则重新引入并预热 critic，用 decoupled、length-adaptive GAE 处理长短混合。它们不是一条“新算法依次取代旧算法”的榜单，而是沿 baseline、长度、探索与采样成本分叉。
@@ -116,6 +123,13 @@ $$
 - 上下文压缩改变了后续可见状态。
 
 [SAO 与 CompactionRL](../landscape/works/sao-compactionrl.md) 分别研究异步 group barrier 与上下文压缩后的信用接口。它们说明“新的 LLM RL”并没有脱离经典 RL；相反，policy gradient、critic、importance sampling 和 partial observability 在更大的系统里重新变得不可回避。
+
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-08" data-paper-source="kimi-k3" data-paper-asset="k3-figure-08" markdown="1">
+[![Kimi K3 多类 Agentic RL 任务的分数和平均步骤随 RL FLOPs 变化](../assets/papers/kimi-k3/figure-08-rl-scaling.png){ width="1571" height="758" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-08-rl-scaling.png)
+<figcaption><strong>Figure 8 展示了历史线的另一端：RL compute 已经同时作用于多种工具和视觉任务，但各领域的曲线、波动与步骤长度并不一致。</strong>它支持“后训练仍可扩展”的配方内观察，不能证明某一个 estimator 单独造成全部增益。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=13">Kimi K3 Technical Report, Figure 8, p. 13</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
 
 ## 一条不变的审题线
 

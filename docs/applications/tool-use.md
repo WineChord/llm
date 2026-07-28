@@ -4,6 +4,13 @@
 
 [ReAct 与 Toolformer](../landscape/works/react-toolformer.md) 展示两种不同起点：前者在推理时交错 reasoning、action 与 observation，后者从候选 API 调用中筛选能降低语言模型损失的训练样本。两者在应用系统演进中的位置见[检索、工具与智能体](../landscape/lineages/retrieval-agents.md)。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="glm-5-figure-07" data-paper-source="glm-5" data-paper-asset="glm-5-figure-07" markdown="1">
+[![GLM-5 展示一次 turn 内 reasoning 与多次工具调用交错，以及跨 turn 保留或丢弃既有 reasoning 和工具结果的差别](../assets/papers/glm-5/figure-07-thinking-state.png){ width="1725" height="1175" loading="lazy" decoding="async" }](../assets/papers/glm-5/figure-07-thinking-state.png)
+<figcaption><strong>Figure 7 提醒工具协议要同时定义 step boundary 与 turn boundary。</strong>工具结果究竟进入下一次模型调用、下一轮用户消息之前是否保留旧 reasoning，以及客户端是否会重复附加历史，都会改变实际输入；仅把函数名和 JSON schema 对齐，还不能保证状态语义一致。<span class="paper-figure__source">图源：<a href="https://arxiv.org/pdf/2602.15763v2#page=10">GLM-5: from Vibe Coding to Agentic Engineering, Figure 7, p. 10</a>；Copyright © 2026 GLM-5 Team，<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>；已裁去原始 caption 与周围正文。</span></figcaption>
+</figure>
+</div>
+
 ## 四段边界
 
 $$

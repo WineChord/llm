@@ -35,14 +35,37 @@
       "kind": "diagram",
       "source_label": "Figure 3",
       "page": 3,
-      "page_box_points": [612, 792],
+      "page_box_points": [
+        612,
+        792
+      ],
       "rotation": 0,
-      "crop_box_points": [98, 68, 514, 382],
-      "pixel_size": [1733, 1308],
+      "crop_box_points": [
+        98,
+        68,
+        514,
+        382
+      ],
+      "pixel_size": [
+        1733,
+        1308
+      ],
       "sha256": "2b15c96102b5e42bb499458ff58c2d2697b878f7d8be7ddc55e705524a89867b",
       "placements": [
         {
           "page": "docs/multimodal/kimi-vl.md",
+          "anchor": "kimi-vl-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/vision-language.md",
+          "anchor": "kimi-vl-figure-03",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/foundations/position-time-masks.md",
           "anchor": "kimi-vl-figure-03",
           "role": "wide",
           "media_link": "asset"

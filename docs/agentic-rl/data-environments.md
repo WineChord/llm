@@ -51,6 +51,13 @@ seed domain
 
 这相当于在概念 DAG 上结合 breadth-first 的覆盖与 depth-first 的细化；停止条件应由“是否能独立提出并验证任务”决定，而不是固定深度。[Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露了这种 coarse-to-fine、递归多 agent 的知识图谱合成实例。可迁移的是节点去重、祖先上下文、公开证据和独立验证四个边界，不能把生成图自身当成事实源。整体方法见 [Kimi K3](../landscape/works/kimi-k3.md)。
 
+<div markdown="block">
+<figure class="paper-figure paper-figure--wide" id="k3-figure-09" data-paper-source="kimi-k3" data-paper-asset="k3-figure-09" markdown="1">
+[![Kimi K3 从领域知识图谱检索材料并生成可验证任务的 coarse-to-fine 合成流程](../assets/papers/kimi-k3/figure-09-task-synthesis.png){ width="1625" height="1062" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-09-task-synthesis.png)
+<figcaption><strong>Figure 9 把任务合成拆成两步：先扩展并组织知识空间，再为选定节点检索公开材料、生成任务并交给独立验证。</strong>图谱提高覆盖和组合性，检索材料固定事实边界，verifier 负责筛掉无法判定的样本；任何一步缺失，都可能把主题多样性误当成有效难度。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=15">Kimi K3 Technical Report, Figure 9, p. 15</a>；Copyright (c) 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+</div>
+
 ## 环境的四类状态
 
 1. **静态状态**：代码仓库、文档、数据库快照；

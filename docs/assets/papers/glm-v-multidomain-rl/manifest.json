@@ -36,15 +36,32 @@
       "kind": "figure",
       "source_label": "standalone figure",
       "page": 1,
-      "source_size_pixels": [1880, 817],
+      "source_size_pixels": [
+        1880,
+        817
+      ],
       "rotation": 0,
-      "source_crop_box_pixels": [0, 0, 1880, 817],
-      "pixel_size": [1880, 817],
+      "source_crop_box_pixels": [
+        0,
+        0,
+        1880,
+        817
+      ],
+      "pixel_size": [
+        1880,
+        817
+      ],
       "sha256": "8d74ef264d8f1d5a70d49c25b1da6fd469fc23487db00650ce84aa660e28f63c",
       "placements": [
         {
           "page": "docs/multimodal/glm.md",
           "anchor": "glmv-rl-multidomain-figure",
+          "role": "wide",
+          "media_link": "asset"
+        },
+        {
+          "page": "docs/multimodal/foundations/data-training-systems.md",
+          "anchor": "glmv-rl-multidomain",
           "role": "wide",
           "media_link": "asset"
         }
