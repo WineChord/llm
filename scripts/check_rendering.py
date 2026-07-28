@@ -994,6 +994,25 @@ def browser_audit(
                             try:
                                 driver.get_log("browser")
                                 driver.get(base_url + route)
+                                wait.until(
+                                    lambda current: current.execute_script(
+                                        """
+                                        const route = arguments[0];
+                                        const canonical = document.querySelector(
+                                          'link[rel="canonical"]'
+                                        );
+                                        return document.readyState === 'complete'
+                                          && location.pathname === route
+                                          && !!canonical
+                                          && new URL(canonical.href).pathname
+                                            === '/llm' + route
+                                          && !!document.querySelector(
+                                            'article.md-content__inner'
+                                          );
+                                        """,
+                                        route,
+                                    )
+                                )
                                 wrappers = driver.execute_script(
                                     "return document.querySelectorAll("
                                     "'.arithmatex').length"
@@ -1286,10 +1305,33 @@ def browser_audit(
                         if stats["raw"]:
                             errors.append(f"{route}: visible prose leaks raw TeX")
                         if stats["rawMarkdown"]:
-                            errors.append(
-                                f"{route}: visible prose leaks raw Markdown "
-                                "emphasis"
-                            )
+                            raw_markdown = True
+                            for _ in range(2):
+                                wait_for_paint()
+                                raw_markdown = driver.execute_script(
+                                    """
+                                    const article = document.querySelector(
+                                      'article.md-content__inner'
+                                    );
+                                    const clone = article
+                                      ? article.cloneNode(true)
+                                      : null;
+                                    if (!clone) return false;
+                                    clone.querySelectorAll(
+                                      'pre, code, script, style, .arithmatex'
+                                    ).forEach((node) => node.remove());
+                                    return /\\*\\*[^*\\n]+\\*\\*/.test(
+                                      clone.textContent
+                                    );
+                                    """
+                                )
+                                if not raw_markdown:
+                                    break
+                            if raw_markdown:
+                                errors.append(
+                                    f"{route}: visible prose leaks raw Markdown "
+                                    "emphasis"
+                                )
                         if stats["badOverflow"]:
                             errors.append(
                                 f"{route}: {stats['badOverflow']} formulas "

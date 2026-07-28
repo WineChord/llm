@@ -2,6 +2,7 @@
 
 ## 2026-07-28
 
+- 新增 [DSpark 深读](landscape/works/dspark.md)：从精确 rejection sampling、DFlash 并行骨干和低秩 Markov / RNN 头进入 confidence soft label、STS、SPS 前缀调度与 non-anticipating 反例，再分开 DeepSpec 公开训练栈、V4 内部生产改造、SGLang confidence-scheduled 路径和 vLLM 固定长度支持；论文四幅机制 / 遥测图按 CC BY 4.0 登记到可复现 manifest，并将可复用结论接回[推测解码](inference/speculative-decoding.md)与[调度和 Goodput](inference/scheduling-goodput.md)。
 - 建立[模型家族](landscape/families/index.md)入口与可审计发布账本，分别展开 [DeepSeek](landscape/families/deepseek.md)、[Kimi](landscape/families/kimi.md) 和 [GLM](landscape/families/glm.md) 的主干、专门模型、研究方法、系统组件、Agent 工具、评测工件、API / 产品与许可证边界；三条时间线、工作深读和 canonical 主题同步形成双向阅读路径。
 - 扩展家族的多模态支线：[DeepSeek](multimodal/deepseek.md) 补入 OCR-2 的语义阅读顺序，[Kimi](multimodal/kimi.md) 继续连接 Kimi-VL、K2.5 与 K3，[GLM](multimodal/glm.md) 则从 VisualGLM、CogVLM 与 GLM-V 贯通 OCR、GUI、端侧、语音、图像和视频生成。
 - 重构[多模态与生成](multimodal/index.md)主线：从[历史脉络](multimodal/history.md)、[信号与 Token 化](multimodal/foundations/signals-tokenization.md)、[对齐与融合](multimodal/foundations/alignment-fusion.md)、[时空位置与 Mask](multimodal/foundations/position-time-masks.md) 推进到[视觉表示与 Grounding](multimodal/vision/representation-grounding.md)，把模态差异、序列接口、训练数据和系统约束放回同一条因果链。

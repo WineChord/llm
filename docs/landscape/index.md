@@ -62,6 +62,7 @@ K3 是观察这种汇流的一个切面：
 - [mHC](works/manifold-hyper-connections.md) 从 Hyper-Connections 走到 Birkhoff polytope 与 Sinkhorn projection，区分局部矩阵约束和完整网络稳定性；
 - [On-Policy Distillation](works/on-policy-distillation.md) 分开轨迹分布、KL 方向、词表估计器和多教师调度；
 - [TileLang、MegaMoE 与 DSec](works/tilelang-mega-moe.md) 沿 wave pipeline、batch invariance、异构 cache、token WAL 和 sandbox 恢复连接训练与部署；
+- [DSpark](works/dspark.md) 把半自回归 block drafter、confidence calibration、硬件成本曲线与无损前缀调度接成生成阶段的联合优化；
 - [V4 引用图谱](deepseek-v4-reference-map.md)逐项标注 103 项正文引用在家族前身、方法来源、系统实现和 benchmark 中承担的角色。
 
 ### 当稠密 attention 不再是唯一答案

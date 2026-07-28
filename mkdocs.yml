@@ -191,6 +191,7 @@ nav:
               - slime 与异步 Agentic RL: landscape/works/slime-async-agentic-rl.md
               - GLM Agentic Engineering: landscape/works/glm-agentic-engineering.md
               - DeepSeek-V4: landscape/works/deepseek-v4.md
+              - DSpark: landscape/works/dspark.md
               - CSA 与 HCA: landscape/works/deepseek-compressed-attention.md
               - Manifold-Constrained Hyper-Connections: landscape/works/manifold-hyper-connections.md
               - On-Policy Distillation: landscape/works/on-policy-distillation.md

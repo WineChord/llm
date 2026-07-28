@@ -1,0 +1,15 @@
+DSpark paper figures
+
+Copyright (c) 2026 Xin Cheng et al.
+
+This material is adapted from "DSpark: Confidence-Scheduled Speculative
+Decoding with Semi-Autoregressive Generation", arXiv:2607.05147v1.
+
+The paper is licensed under the Creative Commons Attribution 4.0 International
+License (CC BY 4.0):
+
+https://creativecommons.org/licenses/by/4.0/
+
+Source:
+
+https://arxiv.org/abs/2607.05147v1

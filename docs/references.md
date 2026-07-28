@@ -244,6 +244,9 @@
 - Agrawal et al., [Sarathi-Serve](https://www.usenix.org/conference/osdi24/presentation/agrawal)
 - Zhong et al., [DistServe](https://www.usenix.org/conference/osdi24/presentation/zhong-yinmin)
 - Leviathan et al., [Fast Inference from Transformers via Speculative Decoding](https://arxiv.org/abs/2211.17192)
+- Cheng et al., [DSpark: Confidence-Scheduled Speculative Decoding with Semi-Autoregressive Generation](https://arxiv.org/abs/2607.05147)
+- Chen et al., [DFlash: Block Diffusion for Efficient Speculative Decoding](https://arxiv.org/abs/2602.06036)
+- Li et al., [EAGLE-3](https://arxiv.org/abs/2503.01840)
 - Zheng et al., [SGLang: Efficient Execution of Structured Language Model Programs](https://arxiv.org/abs/2312.07104)
 
 ### 官方实现与规范
@@ -257,6 +260,7 @@
 - [FlashAttention](https://github.com/Dao-AILab/flash-attention)
 - [vLLM](https://github.com/vllm-project/vllm)
 - [SGLang](https://github.com/sgl-project/sglang)
+- [DeepSpec](https://github.com/deepseek-ai/DeepSpec)
 - [FlashInfer](https://github.com/flashinfer-ai/flashinfer)
 - [veRL](https://github.com/volcengine/verl)
 - [slime](https://github.com/THUDM/slime)

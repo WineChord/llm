@@ -1,0 +1,113 @@
+{
+  "schema_version": 2,
+  "source": {
+    "id": "dspark",
+    "title": "DSpark: Confidence-Scheduled Speculative Decoding with Semi-Autoregressive Generation",
+    "canonical_url": "https://arxiv.org/abs/2607.05147v1",
+    "artifact_url": "https://arxiv.org/pdf/2607.05147v1",
+    "artifact_sha256": "522036b0cc16ad4678bd7c278dd0a0ab4da31170af7b97c2041067cc09a8289a",
+    "version": {
+      "kind": "arxiv_version",
+      "value": "2607.05147v1"
+    },
+    "page_count": 33,
+    "license": {
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "credit": "Copyright (c) 2026 Xin Cheng et al.",
+      "notice_file": "LICENSE.txt",
+      "notice_sha256": "9479b1915086a37f764dbe789a97a567e6addf0c4d7a03482910f18ad98819db"
+    }
+  },
+  "render": {
+    "renderer": "pdftocairo",
+    "renderer_version": "26.07.0",
+    "dpi": 300,
+    "coordinate_space": "rendered-page-points-top-left",
+    "colorspace": "sRGB",
+    "format": "PNG",
+    "metadata_policy": "strip"
+  },
+  "assets": [
+    {
+      "id": "dspark-figure-01",
+      "file": "figure-01-architecture.png",
+      "kind": "diagram",
+      "source_label": "Figure 1",
+      "page": 5,
+      "page_box_points": [595.276, 841.89],
+      "rotation": 0,
+      "crop_box_points": [65, 55, 530, 355],
+      "pixel_size": [1938, 1250],
+      "sha256": "ead410a76d39a34aa05eca65438598ed5bf2c2a9a10765f3936ab9a47768349d",
+      "placements": [
+        {
+          "page": "docs/landscape/works/dspark.md",
+          "anchor": "dspark-figure-01",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "dspark-figure-02",
+      "file": "figure-02-position-acceptance.png",
+      "kind": "figure",
+      "source_label": "Figure 2",
+      "page": 12,
+      "page_box_points": [595.276, 841.89],
+      "rotation": 0,
+      "crop_box_points": [70, 38, 525, 210],
+      "pixel_size": [1896, 717],
+      "sha256": "c029c1c8ddc329d6f767df6382bd194c16ff78b328f4b8dbda641d247facf452",
+      "placements": [
+        {
+          "page": "docs/landscape/works/dspark.md",
+          "anchor": "dspark-figure-02",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "dspark-figure-06",
+      "file": "figure-06-confidence-calibration.png",
+      "kind": "figure",
+      "source_label": "Figure 6",
+      "page": 15,
+      "page_box_points": [595.276, 841.89],
+      "rotation": 0,
+      "crop_box_points": [70, 285, 525, 445],
+      "pixel_size": [1896, 667],
+      "sha256": "384903a295e262539dafbf04ce920c1656ee0234e7e448c2cd644df80da21382",
+      "placements": [
+        {
+          "page": "docs/landscape/works/dspark.md",
+          "anchor": "dspark-figure-06",
+          "role": "wide",
+          "media_link": "asset"
+        }
+      ]
+    },
+    {
+      "id": "dspark-figure-08",
+      "file": "figure-08-load-adaptation.png",
+      "kind": "figure",
+      "source_label": "Figure 8",
+      "page": 19,
+      "page_box_points": [595.276, 841.89],
+      "rotation": 0,
+      "crop_box_points": [87, 215, 510, 480],
+      "pixel_size": [1763, 1104],
+      "sha256": "ee2e5b441e284fe50157d6996925c8d52aa7205f75eb8ee220a1ee592ad5be40",
+      "placements": [
+        {
+          "page": "docs/landscape/works/dspark.md",
+          "anchor": "dspark-figure-08",
+          "role": "portrait",
+          "media_link": "asset"
+        }
+      ]
+    }
+  ]
+}

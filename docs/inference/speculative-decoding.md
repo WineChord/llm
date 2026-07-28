@@ -43,7 +43,10 @@ $$
 
 ### 单位置接受 reference {#speculative-acceptance-reference}
 
-`target` 与 `draft` 是同一历史、同一 logit-processor 状态下的离散概率向量，`token` 是 draft 已采样的候选，`uniform` 是本次接受检验的均匀随机数。接受时返回 `(True, None)`；拒绝时返回归一化后的正残差分布，供调用者采样替代 token。
+`target` 是普通目标解码在该历史上实际使用的离散分布，`draft` 是同一验收位置上
+候选的实际提议分布；两者不必使用相同的采样 processor，但必须映射到同一验收词表。
+`token` 是 draft 已采样的候选，`uniform` 是本次接受检验的均匀随机数。接受时返回
+`(True, None)`；拒绝时返回归一化后的正残差分布，供调用者采样替代 token。
 
 ```python
 import torch
@@ -85,7 +88,10 @@ for bad in [(p, q, -1, .5), (p, p[:, None], 0, .5)]:
     raise AssertionError("invalid distributions and token indices must be rejected")
 ```
 
-正残差非负且和为 $1$，$p=q$ 时所有合法 draft token 都被接受。该函数只定义一个位置的分布语义；完整运行时还要负责候选链的条件历史、RNG 消耗、KV / grammar 回滚和“全接受后额外 target token”，这些状态不能在此函数外被静默跳过。
+正残差非负且和为 $1$，$p=q$ 时所有合法 draft token 都被接受。该函数只定义一个
+位置的分布语义；完整运行时还要负责候选链的条件历史、拒绝后逻辑状态不再引用
+suffix，以及“全接受后额外 target token”。若另求同 seed 逐字重放，才还需额外
+对齐 RNG 消耗；分布精确性本身不要求复制普通 AR 的随机数轨迹。
 
 ## 接受长度与速度模型
 
@@ -148,6 +154,42 @@ $$
 $$
 
 对归一化分布，$\sum_v\min(p_v,q_v)=1-\operatorname{TV}(p,q)$，因此目标直接提高两分布的重叠质量，而不是只惩罚 target token 的负对数概率。[LK Losses](https://arxiv.org/abs/2602.23881) 给出这一目标的一手论述。上述层位、unroll 深度和 loss 组合属于 K3 具体 recipe；迁移到另一架构时要重新搜索并测 accepted tokens、draft cost 与最终分布。整体证据见 [Kimi K3](../landscape/works/kimi-k3.md)。
+
+### 半自回归 Block Draft
+
+[DSpark](../landscape/works/dspark.md) 把并行与自回归 drafter 组合在同一个 block：
+较深的 DFlash 式骨干一次产生 $\gamma$ 组 base logits，低秩 Markov head 再以刚刚
+采样的前一个 token 修正下一位置：
+
+$$
+p_k(v)
+=
+\operatorname{softmax}
+\left(
+U_k(v)+W_1[x_{k-1}]W_2[:,v]
+\right).
+$$
+
+并行骨干保留强首位置和近似固定的 draft 串行深度，顺序头则减少独立预测把多条
+语义路径拼错的 suffix decay。RNN 头可以保留更长块内历史，但需要额外 recurrent
+state；DSpark 默认使用更简单的 Markov 版本。
+
+它还把 draft / target 的分布重叠
+
+$$
+c_k^*
+=
+1-\frac12\lVert p_k^d-p_k^t\rVert_1
+$$
+
+作为 confidence 软标签。请求 $r$ 的第 $j$ 个 prefix 存活概率为
+$a_{r,j}=\prod_{i\le j}c_{r,i}$；经过校准后，serving scheduler 可以把这些概率与
+实测 step-rate 曲线结合，为不同请求分配不同 verify length。
+
+这里要保留实现边界：官方 [DeepSpec](https://github.com/deepseek-ai/DeepSpec)
+公开训练、标准 rejection sampling 和静态 confidence-threshold 评测；完整的多请求
+硬件感知调度需要支持 ragged verify、SPS cost table 与 non-anticipating admission
+的 serving engine。能加载 DSpark checkpoint，不自动表示运行了论文完整 scheduler。
 
 ### 模型原生多 token 预测
 
@@ -313,6 +355,8 @@ GLM-5.2 把草稿深度扩到七步，并加入两种跨步共享：
 - [EAGLE-3（2025）](https://arxiv.org/abs/2503.01840)
 - [SafeAILab/EAGLE](https://github.com/SafeAILab/EAGLE)
 - [LK Losses](https://arxiv.org/abs/2602.23881)
+- [DSpark: Confidence-Scheduled Speculative Decoding with Semi-Autoregressive Generation](https://arxiv.org/abs/2607.05147)
+- [DeepSpec official training and evaluation repository](https://github.com/deepseek-ai/DeepSpec)
 - [ReplaySSM](https://tridao.me/blog/2026/replayssm/)
 - [TensorRT-LLM 的 speculative decoding 文档](https://nvidia.github.io/TensorRT-LLM/1.2.0/features/speculative-decoding.html)
 - [Kimi K3 Technical Report](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)

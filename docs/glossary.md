@@ -84,6 +84,11 @@ Direct Double-Sided Importance Sampling，SAO 中以 current/rollout direct rati
 
 DeepSeek Sparse Attention，用轻量 indexer 为每个 query 从历史位置选择 top-$k$ 候选，再执行高维核心注意力；索引成本、稀疏 attention 成本和近似误差需要分开。
 
+**[DSpark](landscape/works/dspark.md)**
+
+以深并行骨干、轻量顺序头、校准的接受置信度和硬件感知前缀调度组成的无损推测解码
+框架；不是新的基础模型，也不是 DeepSeek Sparse Attention。
+
 **[Bellman equation](reinforcement-learning/values-bellman.md)**
 
 把当前价值写成即时 reward 与下一状态价值期望的递推等式，是动态规划、TD 与 critic 的共同接口。

@@ -126,7 +126,7 @@ $$
 | 2026-01 | [Engram](https://arxiv.org/abs/2601.07372)，[代码与 checkpoint](https://github.com/deepseek-ai/Engram) | conditional memory / lookup 是独立于 MoE 的稀疏轴 | V4 已经采用 Engram；V4 报告只把它放在后续方向 |
 | 2026-04-24 | [V4 Preview 发布](https://api-docs.deepseek.com/news/news260424/)与 [Flash / Pro、Base / post-trained 集合](https://huggingface.co/collections/deepseek-ai/deepseek-v4) | 284B / 13B 与 1.6T / 49B 两种规模、1M context、开放权重与两个新 API model ID | 发布说明等同于完整训练配方；模型集合的后续文件修订等同于新基础代际 |
 | 2026-04-26 | [DeepSeek-V4 技术报告](https://arxiv.org/abs/2606.19348) | CSA / HCA、mHC、Muon、OPD、FP4 / FP8 混合权重、训练与评测的报告口径 | 报告披露了训练数据配比、总 FLOPs、硬件规模和全部 RL 环境；报告日也不能覆盖权重与 API 的独立 revision |
-| 2026-07 | [DSpark](https://arxiv.org/abs/2607.05147)，[DeepSpec](https://github.com/deepseek-ai/DeepSpec) 与 V4 DSpark attachments | semi-autoregressive drafter、confidence-scheduled verification 及训练/评测框架 | DSpark 改变了 V4 base model，或论文速度可脱离并发与验证协议复用 |
+| 2026-07 | [DSpark 深读](../works/dspark.md)、[论文](https://arxiv.org/abs/2607.05147)、[DeepSpec](https://github.com/deepseek-ai/DeepSpec) 与 V4 DSpark attachments | semi-autoregressive drafter、confidence-scheduled verification 及训练/评测框架 | DSpark 改变了 V4 base model，或论文速度可脱离并发与验证协议复用 |
 
 API 名称尤其容易误导。官方变更记录显示，`deepseek-chat` 曾依次路由到 V2、V2.5、V3、V3.1、V3.2，`deepseek-reasoner` 也曾从 R1 更新到后续 hybrid model；V4 发布时又给出 `deepseek-v4-pro` 与 `deepseek-v4-flash` 新标识，并宣布旧 alias 的退役时间。历史实验若只写 alias、不记录请求日期、实际模型标识和模板，就无法复现。
 

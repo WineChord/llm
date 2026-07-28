@@ -94,6 +94,13 @@ V4 没有简单把 DSA 的 context 上限改成 1M，而是在选择之前先压
 
 V4 的 [系统闭环](works/tilelang-mega-moe.md)同样属于模型定义的一部分：compressed block 改变 Context Parallel 边界和 KV cache；MegaMoE 用 wave 隐藏 expert communication；token WAL 与 DSec 让百万 token Agent rollout 可以被抢占和恢复；[全词表 OPD](works/on-policy-distillation.md) 把十余个 specialist 的行为合回一个学生。
 
+[DSpark](works/dspark.md) 则是 V4 发布后的推理解码节点，而不是 V4 base checkpoint
+内部新增能力。它以深并行骨干加低秩 Markov 头提高长草稿的 prefix survival，再以
+经过校准的 confidence 和硬件 SPS 曲线按负载选择每请求 verify length。论文报告
+DSpark 在 V4-preview 发布约两周后替代生产 MTP-1；公开
+[DeepSpec](https://github.com/deepseek-ai/DeepSpec) 覆盖 Qwen3 / Gemma 4 的训练和
+离线评测，但不等于内部 V4 scheduler、HAI-LLM 与 ragged kernel 的完整源码。
+
 官方把当前版本称为 Preview。报告没有给出训练集配比、总训练 FLOPs、硬件规模、完整 RL 配方或核心组件的充分规模消融，并明确把架构简化、多模态和新的稀疏方向列为后续工作。对应的 103 项正文引用、方法前身与 benchmark 入口见 [V4 引用图谱](deepseek-v4-reference-map.md)。
 
 ## 多模态不是旁支标签
@@ -131,6 +138,7 @@ VL、VL2、Janus 与 OCR 系列处理不同问题：
 - [DeepSeek-V3.2 官方发布记录](https://api-docs.deepseek.com/news/news251201/)
 - [DeepSeek-V3.2 技术报告](https://arxiv.org/abs/2512.02556)
 - [DeepSeek-V4 技术报告](https://arxiv.org/abs/2606.19348)
+- [DSpark 论文](https://arxiv.org/abs/2607.05147)
 - [DeepSeek-V4 官方发布记录](https://api-docs.deepseek.com/news/news260424/)
 - [DeepSeek-V4 官方模型集合](https://huggingface.co/collections/deepseek-ai/deepseek-v4)
 - [Janus](https://arxiv.org/abs/2410.13848)

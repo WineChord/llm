@@ -91,6 +91,49 @@ $$
 
 token budget 只限制工作量，不能替代 KV、workspace 和 graph shape 约束。
 
+### 推测验证也需要每轮预算 {#speculative-verify-budget}
+
+固定验证最长 speculative block 会把低置信候选也塞进 target batch。低负载时这可能
+几乎免费；高并发时，每个无效 verify token 都会占用原本可以服务其他请求的容量。
+[DSpark](../landscape/works/dspark.md#scheduler) 把请求 $r$ 的 prefix survival 写成
+
+$$
+a_{r,j}
+=
+\prod_{i=1}^{j}c_{r,i},
+$$
+
+选择每请求验证长度 $\ell_r$ 后，总 target token 数和期望产出分别为
+
+$$
+B
+=
+\sum_r(1+\ell_r),
+\qquad
+\tau
+=
+\sum_r\left(1+\sum_{j=1}^{\ell_r}a_{r,j}\right).
+$$
+
+若引擎已在当前模型、硬件、并行度和 graph 配置上 profile
+$\operatorname{SPS}(B)$，就可以比较
+
+$$
+\Theta
+=
+\tau\cdot\operatorname{SPS}(B).
+$$
+
+因为同一请求的 $a_{r,j}$ 单调不增，所有 prefix extensions 可以按存活概率全局排序，
+再沿这条可行路径选择 verify budget。调度对象不再只是“本轮最多多少 token”，而是
+“哪一个请求的下一个候选最值得占用一格 target batch”。
+
+正确性约束与容量目标同等重要：若下一位置 confidence 依赖当前采样 token，就不能
+看完未来再回头决定是否提交当前 token，否则会产生 selection bias。同步算法可在
+收益首次不升时 early stop；异步生产实现也可以用滞后的历史容量预测形成因果屏障。
+不具备这类 non-anticipating 机制的静态阈值或 retrospective top-$K$，不能直接沿用
+精确 speculative sampling 的无损结论。
+
 ## Prefill 与 Decode 的冲突
 
 大 prefill 更容易形成高效 GEMM，却会拉长正在流式输出请求的 ITL。chunked prefill 把长 prompt 分为多个片段，与 decode 交错：
@@ -283,6 +326,8 @@ $$
 
 - [Goodput-oriented LLM serving analysis](https://arxiv.org/abs/2410.14257)
 - [Orca: A Distributed Serving System for Transformer-Based Generative Models](https://www.usenix.org/conference/osdi22/presentation/yu)
+- [DSpark hardware-aware prefix scheduling](https://arxiv.org/abs/2607.05147)
+- [SGLang DSpark serving implementation](https://www.lmsys.org/blog/2026-07-06-dspark-sglang)
 - [Sarathi-Serve](https://www.usenix.org/conference/osdi24/presentation/agrawal)
 - [Virtual Token Counter](https://arxiv.org/abs/2401.00588)
 - [Preble](https://arxiv.org/abs/2407.00023)
