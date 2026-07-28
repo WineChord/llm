@@ -599,21 +599,31 @@ def browser_audit(
     options.set_capability("pageLoadStrategy", "eager")
     options.set_capability("goog:loggingPrefs", {"browser": "ALL"})
     driver_path = chromedriver_binary(binary)
-    service = Service(executable_path=driver_path) if driver_path else Service()
-    driver = webdriver.Chrome(service=service, options=options)
-    driver.set_page_load_timeout(45)
-    driver.set_script_timeout(30)
-    wait = WebDriverWait(driver, 30)
+
+    def start_driver():
+        service = Service(executable_path=driver_path) if driver_path else Service()
+        current = webdriver.Chrome(service=service, options=options)
+        current.set_page_load_timeout(45)
+        current.set_script_timeout(30)
+        return current, WebDriverWait(current, 30)
+
+    driver, wait = start_driver()
     rendered = 0
     version = "unknown"
     visits = 0
     disclosure_interactions = 0
     with serve_directory(site_dir) as base_url:
         try:
-            for width, height, mobile in (
-                (1440, 1000, False),
-                (390, 844, True),
+            for viewport_index, (width, height, mobile) in enumerate(
+                (
+                    (1440, 1000, False),
+                    (390, 844, True),
+                )
             ):
+                if viewport_index:
+                    with contextlib.suppress(Exception):
+                        driver.quit()
+                    driver, wait = start_driver()
                 disclosure_checked = False
                 driver.execute_cdp_cmd(
                     "Emulation.setDeviceMetricsOverride",
@@ -687,6 +697,29 @@ def browser_audit(
                                 driver.get_log("browser")
                                 if attempt == 2:
                                     raise
+                        paper_image_count = driver.execute_script(
+                            """
+                            const images = [
+                              ...document.querySelectorAll(
+                                'figure.paper-figure img'
+                              )
+                            ];
+                            images.forEach((image) => {
+                              image.loading = 'eager';
+                            });
+                            return images.length;
+                            """
+                        )
+                        if paper_image_count:
+                            wait.until(
+                                lambda current: current.execute_script(
+                                    """
+                                    return [...document.querySelectorAll(
+                                      'figure.paper-figure img'
+                                    )].every((image) => image.complete);
+                                    """
+                                )
+                            )
                         stats = driver.execute_script(
                             """
                             const wrappers = [
@@ -733,6 +766,49 @@ def browser_audit(
                               )
                             ].filter((image) =>
                               image.complete && image.naturalWidth === 0
+                            ).length;
+                            const paperFigures = [
+                              ...document.querySelectorAll(
+                                'figure.paper-figure'
+                              )
+                            ];
+                            const invalidPaperFigures = paperFigures.filter(
+                              (figure) => {
+                                const image = figure.querySelector(
+                                  ':scope > p > a > img'
+                                );
+                                const imageLink = figure.querySelector(
+                                  ':scope > p > a'
+                                );
+                                const caption = figure.querySelector(
+                                  ':scope > figcaption'
+                                );
+                                const source = caption
+                                  ? caption.querySelector(
+                                      '.paper-figure__source a[href^="https://"]'
+                                    )
+                                  : null;
+                                if (
+                                  !figure.id
+                                  || !image
+                                  || !imageLink
+                                  || !caption
+                                  || !source
+                                  || !image.complete
+                                  || image.naturalWidth === 0
+                                  || (image.alt || '').trim().length < 24
+                                ) {
+                                  return true;
+                                }
+                                const imageStyle = getComputedStyle(image);
+                                const captionRect =
+                                  caption.getBoundingClientRect();
+                                return imageStyle.filter !== 'none'
+                                  || image.naturalWidth + 1 < image.clientWidth
+                                  || figure.scrollWidth
+                                    > figure.clientWidth + 1
+                                  || captionRect.height <= 0;
+                              }
                             ).length;
                             const documentOverflow =
                               document.documentElement.scrollWidth
@@ -811,6 +887,8 @@ def browser_audit(
                               mathErrors,
                               badOverflow,
                               brokenImages,
+                              paperFigures: paperFigures.length,
+                              invalidPaperFigures,
                               raw,
                               rawMarkdown,
                               article: !!article,
@@ -862,6 +940,11 @@ def browser_audit(
                         if stats["brokenImages"]:
                             errors.append(
                                 f"{route}: {stats['brokenImages']} broken images"
+                            )
+                        if stats["invalidPaperFigures"]:
+                            errors.append(
+                                f"{route}: {stats['invalidPaperFigures']} "
+                                "invalid paper figures"
                             )
                         if stats["invalidDisclosures"]:
                             errors.append(

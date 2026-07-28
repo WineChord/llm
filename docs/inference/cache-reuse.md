@@ -128,6 +128,11 @@ KV 可以驻留于 GPU、CPU、节点间内存或持久存储。层级越远，�
 
 [Kimi K3 技术报告](https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf)披露了一套统一 paged pool：物理 block 可在 1024–6144 token 间选择，细粒度 hash 可取 512 token，并对 KDA state 使用稀疏 snapshot。具体数字是其服务配置；可迁移的是把 **查找粒度、物理分配粒度和状态快照粒度解耦**。完整设计见 [Kimi K3](../landscape/works/kimi-k3.md)。
 
+<figure class="paper-figure paper-figure--wide" id="k3-figure-12" markdown="1">
+[![一个 6144 token 物理缓存页被分成十二个 512 token 哈希块，MLA 命中五块但联合复用止于存在 KDA checkpoint 的 2560 边界](../assets/papers/kimi-k3/figure-12-prefix-cache.png){ width="1521" height="525" loading="lazy" decoding="async" }](../assets/papers/kimi-k3/figure-12-prefix-cache.png)
+<figcaption><strong>蓝色 MLA block 命中更长，不等于混合状态可以复用得更长。</strong>图中 6144-token physical page 保留 512-token 的细粒度 hash，而 KDA checkpoint 只在部分边界稀疏保存；两类状态共同成立的最长前缀停在 <em>B</em> = 2560，随后要从该 checkpoint 恢复并重算尾段。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=23">Kimi K3 Technical Report, Figure 12, p. 23</a>；© 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+
 联合查找应分两阶段：先在目录中定位最长兼容 hash chain，再确认每个模型层组的数据实际存在且 checksum/版本一致。发布与失效也必须跨组原子化：共享前缀续写前 copy-on-write，任何 MLA page 或 KDA snapshot 失效时，对应 joint entry 一并失效，避免部分命中进入 decode。
 
 ### V4：压缩块持久化与 SWA 恢复

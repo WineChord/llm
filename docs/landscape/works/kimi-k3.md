@@ -10,6 +10,11 @@
 
 本页先重建整份报告的因果链；[Kimi 技术谱系](../kimi-timeline.md)解释各代工作怎样汇流，[150 项引用图谱](../kimi-k3-reference-map.md)逐项区分直接来源、技术前身、并行工作、benchmark 与比较对象。各个可复用机制分别进入[线性注意力](../../architecture/state-space-linear-attention.md)、[注意力与位置](../../architecture/attention-position.md)、[Mixture of Experts](../../architecture/moe.md)、[长上下文](../../architecture/long-context.md)、[Agentic RL 训练系统](../../agentic-rl/training-systems.md)和[推理缓存](../../inference/cache-reuse.md)等主干页面。
 
+<figure class="paper-figure paper-figure--portrait" id="k3-figure-02" markdown="1">
+[![Kimi K3 的整体结构由 token、channel 与 depth 三条信息流组成：KDA 和 MLA 处理 token，Stable LatentMoE 处理 channel，Attention Residuals 连接不同深度](../../assets/papers/kimi-k3/figure-02-architecture.png){ width="1967" height="1617" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-02-architecture.png)
+<figcaption><strong>三条信息流在同一个模型接口处合流。</strong>沿右侧主干自下而上看，视觉输入先进入共享 embedding；每个结构单元以三层 KDA 接一层 Gated MLA，再由 Stable LatentMoE 完成 channel mixing。红色支路不沿 token 展开，而是在不同深度的 block representation 之间重新分配权重。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=3">Kimi K3 Technical Report, Figure 2, p. 3</a>；© 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+
 ## 一张地图：K3 到底改变了什么
 
 | 层面 | K3 的选择 | 直接解决的问题 | 新增代价或边界 |
@@ -248,7 +253,7 @@ assert torch.all((alpha >= math.exp(-5)) & (alpha <= 1))
 assert math.exp(80) < torch.finfo(torch.bfloat16).max
 ```
 
-这解释了 KDA 中一个常见但危险的误读：`linear in sequence length` 只描述计算随 $T$ 的阶数，不代表状态很小、kernel 自动高效或任意长时都数值稳定。KDA 从 fast weights、DeltaNet 到 Kimi Linear、FlashKDA 与 KCP 的完整演化见[Kimi Linear 与 FlashKDA](kimi-linear-flashkda.md)，稳定机制定义见[状态空间与线性注意力](../../architecture/state-space-linear-attention.md)。
+这解释了 KDA 中一个常见但危险的误读：`linear in sequence length` 只描述计算随 $T$ 的阶数，不代表状态很小、kernel 自动高效或任意长时都数值稳定。[下界与 diagonal tile 的对照图](kimi-linear-flashkda.md#k3-figure-03)把函数值域和执行路径放在同一视野中；KDA 从 fast weights、DeltaNet 到 Kimi Linear、FlashKDA 与 KCP 的完整演化也在该页展开，稳定机制定义见[状态空间与线性注意力](../../architecture/state-space-linear-attention.md)。
 
 K3 还把 Kimi Linear 的低秩 output gate 换成输入相关的 full-rank channel projection。若 $\widetilde o_t$ 是 recurrent output，报告式 (6)为
 
@@ -510,7 +515,7 @@ assert bias.shape == (2,)
 torch.testing.assert_close(bias.mean(), torch.tensor(0.))
 ```
 
-全局 batch 的 margin 数以百万计，实际实现不 gather 全量值，而为每个 expert 建直方图，all-reduce 各 bin 的整数 count，再从累计计数恢复 quantile。若 bin width 为 $\Delta$，未做 bin 内插值时阈值误差不超过一个 bin；count 的可加性保证结果对应全局 token 池，而不是 rank-wise quantile 的错误平均。LatentMoE 原作与 K3 的 RMSNorm、SiTU、QB 增量见[Stable LatentMoE 与 Quantile Balancing](latentmoe-quantile-balancing.md)，稳定路由几何见[Mixture of Experts](../../architecture/moe.md)，通信与负载尾部见[MoE 系统](../../systems/moe-systems.md)。
+全局 batch 的 margin 数以百万计，实际实现不 gather 全量值，而为每个 expert 建直方图，all-reduce 各 bin 的整数 count，再从累计计数恢复 quantile。若 bin width 为 $\Delta$，未做 bin 内插值时阈值误差不超过一个 bin；count 的可加性保证结果对应全局 token 池，而不是 rank-wise quantile 的错误平均。[一次 coordinate update 的路由变化](latentmoe-quantile-balancing.md#k3-figure-05)给出直观读法；LatentMoE 原作与 K3 的 RMSNorm、SiTU、QB 增量也在该页展开，稳定路由几何见[Mixture of Experts](../../architecture/moe.md)，通信与负载尾部见[MoE 系统](../../systems/moe-systems.md)。
 
 ## 原生视觉与 Per-Head Muon
 
@@ -709,6 +714,11 @@ K3 把 agent harness 拆成可配置部件：tool schema、system instruction、
 4. 采样相关节点及其 ancestor；
 5. 从公开来源检索任务材料；
 6. 生成需要这些能力组合才能完成的任务与 verifier。
+
+<figure class="paper-figure paper-figure--portrait" id="k3-figure-09" markdown="1">
+[![分层能力图谱先采样相关节点形成关键词，再检索公开材料，最后按目标类型合成可验证任务](../../assets/papers/kimi-k3/figure-09-task-synthesis.png){ width="1625" height="1063" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-09-task-synthesis.png)
+<figcaption><strong>图谱控制覆盖，材料提供语境，任务在两者汇合后才生成。</strong>左侧 DAG 决定“去哪里找”以及能力应细到什么粒度；中间关键词把抽象节点落到公开材料；右侧再按 coding、knowledge、vision 等目标合成实例。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=15">Kimi K3 Technical Report, Figure 9, p. 15</a>；© 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
 
 图的作用不是给模型提供答案，而是给数据生产一个可查询的 coverage state。它让“已经有多少同质任务”“哪些技能只有父节点没有可验证叶子”变得可检查，也能把新失败重新写回 taxonomy。
 

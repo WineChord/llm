@@ -242,9 +242,14 @@ g_{\min}=-5.
 $$
 
 于是 16-token tile 的累计 log-decay 位于 $(-80,0)$，倒数小于 $e^{80}$，在 BF16 的指数范围内。
-diagonal 和 off-diagonal causal tiles 因而都能使用 dense Tensor Core GEMM。这不只是“更稳定的
-激活函数”：它用函数族约束换取可证明的 kernel 数值边界。代价是模型不能在单步把某 channel 的
-retention 压到 $e^{-5}$ 以下。
+diagonal 和 off-diagonal causal tiles 因而都能使用 dense Tensor Core GEMM。
+
+<figure class="paper-figure paper-figure--wide" id="k3-figure-03" markdown="1">
+[![左侧对比无下界与负五下界的 log-decay，右侧展示下界使 diagonal tile 从逐位置对特判转入统一的 Tensor Core 路径](../../assets/papers/kimi-k3/figure-03-bounded-decay.png){ width="1967" height="683" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-03-bounded-decay.png)
+<figcaption><strong>左图看函数值域，右图看执行路径。</strong>关键不是把 Softplus 换成 Sigmoid 这一表面形式，而是有限下界把 16-token tile 的 reciprocal scaling 留在 BF16 指数范围内，使 diagonal tile 不再需要逐 position-pair 特判。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=5">Kimi K3 Technical Report, Figure 3, p. 5</a>；© 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+
+这不只是“更稳定的激活函数”：它用函数族约束换取可证明的 kernel 数值边界。代价是模型不能在单步把某 channel 的 retention 压到 $e^{-5}$ 以下。
 
 K3 还把 KDA output gate 从 Kimi Linear 的 low-rank projection 改为 full-rank $W_gx_t$。因此
 “KDA”需要附带版本：核心 recurrence 相同，decay parameterization 与输出门并不完全相同。

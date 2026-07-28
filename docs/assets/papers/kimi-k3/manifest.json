@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "source": {
+    "title": "Kimi K3 Technical Report",
+    "revision": "521359a5cae5e79d02e5a2102c2cea9ce3b9b79a",
+    "pdf_url": "https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf",
+    "pdf_sha256": "38621eb5be601a5dcd5c795fc10b692d124430014ff9eb035b0ce38c72ec2eaf",
+    "page_size_points": [
+      612,
+      792
+    ],
+    "license_name": "Kimi K3 License",
+    "license_url": "https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE",
+    "license_file": "LICENSE.txt",
+    "copyright": "Copyright (c) 2026 Moonshot AI"
+  },
+  "render": {
+    "dpi": 300,
+    "colorspace": "sRGB",
+    "format": "PNG"
+  },
+  "figures": [
+    {
+      "id": "k3-figure-02",
+      "file": "figure-02-architecture.png",
+      "figure": 2,
+      "page": 3,
+      "crop_points": [
+        70,
+        50,
+        542,
+        438
+      ],
+      "pixel_width": 1967,
+      "pixel_height": 1617,
+      "sha256": "4a728b7574f4461a7e4924eb890f386a5bb503582d1619f5ece63d6cf52f3b1f",
+      "used_by": "docs/landscape/works/kimi-k3.md"
+    },
+    {
+      "id": "k3-figure-03",
+      "file": "figure-03-bounded-decay.png",
+      "figure": 3,
+      "page": 5,
+      "crop_points": [
+        70,
+        58,
+        542,
+        222
+      ],
+      "pixel_width": 1967,
+      "pixel_height": 683,
+      "sha256": "ecc43beefbf2620dd448e30b88531040208bd6ff36bf547849f20c2fb745fe06",
+      "used_by": "docs/landscape/works/kimi-linear-flashkda.md"
+    },
+    {
+      "id": "k3-figure-05",
+      "file": "figure-05-quantile-balancing.png",
+      "figure": 5,
+      "page": 8,
+      "crop_points": [
+        72,
+        55,
+        540,
+        210
+      ],
+      "pixel_width": 1950,
+      "pixel_height": 646,
+      "sha256": "a022fa36bea9f87d489051b87761f3be41ca764db6cf50b17e46facec302d7df",
+      "used_by": "docs/landscape/works/latentmoe-quantile-balancing.md"
+    },
+    {
+      "id": "k3-figure-09",
+      "file": "figure-09-task-synthesis.png",
+      "figure": 9,
+      "page": 15,
+      "crop_points": [
+        115,
+        185,
+        505,
+        440
+      ],
+      "pixel_width": 1625,
+      "pixel_height": 1063,
+      "sha256": "e60d8e09f1d0e223d0a8ba118b757b76f3d07e88a206354b80b223386d2eb223",
+      "used_by": "docs/landscape/works/kimi-k3.md"
+    },
+    {
+      "id": "k3-figure-12",
+      "file": "figure-12-prefix-cache.png",
+      "figure": 12,
+      "page": 23,
+      "crop_points": [
+        125,
+        332,
+        490,
+        458
+      ],
+      "pixel_width": 1521,
+      "pixel_height": 525,
+      "sha256": "2bef14bdfaaa164d7de2a2aa6984b461dcdfca25541db4e34bb841b269312943",
+      "used_by": "docs/inference/cache-reuse.md"
+    }
+  ]
+}

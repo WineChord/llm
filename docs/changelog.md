@@ -2,6 +2,7 @@
 
 ## 2026-07-28
 
+- 为 [Kimi K3 总览](landscape/works/kimi-k3.md#k3-figure-02)、[KDA 数值边界](landscape/works/kimi-linear-flashkda.md#k3-figure-03)、[Quantile Balancing](landscape/works/latentmoe-quantile-balancing.md#k3-figure-05)和[混合缓存](inference/cache-reuse.md#k3-figure-12)加入五幅精确裁取的原报告机制图；图像按叙事节点分布，保留高清查看、替代文本、固定版本来源、版权与许可证，并由独立门禁校验裁剪范围、像素、摘要和使用位置。
 - 新增 [GLM-5 总深读](landscape/works/glm-5.md)：完整清点 40 页报告的 13 幅图、13 张表、5 个编号公式、4 段代码清单与附录 A–B；按原文、官方配置和后续 GLM-5.2 资料分开记录 80/78 层冲突、恒零组目标、引文元数据问题及内部评测边界。
 - 拆分 [GLM-5 架构](landscape/works/glm-5-architecture.md)、[IndexCache 与 IndexShare](landscape/works/indexcache.md)、[slime 与异步 Agentic RL](landscape/works/slime-async-agentic-rl.md)和 [GLM Agentic Engineering](landscape/works/glm-agentic-engineering.md)，把 MLA-256、Muon Split、Shared MTP、DSA、TITO、direct IS、环境扩展、上下文管理和异构部署接回 canonical 主干。
 - 建立 [GLM 演化](landscape/glm-timeline.md)与 [GLM-5 的 63 项正文引用图谱](landscape/glm-5-reference-map.md)，分开 full report 与 GLM-5.1/5.2 的后续增量，并修正 GLM-5 base model 训练总量为 28.5T。

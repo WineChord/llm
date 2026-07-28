@@ -274,6 +274,11 @@ $$
 
 新 bias 只在下一训练 step 生效。用当前 batch 算完 bias 后重新路由同一 batch，会让 action 与生成它的 policy state 不一致，也会把算法从 causal controller 改成 batch-level assignment。
 
+<figure class="paper-figure paper-figure--wide" id="k3-figure-05" markdown="1">
+[![八个 token 的 top-k 路由先形成四三一零的专家负载，逐专家分位数更新选择边界后变为二二二二](../../assets/papers/kimi-k3/figure-05-quantile-balancing.png){ width="1950" height="646" loading="lazy" decoding="async" }](../../assets/papers/kimi-k3/figure-05-quantile-balancing.png)
+<figcaption><strong>从左到右读一次 coordinate update。</strong>当前选择先形成 <code>(4, 3, 1, 0)</code> 的 expert load；中间按 expert 列寻找 margin threshold；红星与红边标出 selection boundary 真正改变的部分，结果成为 <code>(2, 2, 2, 2)</code>。这是单个 batch 的说明性例子，不是一次更新必然全局收敛的证明。<span class="paper-figure__source">图源：<a href="https://raw.githubusercontent.com/MoonshotAI/Kimi-K3/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/k3_tech_report.pdf#page=8">Kimi K3 Technical Report, Figure 5, p. 8</a>；© 2026 Moonshot AI，<a href="https://github.com/MoonshotAI/Kimi-K3/blob/521359a5cae5e79d02e5a2102c2cea9ce3b9b79a/LICENSE">Kimi K3 License</a>。</span></figcaption>
+</figure>
+
 ### Exact Coordinate Reference {#qb-coordinate-reference}
 
 下面明确采用“第 $q+1$ 大 margin”作为离散 quantile，并拒绝非整数 target 与阈值 tie。实际系统若允许 tie，必须固定 secondary key 或 fractional assignment 规则，不能依赖未指定的 `topk` 顺序。

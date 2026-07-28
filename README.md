@@ -25,6 +25,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 python scripts/check_content.py
+python scripts/check_paper_figures.py
 python scripts/check_architecture.py
 python scripts/check_python.py
 python scripts/check_snippets.py
@@ -51,4 +52,4 @@ mkdocs serve
 
 ## License
 
-[MIT](LICENSE)
+正文与站点代码采用 [MIT](LICENSE)。`docs/assets/papers/` 下的第三方论文图表保留各自的来源、版权与许可证记录。
