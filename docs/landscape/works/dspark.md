@@ -17,11 +17,11 @@ DeepSeek Sparse Attention。它是一套<strong>保持目标模型采样分布�
 空闲的目标算力。DSpark 的核心价值是把模型结构、概率校准和 serving 调度放进同
 一条因果链。
 
-> [!NOTE]
-> 本页以 2026-07-06 提交的 arXiv v1、官方
-> [DeepSpec](https://github.com/deepseek-ai/DeepSpec) 代码和截至
-> 2026-07-28 的公开 serving 实现为边界。论文是作者报告而非同行评审定论；
-> DeepSpec 公开的是训练与离线评测栈，不等于 DeepSeek 内部生产引擎的完整源码。
+!!! note "版本边界"
+    本页以 2026-07-06 提交的 arXiv v1、官方
+    [DeepSpec](https://github.com/deepseek-ai/DeepSpec) 代码和截至
+    2026-07-28 的公开 serving 实现为边界。论文是作者报告而非同行评审定论；
+    DeepSpec 公开的是训练与离线评测栈，不等于 DeepSeek 内部生产引擎的完整源码。
 
 ## 先分清对象：五层制品不是一回事 {#artifact-boundary}
 

@@ -69,6 +69,10 @@ VISIBLE_MARKDOWN_PATTERNS = (
     ("strong emphasis", re.compile(r"\*\*[^*]+\*\*|__[^_]+__")),
     ("strikethrough", re.compile(r"~~[^~]+~~")),
     ("inline link", re.compile(r"(?<!!)\[[^\]]+\]\([^)]+\)")),
+    (
+        "unsupported GitHub alert",
+        re.compile(r"(?i)\[!(?:NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]"),
+    ),
 )
 
 
