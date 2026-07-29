@@ -1,14 +1,14 @@
 :root {
   --md-text-font: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
-  --wc-inline-math-baseline-shift: -0.22em;
+  --wc-inline-math-vertical-align: baseline;
 }
 
 .md-typeset span.arithmatex {
   display: inline-block;
   max-width: none;
   overflow: visible;
-  vertical-align: var(--wc-inline-math-baseline-shift);
+  vertical-align: var(--wc-inline-math-vertical-align);
 }
 
 .md-typeset div.arithmatex {

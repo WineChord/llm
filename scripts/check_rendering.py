@@ -582,6 +582,158 @@ def chromedriver_binary(browser: str) -> Optional[str]:
     )
 
 
+def inline_math_baseline_probe(driver: object) -> list[str]:
+    result = driver.execute_async_script(
+        r"""
+        const done = arguments[0];
+        const host = document.createElement('div');
+        host.className = 'md-typeset';
+        host.style.cssText = [
+          'position:absolute',
+          'left:-10000px',
+          'top:0',
+          'visibility:hidden',
+          'white-space:nowrap',
+        ].join(';');
+        const cases = [
+          {
+            name: 'site-U',
+            fontFamily: null,
+            tex: String.raw`\(U_1,\ldots,U_\gamma\)`,
+            glyph: 'mjx-msub > mjx-mi > mjx-c',
+          },
+          {
+            name: 'site-B',
+            fontFamily: null,
+            tex: String.raw`\(B_k\)`,
+            glyph: 'mjx-msub > mjx-mi > mjx-c',
+          },
+          {
+            name: 'fallback-U',
+            fontFamily: 'Arial, Helvetica, sans-serif',
+            tex: String.raw`\(U_1,\ldots,U_\gamma\)`,
+            glyph: 'mjx-msub > mjx-mi > mjx-c',
+          },
+          {
+            name: 'fallback-B',
+            fontFamily: 'Arial, Helvetica, sans-serif',
+            tex: String.raw`\(B_k\)`,
+            glyph: 'mjx-msub > mjx-mi > mjx-c',
+          },
+        ];
+        const targets = [];
+        const rows = [];
+        for (const item of cases) {
+          const row = document.createElement('div');
+          row.style.margin = '0';
+          row.style.padding = '0';
+          if (item.fontFamily) row.style.fontFamily = item.fontFamily;
+          const before = document.createTextNode('汉A ');
+          const math = document.createElement('span');
+          math.className = 'arithmatex';
+          math.textContent = item.tex;
+          const marker = document.createElement('span');
+          marker.style.cssText = [
+            'display:inline-block',
+            'width:0',
+            'height:1px',
+            'margin:0',
+            'padding:0',
+            'border:0',
+            'vertical-align:baseline',
+          ].join(';');
+          row.append(before, math, marker, document.createTextNode(' 汉A'));
+          host.append(row);
+          targets.push(math);
+          rows.push({item, row, math, marker});
+        }
+        document.body.append(host);
+        Promise.resolve(window.MathJax.typesetPromise(targets))
+          .then(() => document.fonts
+            ? document.fonts.ready
+            : Promise.resolve())
+          .then(() => new Promise((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(resolve))))
+          .then(() => {
+            const issues = [];
+            const measurements = [];
+            for (const {item, row, math, marker} of rows) {
+              const style = getComputedStyle(math);
+              const fontSize = Number.parseFloat(style.fontSize);
+              const numericAlign = Number.parseFloat(style.verticalAlign);
+              const alignRatio = numericAlign / fontSize;
+              if (
+                style.verticalAlign !== 'baseline'
+                && (
+                  !Number.isFinite(alignRatio)
+                  || Math.abs(alignRatio) > 0.02
+                )
+              ) {
+                issues.push(
+                  `${item.name}: wrapper vertical-align `
+                  + `${style.verticalAlign}`
+                );
+              }
+              const glyph = math.querySelector(item.glyph);
+              if (!glyph) {
+                issues.push(`${item.name}: base glyph unavailable`);
+                continue;
+              }
+              const baseline = marker.getBoundingClientRect().bottom;
+              const glyphRect = glyph.getBoundingClientRect();
+              const deltaEm = (glyphRect.bottom - baseline) / fontSize;
+              const rowStyle = getComputedStyle(row);
+              const lineHeight = Number.parseFloat(rowStyle.lineHeight);
+              const rowHeight = row.getBoundingClientRect().height;
+              measurements.push({
+                name: item.name,
+                deltaEm,
+                lineHeight,
+                rowHeight,
+              });
+              if (!Number.isFinite(deltaEm) || Math.abs(deltaEm) > 0.06) {
+                issues.push(
+                  `${item.name}: base glyph is `
+                  + `${deltaEm.toFixed(3)}em from the text baseline`
+                );
+              }
+              if (
+                Number.isFinite(lineHeight)
+                && rowHeight > lineHeight + 1
+              ) {
+                issues.push(
+                  `${item.name}: inline math expands a `
+                  + `${lineHeight.toFixed(2)}px line to `
+                  + `${rowHeight.toFixed(2)}px`
+                );
+              }
+            }
+            window.MathJax.typesetClear([host]);
+            host.remove();
+            done({issues, measurements});
+          })
+          .catch((error) => {
+            try {
+              window.MathJax.typesetClear([host]);
+            } catch (_) {
+              // The original error is more useful than cleanup failure.
+            }
+            host.remove();
+            done({
+              issues: [`probe failed: ${String(error)}`],
+              measurements: [],
+            });
+          });
+        """
+    )
+    if not isinstance(result, dict):
+        return ["probe returned an invalid result"]
+    issues = result.get("issues")
+    if not isinstance(issues, list):
+        return ["probe returned invalid issues"]
+    return [str(issue) for issue in issues]
+
+
 def browser_audit(
     site_dir: Path,
     explicit_chrome: Optional[str],
@@ -968,6 +1120,7 @@ def browser_audit(
                         driver.quit()
                     driver, wait = start_driver()
                 disclosure_checked = False
+                baseline_probed = False
                 set_color_scheme("light")
                 driver.execute_cdp_cmd(
                     "Emulation.setDeviceMetricsOverride",
@@ -1054,6 +1207,17 @@ def browser_audit(
                                         raise RuntimeError(
                                             f"MathJax startup failed: {ready}"
                                         )
+                                    if not baseline_probed:
+                                        baseline_issues = (
+                                            inline_math_baseline_probe(driver)
+                                        )
+                                        if baseline_issues:
+                                            errors.append(
+                                                f"{width}px inline-math "
+                                                "baseline probe: "
+                                                + "; ".join(baseline_issues)
+                                            )
+                                        baseline_probed = True
                                 else:
                                     driver.execute_async_script(
                                         """
@@ -1141,15 +1305,21 @@ def browser_audit(
                             const inlineMathIssues = wrappers.filter((element) => {
                               if (element.tagName !== 'SPAN') return false;
                               const style = getComputedStyle(element);
-                              const shift = Number.parseFloat(style.verticalAlign);
+                              const align = Number.parseFloat(
+                                style.verticalAlign
+                              );
                               const fontSize = Number.parseFloat(style.fontSize);
-                              const ratio = shift / fontSize;
+                              const ratio = align / fontSize;
+                              const baselineAligned =
+                                style.verticalAlign === 'baseline'
+                                || (
+                                  Number.isFinite(ratio)
+                                  && Math.abs(ratio) <= 0.02
+                                );
                               return style.display !== 'inline-block'
                                 || style.overflowX !== 'visible'
                                 || style.overflowY !== 'visible'
-                                || !Number.isFinite(ratio)
-                                || ratio < -0.24
-                                || ratio > -0.20;
+                                || !baselineAligned;
                             }).length;
                             const displayMathIssues = wrappers.filter((element) => {
                               if (element.tagName !== 'DIV') return false;
