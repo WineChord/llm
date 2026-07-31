@@ -56,6 +56,47 @@ $$
 
 工具调用成功只说明接口返回成功，不说明任务完成。例如 `git push` 成功不代表 CI 和线上部署成功；HTML 返回 200 也不代表公式与交互正确渲染。
 
+## 外部模型接入：不要混淆六个层次
+
+把一个 Coding Agent 切到第三方模型，并不是“改一个模型名”这么简单。至少有六个彼此独立的层次：
+
+| 层次 | 回答的问题 | Codex 接入 DeepSeek 的实例 |
+| --- | --- | --- |
+| harness | 谁维护任务循环、工具执行、权限和上下文 | Codex CLI / IDE / Desktop |
+| model | 谁生成下一步推理或动作 | `deepseek-v4-flash` |
+| wire API | 客户端按什么请求与事件协议通信 | Responses API |
+| provider | 请求发到哪里、如何认证 | `https://api.deepseek.com/` 与 Bearer token |
+| model catalog | 客户端如何得知窗口、推理档位、工具和指令模板 | 单独的 `models.json` |
+| config scope | 变更影响一次运行、一个 profile，还是所有客户端 | 命令行覆盖、`deepseek.config.toml` 或全局 `config.toml` |
+
+因此，“接口能返回文本”只验证了 model、provider 与 wire API 的最短链路；它没有证明工具循环、上下文压缩、图片、搜索、MCP、审批和恢复都兼容。反过来，`models.json` 也不是模型实现：它只是客户端侧的能力声明，不能让服务端凭空支持一个协议字段或工具。
+
+以 Codex 的隔离 profile 为例，provider 配置可以保持很小：
+
+```toml
+# ~/.codex/deepseek.config.toml
+model = "deepseek-v4-flash"
+model_provider = "deepseek"
+model_reasoning_effort = "high"
+model_catalog_json = "~/.codex/models.deepseek.json"
+
+[model_providers.deepseek]
+name = "DeepSeek"
+base_url = "https://api.deepseek.com/"
+wire_api = "responses"
+env_key = "DEEPSEEK_API_KEY"
+```
+
+随后以 `codex --profile deepseek` 启动。profile 把 provider 与模型目录限制在显式选择的 CLI 会话中，普通 `codex` 仍使用原有默认配置；如果目标是让所有客户端都默认切换，则需要修改用户级 `~/.codex/config.toml`。provider 和认证字段不能放在项目级 `.codex/config.toml` 中，因为 Codex 会忽略这些机器级设置。
+
+凭据与 provider 配置也应分离。Codex 支持用 `env_key` 读取环境变量，或用 `[model_providers.<id>.auth]` 调用外部凭据助手；把长期 API Key 直接写进可复制的 TOML 虽然方便，却扩大了备份、日志、截图和误提交的泄露面。一个可靠的切换流程还应保留原配置、验证 TOML/JSON、检查凭据来源、做最小 API 调用，再做一次完整 agent 回合。
+
+### 能力取交集，而不是取并集
+
+截至 2026-07-31，DeepSeek 的 Responses API 只列出 `deepseek-v4-flash`；`deepseek-v4-pro` 尚不支持该协议。当前兼容层支持文本、function tool、服务端 web search 和 Codex 使用的 `apply_patch` custom tool，但不支持图片或文件输入，也不支持 `previous_response_id`、`conversation`、`store`、background mode 等服务端状态能力。超出交集的字段有些会被忽略，而不是显式报错。
+
+这意味着 Codex 仍可在本地保存任务历史、执行 shell 和回传工具结果，但每轮模型请求必须服从 DeepSeek 的实际协议边界。服务端无状态并不等于 agent 无状态：状态可以由 harness 保存在本地，并在后续请求中重新发送；代价是更高的输入 token、上下文压缩压力和对自动 prefix cache 的依赖。公开的 1M context 也不等于任意 1M token 工作流都稳定可用，仍需为系统指令、工具 schema、历史和输出预留空间。
+
 ## 规划与执行
 
 短任务适合隐式一步计划；跨文件或长时任务需要显式状态机：
@@ -127,3 +168,8 @@ GLM-5 的 Agentic Engineering 路线把 coding task 视为环境生产问题：�
 - [badlogic/pi-mono agent framework](https://github.com/badlogic/pi-mono)
 - [RepoLaunch](https://arxiv.org/abs/2505.23419)
 - [GLM-5: from Vibe Coding to Agentic Engineering](https://arxiv.org/abs/2602.15763)
+- [DeepSeek：Integrate with Codex](https://api-docs.deepseek.com/quick_start/agent_integrations/codex/)
+- [DeepSeek：Using the Responses API](https://api-docs.deepseek.com/guides/responses_api/)
+- [DeepSeek：Models & Pricing](https://api-docs.deepseek.com/quick_start/pricing/)
+- [OpenAI Codex：Custom model providers](https://learn.chatgpt.com/docs/config-file/config-advanced#custom-model-providers)
+- [OpenAI Codex：Configuration Reference](https://learn.chatgpt.com/docs/config-file/config-reference#configtoml)
